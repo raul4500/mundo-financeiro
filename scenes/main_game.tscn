@@ -822,7 +822,10 @@ tile_set = SubResource("TileSet_ipu61")
 [node name="Raul" parent="." unique_id=1335606052 instance=ExtResource("2_72e8q")]
 position = Vector2(445, 330)
 
-[node name="Camera2D" type="Camera2D" parent="Raul" unique_id=1666091589]
-position = Vector2(-1, -8)
+[node name="Camera2D" type="Camera2D" parent="Raul" unique_id=877482067]
+position = Vector2(-2, 0)
 zoom = Vector2(4, 4)
-position_smoothing_speed = 8.0
+
+[node name="Spawns" type="Node2D" parent="." unique_id=975818676]
+
+[node name="Sp1" type="Marker2D" parent="Spawns" unique_id=569491616]
