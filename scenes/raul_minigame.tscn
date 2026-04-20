@@ -1,0 +1,117 @@
+[gd_scene format=3 uid="uid://c2neatiggtmug"]
+
+[ext_resource type="Script" uid="uid://vwerywahd2u4" path="res://scripts/raul_minigame.gd" id="1_ilftp"]
+[ext_resource type="Texture2D" uid="uid://cngb5cgrpieyt" path="res://assests/sprites/Raul/pixil-layer-main.png" id="1_so4ky"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ilftp"]
+atlas = ExtResource("1_so4ky")
+region = Rect2(32, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5va3a"]
+atlas = ExtResource("1_so4ky")
+region = Rect2(48, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8ddcd"]
+atlas = ExtResource("1_so4ky")
+region = Rect2(64, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5vg7s"]
+atlas = ExtResource("1_so4ky")
+region = Rect2(80, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pntky"]
+atlas = ExtResource("1_so4ky")
+region = Rect2(96, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6wlaa"]
+atlas = ExtResource("1_so4ky")
+region = Rect2(112, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8vxov"]
+atlas = ExtResource("1_so4ky")
+region = Rect2(128, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5ybt7"]
+atlas = ExtResource("1_so4ky")
+region = Rect2(144, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fkrgj"]
+atlas = ExtResource("1_so4ky")
+region = Rect2(32, 128, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c5gbu"]
+atlas = ExtResource("1_so4ky")
+region = Rect2(48, 128, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f64s3"]
+atlas = ExtResource("1_so4ky")
+region = Rect2(64, 128, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3tekb"]
+atlas = ExtResource("1_so4ky")
+region = Rect2(80, 128, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_mv373"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ilftp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5va3a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8ddcd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5vg7s")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pntky")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6wlaa")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8vxov")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5ybt7")
+}],
+"loop": true,
+"name": &"default",
+"speed": 15.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fkrgj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c5gbu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f64s3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3tekb")
+}],
+"loop": true,
+"name": &"jump",
+"speed": 10.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ijm7n"]
+size = Vector2(11, 13)
+
+[node name="raul-minigame" type="CharacterBody2D" unique_id=1701924158]
+script = ExtResource("1_ilftp")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1600341270]
+position = Vector2(1, 0)
+sprite_frames = SubResource("SpriteFrames_mv373")
+autoplay = "default"
+frame_progress = 0.18596953
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1367336547]
+position = Vector2(0.5, 0.5)
+shape = SubResource("RectangleShape2D_ijm7n")
