@@ -1,0 +1,39 @@
+[gd_scene format=3 uid="uid://b84dtjt10qpnb"]
+
+[ext_resource type="Script" uid="uid://cqdxt6jav7hbq" path="res://scripts/main_menu.gd" id="1_ekxnf"]
+[ext_resource type="Texture2D" uid="uid://beslbk8cbypym" path="res://assests/sprites/backgrounds/nature_3/orig.png" id="1_l6cm7"]
+
+[node name="main_menu" type="Control" unique_id=1154258972]
+layout_mode = 3
+anchor_right = 1.0
+anchor_bottom = 1.416
+offset_right = 224.0
+offset_bottom = -89.56799
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ekxnf")
+
+[node name="background" type="Sprite2D" parent="." unique_id=831246573]
+position = Vector2(706.06244, 336.62503)
+scale = Vector2(2.628255, 2.1751542)
+texture = ExtResource("1_l6cm7")
+
+[node name="start" type="Button" parent="." unique_id=1633250388]
+layout_mode = 0
+offset_left = 565.0
+offset_top = 278.0
+offset_right = 825.0
+offset_bottom = 325.0
+text = "Começar"
+
+[node name="novo jogo" type="Button" parent="." unique_id=1069495360]
+layout_mode = 0
+offset_left = 566.0
+offset_top = 365.0
+offset_right = 826.0
+offset_bottom = 412.0
+text = "Novo Jogo
+"
+
+[connection signal="pressed" from="start" to="." method="_on_start_pressed"]
+[connection signal="pressed" from="novo jogo" to="." method="_on_novo_jogo_pressed"]

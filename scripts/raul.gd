@@ -40,3 +40,6 @@ func _physics_process(delta: float) -> void:
 	velocity = direction * SPEED
 
 	move_and_slide()
+
+func _exit_tree():
+	Global.player = null

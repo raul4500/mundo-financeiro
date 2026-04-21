@@ -11,9 +11,14 @@ config_version=5
 [application]
 
 config/name="mundo-financeiro"
-run/main_scene="uid://dv2fal4tcl826"
+run/main_scene="uid://b84dtjt10qpnb"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
+
+[autoload]
+
+Data="*uid://h77e3658d661"
+Global="*uid://docig2r6rn8st"
 
 [input]
 
