@@ -11,3 +11,7 @@ func _on_novo_jogo_pressed() -> void:
 	if dir:
 		dir.remove("savegame.json")
 	get_tree().change_scene_to_file("res://scenes/main_game.tscn")
+
+
+func _on_sair_do_jogo_pressed() -> void:
+	get_tree().quit()

@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://bn25wcp4u05qr" path="res://assests/sprites/1 Tiles/Tile_04.png" id="2_d2op2"]
 [ext_resource type="Script" uid="uid://b1lnuqk4aqlo7" path="res://scripts/minigame_door.gd" id="4_0rdsr"]
 [ext_resource type="Script" uid="uid://dcbgk5qjcltii" path="res://scripts/hud_control.gd" id="5_ygxny"]
+[ext_resource type="PackedScene" uid="uid://cha446b7n3r5r" path="res://scenes/pause_menu.tscn" id="6_70vka"]
 [ext_resource type="Script" uid="uid://d3vy1q2be0o6j" path="res://scripts/shop.gd" id="7_wi4c7"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_72e8q"]
@@ -846,11 +847,6 @@ tile_set = SubResource("TileSet_ipu61")
 [node name="raul" parent="." unique_id=1495462931 instance=ExtResource("2_72e8q")]
 position = Vector2(577, 292)
 
-[node name="Camera2D" type="Camera2D" parent="raul" unique_id=568387056]
-position = Vector2(0, 2)
-zoom = Vector2(4, 4)
-position_smoothing_enabled = true
-
 [node name="Hud" type="CanvasLayer" parent="raul" unique_id=1537627006]
 
 [node name="HudControl" type="Control" parent="raul/Hud" unique_id=1804946146]
@@ -870,6 +866,20 @@ offset_top = 12.0
 offset_right = 103.0
 offset_bottom = 35.0
 text = "R$ 100,00"
+
+[node name="CanvasLayer" type="CanvasLayer" parent="raul" unique_id=488745734]
+process_mode = 3
+
+[node name="pause_menu" parent="raul/CanvasLayer" unique_id=2075846777 instance=ExtResource("6_70vka")]
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 312.0
+offset_top = 118.0
+offset_right = 839.0
+offset_bottom = 481.0
+grow_horizontal = 1
+grow_vertical = 1
 
 [node name="minigame_door" type="Area2D" parent="." unique_id=1388088722]
 script = ExtResource("4_0rdsr")

@@ -35,7 +35,7 @@ func _ready() -> void:
 	#player.global_position = Vector2(pos["x"], pos["y"])
 
 var save_timer := 0.0
-var save_interval := 10.0 # segundos
+var save_interval := 100.0 # segundos
 
 func _process(delta):
 	save_timer += delta
