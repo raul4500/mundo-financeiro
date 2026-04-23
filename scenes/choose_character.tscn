@@ -1,0 +1,73 @@
+[gd_scene format=3 uid="uid://cbrmr5kff5n8f"]
+
+[ext_resource type="Script" uid="uid://c6aknosj6rayg" path="res://scripts/choose_character.gd" id="1_iysi2"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_3emc4"]
+load_path = "res://.godot/imported/orig.png-5009e0966f6b6d1c404f12c1e9121ca6.ctex"
+
+[node name="Choose_character" type="Control" unique_id=527423592]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_iysi2")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1720949444]
+layout_mode = 0
+offset_right = 1152.0
+offset_bottom = 648.0
+texture = SubResource("CompressedTexture2D_3emc4")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=373397064]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -383.0
+offset_top = -100.0
+offset_right = 383.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="raul" type="Button" parent="HBoxContainer" unique_id=2124784887]
+custom_minimum_size = Vector2(150, 200)
+layout_mode = 2
+
+[node name="matheus" type="Button" parent="HBoxContainer" unique_id=142425786]
+custom_minimum_size = Vector2(150, 200)
+layout_mode = 2
+
+[node name="phillip" type="Button" parent="HBoxContainer" unique_id=421737751]
+custom_minimum_size = Vector2(150, 200)
+layout_mode = 2
+
+[node name="melissa" type="Button" parent="HBoxContainer" unique_id=1742504988]
+custom_minimum_size = Vector2(150, 200)
+layout_mode = 2
+
+[node name="enzo" type="Button" parent="HBoxContainer" unique_id=105250983]
+custom_minimum_size = Vector2(150, 200)
+layout_mode = 2
+
+[node name="return" type="Button" parent="." unique_id=1528197018]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -148.0
+offset_top = -138.0
+offset_right = 145.0
+offset_bottom = -73.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Voltar"
+
+[connection signal="pressed" from="return" to="." method="_on_return_pressed"]

@@ -97,6 +97,7 @@
 [ext_resource type="Texture2D" uid="uid://dd8fhe6d56xhv" path="res://assests/sprites/1 Tiles/Tile_95.png" id="94_joxf2"]
 [ext_resource type="Texture2D" uid="uid://cebj5evamvfj6" path="res://assests/sprites/1 Tiles/Tile_96.png" id="95_x3ton"]
 [ext_resource type="PackedScene" uid="uid://c2neatiggtmug" path="res://scenes/raul_minigame.tscn" id="96_r7q0m"]
+[ext_resource type="PackedScene" uid="uid://cha446b7n3r5r" path="res://scenes/pause_menu.tscn" id="98_d5m6k"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_aj5m8"]
 texture = ExtResource("1_8aj84")
@@ -863,3 +864,8 @@ tile_set = SubResource("TileSet_vq4j8")
 
 [node name="raul-minigame" parent="." unique_id=1701924158 instance=ExtResource("96_r7q0m")]
 position = Vector2(6, 377)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="raul-minigame" unique_id=954201236]
+process_mode = 3
+
+[node name="pause_menu" parent="raul-minigame/CanvasLayer" unique_id=2075846777 instance=ExtResource("98_d5m6k")]

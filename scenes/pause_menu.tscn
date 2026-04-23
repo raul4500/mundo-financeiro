@@ -19,22 +19,26 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -43.0
-offset_top = -33.0
-offset_right = 43.0
-offset_bottom = 33.0
+offset_left = -301.0
+offset_top = -189.0
+offset_right = 301.0
+offset_bottom = 189.0
 grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
 
 [node name="continuar" type="Button" parent="VBoxContainer" unique_id=549171926]
-custom_minimum_size = Vector2(30, 10)
+custom_minimum_size = Vector2(1000, 100)
 layout_mode = 2
 size_flags_horizontal = 4
 text = "Continuar"
 
+[node name="Container" type="Container" parent="VBoxContainer" unique_id=782322611]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+
 [node name="sair" type="Button" parent="VBoxContainer" unique_id=1685082915]
-custom_minimum_size = Vector2(30, 10)
+custom_minimum_size = Vector2(1000, 100)
 layout_mode = 2
 size_flags_vertical = 8
 text = "Sair"

@@ -16,12 +16,12 @@ func _physics_process(delta: float) -> void:
 
 	# Corrida
 	var spd_name = "walk"
-	if Input.is_action_pressed("run"):
-		SPEED = 140.0
-		spd_name = "run"
-	else:
-		SPEED = 70.0
-		spd_name = "walk"
+	#if Input.is_action_pressed("run"):
+	#	SPEED = 140.0
+	#	spd_name = "run"
+	#else:
+	SPEED = 70.0
+		#spd_name = "walk"
 
 	# Animação
 	if direction.x < 0:
