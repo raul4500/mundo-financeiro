@@ -1,6 +1,6 @@
 extends Node
 
-func save_game(data):
+func save_game(data = Global.player):
 	var json_string = JSON.stringify(data)
 	var file = FileAccess.open("user://savegame.json", FileAccess.WRITE)
 	file.store_string(json_string)
@@ -21,11 +21,11 @@ func _ready() -> void:
 	#player.global_position = Vector2(pos["x"], pos["y"])
 
 var save_timer := 0.0
-var save_interval := 30.0 # segundos
+var save_interval := 10.0 # segundos
 
 func _process(delta):
 	save_timer += delta
 	if save_timer >= save_interval:
 		print("game saved!")
-		save_game(Global.player)
+		save_game()
 		save_timer = 0

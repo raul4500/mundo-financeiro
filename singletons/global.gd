@@ -12,7 +12,11 @@ var data_model = {
 			"y": 0
 			}
 	}
-
+	
+func new_game() -> void:
+	player["name"] = ""
+	player["money"] = 0
+	
 func load_data() -> void:
 	if not SaveManager.load_game():
 		player = data_model

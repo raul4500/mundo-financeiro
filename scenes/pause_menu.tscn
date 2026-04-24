@@ -28,17 +28,17 @@ grow_vertical = 2
 alignment = 1
 
 [node name="continuar" type="Button" parent="VBoxContainer" unique_id=549171926]
-custom_minimum_size = Vector2(1000, 100)
+custom_minimum_size = Vector2(700, 70)
 layout_mode = 2
 size_flags_horizontal = 4
 text = "Continuar"
 
 [node name="Container" type="Container" parent="VBoxContainer" unique_id=782322611]
-custom_minimum_size = Vector2(0, 100)
+custom_minimum_size = Vector2(0, 70)
 layout_mode = 2
 
 [node name="sair" type="Button" parent="VBoxContainer" unique_id=1685082915]
-custom_minimum_size = Vector2(1000, 100)
+custom_minimum_size = Vector2(500, 70)
 layout_mode = 2
 size_flags_vertical = 8
 text = "Sair"

@@ -21,6 +21,7 @@ func _input(event: InputEvent) -> void:
 func _on_sair_pressed() -> void:
 	get_tree().paused = false
 	visible = false
+	SaveManager.save_game(Global.player)
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 
 
