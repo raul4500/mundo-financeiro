@@ -1,17 +1,28 @@
 extends Node
 
-# Variável para armazenar a referência do nó do jogador
-var player: Node2D = null
-var money: float
-var selected_character: int
+var player: Dictionary
+
+var data_model = {
+		"name": "",
+		"money": 0,
+		"week": 1,
+		"school_level": 0,
+		"position": {
+			"x": 0,
+			"y": 0
+			}
+	}
+
+func load_data() -> void:
+	if not SaveManager.load_game():
+		player = data_model
+	else:
+		player = SaveManager.load_game()
 
 func _ready() -> void:
-	money = Data.data["money"]
+	load_data()
 	print("global loaded")
+	print(player)
 	
-
-# Função opcional para pegar a posição mais facilmente
-func get_player_position() -> Vector2:
-	if player:
-		return player.global_position
-	return Vector2.ZERO # Retorna zero se o player não existir
+func _process(delta: float) -> void:
+	pass

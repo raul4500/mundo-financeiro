@@ -96,7 +96,7 @@
 [ext_resource type="Texture2D" uid="uid://dcjkni0tsi5f0" path="res://assests/sprites/1 Tiles/Tile_94.png" id="93_utbxy"]
 [ext_resource type="Texture2D" uid="uid://dd8fhe6d56xhv" path="res://assests/sprites/1 Tiles/Tile_95.png" id="94_joxf2"]
 [ext_resource type="Texture2D" uid="uid://cebj5evamvfj6" path="res://assests/sprites/1 Tiles/Tile_96.png" id="95_x3ton"]
-[ext_resource type="PackedScene" uid="uid://c2neatiggtmug" path="res://scenes/raul_minigame.tscn" id="96_r7q0m"]
+[ext_resource type="PackedScene" uid="uid://c2neatiggtmug" path="res://scenes/players/raul_minigame.tscn" id="96_r7q0m"]
 [ext_resource type="PackedScene" uid="uid://cha446b7n3r5r" path="res://scenes/pause_menu.tscn" id="98_d5m6k"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_aj5m8"]

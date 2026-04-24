@@ -2,14 +2,15 @@ extends Control
 
 
 func _ready():
-	$HBoxContainer/raul.pressed.connect(func(): select_character(1))
-	$HBoxContainer/matheus.pressed.connect(func(): select_character(2))
-	$HBoxContainer/phillip.pressed.connect(func(): select_character(3))
-	$HBoxContainer/melissa.pressed.connect(func(): select_character(4))
-	$HBoxContainer/enzo.pressed.connect(func(): select_character(5))
+	$HBoxContainer/raul.pressed.connect(func(): select_character("Raul", 1.1))
+	$HBoxContainer/matheus.pressed.connect(func(): select_character("Matheus", 1.3))
+	$HBoxContainer/phillip.pressed.connect(func(): select_character("Phillip", 1))
+	$HBoxContainer/melissa.pressed.connect(func(): select_character("Melissa", 1.1))
+	$HBoxContainer/enzo.pressed.connect(func(): select_character("Enzo", 0.9))
 
-func select_character(id: int) -> void:
-	Global.selected_character = id
+func select_character(name: String, k: float) -> void:
+	Global.player["name"] = name
+	Global.player["money"] = k*200
 	get_tree().change_scene_to_file("res://scenes/main_game.tscn")
 
 

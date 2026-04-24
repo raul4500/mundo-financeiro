@@ -4,8 +4,8 @@ var dentro = false
 @onready var label = $buy
 
 func _process(delta: float) -> void:
-	if Input.is_key_pressed(KEY_ENTER) and dentro == true:
-		Global.money -= 10.00
+	if Input.is_action_just_pressed("ui_accept") and dentro == true:
+		Global.player["money"] -= 10.00
 
 
 

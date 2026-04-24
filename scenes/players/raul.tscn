@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" uid="uid://baselv3etcohu" path="res://scripts/raul.gd" id="1_5u4nw"]
 [ext_resource type="Texture2D" uid="uid://cngb5cgrpieyt" path="res://assests/sprites/Raul/pixil-layer-main.png" id="2_j2i8v"]
+[ext_resource type="Script" uid="uid://dcbgk5qjcltii" path="res://scripts/hud_control.gd" id="3_d1d41"]
+[ext_resource type="PackedScene" uid="uid://cha446b7n3r5r" path="res://scenes/pause_menu.tscn" id="4_fxnpp"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ubotu"]
 atlas = ExtResource("2_j2i8v")
@@ -239,3 +241,37 @@ shape = SubResource("RectangleShape2D_tys1d")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=777825911]
 zoom = Vector2(4, 4)
+
+[node name="Hud" type="CanvasLayer" parent="." unique_id=1168280528]
+
+[node name="HudControl" type="Control" parent="Hud" unique_id=1982214786]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -1.0
+offset_top = 2.0
+offset_right = 1152.0
+offset_bottom = 642.0
+script = ExtResource("3_d1d41")
+
+[node name="Label" type="Label" parent="Hud/HudControl" unique_id=1215494150]
+modulate = Color(0, 0, 0, 1)
+layout_mode = 0
+offset_left = 29.0
+offset_top = 12.0
+offset_right = 103.0
+offset_bottom = 35.0
+text = "R$ 100,00"
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=926795539]
+process_mode = 3
+
+[node name="pause_menu" parent="CanvasLayer" unique_id=2075846777 instance=ExtResource("4_fxnpp")]
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 312.0
+offset_top = 118.0
+offset_right = 839.0
+offset_bottom = 481.0
+grow_horizontal = 1
+grow_vertical = 1

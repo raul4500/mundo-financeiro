@@ -2,11 +2,8 @@
 
 [ext_resource type="Script" uid="uid://dgc20ckx6otos" path="res://scripts/main_game.gd" id="1_ipu61"]
 [ext_resource type="Texture2D" uid="uid://chk50sy5fvbm" path="res://assests/sprites/PNG/TileSet_V1.png" id="1_s3esy"]
-[ext_resource type="PackedScene" uid="uid://bao1xk8dho6a7" path="res://scenes/raul.tscn" id="2_72e8q"]
 [ext_resource type="Texture2D" uid="uid://bn25wcp4u05qr" path="res://assests/sprites/1 Tiles/Tile_04.png" id="2_d2op2"]
 [ext_resource type="Script" uid="uid://b1lnuqk4aqlo7" path="res://scripts/minigame_door.gd" id="4_0rdsr"]
-[ext_resource type="Script" uid="uid://dcbgk5qjcltii" path="res://scripts/hud_control.gd" id="5_ygxny"]
-[ext_resource type="PackedScene" uid="uid://cha446b7n3r5r" path="res://scenes/pause_menu.tscn" id="6_70vka"]
 [ext_resource type="Script" uid="uid://d3vy1q2be0o6j" path="res://scripts/shop.gd" id="7_wi4c7"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_72e8q"]
@@ -843,43 +840,6 @@ tile_set = SubResource("TileSet_ipu61")
 [node name="Spawns" type="Node2D" parent="." unique_id=975818676]
 
 [node name="Sp1" type="Marker2D" parent="Spawns" unique_id=569491616]
-
-[node name="raul" parent="." unique_id=1495462931 instance=ExtResource("2_72e8q")]
-position = Vector2(577, 292)
-
-[node name="Hud" type="CanvasLayer" parent="raul" unique_id=1537627006]
-
-[node name="HudControl" type="Control" parent="raul/Hud" unique_id=1804946146]
-layout_mode = 3
-anchors_preset = 0
-offset_left = -1.0
-offset_top = 2.0
-offset_right = 1152.0
-offset_bottom = 642.0
-script = ExtResource("5_ygxny")
-
-[node name="Label" type="Label" parent="raul/Hud/HudControl" unique_id=1581533100]
-modulate = Color(0, 0, 0, 1)
-layout_mode = 0
-offset_left = 29.0
-offset_top = 12.0
-offset_right = 103.0
-offset_bottom = 35.0
-text = "R$ 100,00"
-
-[node name="CanvasLayer" type="CanvasLayer" parent="raul" unique_id=488745734]
-process_mode = 3
-
-[node name="pause_menu" parent="raul/CanvasLayer" unique_id=2075846777 instance=ExtResource("6_70vka")]
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 312.0
-offset_top = 118.0
-offset_right = 839.0
-offset_bottom = 481.0
-grow_horizontal = 1
-grow_vertical = 1
 
 [node name="minigame_door" type="Area2D" parent="." unique_id=1388088722]
 script = ExtResource("4_0rdsr")
