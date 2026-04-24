@@ -18,4 +18,6 @@ func _ready():
 
 	var scene = load(characters[char_name])
 	var character = scene.instantiate()
+	character.global_position.x = 500
+	character.global_position.y = 200
 	add_child(character)

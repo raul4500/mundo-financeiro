@@ -8,8 +8,8 @@ var data_model = {
 		"week": 1,
 		"school_level": 0,
 		"position": {
-			"x": 0,
-			"y": 0
+			"x": 500,
+			"y": 200
 			}
 	}
 	

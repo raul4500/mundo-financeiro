@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c6aknosj6rayg" path="res://scripts/choose_character.gd" id="1_iysi2"]
 [ext_resource type="Texture2D" uid="uid://cngb5cgrpieyt" path="res://assests/sprites/Raul/pixil-layer-main.png" id="2_4rxp5"]
+[ext_resource type="Texture2D" uid="uid://211we30a2e3o" path="res://assests/sprites/Player_sprites/Player_sprites/idle.png" id="3_d1bwa"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_3emc4"]
 load_path = "res://.godot/imported/orig.png-5009e0966f6b6d1c404f12c1e9121ca6.ctex"
@@ -36,6 +37,42 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_uo8c8")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cb8dg"]
+atlas = ExtResource("3_d1bwa")
+region = Rect2(32, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h7fqr"]
+atlas = ExtResource("3_d1bwa")
+region = Rect2(112, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dy2f6"]
+atlas = ExtResource("3_d1bwa")
+region = Rect2(192, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jbegy"]
+atlas = ExtResource("3_d1bwa")
+region = Rect2(272, 32, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_xv425"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cb8dg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_h7fqr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dy2f6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jbegy")
 }],
 "loop": true,
 "name": &"default",
@@ -83,12 +120,20 @@ position = Vector2(75, 97.00001)
 scale = Vector2(9.25, 10.125001)
 sprite_frames = SubResource("SpriteFrames_cb8dg")
 autoplay = "default"
-frame = 2
 frame_progress = 0.5018258
 
 [node name="matheus" type="Button" parent="HBoxContainer" unique_id=142425786]
+self_modulate = Color(1, 1, 1, 0)
+show_behind_parent = true
 custom_minimum_size = Vector2(150, 200)
 layout_mode = 2
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="HBoxContainer/matheus" unique_id=248630692]
+position = Vector2(75.000015, 100)
+scale = Vector2(9.25, 9.5625)
+sprite_frames = SubResource("SpriteFrames_xv425")
+autoplay = "default"
+frame_progress = 0.45384967
 
 [node name="phillip" type="Button" parent="HBoxContainer" unique_id=421737751]
 custom_minimum_size = Vector2(150, 200)
