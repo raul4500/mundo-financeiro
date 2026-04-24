@@ -13,10 +13,6 @@ func _on_start_pressed() -> void:
 	start()
 	
 func _on_novo_jogo_pressed() -> void:
-	var dir = DirAccess.open("user://")
-	if dir:
-		dir.remove("savegame.json")
-	Global.new_game()
 	get_tree().change_scene_to_file("res://scenes/choose_character.tscn")
 
 

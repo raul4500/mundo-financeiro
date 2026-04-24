@@ -9,8 +9,10 @@ func _ready():
 	$HBoxContainer/enzo.pressed.connect(func(): select_character("Enzo", 0.9))
 
 func select_character(name: String, k: float) -> void:
-	Global.player["name"] = name
-	Global.player["money"] = k*200
+	var dir = DirAccess.open("user://")
+	if dir:
+		dir.remove("savegame.json")
+	Global.new_game(name, k*200)
 	get_tree().change_scene_to_file("res://scenes/main_game.tscn")
 
 
