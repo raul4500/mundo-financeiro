@@ -1,10 +1,24 @@
 extends Node2D
 
+@onready var player = $"raul-minigame"
 @onready var camera = $Camera2D
+@onready var level_label = $Camera2D/Level
+@onready var marker1 = $map/levels/Marker_1
+@onready var marker2 = $map/levels/Level1/Marker_2
+@onready var marker3 = $cam_marker
+@onready var marker4 = $cam_marker2
+
+
+var curr_level = Global.player["school_level"]
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass
-
+	if curr_level == 1:
+		player.global_position = marker1.global_position
+		camera.global_position = marker3.global_position
+	if curr_level == 2:
+		player.global_position = marker2.global_position
+		camera.global_position = marker4.global_position
 func _process(delta: float) -> void:
 	camera.global_position.x += 1.6666666
+	level_label.text = str(int(Global.player["school_level"]))
