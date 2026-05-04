@@ -5,7 +5,9 @@
 [ext_resource type="Texture2D" uid="uid://bn25wcp4u05qr" path="res://assests/sprites/1 Tiles/Tile_04.png" id="2_d2op2"]
 [ext_resource type="Script" uid="uid://b1lnuqk4aqlo7" path="res://scripts/minigame_door.gd" id="4_0rdsr"]
 [ext_resource type="Texture2D" uid="uid://62w5yrcdqt4r" path="res://assests/sprites/68908f99-a84b-46a7-b953-04ed86e010d2.jpg" id="4_ygxny"]
-[ext_resource type="Script" uid="uid://d3vy1q2be0o6j" path="res://scripts/shop.gd" id="7_wi4c7"]
+[ext_resource type="Script" uid="uid://cagihov8rth3a" path="res://scripts/shop_door.gd" id="6_70vka"]
+[ext_resource type="FontFile" uid="uid://bf1r20swxoymi" path="res://assests/fonts/QuinqueFive.otf" id="7_70vka"]
+[ext_resource type="Script" uid="uid://d3vy1q2be0o6j" path="res://scripts/bank_door.gd" id="7_wi4c7"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_72e8q"]
 texture = ExtResource("1_s3esy")
@@ -825,6 +827,9 @@ radius = 23.021729
 [sub_resource type="CircleShape2D" id="CircleShape2D_70vka"]
 radius = 22.022715
 
+[sub_resource type="FontVariation" id="FontVariation_2l77h"]
+base_font = ExtResource("7_70vka")
+
 [node name="main_game" type="Node2D" unique_id=2056535382]
 script = ExtResource("1_ipu61")
 
@@ -856,29 +861,54 @@ shape = SubResource("CircleShape2D_ipu61")
 
 [node name="min_door" type="Label" parent="minigame_door" unique_id=652777388]
 visible = false
-offset_left = 610.0
-offset_top = 204.0
-offset_right = 687.0
-offset_bottom = 227.0
+offset_left = 159.0
+offset_top = 349.0
+offset_right = 236.0
+offset_bottom = 372.0
 text = "Minigame"
 
 [node name="shop" type="Area2D" parent="." unique_id=233731835]
-script = ExtResource("7_wi4c7")
+script = ExtResource("6_70vka")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="shop" unique_id=1442001352]
 position = Vector2(572, 254)
 shape = SubResource("CircleShape2D_70vka")
 
-[node name="buy" type="Label" parent="shop" unique_id=39462917]
+[node name="buy" type="Label" parent="shop" unique_id=720853210]
 visible = false
-offset_left = 519.0
-offset_top = 203.0
-offset_right = 588.0
-offset_bottom = 226.0
-text = "Comprar"
+offset_left = 518.0
+offset_top = 220.0
+offset_right = 636.0
+offset_bottom = 237.0
+theme_override_constants/outline_size = 9
+theme_override_fonts/font = SubResource("FontVariation_2l77h")
+theme_override_font_sizes/font_size = 14
+text = "COMPRAR"
+horizontal_alignment = 1
+
+[node name="bank" type="Area2D" parent="." unique_id=2021245623]
+script = ExtResource("7_wi4c7")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="bank" unique_id=1537764621]
+position = Vector2(640, 429)
+shape = SubResource("CircleShape2D_70vka")
+
+[node name="bank" type="Label" parent="bank" unique_id=1578286873]
+visible = false
+offset_left = 598.0
+offset_top = 404.0
+offset_right = 682.0
+offset_bottom = 421.0
+theme_override_constants/outline_size = 9
+theme_override_fonts/font = SubResource("FontVariation_2l77h")
+theme_override_font_sizes/font_size = 14
+text = "BANCO"
+horizontal_alignment = 1
 
 [connection signal="tree_exited" from="." to="." method="_on_tree_exited"]
 [connection signal="body_shape_entered" from="minigame_door" to="minigame_door" method="_on_body_shape_entered"]
 [connection signal="body_shape_exited" from="minigame_door" to="minigame_door" method="_on_body_shape_exited"]
 [connection signal="body_shape_entered" from="shop" to="shop" method="_on_body_shape_entered"]
 [connection signal="body_shape_exited" from="shop" to="shop" method="_on_body_shape_exited"]
+[connection signal="body_shape_entered" from="bank" to="bank" method="_on_body_shape_entered"]
+[connection signal="body_shape_exited" from="bank" to="bank" method="_on_body_shape_exited"]

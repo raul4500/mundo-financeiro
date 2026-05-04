@@ -1,0 +1,126 @@
+[gd_scene format=3 uid="uid://bljey7557x32m"]
+
+[ext_resource type="Script" uid="uid://6ov1a0843iiq" path="res://scripts/banco.gd" id="1_3bwp7"]
+[ext_resource type="Texture2D" uid="uid://yxmmv1bxgkfm" path="res://assests/sprites/bank.jpg" id="2_24jpf"]
+[ext_resource type="FontFile" uid="uid://bf1r20swxoymi" path="res://assests/fonts/QuinqueFive.otf" id="3_dkbjb"]
+
+[sub_resource type="FontVariation" id="FontVariation_e47eg"]
+base_font = ExtResource("3_dkbjb")
+
+[sub_resource type="FontVariation" id="FontVariation_2nf2n"]
+base_font = ExtResource("3_dkbjb")
+
+[node name="banco" type="Control" unique_id=11116231]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_3bwp7")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1685238952]
+modulate = Color(1, 1, 1, 0.42352942)
+texture_filter = 1
+texture_repeat = 1
+position = Vector2(575, 324)
+scale = Vector2(1.8402556, 1.028754)
+texture = ExtResource("2_24jpf")
+
+[node name="Label_Money" type="Label" parent="." unique_id=416209020]
+modulate = Color(0.9696924, 0.9696924, 0.9696924, 1)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -128.0
+offset_top = 29.0
+offset_right = 131.0
+offset_bottom = 71.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_constants/shadow_outline_size = 5
+theme_override_fonts/font = SubResource("FontVariation_e47eg")
+theme_override_font_sizes/font_size = 30
+text = "R$ 200,00"
+horizontal_alignment = 1
+
+[node name="Label" type="Label" parent="." unique_id=1510894160]
+layout_mode = 0
+offset_left = 68.0
+offset_top = 155.0
+offset_right = 482.0
+offset_bottom = 182.0
+theme_override_constants/outline_size = 8
+theme_override_fonts/font = SubResource("FontVariation_2nf2n")
+theme_override_font_sizes/font_size = 23
+text = "Saldo na conta:"
+
+[node name="Label_Saldo" type="Label" parent="." unique_id=1362603835]
+layout_mode = 0
+offset_left = 66.0
+offset_top = 194.0
+offset_right = 411.0
+offset_bottom = 236.0
+theme_override_constants/outline_size = 9
+theme_override_fonts/font = SubResource("FontVariation_2nf2n")
+theme_override_font_sizes/font_size = 36
+text = "R$ 20,00"
+
+[node name="Button_Deposit" type="Button" parent="." unique_id=1274055190]
+layout_mode = 0
+offset_left = 72.0
+offset_top = 422.0
+offset_right = 457.0
+offset_bottom = 521.0
+theme_override_fonts/font = ExtResource("3_dkbjb")
+text = "DEPOSITAR"
+
+[node name="LineEdit_Deposit" type="LineEdit" parent="." unique_id=389989917]
+layout_mode = 0
+offset_left = 74.0
+offset_top = 304.0
+offset_right = 457.0
+offset_bottom = 395.0
+placeholder_text = "VALOR A DEPOSITAR:"
+
+[node name="Button_Withdraw" type="Button" parent="." unique_id=83204081]
+layout_mode = 0
+offset_left = 634.0
+offset_top = 422.0
+offset_right = 1019.0
+offset_bottom = 521.0
+theme_override_fonts/font = ExtResource("3_dkbjb")
+text = "SACAR"
+
+[node name="LineEdit_Withdraw" type="LineEdit" parent="." unique_id=243457433]
+layout_mode = 0
+offset_left = 631.0
+offset_top = 302.0
+offset_right = 1014.0
+offset_bottom = 393.0
+placeholder_text = "VALOR A SACAR:"
+
+[node name="Button3" type="Button" parent="." unique_id=439501954]
+modulate = Color(1, 1, 1, 0.42745098)
+layout_mode = 0
+offset_left = 374.0
+offset_top = 558.0
+offset_right = 722.0
+offset_bottom = 607.0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("3_dkbjb")
+text = "INVESTIR"
+
+[node name="Exit" type="Button" parent="." unique_id=777277480]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 19.0
+offset_right = 152.0
+offset_bottom = 59.0
+theme_override_fonts/font = ExtResource("3_dkbjb")
+text = "SAIR
+"
+
+[connection signal="pressed" from="Exit" to="." method="_on_exit_pressed"]

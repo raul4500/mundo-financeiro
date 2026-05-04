@@ -5,6 +5,7 @@ var player: Dictionary
 var data_model = {
 		"name": "",
 		"money": 0,
+		"saldo": 0,
 		"week": 1,
 		"school_level": 0,
 		"position": {
@@ -16,6 +17,7 @@ var data_model = {
 func new_game(name: String, money: float) -> void:
 	player["name"] = name
 	player["money"] = money
+	player["saldo"] = 0
 	player["position"]["x"] = 500
 	player["position"]["y"] = 200
 	

@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://cngb5cgrpieyt" path="res://assests/sprites/Raul/pixil-layer-main.png" id="2_j2i8v"]
 [ext_resource type="Script" uid="uid://dcbgk5qjcltii" path="res://scripts/hud_control.gd" id="3_d1d41"]
 [ext_resource type="PackedScene" uid="uid://cha446b7n3r5r" path="res://scenes/pause_menu.tscn" id="4_fxnpp"]
+[ext_resource type="FontFile" uid="uid://bf1r20swxoymi" path="res://assests/fonts/QuinqueFive.otf" id="4_gk2mp"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ubotu"]
 atlas = ExtResource("2_j2i8v")
@@ -227,6 +228,9 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tys1d"]
 size = Vector2(9, 5)
 
+[sub_resource type="FontVariation" id="FontVariation_m4kff"]
+base_font = ExtResource("4_gk2mp")
+
 [node name="raul" type="CharacterBody2D" unique_id=1495462931]
 script = ExtResource("1_5u4nw")
 
@@ -253,14 +257,24 @@ offset_right = 1152.0
 offset_bottom = 642.0
 script = ExtResource("3_d1d41")
 
-[node name="Label" type="Label" parent="Hud/HudControl" unique_id=1215494150]
-modulate = Color(0, 0, 0, 1)
-layout_mode = 0
-offset_left = 29.0
-offset_top = 12.0
-offset_right = 103.0
-offset_bottom = 35.0
-text = "R$ 100,00"
+[node name="Label" type="Label" parent="Hud/HudControl" unique_id=924315269]
+modulate = Color(0.9696924, 0.9696924, 0.9696924, 1)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -128.5
+offset_top = 18.0
+offset_right = 130.5
+offset_bottom = 60.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_constants/shadow_outline_size = 5
+theme_override_fonts/font = SubResource("FontVariation_m4kff")
+theme_override_font_sizes/font_size = 30
+text = "fsefe"
+horizontal_alignment = 1
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=926795539]
 process_mode = 3
