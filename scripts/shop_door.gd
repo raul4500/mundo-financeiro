@@ -4,8 +4,9 @@ var dentro = false
 @onready var label = $buy
 
 func _process(delta: float) -> void:
-	if Input.is_key_pressed(KEY_ENTER) and dentro == true:
-		get_tree().change_scene_to_file("res://scenes/shop.tscn")
+	if Input.is_action_just_pressed("ui_accept") and dentro == true:
+		if Global.player["money"] > 0:
+			Global.player["money"] -= 10
 
 
 func _on_body_shape_entered(body_rid: RID, body: Node2D, body_shape_index: int, local_shape_index: int) -> void:

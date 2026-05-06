@@ -19,8 +19,8 @@ func new_game(name: String, money: float) -> void:
 	player["money"] = money
 	player["saldo"] = 0
 	player["school_level"] = 1
-	player["position"]["x"] = 500
-	player["position"]["y"] = 200
+	player["position"]["x"] = 180
+	player["position"]["y"] = 210
 	
 func load_data() -> void:
 	if not SaveManager.load_game():
