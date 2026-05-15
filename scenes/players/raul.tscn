@@ -289,3 +289,35 @@ offset_right = 839.0
 offset_bottom = 481.0
 grow_horizontal = 1
 grow_vertical = 1
+
+[node name="Event" type="CanvasLayer" parent="." unique_id=1618234526]
+script = ExtResource("6_gk2mp")
+
+[node name="Panel" type="Panel" parent="Event" unique_id=1449586594]
+offset_right = 255.0
+offset_bottom = 121.0
+
+[node name="Titulo" type="Label" parent="Event/Panel" unique_id=905047022]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 11.0
+offset_right = 235.0
+offset_bottom = 34.0
+text = "teste"
+
+[node name="Descricao" type="Label" parent="Event/Panel" unique_id=671791783]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 58.0
+offset_right = 237.0
+offset_bottom = 81.0
+text = "tesdte"
+
+[node name="Button" type="Button" parent="Event/Panel" unique_id=1710709671]
+layout_mode = 0
+offset_left = 190.0
+offset_top = 89.0
+offset_right = 241.0
+offset_bottom = 115.0
+
+[connection signal="pressed" from="Event/Panel/Button" to="Event" method="_on_button_pressed"]
