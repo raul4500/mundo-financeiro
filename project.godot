@@ -17,8 +17,10 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+EventsManager="*uid://0i1kvfbj276t"
 SaveManager="*uid://h77e3658d661"
 Global="*uid://docig2r6rn8st"
+UnexpectedEvents="*uid://dn0fudhms8ha6"
 
 [input]
 
