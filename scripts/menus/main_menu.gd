@@ -7,13 +7,13 @@ func _ready() -> void:
 		continue_button.visible = true
 
 func start() -> void:
-	get_tree().change_scene_to_file("res://scenes/main_game.tscn")
+	get_tree().change_scene_to_file("res://scenes/world/main_game.tscn")
 
 func _on_start_pressed() -> void:
 	start()
 	
 func _on_novo_jogo_pressed() -> void:
-	get_tree().change_scene_to_file("res://scenes/choose_character.tscn")
+	get_tree().change_scene_to_file("res://scenes/menus/choose_character.tscn")
 
 
 func _on_sair_do_jogo_pressed() -> void:

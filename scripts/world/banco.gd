@@ -84,4 +84,4 @@ func _only_numbers(new_text, line_edit: LineEdit):
 
 
 func _on_exit_pressed() -> void:
-	get_tree().change_scene_to_file("res://scenes/main_game.tscn")
+	get_tree().change_scene_to_file("res://scenes/world/main_game.tscn")
