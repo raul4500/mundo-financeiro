@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://c2neatiggtmug"]
 
-[ext_resource type="Script" uid="uid://vwerywahd2u4" path="res://scripts/raul_minigame.gd" id="1_ilftp"]
+[ext_resource type="Script" uid="uid://vwerywahd2u4" path="res://scripts/player/raul_minigame.gd" id="1_ilftp"]
 [ext_resource type="Texture2D" uid="uid://cngb5cgrpieyt" path="res://assests/sprites/Raul/pixil-layer-main.png" id="1_so4ky"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ilftp"]

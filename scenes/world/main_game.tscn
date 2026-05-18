@@ -1,16 +1,16 @@
 [gd_scene format=4 uid="uid://dv2fal4tcl826"]
 
-[ext_resource type="Script" uid="uid://dgc20ckx6otos" path="res://scripts/main_game.gd" id="1_ipu61"]
-[ext_resource type="Texture2D" uid="uid://chk50sy5fvbm" path="res://assests/sprites/PNG/TileSet_V1.png" id="1_s3esy"]
-[ext_resource type="Texture2D" uid="uid://bn25wcp4u05qr" path="res://assests/sprites/1 Tiles/Tile_04.png" id="2_d2op2"]
-[ext_resource type="Script" uid="uid://b1lnuqk4aqlo7" path="res://scripts/minigame_door.gd" id="4_0rdsr"]
-[ext_resource type="Texture2D" uid="uid://62w5yrcdqt4r" path="res://assests/sprites/68908f99-a84b-46a7-b953-04ed86e010d2.jpg" id="4_ygxny"]
-[ext_resource type="Script" uid="uid://cagihov8rth3a" path="res://scripts/shop_door.gd" id="6_70vka"]
-[ext_resource type="FontFile" uid="uid://bf1r20swxoymi" path="res://assests/fonts/QuinqueFive.otf" id="7_70vka"]
-[ext_resource type="Script" uid="uid://d3vy1q2be0o6j" path="res://scripts/bank_door.gd" id="7_wi4c7"]
+[ext_resource type="Script" uid="uid://dgc20ckx6otos" path="res://scripts/world/main_game.gd" id="1_02s2o"]
+[ext_resource type="Texture2D" uid="uid://chk50sy5fvbm" path="res://assests/sprites/PNG/TileSet_V1.png" id="2_yls0m"]
+[ext_resource type="Texture2D" uid="uid://bn25wcp4u05qr" path="res://assests/sprites/1 Tiles/Tile_04.png" id="3_1ykqh"]
+[ext_resource type="Texture2D" uid="uid://62w5yrcdqt4r" path="res://assests/sprites/68908f99-a84b-46a7-b953-04ed86e010d2.jpg" id="4_atnbu"]
+[ext_resource type="Script" uid="uid://b1lnuqk4aqlo7" path="res://scripts/world/minigame_door.gd" id="5_c3j4a"]
+[ext_resource type="Script" uid="uid://cagihov8rth3a" path="res://scripts/world/shop_door.gd" id="6_v6dap"]
+[ext_resource type="FontFile" uid="uid://bf1r20swxoymi" path="res://assests/fonts/QuinqueFive.otf" id="7_b558i"]
+[ext_resource type="Script" uid="uid://d3vy1q2be0o6j" path="res://scripts/world/bank_door.gd" id="8_w8cva"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_72e8q"]
-texture = ExtResource("1_s3esy")
+texture = ExtResource("2_yls0m")
 2:0/0 = 0
 3:0/0 = 0
 4:0/0 = 0
@@ -412,7 +412,7 @@ texture = ExtResource("1_s3esy")
 sources/0 = SubResource("TileSetAtlasSource_72e8q")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0rdsr"]
-texture = ExtResource("1_s3esy")
+texture = ExtResource("2_yls0m")
 2:0/0 = 0
 3:0/0 = 0
 4:0/0 = 0
@@ -811,7 +811,7 @@ texture = ExtResource("1_s3esy")
 1:27/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ipu61"]
-texture = ExtResource("2_d2op2")
+texture = ExtResource("3_1ykqh")
 0:0/0 = 0
 1:0/0 = 0
 0:1/0 = 0
@@ -828,10 +828,10 @@ radius = 23.021729
 radius = 22.022715
 
 [sub_resource type="FontVariation" id="FontVariation_2l77h"]
-base_font = ExtResource("7_70vka")
+base_font = ExtResource("7_b558i")
 
 [node name="main_game" type="Node2D" unique_id=2056535382]
-script = ExtResource("1_ipu61")
+script = ExtResource("1_02s2o")
 
 [node name="background" type="Node2D" parent="." unique_id=2125031835]
 
@@ -846,14 +846,14 @@ tile_set = SubResource("TileSet_ipu61")
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=707239924]
 texture_filter = 1
 position = Vector2(547, 311)
-texture = ExtResource("4_ygxny")
+texture = ExtResource("4_atnbu")
 
 [node name="Spawns" type="Node2D" parent="." unique_id=975818676]
 
 [node name="Sp1" type="Marker2D" parent="Spawns" unique_id=569491616]
 
 [node name="minigame_door" type="Area2D" parent="." unique_id=1388088722]
-script = ExtResource("4_0rdsr")
+script = ExtResource("5_c3j4a")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="minigame_door" unique_id=1350407543]
 position = Vector2(212, 396)
@@ -868,7 +868,7 @@ offset_bottom = 372.0
 text = "Minigame"
 
 [node name="shop" type="Area2D" parent="." unique_id=233731835]
-script = ExtResource("6_70vka")
+script = ExtResource("6_v6dap")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="shop" unique_id=1442001352]
 position = Vector2(572, 254)
@@ -887,7 +887,7 @@ text = "COMPRAR"
 horizontal_alignment = 1
 
 [node name="bank" type="Area2D" parent="." unique_id=2021245623]
-script = ExtResource("7_wi4c7")
+script = ExtResource("8_w8cva")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="bank" unique_id=1537764621]
 position = Vector2(640, 429)

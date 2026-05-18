@@ -1,11 +1,11 @@
 [gd_scene format=3 uid="uid://bao1xk8dho6a7"]
 
-[ext_resource type="Script" uid="uid://baselv3etcohu" path="res://scripts/raul.gd" id="1_5u4nw"]
+[ext_resource type="Script" uid="uid://baselv3etcohu" path="res://scripts/player/raul.gd" id="1_5u4nw"]
 [ext_resource type="Texture2D" uid="uid://cngb5cgrpieyt" path="res://assests/sprites/Raul/pixil-layer-main.png" id="2_j2i8v"]
-[ext_resource type="Script" uid="uid://dcbgk5qjcltii" path="res://scripts/hud_control.gd" id="3_d1d41"]
-[ext_resource type="PackedScene" uid="uid://cha446b7n3r5r" path="res://scenes/pause_menu.tscn" id="4_fxnpp"]
+[ext_resource type="Script" uid="uid://dcbgk5qjcltii" path="res://scripts/hud/hud_control.gd" id="3_d1d41"]
+[ext_resource type="PackedScene" uid="uid://cha446b7n3r5r" path="res://scenes/menus/pause_menu.tscn" id="4_fxnpp"]
 [ext_resource type="FontFile" uid="uid://bf1r20swxoymi" path="res://assests/fonts/QuinqueFive.otf" id="4_gk2mp"]
-[ext_resource type="Script" uid="uid://bug0fih4lhmqw" path="res://scripts/event_ui.gd" id="6_gk2mp"]
+[ext_resource type="Script" uid="uid://bug0fih4lhmqw" path="res://scripts/hud/event_ui.gd" id="6_gk2mp"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ubotu"]
 atlas = ExtResource("2_j2i8v")

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://b84dtjt10qpnb"]
 
-[ext_resource type="Script" uid="uid://cqdxt6jav7hbq" path="res://scripts/main_menu.gd" id="1_ekxnf"]
-[ext_resource type="Texture2D" uid="uid://b0w6s2q7h5b42" path="res://assests/sprites/backgrounds/nature_4/orig.png" id="2_ekxnf"]
+[ext_resource type="Script" uid="uid://cqdxt6jav7hbq" path="res://scripts/menus/main_menu.gd" id="1_ovrgc"]
+[ext_resource type="Texture2D" uid="uid://b0w6s2q7h5b42" path="res://assests/sprites/backgrounds/nature_4/orig.png" id="2_2o76q"]
 
 [node name="main_menu" type="Control" unique_id=1154258972]
 layout_mode = 3
@@ -11,13 +11,13 @@ offset_bottom = -269.568
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
-script = ExtResource("1_ekxnf")
+script = ExtResource("1_ovrgc")
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=65784137]
 layout_mode = 0
 offset_right = 1152.0
 offset_bottom = 647.0
-texture = ExtResource("2_ekxnf")
+texture = ExtResource("2_2o76q")
 
 [node name="GridContainer" type="GridContainer" parent="." unique_id=1809211919]
 layout_mode = 1

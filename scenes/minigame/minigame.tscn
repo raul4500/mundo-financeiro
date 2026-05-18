@@ -1,20 +1,20 @@
 [gd_scene format=4 uid="uid://dun3niuvduqbh"]
 
-[ext_resource type="Script" uid="uid://cq12h13ej6w8n" path="res://scripts/minigame.gd" id="1_22jyr"]
-[ext_resource type="Texture2D" uid="uid://dureoh3tij7qk" path="res://assests/sprites/craftpix-net-867123-free-medieval-field-work-2d-tileset-for-platformer/PNG/Platformer/Cartoon_Medieval_Field_Work_Level_Set_Platformer - Ground 02.png" id="2_qfvgk"]
-[ext_resource type="Texture2D" uid="uid://bhl11mw664myg" path="res://assests/sprites/Multi_Platformer_Tileset_Free/GrassLand/Background/GrassLand_Background_Guide.png" id="2_u3p8f"]
-[ext_resource type="Texture2D" uid="uid://bapb4wmonjd6e" path="res://assests/sprites/craftpix-net-867123-free-medieval-field-work-2d-tileset-for-platformer/PNG/Platformer/Cartoon_Medieval_Field_Work_Level_Set_Platformer - Ground 06.png" id="3_jwi4h"]
-[ext_resource type="Texture2D" uid="uid://bst8u00gwgogx" path="res://assests/sprites/Multi_Platformer_Tileset_Free/GrassLand/Terrain/Grassland_Terrain_47Tiles.png" id="5_r0qu8"]
-[ext_resource type="Texture2D" uid="uid://dkdtg0fschv0" path="res://assests/sprites/Multi_Platformer_Tileset_Free/GrassLand/Terrain/Grassland_Terrain_ExtraTiles.png" id="6_jbh4e"]
-[ext_resource type="Script" uid="uid://b5hbj4bopj53y" path="res://scripts/minigame_obstacles/obstacle.gd" id="7_jbh4e"]
-[ext_resource type="Texture2D" uid="uid://dtkretlo7iu1a" path="res://assests/sprites/Dungeon assets/PNG/Pole/No outline/Pole_brown7.png" id="7_r0qu8"]
-[ext_resource type="Script" uid="uid://bkx5wsf3otk68" path="res://scripts/minigame_levels/level.gd" id="9_7ju2r"]
-[ext_resource type="FontFile" uid="uid://bf1r20swxoymi" path="res://assests/fonts/QuinqueFive.otf" id="12_802es"]
-[ext_resource type="PackedScene" uid="uid://c2neatiggtmug" path="res://scenes/players/raul_minigame.tscn" id="96_r7q0m"]
-[ext_resource type="PackedScene" uid="uid://cha446b7n3r5r" path="res://scenes/pause_menu.tscn" id="98_d5m6k"]
+[ext_resource type="Script" uid="uid://cq12h13ej6w8n" path="res://scripts/minigame/minigame.gd" id="1_ms23d"]
+[ext_resource type="Texture2D" uid="uid://bhl11mw664myg" path="res://assests/sprites/Multi_Platformer_Tileset_Free/GrassLand/Background/GrassLand_Background_Guide.png" id="2_14fvx"]
+[ext_resource type="Texture2D" uid="uid://dureoh3tij7qk" path="res://assests/sprites/craftpix-net-867123-free-medieval-field-work-2d-tileset-for-platformer/PNG/Platformer/Cartoon_Medieval_Field_Work_Level_Set_Platformer - Ground 02.png" id="3_qprf6"]
+[ext_resource type="Texture2D" uid="uid://bapb4wmonjd6e" path="res://assests/sprites/craftpix-net-867123-free-medieval-field-work-2d-tileset-for-platformer/PNG/Platformer/Cartoon_Medieval_Field_Work_Level_Set_Platformer - Ground 06.png" id="4_0k17t"]
+[ext_resource type="Texture2D" uid="uid://bst8u00gwgogx" path="res://assests/sprites/Multi_Platformer_Tileset_Free/GrassLand/Terrain/Grassland_Terrain_47Tiles.png" id="5_ggla5"]
+[ext_resource type="Texture2D" uid="uid://dkdtg0fschv0" path="res://assests/sprites/Multi_Platformer_Tileset_Free/GrassLand/Terrain/Grassland_Terrain_ExtraTiles.png" id="6_axv1m"]
+[ext_resource type="Script" uid="uid://b5hbj4bopj53y" path="res://scripts/minigame/obstacle.gd" id="7_al4os"]
+[ext_resource type="Texture2D" uid="uid://dtkretlo7iu1a" path="res://assests/sprites/Dungeon assets/PNG/Pole/No outline/Pole_brown7.png" id="8_j6hl7"]
+[ext_resource type="Script" uid="uid://bkx5wsf3otk68" path="res://scripts/minigame/level.gd" id="9_b7ekc"]
+[ext_resource type="PackedScene" uid="uid://c2neatiggtmug" path="res://scenes/players/raul_minigame.tscn" id="10_7monl"]
+[ext_resource type="PackedScene" uid="uid://cha446b7n3r5r" path="res://scenes/menus/pause_menu.tscn" id="11_6f0bu"]
+[ext_resource type="FontFile" uid="uid://bf1r20swxoymi" path="res://assests/fonts/QuinqueFive.otf" id="12_8as1d"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_mnqgq"]
-texture = ExtResource("2_qfvgk")
+texture = ExtResource("3_qprf6")
 0:2/0 = 0
 0:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 0:3/0 = 0
@@ -115,7 +115,7 @@ texture = ExtResource("2_qfvgk")
 7:6/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_u3p8f"]
-texture = ExtResource("3_jwi4h")
+texture = ExtResource("4_0k17t")
 0:0/0 = 0
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 0:1/0 = 0
@@ -210,7 +210,7 @@ texture = ExtResource("3_jwi4h")
 7:7/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_02b5t"]
-texture = ExtResource("5_r0qu8")
+texture = ExtResource("5_ggla5")
 0:0/0 = 0
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 1:0/0 = 0
@@ -269,7 +269,7 @@ texture = ExtResource("5_r0qu8")
 10:3/0 = 0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7ju2r"]
-texture = ExtResource("6_jbh4e")
+texture = ExtResource("6_axv1m")
 0:0/0 = 0
 1:0/0 = 0
 2:0/0 = 0
@@ -349,10 +349,10 @@ height = 28.0
 size = Vector2(5, 165)
 
 [sub_resource type="FontVariation" id="FontVariation_3u4ns"]
-base_font = ExtResource("12_802es")
+base_font = ExtResource("12_8as1d")
 
 [node name="minigame" type="Node2D" unique_id=843873475]
-script = ExtResource("1_22jyr")
+script = ExtResource("1_ms23d")
 
 [node name="Parallax2D" type="Parallax2D" parent="." unique_id=1868959201]
 repeat_size = Vector2(368, 0)
@@ -360,7 +360,7 @@ repeat_times = 14
 
 [node name="Sprite2D" type="Sprite2D" parent="Parallax2D" unique_id=457547549]
 position = Vector2(2753, -93)
-texture = ExtResource("2_u3p8f")
+texture = ExtResource("2_14fvx")
 
 [node name="map" type="Node2D" parent="." unique_id=495728607]
 
@@ -371,36 +371,36 @@ tile_set = SubResource("TileSet_22ed1")
 [node name="obstacles" type="Node2D" parent="map" unique_id=404002876]
 
 [node name="obstacle" type="Area2D" parent="map/obstacles" unique_id=1773295231]
-script = ExtResource("7_jbh4e")
+script = ExtResource("7_al4os")
 
 [node name="Sprite2D" type="Sprite2D" parent="map/obstacles/obstacle" unique_id=120616548]
 position = Vector2(321, -44)
 scale = Vector2(1.250001, 1)
-texture = ExtResource("7_r0qu8")
+texture = ExtResource("8_j6hl7")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="map/obstacles/obstacle" unique_id=1348410483]
 position = Vector2(321, -47)
 shape = SubResource("CapsuleShape2D_02b5t")
 
 [node name="obstacle2" type="Area2D" parent="map/obstacles" unique_id=167930002]
-script = ExtResource("7_jbh4e")
+script = ExtResource("7_al4os")
 
 [node name="Sprite2D" type="Sprite2D" parent="map/obstacles/obstacle2" unique_id=2143711677]
 position = Vector2(555, -44)
 scale = Vector2(1.250001, 1)
-texture = ExtResource("7_r0qu8")
+texture = ExtResource("8_j6hl7")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="map/obstacles/obstacle2" unique_id=401399571]
 position = Vector2(555, -47)
 shape = SubResource("CapsuleShape2D_02b5t")
 
 [node name="obstacle3" type="Area2D" parent="map/obstacles" unique_id=1310385333]
-script = ExtResource("7_jbh4e")
+script = ExtResource("7_al4os")
 
 [node name="Sprite2D" type="Sprite2D" parent="map/obstacles/obstacle3" unique_id=214839970]
 position = Vector2(896.00006, -43)
 scale = Vector2(1.250001, 1)
-texture = ExtResource("7_r0qu8")
+texture = ExtResource("8_j6hl7")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="map/obstacles/obstacle3" unique_id=463152555]
 position = Vector2(896, -47)
@@ -412,7 +412,7 @@ shape = SubResource("CapsuleShape2D_02b5t")
 position = Vector2(139, -40)
 
 [node name="Level1" type="Area2D" parent="map/levels" unique_id=2087778247]
-script = ExtResource("9_7ju2r")
+script = ExtResource("9_b7ekc")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="map/levels/Level1" unique_id=1179910536]
 position = Vector2(629, -116)
@@ -421,13 +421,13 @@ shape = SubResource("RectangleShape2D_8e78p")
 [node name="Marker_2" type="Marker2D" parent="map/levels/Level1" unique_id=1233382831]
 position = Vector2(644, -41)
 
-[node name="raul-minigame" parent="." unique_id=1701924158 instance=ExtResource("96_r7q0m")]
+[node name="raul-minigame" parent="." unique_id=1701924158 instance=ExtResource("10_7monl")]
 position = Vector2(139, -40)
 
 [node name="CanvasLayer2" type="CanvasLayer" parent="raul-minigame" unique_id=954201236]
 process_mode = 3
 
-[node name="pause_menu" parent="raul-minigame/CanvasLayer2" unique_id=2075846777 instance=ExtResource("98_d5m6k")]
+[node name="pause_menu" parent="raul-minigame/CanvasLayer2" unique_id=2075846777 instance=ExtResource("11_6f0bu")]
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=299133252]
 position = Vector2(212, -89)

@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://b8uxoev0h6pmm"]
 
-[ext_resource type="Script" uid="uid://baselv3etcohu" path="res://scripts/raul.gd" id="1_ndh4i"]
+[ext_resource type="Script" uid="uid://baselv3etcohu" path="res://scripts/player/raul.gd" id="1_ndh4i"]
 [ext_resource type="Texture2D" uid="uid://211we30a2e3o" path="res://assests/sprites/Player_sprites/Player_sprites/idle.png" id="2_j0g8l"]
-[ext_resource type="Script" uid="uid://dcbgk5qjcltii" path="res://scripts/hud_control.gd" id="3_j0g8l"]
+[ext_resource type="Script" uid="uid://dcbgk5qjcltii" path="res://scripts/hud/hud_control.gd" id="3_j0g8l"]
 [ext_resource type="Texture2D" uid="uid://bxdtucknsmghk" path="res://assests/sprites/Player_sprites/Player_sprites/walk.png" id="4_j0g8l"]
-[ext_resource type="PackedScene" uid="uid://cha446b7n3r5r" path="res://scenes/pause_menu.tscn" id="4_xjfe7"]
+[ext_resource type="PackedScene" uid="uid://cha446b7n3r5r" path="res://scenes/menus/pause_menu.tscn" id="4_xjfe7"]
 [ext_resource type="FontFile" uid="uid://bf1r20swxoymi" path="res://assests/fonts/QuinqueFive.otf" id="5_j0g8l"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_xjfe7"]
