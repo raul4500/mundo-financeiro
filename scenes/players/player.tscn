@@ -246,6 +246,8 @@ shape = SubResource("RectangleShape2D_tys1d")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=777825911]
 zoom = Vector2(4, 4)
+position_smoothing_enabled = true
+position_smoothing_speed = 6.5
 
 [node name="Hud" type="CanvasLayer" parent="." unique_id=1168280528]
 
