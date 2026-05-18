@@ -1,11 +1,6 @@
-[gd_scene format=3 uid="uid://bao1xk8dho6a7"]
+[gd_scene format=3 uid="uid://dp8mac00denuj"]
 
-[ext_resource type="Script" uid="uid://baselv3etcohu" path="res://scripts/player/raul.gd" id="1_5u4nw"]
 [ext_resource type="Texture2D" uid="uid://cngb5cgrpieyt" path="res://assests/sprites/Raul/pixil-layer-main.png" id="2_j2i8v"]
-[ext_resource type="Script" uid="uid://dcbgk5qjcltii" path="res://scripts/hud/hud_control.gd" id="3_d1d41"]
-[ext_resource type="PackedScene" uid="uid://cha446b7n3r5r" path="res://scenes/menus/pause_menu.tscn" id="4_fxnpp"]
-[ext_resource type="FontFile" uid="uid://bf1r20swxoymi" path="res://assests/fonts/QuinqueFive.otf" id="4_gk2mp"]
-[ext_resource type="Script" uid="uid://bug0fih4lhmqw" path="res://scripts/hud/event_ui.gd" id="6_gk2mp"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ubotu"]
 atlas = ExtResource("2_j2i8v")
@@ -226,99 +221,7 @@ animations = [{
 "speed": 10.0
 }]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_tys1d"]
-size = Vector2(9, 5)
-
-[sub_resource type="FontVariation" id="FontVariation_m4kff"]
-base_font = ExtResource("4_gk2mp")
-
-[node name="raul" type="CharacterBody2D" unique_id=1495462931]
-script = ExtResource("1_5u4nw")
-
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=835100916]
+[node name="Raul" type="AnimatedSprite2D" unique_id=731281275]
 sprite_frames = SubResource("SpriteFrames_lik2q")
 animation = &"walk"
 autoplay = "default"
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=143520596]
-position = Vector2(-0.5, 4.5)
-shape = SubResource("RectangleShape2D_tys1d")
-
-[node name="Camera2D" type="Camera2D" parent="." unique_id=777825911]
-zoom = Vector2(4, 4)
-
-[node name="Hud" type="CanvasLayer" parent="." unique_id=1168280528]
-
-[node name="HudControl" type="Control" parent="Hud" unique_id=1982214786]
-layout_mode = 3
-anchors_preset = 0
-offset_left = -1.0
-offset_top = 2.0
-offset_right = 1152.0
-offset_bottom = 642.0
-script = ExtResource("3_d1d41")
-
-[node name="Label" type="Label" parent="Hud/HudControl" unique_id=924315269]
-modulate = Color(0.9696924, 0.9696924, 0.9696924, 1)
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -128.5
-offset_top = 18.0
-offset_right = 130.5
-offset_bottom = 60.0
-grow_horizontal = 2
-theme_override_colors/font_color = Color(1, 1, 0, 1)
-theme_override_constants/outline_size = 8
-theme_override_constants/shadow_outline_size = 5
-theme_override_fonts/font = SubResource("FontVariation_m4kff")
-theme_override_font_sizes/font_size = 30
-text = "fsefe"
-horizontal_alignment = 1
-
-[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=926795539]
-process_mode = 3
-
-[node name="pause_menu" parent="CanvasLayer" unique_id=2075846777 instance=ExtResource("4_fxnpp")]
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 312.0
-offset_top = 118.0
-offset_right = 839.0
-offset_bottom = 481.0
-grow_horizontal = 1
-grow_vertical = 1
-
-[node name="Event" type="CanvasLayer" parent="." unique_id=1618234526]
-script = ExtResource("6_gk2mp")
-
-[node name="Panel" type="Panel" parent="Event" unique_id=1449586594]
-offset_right = 255.0
-offset_bottom = 121.0
-
-[node name="Titulo" type="Label" parent="Event/Panel" unique_id=905047022]
-layout_mode = 0
-offset_left = 16.0
-offset_top = 11.0
-offset_right = 235.0
-offset_bottom = 34.0
-text = "teste"
-
-[node name="Descricao" type="Label" parent="Event/Panel" unique_id=671791783]
-layout_mode = 0
-offset_left = 18.0
-offset_top = 58.0
-offset_right = 237.0
-offset_bottom = 81.0
-text = "tesdte"
-
-[node name="Button" type="Button" parent="Event/Panel" unique_id=1710709671]
-layout_mode = 0
-offset_left = 190.0
-offset_top = 89.0
-offset_right = 241.0
-offset_bottom = 115.0
-
-[connection signal="pressed" from="Event/Panel/Button" to="Event" method="_on_button_pressed"]

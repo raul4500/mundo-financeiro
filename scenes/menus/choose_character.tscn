@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://c6aknosj6rayg" path="res://scripts/menus/choose_character.gd" id="1_y5l5p"]
 [ext_resource type="Texture2D" uid="uid://cngb5cgrpieyt" path="res://assests/sprites/Raul/pixil-layer-main.png" id="2_veens"]
 [ext_resource type="Texture2D" uid="uid://211we30a2e3o" path="res://assests/sprites/Player_sprites/Player_sprites/idle.png" id="3_4iitr"]
+[ext_resource type="PackedScene" uid="uid://de82ksrqhcn32" path="res://scenes/players/matheus.tscn" id="4_veens"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_3emc4"]
 load_path = "res://.godot/imported/orig.png-5009e0966f6b6d1c404f12c1e9121ca6.ctex"
@@ -138,6 +139,10 @@ frame_progress = 0.45384967
 [node name="phillip" type="Button" parent="HBoxContainer" unique_id=421737751]
 custom_minimum_size = Vector2(150, 200)
 layout_mode = 2
+
+[node name="Matheus" parent="HBoxContainer/phillip" unique_id=1904495750 instance=ExtResource("4_veens")]
+position = Vector2(72.5, 108.75)
+scale = Vector2(3.4687498, 3.1406252)
 
 [node name="melissa" type="Button" parent="HBoxContainer" unique_id=1742504988]
 custom_minimum_size = Vector2(150, 200)

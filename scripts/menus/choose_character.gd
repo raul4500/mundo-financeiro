@@ -13,6 +13,7 @@ func select_character(name: String, k: float) -> void:
 	if dir:
 		dir.remove("savegame.json")
 	Global.new_game(name, k*200)
+	print(Global.player)
 	get_tree().change_scene_to_file("res://scenes/world/main_game.tscn")
 
 

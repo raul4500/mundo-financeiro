@@ -2,7 +2,27 @@ extends CharacterBody2D
 
 var SPEED = 70.0
 
-@onready var animated_player = $AnimatedSprite2D
+var characters = {
+	"Raul": "res://scenes/players/raul.tscn",
+	"Matheus": "res://scenes/players/guy.tscn",
+	"Phillip": "res://scenes/players/matheus.tscn",
+	"Melissa": "res://scenes/players/melissa.tscn",
+	"Enzo": "res://scenes/players/enzo.tscn"
+}
+
+var char_name = Global.player.get("name", "")
+var scene = load(characters[char_name])
+var animated_player = scene.instantiate()
+
+
+func _ready() -> void:
+	if not characters.has(char_name):
+		push_error("Personagem inválido")
+		get_tree().quit()
+	if has_node("AnimatedSprite2D"):
+		get_node("AnimatedSprite2D").queue_free()
+		animated_player.name = "AnimatedSprite2D" # Garante o nome correto para a checagem
+		add_child(animated_player)
 
 func _physics_process(delta: float) -> void:
 	var direction = Vector2(
