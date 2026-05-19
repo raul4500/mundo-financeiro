@@ -19,10 +19,11 @@ func _ready() -> void:
 	if not characters.has(char_name):
 		push_error("Personagem inválido")
 		get_tree().quit()
-	if has_node("AnimatedSprite2D"):
-		get_node("AnimatedSprite2D").queue_free()
-		animated_player.name = "AnimatedSprite2D" # Garante o nome correto para a checagem
-		add_child(animated_player)
+	add_child(animated_player)
+	
+	var event_url = load("res://scenes/ui/event_message.tscn")
+	var event_ui = event_url.instantiate()
+	add_child(event_ui)
 
 func _physics_process(delta: float) -> void:
 	var direction = Vector2(

@@ -128,12 +128,12 @@ func aplicar_impacto(impacto: Dictionary):
 
 
 
-#var save_timer := 0.0
-#var save_interval := 10.0 # segundos
+var save_timer := 0.0
+var save_interval := 10.0 # segundos
 
-#func _process(delta):
-#	save_timer += delta
-#	if save_timer >= save_interval:
-#		print("evento sorteado")
-#		var evento = trigger_evento()
-#		save_timer = 0
+func _process(delta):
+	save_timer += delta
+	if save_timer >= save_interval:
+		print("evento sorteado")
+		var evento = trigger_evento()
+		save_timer = 0
