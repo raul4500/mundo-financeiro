@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://3p6khdm5bc41"]
+
+[ext_resource type="Script" uid="uid://ccp4r4u1dlqvy" path="res://scripts/hud/clock.gd" id="1_ic7of"]
+
+[node name="Clock" type="CanvasLayer" unique_id=1283336720]
+script = ExtResource("1_ic7of")
+
+[node name="ClockLabel" type="Label" parent="." unique_id=1485948882]
+offset_left = 38.0
+offset_top = 54.0
+offset_right = 284.0
+offset_bottom = 79.0
+text = "teste"
+
+[node name="DayLabel" type="Label" parent="." unique_id=1165598627]
+offset_left = 37.0
+offset_top = 19.0
+offset_right = 292.0
+offset_bottom = 51.0
+text = "teste"

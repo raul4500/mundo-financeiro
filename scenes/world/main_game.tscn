@@ -905,6 +905,7 @@ theme_override_font_sizes/font_size = 14
 text = "BANCO"
 horizontal_alignment = 1
 
+[connection signal="tree_entered" from="." to="." method="_on_tree_entered"]
 [connection signal="tree_exited" from="." to="." method="_on_tree_exited"]
 [connection signal="body_shape_entered" from="minigame_door" to="minigame_door" method="_on_body_shape_entered"]
 [connection signal="body_shape_exited" from="minigame_door" to="minigame_door" method="_on_body_shape_exited"]

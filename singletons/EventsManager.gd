@@ -129,7 +129,7 @@ func aplicar_impacto(impacto: Dictionary):
 
 
 var save_timer := 0.0
-var save_interval := 10.0 # segundos
+var save_interval := 100.0 # segundos
 
 func _process(delta):
 	save_timer += delta

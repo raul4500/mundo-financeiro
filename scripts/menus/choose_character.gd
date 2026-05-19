@@ -9,9 +9,7 @@ func _ready():
 	$HBoxContainer/enzo.pressed.connect(func(): select_character("Enzo", 0.9))
 
 func select_character(name: String, k: float) -> void:
-	var dir = DirAccess.open("user://")
-	if dir:
-		dir.remove("savegame.json")
+	SaveManager.delete_save()
 	Global.new_game(name, k*200)
 	print(Global.player)
 	get_tree().change_scene_to_file("res://scenes/world/main_game.tscn")

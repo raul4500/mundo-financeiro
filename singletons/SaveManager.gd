@@ -20,8 +20,22 @@ func _ready() -> void:
 	#var pos = load_game()["player_position"]
 	#player.global_position = Vector2(pos["x"], pos["y"])
 
+func delete_save(caminho: String = "savegame.json") -> void:
+	var dir = DirAccess.open("user://") # Substitua "res://" por "user://" se o arquivo estiver na pasta de usuário
+	print(dir.get_files())
+	if dir.file_exists(caminho):
+		var erro = dir.remove(caminho)
+		if erro == OK:
+			print("Arquivo deletado com sucesso!")
+		else:
+			print("Erro ao tentar deletar o arquivo.")
+	else:
+		print("O arquivo não existe.")
+
+
+
 var save_timer := 0.0
-var save_interval := 10.0 # segundos
+var save_interval := 300.0 # segundos (5 minutos)
 
 func _process(delta):
 	save_timer += delta

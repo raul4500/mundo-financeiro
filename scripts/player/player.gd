@@ -14,6 +14,8 @@ var char_name = Global.player.get("name", "")
 var scene = load(characters[char_name])
 var animated_player = scene.instantiate()
 
+var clock_scene = preload("res://scenes/ui/clock.tscn")
+
 
 func _ready() -> void:
 	if not characters.has(char_name):
@@ -24,6 +26,9 @@ func _ready() -> void:
 	var event_url = load("res://scenes/ui/event_message.tscn")
 	var event_ui = event_url.instantiate()
 	add_child(event_ui)
+	
+	var clock_ui = clock_scene.instantiate()
+	add_child(clock_ui)
 
 func _physics_process(delta: float) -> void:
 	var direction = Vector2(
