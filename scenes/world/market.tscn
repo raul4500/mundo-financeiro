@@ -43,14 +43,6 @@ offset_bottom = 521.0
 theme_override_fonts/font = ExtResource("2_kvkvd")
 text = "DEPOSITAR"
 
-[node name="LineEdit_Deposit" type="LineEdit" parent="." unique_id=1598712622]
-layout_mode = 0
-offset_left = 74.0
-offset_top = 304.0
-offset_right = 457.0
-offset_bottom = 395.0
-placeholder_text = "VALOR A DEPOSITAR:"
-
 [node name="Button_Withdraw" type="Button" parent="." unique_id=11603081]
 layout_mode = 0
 offset_left = 634.0
@@ -59,14 +51,6 @@ offset_right = 1019.0
 offset_bottom = 521.0
 theme_override_fonts/font = ExtResource("2_kvkvd")
 text = "SACAR"
-
-[node name="LineEdit_Withdraw" type="LineEdit" parent="." unique_id=157987994]
-layout_mode = 0
-offset_left = 631.0
-offset_top = 302.0
-offset_right = 1014.0
-offset_bottom = 393.0
-placeholder_text = "VALOR A SACAR:"
 
 [node name="Button3" type="Button" parent="." unique_id=974597138]
 modulate = Color(1, 1, 1, 0.42745098)
