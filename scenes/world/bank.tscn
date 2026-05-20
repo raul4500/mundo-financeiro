@@ -10,7 +10,7 @@ base_font = ExtResource("3_dkbjb")
 [sub_resource type="FontVariation" id="FontVariation_2nf2n"]
 base_font = ExtResource("3_dkbjb")
 
-[node name="banco" type="Control" unique_id=11116231]
+[node name="Bank" type="Control" unique_id=11116231]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

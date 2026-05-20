@@ -21,17 +21,10 @@ func _ready():
 	input_withdraw.text_changed.connect(_only_numbers.bind(input_withdraw))
 
 
-# ------------------------
-# 💰 Atualização da UI
-# ------------------------
 func update_labels():
 	label_money.text = "Dinheiro: $" + str(Global.player["money"])
 	label_saldo.text = "Banco: $" + str(Global.player["saldo"])
 
-
-# ------------------------
-# 💸 Depositar
-# ------------------------
 func deposit():
 	var value = int(input_deposit.text)
 
@@ -48,10 +41,6 @@ func deposit():
 	input_deposit.text = ""
 	update_labels()
 
-
-# ------------------------
-# 🏦 Sacar
-# ------------------------
 func withdraw():
 	var value = int(input_withdraw.text)
 
@@ -68,10 +57,6 @@ func withdraw():
 	input_withdraw.text = ""
 	update_labels()
 
-
-# ------------------------
-# 🔢 Permitir apenas números
-# ------------------------
 func _only_numbers(new_text, line_edit: LineEdit):
 	var filtered = ""
 

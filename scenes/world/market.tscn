@@ -1,9 +1,92 @@
 [gd_scene format=3 uid="uid://b4xvk2fnxmf73"]
 
-[node name="Market" type="Control" unique_id=1100959981]
+[ext_resource type="Script" uid="uid://dhgjxsjmqw3kg" path="res://scripts/world/market.gd" id="1_ovrwm"]
+[ext_resource type="FontFile" uid="uid://bf1r20swxoymi" path="res://assests/fonts/QuinqueFive.otf" id="2_kvkvd"]
+
+[sub_resource type="FontVariation" id="FontVariation_yyx4t"]
+base_font = ExtResource("2_kvkvd")
+
+[node name="Market" type="Control" unique_id=629235113]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_ovrwm")
+
+[node name="Label_Money" type="Label" parent="." unique_id=1503799514]
+modulate = Color(0.9696924, 0.9696924, 0.9696924, 1)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -128.0
+offset_top = 29.0
+offset_right = 131.0
+offset_bottom = 71.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_constants/shadow_outline_size = 5
+theme_override_fonts/font = SubResource("FontVariation_yyx4t")
+theme_override_font_sizes/font_size = 30
+text = "R$ 200,00"
+horizontal_alignment = 1
+
+[node name="Button_Deposit" type="Button" parent="." unique_id=710077164]
+layout_mode = 0
+offset_left = 72.0
+offset_top = 422.0
+offset_right = 457.0
+offset_bottom = 521.0
+theme_override_fonts/font = ExtResource("2_kvkvd")
+text = "DEPOSITAR"
+
+[node name="LineEdit_Deposit" type="LineEdit" parent="." unique_id=1598712622]
+layout_mode = 0
+offset_left = 74.0
+offset_top = 304.0
+offset_right = 457.0
+offset_bottom = 395.0
+placeholder_text = "VALOR A DEPOSITAR:"
+
+[node name="Button_Withdraw" type="Button" parent="." unique_id=11603081]
+layout_mode = 0
+offset_left = 634.0
+offset_top = 422.0
+offset_right = 1019.0
+offset_bottom = 521.0
+theme_override_fonts/font = ExtResource("2_kvkvd")
+text = "SACAR"
+
+[node name="LineEdit_Withdraw" type="LineEdit" parent="." unique_id=157987994]
+layout_mode = 0
+offset_left = 631.0
+offset_top = 302.0
+offset_right = 1014.0
+offset_bottom = 393.0
+placeholder_text = "VALOR A SACAR:"
+
+[node name="Button3" type="Button" parent="." unique_id=974597138]
+modulate = Color(1, 1, 1, 0.42745098)
+layout_mode = 0
+offset_left = 374.0
+offset_top = 558.0
+offset_right = 722.0
+offset_bottom = 607.0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("2_kvkvd")
+text = "INVESTIR"
+
+[node name="Exit" type="Button" parent="." unique_id=2073528430]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 19.0
+offset_right = 152.0
+offset_bottom = 59.0
+theme_override_fonts/font = ExtResource("2_kvkvd")
+text = "SAIR
+"
+
+[connection signal="pressed" from="Exit" to="." method="_on_exit_pressed"]
