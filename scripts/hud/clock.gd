@@ -9,16 +9,15 @@ func _ready():
 	TimeManager.connect("day_changed", Callable(self, "_on_day_changed"))
 	
 	# Atualizar imediatamente ao iniciar
-	_update_clock(Global.player["hour"], Global.player["minute"])
-	_update_day(TimeManager.current_day)
+	_update_clock(Global.player["hour"])
+	_update_day(Global.player["day"])
 
-func _on_time_changed(hour, minute):
-	_update_clock(hour, minute)
+func _on_time_changed(hour):
+	_update_clock(hour)
 
-func _update_clock(hour, minute):
-	var h = str(hour).pad_zeros(2)
-	var m = str(minute).pad_zeros(2)
-	clock_label.text = h + ":" + m
+func _update_clock(hour):
+	var h = int(hour)
+	clock_label.text = " %d" %h
 
 func _on_day_changed(day):
 	_update_day(day)

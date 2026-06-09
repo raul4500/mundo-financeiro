@@ -9,4 +9,4 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	money_label.text = "R$ %s" %Global.player["money"]
+	money_label.text = "Semana %d" %Global.player["week"] + "\nR$ %s" %Global.player["money"]

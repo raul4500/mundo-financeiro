@@ -4,13 +4,13 @@ extends Control
 func _ready():
 	$HBoxContainer/raul.pressed.connect(func(): select_character("Raul", 1.1))
 	$HBoxContainer/matheus.pressed.connect(func(): select_character("Matheus", 1.3))
-	$HBoxContainer/phillip.pressed.connect(func(): select_character("Phillip", 1))
+	$HBoxContainer/phillip.pressed.connect(func(): select_character("Phillip", 1.2))
 	$HBoxContainer/melissa.pressed.connect(func(): select_character("Melissa", 1.1))
 	$HBoxContainer/enzo.pressed.connect(func(): select_character("Enzo", 0.9))
 
 func select_character(name: String, k: float) -> void:
 	SaveManager.delete_save()
-	Global.new_game(name, k*200)
+	Global.new_game(name, Global.player["school_level"]*k*200)
 	print(Global.player)
 	get_tree().change_scene_to_file("res://scenes/world/main_game.tscn")
 

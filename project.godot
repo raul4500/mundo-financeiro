@@ -22,6 +22,8 @@ SaveManager="*uid://h77e3658d661"
 Global="*uid://docig2r6rn8st"
 UnexpectedEvents="*uid://dn0fudhms8ha6"
 TimeManager="*uid://bc7phm8sp46xm"
+MissionManager="*uid://cvt4jycppg2xx"
+DoorManager="*uid://dcjoibsvo3jjk"
 
 [input]
 

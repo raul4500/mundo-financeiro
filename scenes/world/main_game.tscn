@@ -4,10 +4,10 @@
 [ext_resource type="Texture2D" uid="uid://chk50sy5fvbm" path="res://assests/sprites/PNG/TileSet_V1.png" id="2_yls0m"]
 [ext_resource type="Texture2D" uid="uid://bn25wcp4u05qr" path="res://assests/sprites/1 Tiles/Tile_04.png" id="3_1ykqh"]
 [ext_resource type="Texture2D" uid="uid://62w5yrcdqt4r" path="res://assests/sprites/68908f99-a84b-46a7-b953-04ed86e010d2.jpg" id="4_atnbu"]
-[ext_resource type="Script" uid="uid://b1lnuqk4aqlo7" path="res://scripts/world/minigame_door.gd" id="5_c3j4a"]
-[ext_resource type="Script" uid="uid://cagihov8rth3a" path="res://scripts/world/shop_door.gd" id="6_v6dap"]
+[ext_resource type="Script" uid="uid://c0fdy3dk8vb0s" path="res://scripts/world/doors/minigame_door.gd" id="5_284u4"]
+[ext_resource type="Script" uid="uid://ld1a4gtiqh5s" path="res://scripts/world/doors/shop_door.gd" id="6_02s2o"]
 [ext_resource type="FontFile" uid="uid://bf1r20swxoymi" path="res://assests/fonts/QuinqueFive.otf" id="7_b558i"]
-[ext_resource type="Script" uid="uid://d3vy1q2be0o6j" path="res://scripts/world/bank_door.gd" id="8_w8cva"]
+[ext_resource type="Script" uid="uid://b87wemh64khlu" path="res://scripts/world/doors/bank_door.gd" id="8_yls0m"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_72e8q"]
 texture = ExtResource("2_yls0m")
@@ -852,14 +852,16 @@ texture = ExtResource("4_atnbu")
 
 [node name="Sp1" type="Marker2D" parent="Spawns" unique_id=569491616]
 
-[node name="minigame_door" type="Area2D" parent="." unique_id=1388088722]
-script = ExtResource("5_c3j4a")
+[node name="Doors" type="Node2D" parent="." unique_id=1572920439]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="minigame_door" unique_id=1350407543]
+[node name="Minigame_door" type="Area2D" parent="Doors" unique_id=1388088722]
+script = ExtResource("5_284u4")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Doors/Minigame_door" unique_id=1350407543]
 position = Vector2(212, 396)
 shape = SubResource("CircleShape2D_ipu61")
 
-[node name="min_door" type="Label" parent="minigame_door" unique_id=652777388]
+[node name="Minigame" type="Label" parent="Doors/Minigame_door" unique_id=652777388]
 visible = false
 offset_left = 159.0
 offset_top = 349.0
@@ -867,14 +869,14 @@ offset_right = 236.0
 offset_bottom = 372.0
 text = "Minigame"
 
-[node name="shop" type="Area2D" parent="." unique_id=233731835]
-script = ExtResource("6_v6dap")
+[node name="Market_door" type="Area2D" parent="Doors" unique_id=233731835]
+script = ExtResource("6_02s2o")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="shop" unique_id=1442001352]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Doors/Market_door" unique_id=1442001352]
 position = Vector2(572, 254)
 shape = SubResource("CircleShape2D_70vka")
 
-[node name="buy" type="Label" parent="shop" unique_id=720853210]
+[node name="Market" type="Label" parent="Doors/Market_door" unique_id=720853210]
 visible = false
 offset_left = 518.0
 offset_top = 220.0
@@ -886,14 +888,14 @@ theme_override_font_sizes/font_size = 14
 text = "COMPRAR"
 horizontal_alignment = 1
 
-[node name="bank" type="Area2D" parent="." unique_id=2021245623]
-script = ExtResource("8_w8cva")
+[node name="Bank_door" type="Area2D" parent="Doors" unique_id=2021245623]
+script = ExtResource("8_yls0m")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="bank" unique_id=1537764621]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Doors/Bank_door" unique_id=1537764621]
 position = Vector2(640, 429)
 shape = SubResource("CircleShape2D_70vka")
 
-[node name="bank" type="Label" parent="bank" unique_id=1578286873]
+[node name="Bank" type="Label" parent="Doors/Bank_door" unique_id=1578286873]
 visible = false
 offset_left = 598.0
 offset_top = 404.0
@@ -907,9 +909,9 @@ horizontal_alignment = 1
 
 [connection signal="tree_entered" from="." to="." method="_on_tree_entered"]
 [connection signal="tree_exited" from="." to="." method="_on_tree_exited"]
-[connection signal="body_shape_entered" from="minigame_door" to="minigame_door" method="_on_body_shape_entered"]
-[connection signal="body_shape_exited" from="minigame_door" to="minigame_door" method="_on_body_shape_exited"]
-[connection signal="body_shape_entered" from="shop" to="shop" method="_on_body_shape_entered"]
-[connection signal="body_shape_exited" from="shop" to="shop" method="_on_body_shape_exited"]
-[connection signal="body_shape_entered" from="bank" to="bank" method="_on_body_shape_entered"]
-[connection signal="body_shape_exited" from="bank" to="bank" method="_on_body_shape_exited"]
+[connection signal="body_shape_entered" from="Doors/Minigame_door" to="Doors/Minigame_door" method="_on_body_shape_entered"]
+[connection signal="body_shape_exited" from="Doors/Minigame_door" to="Doors/Minigame_door" method="_on_body_shape_exited"]
+[connection signal="body_shape_entered" from="Doors/Market_door" to="Doors/Market_door" method="_on_body_shape_entered"]
+[connection signal="body_shape_exited" from="Doors/Market_door" to="Doors/Market_door" method="_on_body_shape_exited"]
+[connection signal="body_shape_entered" from="Doors/Bank_door" to="Doors/Bank_door" method="_on_body_shape_entered"]
+[connection signal="body_shape_exited" from="Doors/Bank_door" to="Doors/Bank_door" method="_on_body_shape_exited"]

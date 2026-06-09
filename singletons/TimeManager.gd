@@ -12,7 +12,7 @@ var timer: float = 0.0
 
 func update_time():
 	current_day = Global.player["day"]
-	current_minute = Global.player["minute"]
+	current_minute = 0
 	current_hour = Global.player["hour"]
 
 func _ready() -> void:
@@ -20,7 +20,7 @@ func _ready() -> void:
 
 func _process(delta):
 	if Global.play_time == true:
-		timer += delta * time_scale
+		timer += delta * time_scale * 1000
 		if timer >= 60:
 			timer = 0
 			_add_minute()
@@ -37,6 +37,13 @@ func _add_minute():
 			current_day += 1
 			Global.player["day"] = current_day
 			emit_signal("day_changed", current_day)
+		if current_day >= 6:
+			Global.player["day"] = 0
+			emit_signal("day_changed", 1)
+			emit_signal("week_changed")
+			update_time()
+			Global.player["week"] += 1
+			Global.get_paid()
+			print(Global.player["week"])
 	Global.player["hour"] = current_hour
-	Global.player["minute"] = current_minute
-	emit_signal("time_changed", current_hour, current_minute)
+	emit_signal("time_changed", current_hour)

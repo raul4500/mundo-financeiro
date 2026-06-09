@@ -5,7 +5,7 @@ var character: Node2D
 
 
 func _ready():
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	#Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	scene = load("res://scenes/players/player.tscn")
 	character = scene.instantiate()
 	var pos = Global.player["position"]

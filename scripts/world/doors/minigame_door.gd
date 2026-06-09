@@ -1,7 +1,7 @@
 extends Area2D
 
 var dentro = false
-@onready var label = $min_door
+@onready var label = $Minigame
 
 func _process(delta: float) -> void:
 	if Input.is_key_pressed(KEY_ENTER) and dentro == true:

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://b4xvk2fnxmf73"]
 
-[ext_resource type="Script" uid="uid://dhgjxsjmqw3kg" path="res://scripts/world/market.gd" id="1_ovrwm"]
+[ext_resource type="Script" uid="uid://dhgjxsjmqw3kg" path="res://scripts/world/market/market.gd" id="1_ovrwm"]
 [ext_resource type="FontFile" uid="uid://bf1r20swxoymi" path="res://assests/fonts/QuinqueFive.otf" id="2_kvkvd"]
 
 [sub_resource type="FontVariation" id="FontVariation_yyx4t"]
@@ -34,35 +34,6 @@ theme_override_font_sizes/font_size = 30
 text = "R$ 200,00"
 horizontal_alignment = 1
 
-[node name="Button_Deposit" type="Button" parent="." unique_id=710077164]
-layout_mode = 0
-offset_left = 72.0
-offset_top = 422.0
-offset_right = 457.0
-offset_bottom = 521.0
-theme_override_fonts/font = ExtResource("2_kvkvd")
-text = "DEPOSITAR"
-
-[node name="Button_Withdraw" type="Button" parent="." unique_id=11603081]
-layout_mode = 0
-offset_left = 634.0
-offset_top = 422.0
-offset_right = 1019.0
-offset_bottom = 521.0
-theme_override_fonts/font = ExtResource("2_kvkvd")
-text = "SACAR"
-
-[node name="Button3" type="Button" parent="." unique_id=974597138]
-modulate = Color(1, 1, 1, 0.42745098)
-layout_mode = 0
-offset_left = 374.0
-offset_top = 558.0
-offset_right = 722.0
-offset_bottom = 607.0
-mouse_filter = 2
-theme_override_fonts/font = ExtResource("2_kvkvd")
-text = "INVESTIR"
-
 [node name="Exit" type="Button" parent="." unique_id=2073528430]
 layout_mode = 0
 offset_left = 15.0
@@ -72,5 +43,12 @@ offset_bottom = 59.0
 theme_override_fonts/font = ExtResource("2_kvkvd")
 text = "SAIR
 "
+
+[node name="TabContainer" type="TabContainer" parent="." unique_id=2101552195]
+layout_mode = 0
+offset_left = 115.0
+offset_top = 82.0
+offset_right = 1002.0
+offset_bottom = 579.0
 
 [connection signal="pressed" from="Exit" to="." method="_on_exit_pressed"]

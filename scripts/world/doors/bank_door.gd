@@ -1,11 +1,11 @@
 extends Area2D
 
 var dentro = false
-@onready var label = $bank
+@onready var label = $Bank
 
 func _process(delta: float) -> void:
 	if Input.is_key_pressed(KEY_ENTER) and dentro == true:
-		get_tree().change_scene_to_file("res://scenes/world/bank.tscn")
+		get_tree().change_scene_to_file("res://scenes/world/places/bank.tscn")
 
 func _on_body_shape_entered(body_rid: RID, body: Node2D, body_shape_index: int, local_shape_index: int) -> void:
 	label.show()

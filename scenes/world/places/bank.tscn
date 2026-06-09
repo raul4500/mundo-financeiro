@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bljey7557x32m"]
 
-[ext_resource type="Script" uid="uid://6ov1a0843iiq" path="res://scripts/world/banco.gd" id="1_3bwp7"]
+[ext_resource type="Script" uid="uid://6ov1a0843iiq" path="res://scripts/world/bank/banco.gd" id="1_3bwp7"]
 [ext_resource type="Texture2D" uid="uid://yxmmv1bxgkfm" path="res://assests/sprites/bank.jpg" id="2_24jpf"]
 [ext_resource type="FontFile" uid="uid://bf1r20swxoymi" path="res://assests/fonts/QuinqueFive.otf" id="3_dkbjb"]
 
