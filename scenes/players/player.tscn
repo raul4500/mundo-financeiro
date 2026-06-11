@@ -13,6 +13,7 @@ size = Vector2(9, 5)
 base_font = ExtResource("4_yl2j2")
 
 [node name="Player" type="CharacterBody2D" unique_id=1495462931]
+scale = Vector2(1.5, 1.5)
 script = ExtResource("1_sguum")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=143520596]
