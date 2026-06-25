@@ -25,6 +25,11 @@ TimeManager="*uid://bc7phm8sp46xm"
 MissionManager="*uid://cvt4jycppg2xx"
 DoorManager="*uid://dcjoibsvo3jjk"
 
+[display]
+
+window/size/mode=3
+window/stretch/mode="canvas_items"
+
 [input]
 
 move_right={
