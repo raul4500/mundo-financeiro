@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cffcekviasu4a"
-path="res://.godot/imported/banco.png-71ffab9d648f1f6f29b3fa86a75e9983.ctex"
+uid="uid://bylv0nc8plam7"
+path="res://.godot/imported/run.png-b590fa644952b28fc84233d38c5d14ce.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assests/sprites/PNG/banco.png"
-dest_files=["res://.godot/imported/banco.png-71ffab9d648f1f6f29b3fa86a75e9983.ctex"]
+source_file="res://assests/sprites/Melissa/run.png"
+dest_files=["res://.godot/imported/run.png-b590fa644952b28fc84233d38c5d14ce.ctex"]
 
 [params]
 

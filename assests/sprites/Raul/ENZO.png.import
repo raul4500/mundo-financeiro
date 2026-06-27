@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://luoc3yb2ijtc"
-path="res://.godot/imported/Trees_animation.png-5c48ae814a418bcad984402d9fb7eb74.ctex"
+uid="uid://bn16uj35ahfvs"
+path="res://.godot/imported/ENZO.png-8209813eeb5e1caf884abf1a46f8c672.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assests/sprites/PNG/Trees_animation.png"
-dest_files=["res://.godot/imported/Trees_animation.png-5c48ae814a418bcad984402d9fb7eb74.ctex"]
+source_file="res://assests/sprites/Raul/ENZO.png"
+dest_files=["res://.godot/imported/ENZO.png-8209813eeb5e1caf884abf1a46f8c672.ctex"]
 
 [params]
 

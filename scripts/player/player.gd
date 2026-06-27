@@ -4,8 +4,8 @@ var SPEED = 70.0
 
 var characters = {
 	"Raul": "res://scenes/players/raul.tscn",
-	"Matheus": "res://scenes/players/guy.tscn",
-	"Phillip": "res://scenes/players/matheus.tscn",
+	"Matheus": "res://scenes/players/matheus.tscn",
+	"Phillip": "res://scenes/players/phillip.tscn",
 	"Melissa": "res://scenes/players/melissa.tscn",
 	"Enzo": "res://scenes/players/enzo.tscn"
 }

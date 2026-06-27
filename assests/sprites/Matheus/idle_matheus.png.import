@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://xtnj5wsyftux"
-path="res://.godot/imported/heartsprite.png-97188c5586c013b27d1d9ec8da8e4d7a.ctex"
+uid="uid://btmu2q7l11d13"
+path="res://.godot/imported/idle_matheus.png-10df0800563cd97831f485fc96440b99.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assests/sprites/Player_sprites/Player_sprites/heartsprite.png"
-dest_files=["res://.godot/imported/heartsprite.png-97188c5586c013b27d1d9ec8da8e4d7a.ctex"]
+source_file="res://assests/sprites/Matheus/idle_matheus.png"
+dest_files=["res://.godot/imported/idle_matheus.png-10df0800563cd97831f485fc96440b99.ctex"]
 
 [params]
 

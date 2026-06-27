@@ -1,0 +1,227 @@
+[gd_scene format=3 uid="uid://decxoygcije53"]
+
+[ext_resource type="Texture2D" uid="uid://bn16uj35ahfvs" path="res://assests/sprites/Raul/ENZO.png" id="1_ifruv"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6scs6"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(224, 128, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_14v3v"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(240, 128, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tbsba"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(256, 128, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hp6q4"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(272, 128, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1v7cl"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(224, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_34b8m"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(240, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uslmd"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(256, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qnem6"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(272, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6p8rq"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(288, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_biw7n"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(304, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5klj3"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(320, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mir4p"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(336, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gkfpf"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(224, 96, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kriww"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(240, 96, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bicbh"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(256, 96, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xgie1"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(272, 96, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_68dm4"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(288, 96, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oxqv7"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(304, 96, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ntkmg"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(320, 96, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tdwl6"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(336, 96, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nd2xv"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(224, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cru3x"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(240, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6f62g"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(256, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dr8rm"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(272, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d4o16"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(288, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h22b2"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(304, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_btxb6"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(320, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xtjtl"]
+atlas = ExtResource("1_ifruv")
+region = Rect2(336, 32, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_b1p56"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6scs6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_14v3v")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tbsba")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hp6q4")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1v7cl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_34b8m")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uslmd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qnem6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6p8rq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_biw7n")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5klj3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mir4p")
+}],
+"loop": true,
+"name": &"down",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gkfpf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kriww")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bicbh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xgie1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_68dm4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oxqv7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ntkmg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tdwl6")
+}],
+"loop": true,
+"name": &"up",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nd2xv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cru3x")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6f62g")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dr8rm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_d4o16")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_h22b2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_btxb6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xtjtl")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 10.0
+}]
+
+[node name="Enzo" type="AnimatedSprite2D" unique_id=2095464486]
+sprite_frames = SubResource("SpriteFrames_b1p56")
+animation = &"walk"
+autoplay = "default"

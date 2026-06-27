@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://211we30a2e3o"
-path="res://.godot/imported/idle.png-b2927470b0f83534a7e80f7e74415f2f.ctex"
+uid="uid://bbh8asdir1336"
+path="res://.godot/imported/walk_matheus.png-ab16287f0a8bce91849c4936df3f859e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assests/sprites/Player_sprites/Player_sprites/idle.png"
-dest_files=["res://.godot/imported/idle.png-b2927470b0f83534a7e80f7e74415f2f.ctex"]
+source_file="res://assests/sprites/Matheus/walk_matheus.png"
+dest_files=["res://.godot/imported/walk_matheus.png-ab16287f0a8bce91849c4936df3f859e.ctex"]
 
 [params]
 

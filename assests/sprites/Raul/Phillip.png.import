@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cxs4fafdruavg"
-path="res://.godot/imported/bird_fly_animation.png-a4879eafd7e52a42edc80314b0f32aba.ctex"
+uid="uid://6pfgl7h507kr"
+path="res://.godot/imported/Phillip.png-6e0a36107aa683435505633fe0fd46ef.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assests/sprites/PNG/bird_fly_animation.png"
-dest_files=["res://.godot/imported/bird_fly_animation.png-a4879eafd7e52a42edc80314b0f32aba.ctex"]
+source_file="res://assests/sprites/Raul/Phillip.png"
+dest_files=["res://.godot/imported/Phillip.png-6e0a36107aa683435505633fe0fd46ef.ctex"]
 
 [params]
 
