@@ -1,0 +1,13 @@
+[gd_resource type="Theme" format=3 uid="uid://b2pfdp8p48jam"]
+
+[ext_resource type="Texture2D" uid="uid://dcyo7k0w3kbxp" path="res://assests/sprites/button.png" id="1_1y3r0"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_mwa8i"]
+texture = ExtResource("1_1y3r0")
+texture_margin_top = 16.0
+texture_margin_bottom = 16.0
+
+[resource]
+Button/colors/font_color = Color(7.546413e-05, 1.3102213e-05, 2.0507794e-06, 1)
+Button/styles/normal = SubResource("StyleBoxTexture_mwa8i")
+Button/styles/pressed = null

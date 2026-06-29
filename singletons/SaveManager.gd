@@ -35,7 +35,7 @@ func delete_save(caminho: String = "savegame.json") -> void:
 
 
 var save_timer := 0.0
-var save_interval := 300.0 # segundos (5 minutos)
+var save_interval := 300.0 # segundos (1 minutos)
 
 func _process(delta):
 	save_timer += delta
