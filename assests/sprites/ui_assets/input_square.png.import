@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c754kbyx1sdk5"
-path="res://.godot/imported/big-pine.png-c031843bcacd12cabfa955886755f738.ctex"
+uid="uid://dh8wmx7jvhybw"
+path="res://.godot/imported/input_square.png-91fd8a2ee9fac2057b0c446a9b2c10a7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assests/sprites/buildings/Buildings/big-pine.png"
-dest_files=["res://.godot/imported/big-pine.png-c031843bcacd12cabfa955886755f738.ctex"]
+source_file="res://assests/sprites/ui_assets/input_square.png"
+dest_files=["res://.godot/imported/input_square.png-91fd8a2ee9fac2057b0c446a9b2c10a7.ctex"]
 
 [params]
 
