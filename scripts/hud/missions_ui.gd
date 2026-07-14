@@ -19,7 +19,7 @@ func load_missions(phase: int):
 	
 	for m in missions:
 		var label = Label.new()
-		label.text = "- " + m
+		label.text = "- " + m["description"]
 		mission_list.add_child(label)
 
 func _process(delta: float) -> void:
