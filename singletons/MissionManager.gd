@@ -27,3 +27,15 @@ var missions_data = {
 		"Mantenha saldo positivo por 7 dias"
 	]
 }
+
+func verificate_missons(week):
+	if week == 1:
+		if Global.player["money"] < 100.00:
+			print("não economizou R$100,00")
+			Global.new_game(Global.player["name"], Global.player["salary"])
+			return false
+	return true
+			
+			
+			
+			

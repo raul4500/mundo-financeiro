@@ -42,8 +42,8 @@ func _add_minute():
 			emit_signal("day_changed", 1)
 			emit_signal("week_changed")
 			update_time()
-			Global.player["week"] += 1
-			Global.get_paid()
-			print(Global.player["week"])
+			if MissionManager.verificate_missons(Global.player["week"]):
+				Global.player["week"] += 1
+				Global.get_paid()
 	Global.player["hour"] = current_hour
 	emit_signal("time_changed", current_hour)

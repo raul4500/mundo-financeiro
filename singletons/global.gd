@@ -19,6 +19,7 @@ var data_model = {
 var play_time: bool = false
 
 func new_game(name: String, money: float) -> void:
+	SaveManager.delete_save()
 	player["name"] = name
 	player["money"] = money
 	player["saldo"] = 0
@@ -30,6 +31,7 @@ func new_game(name: String, money: float) -> void:
 	player["day"] = 1
 	player["hour"] = 8
 	TimeManager.update_time()
+	get_tree().change_scene_to_file("res://scenes/world/main_game.tscn")
 	
 func load_data() -> void:
 	if not SaveManager.load_game():

@@ -4150,7 +4150,6 @@ texture = ExtResource("25_8uhhx")
 [node name="Doors" type="Node2D" parent="." unique_id=1572920439]
 
 [node name="Minigame_door" type="Area2D" parent="Doors" unique_id=1388088722]
-visible = false
 script = ExtResource("5_284u4")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Doors/Minigame_door" unique_id=1350407543]
@@ -4159,14 +4158,13 @@ shape = SubResource("CircleShape2D_ipu61")
 
 [node name="Minigame" type="Label" parent="Doors/Minigame_door" unique_id=652777388]
 visible = false
-offset_left = 159.0
-offset_top = 349.0
-offset_right = 236.0
-offset_bottom = 372.0
+offset_left = 108.0
+offset_top = 386.0
+offset_right = 200.0
+offset_bottom = 409.0
 text = "Minigame"
 
 [node name="Market_door" type="Area2D" parent="Doors" unique_id=233731835]
-visible = false
 script = ExtResource("6_02s2o")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Doors/Market_door" unique_id=1442001352]
@@ -4190,16 +4188,15 @@ position = Vector2(0, -3)
 script = ExtResource("8_yls0m")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Doors/Bank_door" unique_id=1537764621]
-visible = false
 position = Vector2(583, 480)
 shape = SubResource("CircleShape2D_70vka")
 
 [node name="Bank" type="Label" parent="Doors/Bank_door" unique_id=1578286873]
 visible = false
-offset_left = 598.0
-offset_top = 404.0
-offset_right = 682.0
-offset_bottom = 421.0
+offset_left = 543.0
+offset_top = 422.0
+offset_right = 627.0
+offset_bottom = 439.0
 theme_override_constants/outline_size = 9
 theme_override_fonts/font = SubResource("FontVariation_2l77h")
 theme_override_font_sizes/font_size = 14
