@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dhgjxsjmqw3kg" path="res://scripts/world/market/market.gd" id="1_ovrwm"]
 [ext_resource type="FontFile" uid="uid://bf1r20swxoymi" path="res://assests/fonts/QuinqueFive.otf" id="2_kvkvd"]
+[ext_resource type="Theme" uid="uid://b2pfdp8p48jam" path="res://themes/font_theme.tres" id="3_3pbar"]
 
 [sub_resource type="FontVariation" id="FontVariation_yyx4t"]
 base_font = ExtResource("2_kvkvd")
@@ -46,9 +47,55 @@ text = "SAIR
 
 [node name="TabContainer" type="TabContainer" parent="." unique_id=2101552195]
 layout_mode = 0
-offset_left = 115.0
-offset_top = 82.0
-offset_right = 1002.0
-offset_bottom = 579.0
+offset_left = 879.0
+offset_top = 80.0
+offset_right = 1115.0
+offset_bottom = 315.0
+
+[node name="CategoryPanel" type="Panel" parent="." unique_id=52492565]
+layout_mode = 0
+offset_left = 19.0
+offset_top = 90.0
+offset_right = 245.0
+offset_bottom = 544.0
+size_flags_horizontal = 3
+theme = ExtResource("3_3pbar")
+
+[node name="CategoryList" type="VBoxContainer" parent="CategoryPanel" unique_id=1299133016]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 9.0
+offset_top = 11.0
+offset_right = -11.0
+offset_bottom = -11.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainPanel" type="Panel" parent="." unique_id=751845774]
+layout_mode = 0
+offset_left = 255.0
+offset_top = 90.0
+offset_right = 840.0
+offset_bottom = 544.0
+size_flags_horizontal = 3
+theme = ExtResource("3_3pbar")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MainPanel" unique_id=1120244782]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 9.0
+offset_top = 11.0
+offset_right = -9.0
+offset_bottom = -11.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ItemList" type="GridContainer" parent="MainPanel/ScrollContainer" unique_id=2008716523]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [connection signal="pressed" from="Exit" to="." method="_on_exit_pressed"]
