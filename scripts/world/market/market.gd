@@ -119,12 +119,52 @@ func _populate_items(group_name: String) -> void:
 	for item_name in item_dict.keys():
 		var price = item_dict[item_name]["price"]
 
+		var product = Panel.new()
+		var container = VBoxContainer.new()
+		var product_name = Label.new()
 		var button = Button.new()
-		button.text = "%s - $%d" % [item_name.capitalize(), price]
-		button.custom_minimum_size = Vector2(150, 60)
-		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	
+	# Texto
+		product_name.text = "%s \n $%d" % [item_name.capitalize(), price]
+		button.text = "Adicionar"
+	
+	# Tamanho do painel
+		product.custom_minimum_size = Vector2(170, 200)
+		product.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		
+		product_name.custom_minimum_size = Vector2(130, 50)
+	
+	# 🔥 Container ocupa todo o painel
+		container.anchor_right = 1.0
+		container.anchor_bottom = 1.0
+		container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		container.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	
+	# 🔥 Centralização
+		container.alignment = BoxContainer.ALIGNMENT_CENTER
+	
+	# 🔥 Alinhamento dos elementos
+		product_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	
+	# Conectar botão
 		button.pressed.connect(_on_buy_item.bind(group_name, item_name))
-		item_list.add_child(button)
+	
+	# Hierarquia correta
+		container.add_child(product_name)
+		container.add_child(button)
+		product.add_child(container)
+		item_list.add_child(product)
+
+
+#container.anchor_left = 0.5
+#container.anchor_right = 0.5
+#container.anchor_top = 0.5
+#container.anchor_bottom = 0.5
+#container.offset_left = -80
+#container.offset_right = 80
+#container.offset_top = -50
+#container.offset_bottom = 50
 
 
 func update_labels() -> void:
