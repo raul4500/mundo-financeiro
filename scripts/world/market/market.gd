@@ -79,8 +79,9 @@ var items: Dictionary = {
 	}
 }
 
-@onready var category_list: VBoxContainer = $CategoryPanel/CategoryList
-@onready var item_list: GridContainer = $MainPanel/ScrollContainer/ItemList
+@onready var category_list: VBoxContainer = $HBoxContainer/CategoryPanel/CategoryList
+@onready var item_list: GridContainer = $HBoxContainer/MainPanel/ScrollContainer/ItemList
+@onready var kart_list: VBoxContainer = $HBoxContainer/KartPanel/ScrollContainer/KartList
 @onready var label_money: Label = $Label_Money
 
 var current_category: String = ""
@@ -135,6 +136,7 @@ func _populate_items(group_name: String) -> void:
 		product_name.custom_minimum_size = Vector2(130, 50)
 	
 	# 🔥 Container ocupa todo o painel
+		container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		container.anchor_right = 1.0
 		container.anchor_bottom = 1.0
 		container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -177,8 +179,44 @@ func _on_exit_pressed() -> void:
 
 func _on_buy_item(group_name: String, item_name: String) -> void:
 	var price = items[group_name][item_name]["price"]
+
+	var product = Panel.new()
+	var container = VBoxContainer.new()
+	var product_name = Label.new()
+	
+	kart_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+# =============================
+# 📦 PANEL
+# =============================
+	product.custom_minimum_size = Vector2(0, 90)
+	product.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+# =============================
+# 📐 CONTAINER (layout)
+# =============================
+	container.anchor_right = 1.0
+	container.anchor_bottom = 1.0
+	container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	container.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	container.alignment = BoxContainer.ALIGNMENT_CENTER
+	container.add_theme_constant_override("separation", 5)
+
+# =============================
+# 🏷️ LABEL
+# =============================
+	product_name.text = "%s\n$%d" % [item_name.capitalize(), price]
+	product_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+
+# =============================
+# 🔗 HIERARQUIA CORRETA
+# =============================
+	container.add_child(product_name)
+	product.add_child(container)
+	kart_list.add_child(product)
+	
 	if Global.player["money"] >= price:
-		print("Comprou:", item_name, "por", price)
+				
 		Global.player["money"] = int(Global.player["money"] - price)
 		update_labels()
 	else:

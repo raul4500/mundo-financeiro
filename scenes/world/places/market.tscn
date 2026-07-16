@@ -45,23 +45,19 @@ theme_override_fonts/font = ExtResource("2_kvkvd")
 text = "SAIR
 "
 
-[node name="TabContainer" type="TabContainer" parent="." unique_id=2101552195]
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1768410827]
 layout_mode = 0
-offset_left = 906.0
-offset_top = 20.0
-offset_right = 1142.0
-offset_bottom = 255.0
-
-[node name="CategoryPanel" type="Panel" parent="." unique_id=52492565]
-layout_mode = 0
-offset_left = 19.0
+offset_left = 17.0
 offset_top = 90.0
-offset_right = 245.0
-offset_bottom = 544.0
+offset_right = 1136.0
+offset_bottom = 554.0
+
+[node name="CategoryPanel" type="Panel" parent="HBoxContainer" unique_id=52492565]
+layout_mode = 2
 size_flags_horizontal = 3
 theme = ExtResource("3_3pbar")
 
-[node name="CategoryList" type="VBoxContainer" parent="CategoryPanel" unique_id=1299133016]
+[node name="CategoryList" type="VBoxContainer" parent="HBoxContainer/CategoryPanel" unique_id=1299133016]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -73,16 +69,13 @@ offset_bottom = -11.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MainPanel" type="Panel" parent="." unique_id=751845774]
-layout_mode = 0
-offset_left = 255.0
-offset_top = 90.0
-offset_right = 895.0
-offset_bottom = 544.0
+[node name="MainPanel" type="Panel" parent="HBoxContainer" unique_id=751845774]
+layout_mode = 2
 size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
 theme = ExtResource("3_3pbar")
 
-[node name="ScrollContainer" type="ScrollContainer" parent="MainPanel" unique_id=1120244782]
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/MainPanel" unique_id=1120244782]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -94,8 +87,23 @@ offset_bottom = -11.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ItemList" type="GridContainer" parent="MainPanel/ScrollContainer" unique_id=2008716523]
+[node name="ItemList" type="GridContainer" parent="HBoxContainer/MainPanel/ScrollContainer" unique_id=2008716523]
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="KartPanel" type="Panel" parent="HBoxContainer" unique_id=371934554]
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("3_3pbar")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/KartPanel" unique_id=754036126]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 11.0
+offset_right = 268.0
+offset_bottom = 452.0
+
+[node name="KartList" type="VBoxContainer" parent="HBoxContainer/KartPanel/ScrollContainer" unique_id=1626909722]
+layout_mode = 2
 
 [connection signal="pressed" from="Exit" to="." method="_on_exit_pressed"]
