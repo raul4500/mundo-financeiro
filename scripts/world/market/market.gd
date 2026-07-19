@@ -81,11 +81,13 @@ var items: Dictionary = {
 
 @onready var category_list: VBoxContainer = $HBoxContainer/CategoryPanel/CategoryList
 @onready var item_list: GridContainer = $HBoxContainer/MainPanel/ScrollContainer/ItemList
-@onready var kart_list: VBoxContainer = $HBoxContainer/KartPanel/ScrollContainer/KartList
+@onready var kart_list: VBoxContainer = $HBoxContainer/KartContainer/KartPanel/ScrollContainer/KartList
 @onready var label_money: Label = $Label_Money
+@onready var label_total: Label = $HBoxContainer/KartContainer/Panel/Label
 
 var current_category: String = ""
 
+var total: float = 0.00
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -171,6 +173,7 @@ func _populate_items(group_name: String) -> void:
 
 func update_labels() -> void:
 	label_money.text = "Dinheiro: $" + str(Global.player["money"])
+	label_total.text = "Total: R$" + str(total)
 
 
 func _on_exit_pressed() -> void:
@@ -179,18 +182,21 @@ func _on_exit_pressed() -> void:
 
 func _on_buy_item(group_name: String, item_name: String) -> void:
 	var price = items[group_name][item_name]["price"]
+	
+	total += price
 
-	var product = Panel.new()
-	var container = VBoxContainer.new()
+	var container = HBoxContainer.new()
 	var product_name = Label.new()
+	var remove_product = Button.new()
 	
 	kart_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 # =============================
-# 📦 PANEL
+#    Button
 # =============================
-	product.custom_minimum_size = Vector2(0, 90)
-	product.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	remove_product.text = "X"
+	remove_product.theme = load("res://themes/sell_button.tres")
+
 
 # =============================
 # 📐 CONTAINER (layout)
@@ -205,19 +211,27 @@ func _on_buy_item(group_name: String, item_name: String) -> void:
 # =============================
 # 🏷️ LABEL
 # =============================
-	product_name.text = "%s\n$%d" % [item_name.capitalize(), price]
-	product_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	product_name.text = "%s - $%d" % [item_name.capitalize(), price]
+	product_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 
 # =============================
 # 🔗 HIERARQUIA CORRETA
 # =============================
 	container.add_child(product_name)
-	product.add_child(container)
-	kart_list.add_child(product)
-	
-	if Global.player["money"] >= price:
-				
-		Global.player["money"] = int(Global.player["money"] - price)
+	container.add_child(remove_product)
+	kart_list.add_child(container)
+	update_labels()
+
+func _on_clean_kart_pressed() -> void:
+	total = 0.00
+	for child in kart_list.get_children():
+		child.free()
+	update_labels()
+
+
+func _on_finish_pressed() -> void:
+	if Global.player["money"] >= total:
+		Global.player["money"] = int(Global.player["money"] - total)
 		update_labels()
 	else:
 		print("Saldo insuficiente")

@@ -1,11 +1,9 @@
 [gd_scene format=3 uid="uid://b4xvk2fnxmf73"]
 
 [ext_resource type="Script" uid="uid://dhgjxsjmqw3kg" path="res://scripts/world/market/market.gd" id="1_ovrwm"]
-[ext_resource type="FontFile" uid="uid://bf1r20swxoymi" path="res://assests/fonts/QuinqueFive.otf" id="2_kvkvd"]
 [ext_resource type="Theme" uid="uid://b2pfdp8p48jam" path="res://themes/font_theme.tres" id="3_3pbar"]
-
-[sub_resource type="FontVariation" id="FontVariation_yyx4t"]
-base_font = ExtResource("2_kvkvd")
+[ext_resource type="Theme" uid="uid://bgmqv8sn4sahi" path="res://themes/buy_button.tres" id="4_h2mo7"]
+[ext_resource type="Theme" uid="uid://ctf4tsiarnho2" path="res://themes/sell_button.tres" id="5_af7vp"]
 
 [node name="Market" type="Control" unique_id=629235113]
 layout_mode = 3
@@ -27,21 +25,17 @@ offset_top = 29.0
 offset_right = 131.0
 offset_bottom = 71.0
 grow_horizontal = 2
-theme_override_colors/font_color = Color(1, 1, 0, 1)
-theme_override_constants/outline_size = 8
-theme_override_constants/shadow_outline_size = 5
-theme_override_fonts/font = SubResource("FontVariation_yyx4t")
-theme_override_font_sizes/font_size = 30
+theme = ExtResource("3_3pbar")
 text = "R$ 200,00"
 horizontal_alignment = 1
 
 [node name="Exit" type="Button" parent="." unique_id=2073528430]
 layout_mode = 0
-offset_left = 15.0
-offset_top = 19.0
-offset_right = 152.0
-offset_bottom = 59.0
-theme_override_fonts/font = ExtResource("2_kvkvd")
+offset_left = 19.0
+offset_top = 21.0
+offset_right = 156.0
+offset_bottom = 73.0
+theme = ExtResource("3_3pbar")
 text = "SAIR
 "
 
@@ -55,6 +49,7 @@ offset_bottom = 554.0
 [node name="CategoryPanel" type="Panel" parent="HBoxContainer" unique_id=52492565]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.7
 theme = ExtResource("3_3pbar")
 
 [node name="CategoryList" type="VBoxContainer" parent="HBoxContainer/CategoryPanel" unique_id=1299133016]
@@ -91,19 +86,71 @@ grow_vertical = 2
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="KartPanel" type="Panel" parent="HBoxContainer" unique_id=371934554]
+[node name="KartContainer" type="VBoxContainer" parent="HBoxContainer" unique_id=2018960214]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.5
+
+[node name="KartPanel" type="Panel" parent="HBoxContainer/KartContainer" unique_id=371934554]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 theme = ExtResource("3_3pbar")
 
-[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/KartPanel" unique_id=754036126]
-layout_mode = 0
-offset_left = 9.0
-offset_top = 11.0
-offset_right = 268.0
-offset_bottom = 452.0
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/KartContainer/KartPanel" unique_id=754036126]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 7.0
+offset_top = 9.0
+offset_right = -9.0
+offset_bottom = -11.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="KartList" type="VBoxContainer" parent="HBoxContainer/KartPanel/ScrollContainer" unique_id=1626909722]
+[node name="KartList" type="VBoxContainer" parent="HBoxContainer/KartContainer/KartPanel/ScrollContainer" unique_id=1626909722]
 layout_mode = 2
 
+[node name="Panel" type="Panel" parent="HBoxContainer/KartContainer" unique_id=782148895]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.5
+theme = ExtResource("3_3pbar")
+
+[node name="Label" type="Label" parent="HBoxContainer/KartContainer/Panel" unique_id=1081571191]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 269.0
+offset_bottom = 58.0
+text = "total: R$100,00"
+
+[node name="Finish" type="Button" parent="HBoxContainer/KartContainer/Panel" unique_id=1362767445]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -128.0
+offset_top = -18.0
+offset_right = 128.0
+offset_bottom = 18.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("4_h2mo7")
+text = "Finalizar Compra"
+
+[node name="CleanKart" type="Button" parent="HBoxContainer/KartContainer/Panel" unique_id=788109191]
+layout_mode = 0
+offset_left = 11.0
+offset_top = 98.0
+offset_right = 267.0
+offset_bottom = 134.0
+theme = ExtResource("5_af7vp")
+text = "Limpar Carrinho"
+
 [connection signal="pressed" from="Exit" to="." method="_on_exit_pressed"]
+[connection signal="pressed" from="HBoxContainer/KartContainer/Panel/Finish" to="." method="_on_finish_pressed"]
+[connection signal="pressed" from="HBoxContainer/KartContainer/Panel/CleanKart" to="." method="_on_clean_kart_pressed"]
