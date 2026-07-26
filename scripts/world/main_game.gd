@@ -3,6 +3,9 @@ extends Node2D
 var scene: Resource
 var character: Node2D
 
+@onready var player_node = $Player
+
+@onready var poles = $"Light-poles"
 
 func _ready():
 	#Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -10,7 +13,11 @@ func _ready():
 	character = scene.instantiate()
 	var pos = Global.player["position"]
 	character.global_position = Vector2(pos["x"], pos["y"])
-	add_child(character)
+	player_node.add_child(character)
+	
+	for pole in poles.get_children():
+		pole.offset = Vector2(0, -17)
+		pole.global_position.y += 17
 
 func _on_tree_exited() -> void:
 	Global.play_time = false
