@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://cha446b7n3r5r"]
 
 [ext_resource type="Script" uid="uid://c05tswtjaqw1l" path="res://scripts/menus/pause_menu.gd" id="1_n87rw"]
+[ext_resource type="Theme" uid="uid://b2pfdp8p48jam" path="res://themes/font_theme.tres" id="2_7unhi"]
 
 [node name="pause_menu" type="Control" unique_id=2075846777]
 process_mode = 3
@@ -25,6 +26,7 @@ offset_right = 301.0
 offset_bottom = 189.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("2_7unhi")
 alignment = 1
 
 [node name="continuar" type="Button" parent="VBoxContainer" unique_id=549171926]

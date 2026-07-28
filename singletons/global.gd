@@ -9,11 +9,13 @@ var data_model = {
 		"salary": 200,
 		"school_level": 1,
 		"position": {
-			"x": 500,
-			"y": 200
+			"x": 180,
+			"y": 210
 			},
 		"day": 1,
 		"hour": 8,
+		
+		"investments": {}
 	}
 
 var play_time: bool = false
@@ -30,6 +32,10 @@ func new_game(name: String, money: float) -> void:
 	player["position"]["y"] = 210
 	player["day"] = 1
 	player["hour"] = 8
+	player["investments"] = {}
+	
+	
+	
 	TimeManager.update_time()
 	get_tree().change_scene_to_file("res://scenes/world/main_game.tscn")
 	
@@ -48,6 +54,7 @@ func get_paid() -> void:
 
 func _ready() -> void:
 	load_data()
+	FIIManager.load_data()
 	print(player)
 	
 func _process(delta: float) -> void:

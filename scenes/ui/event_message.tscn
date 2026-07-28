@@ -1,35 +1,38 @@
 [gd_scene format=3 uid="uid://dgh0g7wcwwssa"]
 
 [ext_resource type="Script" uid="uid://bug0fih4lhmqw" path="res://scripts/hud/event_ui.gd" id="1_g7v6l"]
+[ext_resource type="Theme" uid="uid://b2pfdp8p48jam" path="res://themes/font_theme.tres" id="2_8mcoy"]
 
 [node name="Event" type="CanvasLayer" unique_id=1609511440]
 script = ExtResource("1_g7v6l")
 
 [node name="Panel" type="Panel" parent="." unique_id=1356184198]
-offset_right = 255.0
-offset_bottom = 121.0
+offset_right = 304.0
+offset_bottom = 177.0
+theme = ExtResource("2_8mcoy")
 
 [node name="Titulo" type="Label" parent="Panel" unique_id=938666601]
 layout_mode = 0
-offset_left = 16.0
+offset_left = 8.0
 offset_top = 11.0
-offset_right = 235.0
-offset_bottom = 34.0
+offset_right = 297.0
+offset_bottom = 57.0
 text = "teste"
 
 [node name="Descricao" type="Label" parent="Panel" unique_id=668734126]
 layout_mode = 0
-offset_left = 18.0
-offset_top = 58.0
-offset_right = 237.0
-offset_bottom = 81.0
+offset_left = 8.0
+offset_top = 59.0
+offset_right = 295.0
+offset_bottom = 105.0
 text = "tesdte"
 
 [node name="Button" type="Button" parent="Panel" unique_id=1238707381]
 layout_mode = 0
-offset_left = 190.0
-offset_top = 89.0
-offset_right = 241.0
-offset_bottom = 115.0
+offset_left = 174.0
+offset_top = 111.0
+offset_right = 291.0
+offset_bottom = 163.0
+text = "Confirmar"
 
 [connection signal="pressed" from="Panel/Button" to="." method="_on_button_pressed"]

@@ -1,6 +1,8 @@
 extends Node
 
-func save_game(data = Global.player):
+func save_game():
+	FIIManager.save_data()
+	var data = Global.player
 	var json_string = JSON.stringify(data)
 	var file = FileAccess.open("user://savegame.json", FileAccess.WRITE)
 	file.store_string(json_string)
@@ -13,10 +15,11 @@ func load_game():
 	var content = file.get_as_text()
 	file.close()
 	var data = JSON.parse_string(content)
+	print("save loaded")
 	return data
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	print("save loaded")
+	pass
 	#var pos = load_game()["player_position"]
 	#player.global_position = Vector2(pos["x"], pos["y"])
 
@@ -35,7 +38,7 @@ func delete_save(caminho: String = "savegame.json") -> void:
 
 
 var save_timer := 0.0
-var save_interval := 300.0 # segundos (1 minutos)
+var save_interval := 300.0 # segundos (5 minutos)
 
 func _process(delta):
 	save_timer += delta

@@ -1,13 +1,12 @@
 extends Control
 
-@onready var label_money = $Label_Money
-@onready var label_saldo = $Label_Saldo
+@onready var label_money = $"Account-info/Label_Money"
+@onready var label_saldo = $"Account-info/Label-saldo"
 
-@onready var input_deposit = $LineEdit_Deposit
-@onready var input_withdraw = $LineEdit_Withdraw
+@onready var input = $Input
 
-@onready var btn_deposit = $Button_Deposit
-@onready var btn_withdraw = $Button_Withdraw
+@onready var btn_deposit = $Actions/Deposit
+@onready var btn_withdraw = $Actions/Withdraw
 
 
 func _ready():
@@ -17,8 +16,7 @@ func _ready():
 	btn_deposit.pressed.connect(deposit)
 	btn_withdraw.pressed.connect(withdraw)
 
-	input_deposit.text_changed.connect(_only_numbers.bind(input_deposit))
-	input_withdraw.text_changed.connect(_only_numbers.bind(input_withdraw))
+	input.text_changed.connect(_only_numbers.bind(input))
 
 
 func update_labels():
@@ -26,7 +24,7 @@ func update_labels():
 	label_saldo.text = "Banco: $" + str(Global.player["saldo"])
 
 func deposit():
-	var value = int(input_deposit.text)
+	var value = int(input.text)
 
 	if value <= 0:
 		return
@@ -38,11 +36,11 @@ func deposit():
 	Global.player["money"] -= value
 	Global.player["saldo"] += value
 
-	input_deposit.text = ""
+	input.text = ""
 	update_labels()
 
 func withdraw():
-	var value = int(input_withdraw.text)
+	var value = int(input.text)
 
 	if value <= 0:
 		return
@@ -54,7 +52,7 @@ func withdraw():
 	Global.player["saldo"] -= value
 	Global.player["money"] += value
 
-	input_withdraw.text = ""
+	input.text = ""
 	update_labels()
 
 func _only_numbers(new_text, line_edit: LineEdit):

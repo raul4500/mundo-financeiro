@@ -26,3 +26,9 @@ func _on_tree_exited() -> void:
 
 func _on_tree_entered() -> void:
 	Global.play_time = true
+	
+func _process(delta: float) -> void:
+	if Input.is_action_just_pressed("ui_page_down"):
+		get_tree().change_scene_to_file("res://scenes/world/places/bank.tscn")
+	if Input.is_action_just_pressed("ui_page_up"):
+		get_tree().change_scene_to_file("res://scenes/world/places/market.tscn")

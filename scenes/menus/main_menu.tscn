@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cqdxt6jav7hbq" path="res://scripts/menus/main_menu.gd" id="1_ovrgc"]
 [ext_resource type="Texture2D" uid="uid://b0w6s2q7h5b42" path="res://assests/sprites/backgrounds/nature_4/orig.png" id="2_2o76q"]
+[ext_resource type="Theme" uid="uid://b2pfdp8p48jam" path="res://themes/font_theme.tres" id="3_2o76q"]
 
 [node name="main_menu" type="Control" unique_id=1154258972]
 layout_mode = 3
@@ -32,6 +33,7 @@ offset_right = 43.0
 offset_bottom = 33.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("3_2o76q")
 
 [node name="start" type="Button" parent="GridContainer" unique_id=1633250388]
 visible = false

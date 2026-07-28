@@ -1267,7 +1267,16 @@ texture = ExtResource("25_8uhhx")
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Colisions/StaticBody2D" unique_id=912216385]
 polygon = PackedVector2Array(-19, 555, -19, 694, 222, 695, 234, 697, 235, 708, 331, 710, 332, 553, 235, 554, 234, 568, 143, 567, 142, 554)
 
-[node name="StaticBody2D2" type="StaticBody2D" parent="Colisions" unique_id=1489539816]
+[node name="City-exits" type="StaticBody2D" parent="Colisions" unique_id=1489539816]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Colisions/City-exits" unique_id=508804755]
+polygon = PackedVector2Array(-147, 142, -147, 228, -157, 228, -157, 142)
+
+[node name="CollisionPolygon2D2" type="CollisionPolygon2D" parent="Colisions/City-exits" unique_id=1457570020]
+polygon = PackedVector2Array(1211, 217, 1299, 217, 1298, 64, 1312, 64, 1314, 227, 1210, 228)
+
+[node name="CollisionPolygon2D3" type="CollisionPolygon2D" parent="Colisions/City-exits" unique_id=1825254881]
+polygon = PackedVector2Array(741, 805, -119, 812, -118, 816)
 
 [node name="StaticBody2D3" type="StaticBody2D" parent="Colisions" unique_id=2088575058]
 
