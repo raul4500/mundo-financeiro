@@ -1,0 +1,105 @@
+[gd_scene format=3 uid="uid://bb6500lgdif47"]
+
+[ext_resource type="Script" uid="uid://jf6x5estu730" path="res://scripts/world/office/office.gd" id="1_7iq43"]
+[ext_resource type="Theme" uid="uid://b2pfdp8p48jam" path="res://themes/font_theme.tres" id="2_qcymq"]
+
+[node name="Control" type="Control" unique_id=496329955]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_7iq43")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=564243796]
+layout_mode = 0
+offset_left = 17.0
+offset_top = 90.0
+offset_right = 1136.0
+offset_bottom = 554.0
+
+[node name="LevelPanel" type="Panel" parent="HBoxContainer" unique_id=1152723086]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = ExtResource("2_qcymq")
+
+[node name="Levels" type="VBoxContainer" parent="HBoxContainer/LevelPanel" unique_id=1114730822]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 9.0
+offset_right = 213.0
+offset_bottom = 341.0
+size_flags_horizontal = 3
+
+[node name="Level1" type="Button" parent="HBoxContainer/LevelPanel/Levels" unique_id=1673700015]
+layout_mode = 2
+text = "Level 1"
+
+[node name="Level2" type="Button" parent="HBoxContainer/LevelPanel/Levels" unique_id=1860881298]
+layout_mode = 2
+text = "Level 2"
+
+[node name="Level3" type="Button" parent="HBoxContainer/LevelPanel/Levels" unique_id=1776328953]
+layout_mode = 2
+text = "Level 3"
+
+[node name="Level4" type="Button" parent="HBoxContainer/LevelPanel/Levels" unique_id=2075631639]
+layout_mode = 2
+text = "Level 4"
+
+[node name="Level5" type="Button" parent="HBoxContainer/LevelPanel/Levels" unique_id=918239373]
+layout_mode = 2
+text = "Level 5
+"
+
+[node name="Exit" type="Button" parent="HBoxContainer/LevelPanel" unique_id=552767366]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 289.0
+offset_right = 213.0
+offset_bottom = 341.0
+text = "Sair"
+
+[node name="TopicPanel" type="Panel" parent="HBoxContainer" unique_id=1890076085]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+theme = ExtResource("2_qcymq")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/TopicPanel" unique_id=148103472]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 9.0
+offset_top = 11.0
+offset_right = -9.0
+offset_bottom = -11.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Topics" type="VBoxContainer" parent="HBoxContainer/TopicPanel/ScrollContainer" unique_id=47875533]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DetailPanel" type="Panel" parent="HBoxContainer" unique_id=757514451]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+theme = ExtResource("2_qcymq")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/DetailPanel" unique_id=1852633499]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 11.0
+offset_right = 434.0
+offset_bottom = 454.0
+
+[node name="RichTextLabel" type="RichTextLabel" parent="HBoxContainer/DetailPanel/ScrollContainer" unique_id=305714335]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[connection signal="pressed" from="HBoxContainer/LevelPanel/Exit" to="." method="_on_exit_pressed"]

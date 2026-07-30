@@ -17,7 +17,7 @@ func _on_time_changed(hour):
 
 func _update_clock(hour):
 	var h = int(hour)
-	clock_label.text = " %d" %h
+	clock_label.text = "%dh" %h
 
 func _on_day_changed(day):
 	_update_day(day)

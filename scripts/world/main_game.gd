@@ -32,3 +32,5 @@ func _process(delta: float) -> void:
 		get_tree().change_scene_to_file("res://scenes/world/places/bank.tscn")
 	if Input.is_action_just_pressed("ui_page_up"):
 		get_tree().change_scene_to_file("res://scenes/world/places/market.tscn")
+	if Input.is_action_just_pressed("ui_end"):
+		get_tree().change_scene_to_file("res://scenes/world/places/office.tscn")

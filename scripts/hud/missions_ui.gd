@@ -1,6 +1,6 @@
 extends CanvasLayer
 
-@onready var mission_list = $Panel/VBoxContainer/MissionList
+@onready var mission_list = $Panel/MissionList
 @onready var panel = $Panel
 @onready var mission_button = $Open
 
@@ -20,6 +20,7 @@ func load_missions(phase: int):
 	for m in missions:
 		var label = Label.new()
 		label.text = "- " + m["description"]
+		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		mission_list.add_child(label)
 
 func _process(delta: float) -> void:

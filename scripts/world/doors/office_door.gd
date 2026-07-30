@@ -1,0 +1,14 @@
+extends Area2D
+
+var dentro_banco = false
+
+func _process(delta: float) -> void:
+	if Input.is_key_pressed(KEY_ENTER) and dentro_banco == true:
+		get_tree().change_scene_to_file("res://scenes/world/places/office.tscn")
+
+func _on_body_shape_entered(body_rid: RID, body: CharacterBody2D, body_shape_index: int, local_shape_index: int) -> void:
+	dentro_banco = true
+	
+func _on_body_shape_exited(body_rid: RID, body: CharacterBody2D, body_shape_index: int, local_shape_index: int) -> void:
+	dentro_banco = false
+	

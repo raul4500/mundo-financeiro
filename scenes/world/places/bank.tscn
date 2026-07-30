@@ -60,10 +60,10 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -202.0
-offset_top = 58.0
-offset_right = 204.0
-offset_bottom = 104.0
+offset_left = -204.0
+offset_top = 57.0
+offset_right = 202.0
+offset_bottom = 103.0
 grow_horizontal = 2
 text = "Dinheiro: R$1000,00"
 

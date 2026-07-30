@@ -1,14 +1,13 @@
 [gd_scene format=3 uid="uid://cbrmr5kff5n8f"]
 
 [ext_resource type="Script" uid="uid://c6aknosj6rayg" path="res://scripts/menus/choose_character.gd" id="1_y5l5p"]
+[ext_resource type="Texture2D" uid="uid://dsle21iibnuq5" path="res://assests/sprites/backgrounds/choose-character-brackground.png" id="2_teua1"]
 [ext_resource type="Texture2D" uid="uid://cngb5cgrpieyt" path="res://assests/sprites/Raul/pixil-layer-main.png" id="2_veens"]
 [ext_resource type="PackedScene" uid="uid://decxoygcije53" path="res://scenes/players/enzo.tscn" id="4_4iitr"]
 [ext_resource type="PackedScene" uid="uid://jwam377tqte6" path="res://scenes/players/melissa.tscn" id="4_6b5gi"]
 [ext_resource type="PackedScene" uid="uid://de82ksrqhcn32" path="res://scenes/players/matheus.tscn" id="4_veens"]
 [ext_resource type="PackedScene" uid="uid://b7msjawe3sejd" path="res://scenes/players/phillip.tscn" id="6_6b5gi"]
-
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_3emc4"]
-load_path = "res://.godot/imported/orig.png-5009e0966f6b6d1c404f12c1e9121ca6.ctex"
+[ext_resource type="Theme" uid="uid://b2pfdp8p48jam" path="res://themes/font_theme.tres" id="8_y1ocr"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_d1bwa"]
 atlas = ExtResource("2_veens")
@@ -41,7 +40,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_uo8c8")
 }],
-"loop": true,
+"loop": 1,
 "name": &"default",
 "speed": 5.0
 }]
@@ -61,7 +60,7 @@ offset_left = 3.0
 offset_top = 2.0
 offset_right = 1155.0
 offset_bottom = 650.0
-texture = SubResource("CompressedTexture2D_3emc4")
+texture = ExtResource("2_teua1")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=373397064]
 layout_mode = 1
@@ -148,6 +147,7 @@ offset_right = 145.0
 offset_bottom = -73.0
 grow_horizontal = 2
 grow_vertical = 0
+theme = ExtResource("8_y1ocr")
 text = "Voltar"
 
 [connection signal="pressed" from="return" to="." method="_on_return_pressed"]
