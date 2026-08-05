@@ -18,7 +18,8 @@ var data_model = {
 		"investments": {}
 	}
 
-var play_time: bool = false
+var play_time := false
+var gameplay_locked := false
 
 func new_game(name: String, money: float) -> void:
 	SaveManager.delete_save()
@@ -33,9 +34,7 @@ func new_game(name: String, money: float) -> void:
 	player["day"] = 1
 	player["hour"] = 8
 	player["investments"] = {}
-	
-	
-	
+
 	TimeManager.update_time()
 	get_tree().change_scene_to_file("res://scenes/world/main_game.tscn")
 	

@@ -26,6 +26,7 @@ MissionManager="*uid://cvt4jycppg2xx"
 DoorManager="*uid://dcjoibsvo3jjk"
 FIIManager="*uid://dkuxfl3tpqxf1"
 AlertManager="*uid://dv1iu0gs8mcid"
+CameraManager="*uid://bdu5ee4jnl6k"
 
 [display]
 

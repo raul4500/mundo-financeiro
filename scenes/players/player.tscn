@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bao1xk8dho6a7"]
 
 [ext_resource type="Script" uid="uid://baselv3etcohu" path="res://scripts/player/player.gd" id="1_sguum"]
+[ext_resource type="Script" uid="uid://cukmc0w6go4yt" path="res://scripts/player/player-camera.gd" id="2_jwv1m"]
 [ext_resource type="Theme" uid="uid://b2pfdp8p48jam" path="res://themes/font_theme.tres" id="3_olb2f"]
 [ext_resource type="Script" uid="uid://dcbgk5qjcltii" path="res://scripts/hud/hud_control.gd" id="3_phaeh"]
 [ext_resource type="PackedScene" uid="uid://cha446b7n3r5r" path="res://scenes/menus/pause_menu.tscn" id="5_es4m5"]
@@ -22,6 +23,7 @@ shape = SubResource("RectangleShape2D_tys1d")
 zoom = Vector2(3, 3)
 position_smoothing_enabled = true
 position_smoothing_speed = 6.5
+script = ExtResource("2_jwv1m")
 
 [node name="Hud" type="CanvasLayer" parent="." unique_id=1168280528]
 

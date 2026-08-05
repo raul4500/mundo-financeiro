@@ -1337,6 +1337,11 @@ position = Vector2(7, 190)
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Colisions/StaticBody2D8" unique_id=1254993295]
 
+[node name="Camera-focusPoints" type="Node2D" parent="." unique_id=438827463]
+
+[node name="School" type="Marker2D" parent="Camera-focusPoints" unique_id=1633439240]
+position = Vector2(150, 426)
+
 [connection signal="tree_entered" from="." to="." method="_on_tree_entered"]
 [connection signal="tree_exited" from="." to="." method="_on_tree_exited"]
 [connection signal="body_shape_entered" from="Doors/Minigame_door" to="Doors/Minigame_door" method="_on_body_shape_entered"]

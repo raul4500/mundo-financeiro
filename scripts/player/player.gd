@@ -18,6 +18,7 @@ var clock_scene = preload("res://scenes/ui/clock.tscn")
 
 
 func _ready() -> void:
+	
 	if not characters.has(char_name):
 		push_error("Personagem inválido")
 		get_tree().quit()
@@ -31,6 +32,10 @@ func _ready() -> void:
 	add_child(clock_ui)
 
 func _physics_process(delta: float) -> void:
+	
+	if Global.gameplay_locked:
+		return
+	
 	var direction = Vector2(
 		Input.get_axis("move_left", "move_right"),
 		Input.get_axis("move_up", "move_down")
