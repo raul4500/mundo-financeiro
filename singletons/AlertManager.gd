@@ -3,9 +3,6 @@ extends Node
 var panel: Panel
 var alert_label: Label
 
-func _ready():
-	_create_alert_ui()
-
 func _create_alert_ui():
 	panel = Panel.new()
 	panel.visible = false
@@ -18,6 +15,7 @@ func _create_alert_ui():
 	alert_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	alert_label.size = Vector2(400, 100)
 	alert_label.position = Vector2(10, 10)
+	alert_label.z_index = 10000
 
 	alert_label.add_theme_font_size_override("font_size", 24)
 
@@ -27,8 +25,7 @@ func _create_alert_ui():
 	get_tree().root.add_child(panel)
 
 func alert(text: String):
-	if not is_instance_valid(panel):
-		_create_alert_ui()
+	_create_alert_ui()
 
 	panel.visible = true
 	alert_label.visible = true
@@ -36,6 +33,5 @@ func alert(text: String):
 
 	await get_tree().create_timer(4.0).timeout
 
-	if is_instance_valid(panel):
-		panel.visible = false
-		alert_label.visible = false
+	panel.visible = false
+	alert_label.visible = false
