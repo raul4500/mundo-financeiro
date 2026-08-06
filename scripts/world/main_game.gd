@@ -19,9 +19,11 @@ func _ready():
 		pole.offset = Vector2(0, -17)
 		pole.global_position.y += 17
 		
-	await CameraManager.play_intro(
+	await CameraManager.focus(
 		$"Camera-focusPoints/School"
 	)
+	
+	TutorialManager.start_tutorial()
 
 func _on_tree_exited() -> void:
 	Global.play_time = false

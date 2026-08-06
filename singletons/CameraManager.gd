@@ -20,7 +20,7 @@ func register_player(new_player: Node2D):
 
 
 # Executa uma introdução cinematográfica
-func play_intro(target: Node2D, move_time := 2.0, wait_time := 1.0):
+func focus(target: Node2D, move_time := 2.0, wait_time := 1.0):
 
 	if player == null:
 		push_error("CameraManager: nenhum jogador registrado")

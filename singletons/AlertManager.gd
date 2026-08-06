@@ -3,6 +3,9 @@ extends Node
 var panel: Panel
 var alert_label: Label
 
+func _ready() -> void:
+	TutorialManager.show_message.connect(alert)
+
 func _create_alert_ui():
 	panel = Panel.new()
 	panel.visible = false
