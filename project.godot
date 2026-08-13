@@ -31,7 +31,6 @@ TutorialManager="*uid://7bk6pyllg58q"
 
 [display]
 
-window/size/mode=3
 window/stretch/mode="canvas_items"
 
 [gui]

@@ -8,6 +8,7 @@ var character: Node2D
 
 func _ready():
 	#Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	TutorialManager.focus.connect(_focus)
 	scene = load("res://scenes/players/player.tscn")
 	character = scene.instantiate()
 	var pos = Global.player["position"]
@@ -18,12 +19,12 @@ func _ready():
 	for pole in poles.get_children():
 		pole.offset = Vector2(0, -17)
 		pole.global_position.y += 17
-		
-	await CameraManager.focus(
-		$"Camera-focusPoints/School"
-	)
 	
-	TutorialManager.start_tutorial()
+	match Global.player["tutorial_step"]:
+		1: 
+			TutorialManager.start_tutorial()
+		2:
+			pass
 
 func _on_tree_exited() -> void:
 	Global.play_time = false
@@ -40,3 +41,7 @@ func _process(delta: float) -> void:
 		get_tree().change_scene_to_file("res://scenes/world/places/market.tscn")
 	if Input.is_action_just_pressed("ui_end"):
 		get_tree().change_scene_to_file("res://scenes/world/places/office.tscn")
+		
+func _focus(point: String) -> void:
+	var target_node = get_node("Camera-focusPoints/" + point)
+	await CameraManager.focus(target_node)

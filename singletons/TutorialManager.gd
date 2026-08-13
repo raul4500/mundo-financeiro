@@ -3,6 +3,8 @@ extends Node
 signal show_message(text)
 signal tutorial_finished
 
+signal focus(point)
+
 var step := 0
 
 var messages = [
@@ -42,29 +44,29 @@ func start_tutorial():
 	step = 0
 	_next_step()
 
-
 func _next_step():
 	step += 1
+	Global.player["tutorial_step"] += 1
 	
 	match step:
 		1:
-			emit_signal("show_message", messages[0])
+			emit_signal("show_message", messages[0], true)
 		2:
-			emit_signal("show_message", messages[1])
+			emit_signal("show_message", messages[1], true)
 		3:
-			emit_signal("show_message", messages[2])
+			emit_signal("show_message", messages[2], true)
 		4:
-			emit_signal("show_message", messages[3])
+			emit_signal("show_message", messages[3], true)
 		
 		# espera ir pra escola
 		5:
-			pass
+			emit_signal("focus", "School")
 		
-		# minigame explicação
+		# minigame explicação (dentro do minigame)
 		6:
-			emit_signal("show_message", messages[4])
-			emit_signal("show_message", messages[5])
-			emit_signal("show_message", messages[6])
+			emit_signal("show_message", messages[4], true)
+			emit_signal("show_message", messages[5], true)
+			emit_signal("show_message", messages[6], true)
 		
 		# espera terminar minigame
 		7:
@@ -72,19 +74,19 @@ func _next_step():
 		
 		# pós minigame
 		8:
-			emit_signal("show_message", messages[7])
-			emit_signal("show_message", messages[8])
-			emit_signal("show_message", messages[9])
-			emit_signal("show_message", messages[10])
-			emit_signal("show_message", messages[11])
-			emit_signal("show_message", messages[12])
+			emit_signal("show_message", messages[7], true)
+			emit_signal("show_message", messages[8], true)
+			emit_signal("show_message", messages[9], true)
+			emit_signal("show_message", messages[10], true)
+			emit_signal("show_message", messages[11], true)
+			emit_signal("show_message", messages[12], true)
 			emit_signal("show_message", messages[13])
 			
 			emit_signal("tutorial_finished")
 
 
 # =============================
-# 🎯 EVENTOS DO JOGO
+# 🎯 EVENTOS DO JOGO 
 # =============================
 
 func on_player_entered_school():

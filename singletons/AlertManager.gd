@@ -1,106 +1,113 @@
-extends Node
+extends CanvasLayer
 
-var overlay: ColorRect
+var panel: Panel
 var alert_label: Label
 var confirm_button: Button
+var blocker: ColorRect
 
-func _ready() -> void:
+var next_step: bool = false
+
+func _ready():
 	TutorialManager.show_message.connect(alert)
 	_create_alert_ui()
-	
-	
+
+
 func _create_alert_ui():
-		# =============================
-	# 🌫️ FUNDO ESCURO / MODAL (FULLSCREEN)
 	# =============================
-	# Usamos um ColorRect para ocupar toda a tela com uma cor semitransparente
-	overlay = ColorRect.new()
-	overlay.visible = false
-	overlay.z_index = 4090
-	
-	# Define a cor preta com 60% de opacidade (R, G, B, A)
-	overlay.color = Color(0, 0, 0, 0.6)
-	
-	# Faz o fundo ocupar 100% da tela dinamicamente
-	overlay.anchor_right = 1.0
-	overlay.anchor_bottom = 1.0
-	
+	# 🔒 BLOQUEADOR DE INPUT (FULL SCREEN)
 	# =============================
-	# 🎯 CENTER CONTAINER (Centraliza o Modal)
+	blocker = ColorRect.new()
+	blocker.set_anchors_preset(Control.PRESET_FULL_RECT)
+	blocker.color = Color(0, 0, 0, 0.4) # fundo escuro transparente
+	blocker.visible = false
+	blocker.mouse_filter = Control.MOUSE_FILTER_STOP # 🚨 ESSENCIAL
+	
+	add_child(blocker)
+
 	# =============================
-	# O CenterContainer posiciona qualquer filho exatamente no meio do fundo
+	# 🎴 PANEL CENTRAL
+	# =============================
+	panel = Panel.new()
+	panel.visible = false
+	panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	panel.z_index = 10
+
+	panel.set_anchors_preset(Control.PRESET_FULL_RECT)
+
 	var center_container = CenterContainer.new()
-	center_container.anchor_right = 1.0
-	center_container.anchor_bottom = 1.0
-	
+	center_container.set_anchors_preset(Control.PRESET_FULL_RECT)
+
+	var box = VBoxContainer.new()
+	box.custom_minimum_size = Vector2(500, 200)
+	box.alignment = BoxContainer.ALIGNMENT_CENTER
+	box.add_theme_constant_override("separation", 12)
+
 	# =============================
-	# 📜 PAINEL (MODAL)
-	# =============================
-	var panel = Panel.new()
-	# Usamos custom_minimum_size para o CenterContainer respeitar as dimensões
-	panel.custom_minimum_size = Vector2(450, 180)
-	
-	# =============================
-	# 🧱 CONTAINER CONTEÚDO
-	# =============================
-	var container = VBoxContainer.new()
-	container.anchor_right = 1.0
-	container.anchor_bottom = 1.0
-	container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	container.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	container.alignment = BoxContainer.ALIGNMENT_CENTER
-	container.add_theme_constant_override("separation", 10)
-	
-	# =============================
-	# 🏷️ LABEL
+	# 🏷️ TEXTO
 	# =============================
 	alert_label = Label.new()
-	alert_label.text = ""
 	alert_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	alert_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	alert_label.autowrap_mode = TextServer.AUTOWRAP_WORD
-	alert_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	alert_label.add_theme_font_size_override("font_size", 20)
-	
+	alert_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
 	# =============================
 	# 🔘 BOTÃO
 	# =============================
 	confirm_button = Button.new()
+	confirm_button.z_index = 199
 	confirm_button.text = "OK"
-	confirm_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	confirm_button.focus_mode = Control.FOCUS_ALL
+	confirm_button.mouse_filter = Control.MOUSE_FILTER_STOP
 	confirm_button.pressed.connect(_on_confirm_pressed)
-	
-	# =============================
-	# 📦 HIERARQUIA
-	# =============================
-	container.add_child(alert_label)
-	container.add_child(confirm_button)
-	
-	panel.add_child(container)
-	center_container.add_child(panel)
-	overlay.add_child(center_container)
-	
-	# Adicionamos a overlay inteira no root
-	get_tree().root.add_child.call_deferred(overlay)
+
+	box.add_child(alert_label)
+	box.add_child(confirm_button)
+
+	center_container.add_child(box)
+	panel.add_child(center_container)
+
+	add_child(panel)
+
 
 # =============================
 # 🚨 MOSTRAR ALERTA
 # =============================
-func alert(text: String):
-	overlay.visible = true
-	alert_label.text = text
+func alert(text: String, step: bool = false):
+	blocker.visible = true
+	panel.visible = true
 
-	# 🔒 trava o jogo
+	alert_label.text = text
+	confirm_button.grab_focus()
+
+	# 🔒 trava jogo
 	Global.play_time = false
 	Global.gameplay_locked = true
+	
+	next_step = step
 
 
 # =============================
 # ✅ FECHAR ALERTA
 # =============================
 func _on_confirm_pressed():
-	overlay.visible = false
+	_close_alert()
 
-	# 🔓 destrava o jogo
+
+# =============================
+# ⌨️ ENTER FUNCIONA
+# =============================
+func _unhandled_input(event):
+	if panel.visible and event.is_action_pressed("ui_accept"):
+		_close_alert()
+
+
+func _close_alert():
+	blocker.visible = false
+	panel.visible = false
+
+	# 🔓 destrava jogo
 	Global.play_time = true
 	Global.gameplay_locked = false
+	
+	if next_step:
+		TutorialManager._next_step()
