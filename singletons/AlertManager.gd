@@ -92,12 +92,13 @@ func alert(text: String, step: bool = false):
 func _on_confirm_pressed():
 	_close_alert()
 
-
 # =============================
-# ⌨️ ENTER FUNCIONA
+# ⌨️ APENAS ESPAÇO FUNCIONA
 # =============================
 func _unhandled_input(event):
-	if panel.visible and event.is_action_pressed("ui_accept"):
+	if not panel.visible:
+		return
+	if event is InputEventKey and event.pressed and event.keycode == KEY_SPACE:
 		_close_alert()
 
 
@@ -110,4 +111,4 @@ func _close_alert():
 	Global.gameplay_locked = false
 	
 	if next_step:
-		TutorialManager._next_step()
+		TutorialManager.continue_tutorial_after_alert()

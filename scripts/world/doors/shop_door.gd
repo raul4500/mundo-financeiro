@@ -4,6 +4,9 @@ var dentro = false
 @onready var label = $Market
 
 func _process(delta: float) -> void:
+	if Global.gameplay_locked:
+		return
+
 	if Input.is_key_pressed(KEY_ENTER) and dentro == true:
 		get_tree().change_scene_to_file("res://scenes/world/places/market.tscn")
 

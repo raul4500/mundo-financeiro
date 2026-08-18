@@ -14,7 +14,7 @@ var data_model = {
 			},
 		"day": 1,
 		"hour": 8,
-		"tutorial_step": 0,
+		"tutorial_step": 1,
 		"investments": {}
 	}
 
@@ -33,7 +33,7 @@ func new_game(name: String, money: float) -> void:
 	player["position"]["y"] = 210
 	player["day"] = 1
 	player["hour"] = 8
-	player["tutorial_step"] = 0
+	player["tutorial_step"] = 1
 	player["investments"] = {}
 
 	TimeManager.update_time()

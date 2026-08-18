@@ -8,10 +8,11 @@ extends Node2D
 @onready var marker3 = $cam_marker
 @onready var marker4 = $cam_marker2
 
-
 var curr_level = Global.player["school_level"]
 
-# Called when the node enters the scene tree for the first time.
+func notify_tutorial_minigame_finished() -> void:
+	TutorialManager.on_minigame_finished()
+
 func _ready() -> void:
 	if curr_level == 1:
 		player.global_position = marker1.global_position
@@ -19,6 +20,10 @@ func _ready() -> void:
 	if curr_level == 2:
 		player.global_position = marker2.global_position
 		camera.global_position = marker4.global_position
+
 func _process(delta: float) -> void:
+	if Global.gameplay_locked:
+		return
+
 	camera.global_position.x += 1.6666666
 	level_label.text = str(int(Global.player["school_level"]))
