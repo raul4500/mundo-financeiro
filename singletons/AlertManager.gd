@@ -1,6 +1,7 @@
 extends CanvasLayer
 
-var panel: Panel
+var panel: Control      # raiz em tela cheia (transparente)
+var dialog: Panel       # caixa central com o texto e o botão
 var alert_label: Label
 var confirm_button: Button
 var skip_button: Button
@@ -23,16 +24,16 @@ func _create_alert_ui():
 	# =============================
 	blocker = ColorRect.new()
 	blocker.set_anchors_preset(Control.PRESET_FULL_RECT)
-	blocker.color = Color(0, 0, 0, 0.4) # fundo escuro transparente
+	blocker.color = Color(0, 0, 0, 0.1) # fundo escuro transparente (10%)
 	blocker.visible = false
 	blocker.mouse_filter = Control.MOUSE_FILTER_STOP # 🚨 ESSENCIAL
-	
+
 	add_child(blocker)
 
 	# =============================
-	# 🎴 PANEL CENTRAL
+	# 🎴 RAIZ EM TELA CHEIA (transparente)
 	# =============================
-	panel = Panel.new()
+	panel = Control.new()
 	panel.visible = false
 	panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	panel.z_index = 10
@@ -42,8 +43,29 @@ func _create_alert_ui():
 	var center_container = CenterContainer.new()
 	center_container.set_anchors_preset(Control.PRESET_FULL_RECT)
 
+	# =============================
+	# 🎴 CAIXA CENTRAL DO ALERTA
+	# =============================
+	var panel_theme = load("res://themes/font_theme.tres")
+
+	dialog = Panel.new()
+	dialog.theme = panel_theme
+	# Largura fixa; a altura acompanha o tamanho do texto.
+	dialog.custom_minimum_size = Vector2(560, 160)
+	dialog.mouse_filter = Control.MOUSE_FILTER_STOP
+
+	var margin = MarginContainer.new()
+	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
+	margin.offset_left = 0.0
+	margin.offset_top = 0.0
+	margin.offset_right = 0.0
+	margin.offset_bottom = 0.0
+	margin.add_theme_constant_override("margin_left", 24)
+	margin.add_theme_constant_override("margin_right", 24)
+	margin.add_theme_constant_override("margin_top", 24)
+	margin.add_theme_constant_override("margin_bottom", 24)
+
 	var box = VBoxContainer.new()
-	box.custom_minimum_size = Vector2(500, 200)
 	box.alignment = BoxContainer.ALIGNMENT_CENTER
 	box.add_theme_constant_override("separation", 12)
 
@@ -51,6 +73,10 @@ func _create_alert_ui():
 	# 🏷️ TEXTO
 	# =============================
 	alert_label = Label.new()
+	alert_label.theme = load("res://themes/label.tres")
+	# Largura de quebra fixa (560 do painel - 24 de margem de cada lado),
+	# assim a altura do texto é calculada corretamente e nada estoura o painel.
+	alert_label.custom_minimum_size = Vector2(512, 0)
 	alert_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	alert_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 	alert_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -62,13 +88,27 @@ func _create_alert_ui():
 	# que inclui Enter por padrão. Sem foco, só o clique do mouse aciona o botão
 	# e o Espaço continua sendo tratado manualmente em _input().
 	confirm_button = Button.new()
+	confirm_button.theme = panel_theme
 	confirm_button.z_index = 199
 	confirm_button.text = "OK"
 	confirm_button.focus_mode = Control.FOCUS_NONE
 	confirm_button.mouse_filter = Control.MOUSE_FILTER_STOP
+	confirm_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	confirm_button.pressed.connect(_on_confirm_pressed)
 
+	box.add_child(alert_label)
+	box.add_child(confirm_button)
+
+	margin.add_child(box)
+	dialog.add_child(margin)
+	center_container.add_child(dialog)
+	panel.add_child(center_container)
+
+	# =============================
+	# ⏭️ PULAR TUTORIAL (canto superior direito)
+	# =============================
 	skip_button = Button.new()
+	skip_button.theme = panel_theme
 	skip_button.z_index = 199
 	skip_button.text = "Pular tutorial"
 	skip_button.focus_mode = Control.FOCUS_NONE
@@ -76,17 +116,15 @@ func _create_alert_ui():
 	skip_button.visible = false
 	skip_button.pressed.connect(_on_skip_pressed)
 
-	var button_row = HBoxContainer.new()
-	button_row.alignment = BoxContainer.ALIGNMENT_CENTER
-	button_row.add_theme_constant_override("separation", 12)
-	button_row.add_child(confirm_button)
-	button_row.add_child(skip_button)
+	# Ancorado no canto superior direito, com 20px de margem.
+	skip_button.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	skip_button.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	skip_button.offset_left = -220.0
+	skip_button.offset_top = 20.0
+	skip_button.offset_right = -20.0
+	skip_button.offset_bottom = 72.0
 
-	box.add_child(alert_label)
-	box.add_child(button_row)
-
-	center_container.add_child(box)
-	panel.add_child(center_container)
+	panel.add_child(skip_button)
 
 	add_child(panel)
 
