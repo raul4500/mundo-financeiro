@@ -54,6 +54,7 @@ func _add_minute():
 				current_day = 1
 				var week = int(Global.player.get("week", 1))
 				Global.evaluate_week_status()
+				FIIManager.pay_dividends()
 				if MissionManager.verify_missions(week):
 					Global.player["week"] = week + 1
 					Global.get_paid()

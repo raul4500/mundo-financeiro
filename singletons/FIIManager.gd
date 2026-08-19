@@ -44,6 +44,8 @@ var funds = {
 }
 
 var portfolio = {}
+var total_invested: float = 0.0
+var total_dividends_received: float = 0.0
 
 func update_prices():
 	for key in funds.keys():
@@ -70,6 +72,7 @@ func buy_fund(fund_id: String, amount: int):
 	if not portfolio.has(fund_id):
 		portfolio[fund_id] = 0
 	portfolio[fund_id] += amount
+	total_invested += total_cost
 	print("Comprou %d cotas de %s" % [amount, fund_id])
 	emit_signal("portfolio_updated")
 	emit_signal("funds_updated")
@@ -91,20 +94,22 @@ func sell_fund(fund_id: String, amount: int):
 	if portfolio[fund_id] <= 0:
 		portfolio.erase(fund_id)
 	Global.player["money"] = float(Global.player["money"]) + total_gain
+	total_invested -= total_gain
 	print("Vendeu %d cotas de %s" % [amount, fund_id])
 	emit_signal("portfolio_updated")
 	emit_signal("funds_updated")
 	return true
 
 func pay_dividends():
-	var total_dividends = 0.0
+	var dividends_paid = 0.0
 	for fund_id in portfolio.keys():
 		var fund = funds[fund_id]
 		var quantity = portfolio[fund_id]
 		var dividend = float(fund["price"]) * float(fund["dividend_yield"]) * float(quantity)
-		total_dividends += dividend
-	Global.player["money"] = float(Global.player["money"]) + total_dividends
-	print("Dividendos recebidos: R$%.2f" % total_dividends)
+		dividends_paid += dividend
+	Global.player["money"] = float(Global.player["money"]) + dividends_paid
+	total_dividends_received += dividends_paid
+	print("Dividendos recebidos: R$%.2f" % dividends_paid)
 
 func get_portfolio_value() -> float:
 	var total = 0.0
@@ -114,13 +119,18 @@ func get_portfolio_value() -> float:
 		total += float(fund["price"]) * float(quantity)
 	return total
 
+func get_profit() -> float:
+	return get_portfolio_value() + total_dividends_received - total_invested
+
 func save_data():
 	if Global.player == null:
 		return
 	Global.player["investments"] = {
 		"fiis": {
 			"portfolio": portfolio,
-			"funds_data": funds
+			"funds_data": funds,
+			"total_invested": total_invested,
+			"total_dividends_received": total_dividends_received
 		}
 	}
 
@@ -132,3 +142,5 @@ func load_data():
 		portfolio = data["portfolio"]
 	if data.has("funds_data"):
 		funds = data["funds_data"]
+	total_invested = float(data.get("total_invested", 0.0))
+	total_dividends_received = float(data.get("total_dividends_received", 0.0))

@@ -26,7 +26,7 @@ func focus(target: Node2D, move_time := 2.0, wait_time := 1.0):
 		return
 	is_cinematic = true
 	# bloqueia gameplay
-	Global.gameplay_locked = true
+	Global.lock_gameplay()
 	# pega a posição atual do jogador
 	var start_position = player.global_position
 	# entra no modo cinematográfico
@@ -45,5 +45,5 @@ func focus(target: Node2D, move_time := 2.0, wait_time := 1.0):
 	)
 	# retorna ao modo normal
 	player_camera.stop_cinematic()
-	Global.gameplay_locked = false
+	Global.unlock_gameplay()
 	is_cinematic = false

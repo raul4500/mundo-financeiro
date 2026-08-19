@@ -32,6 +32,15 @@ var data_model = {
 
 var play_time := false
 var gameplay_locked := false
+var _gameplay_lock_count := 0
+
+func lock_gameplay() -> void:
+	_gameplay_lock_count += 1
+	gameplay_locked = true
+
+func unlock_gameplay() -> void:
+	_gameplay_lock_count = max(0, _gameplay_lock_count - 1)
+	gameplay_locked = _gameplay_lock_count > 0
 
 func _new_player_data() -> Dictionary:
 	var new_player = data_model.duplicate(true)

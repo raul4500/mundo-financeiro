@@ -9,15 +9,18 @@ var characters = {
 	"Enzo": "res://scenes/players/enzo.tscn"
 }
 
-var char_name = Global.player.get("name", "")
-var scene = load(characters[char_name])
-var animated_player = scene.instantiate()
+var char_name = ""
+var animated_player: Node = null
 
 
 func _ready() -> void:
+	char_name = Global.player.get("name", "")
 	if not characters.has(char_name):
-		push_error("Personagem inválido")
-		get_tree().quit()
+		push_warning("Personagem inválido: '%s'. Usando personagem padrão." % char_name)
+		char_name = characters.keys()[0]
+
+	var scene = load(characters[char_name])
+	animated_player = scene.instantiate()
 	add_child(animated_player)
 
 

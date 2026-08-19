@@ -148,7 +148,7 @@ func _check_mission(mission: Dictionary) -> bool:
 		"diversify":
 			return FIIManager.portfolio.keys().size() > 1
 		"profit":
-			return float(player.get("saldo", 0.0)) >= float(mission.get("value", 0.0))
+			return FIIManager.get_profit() >= float(mission.get("value", 0.0))
 		"portfolio":
 			return FIIManager.get_portfolio_value() > 0.0
 		"positive_days":

@@ -4,7 +4,9 @@ extends Control
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass
+	# O HUD cobre a tela inteira e é puramente informativo. Sem isso ele
+	# engole todos os cliques do mouse (alertas, menus, etc.).
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

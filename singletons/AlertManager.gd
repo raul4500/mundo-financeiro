@@ -3,11 +3,16 @@ extends CanvasLayer
 var panel: Panel
 var alert_label: Label
 var confirm_button: Button
+var skip_button: Button
 var blocker: ColorRect
 
 var next_step: bool = false
 
 func _ready():
+	# Autoloads entram na árvore antes da cena atual, então qualquer CanvasLayer
+	# da cena (HUD, missões, pause) ficaria por cima do alerta e roubaria os
+	# cliques. Uma layer alta garante que o alerta fique sempre no topo.
+	layer = 100
 	TutorialManager.show_message.connect(alert)
 	_create_alert_ui()
 
@@ -53,15 +58,32 @@ func _create_alert_ui():
 	# =============================
 	# 🔘 BOTÃO
 	# =============================
+	# focus_mode = FOCUS_NONE: um botão com foco é acionado pela ação "ui_accept",
+	# que inclui Enter por padrão. Sem foco, só o clique do mouse aciona o botão
+	# e o Espaço continua sendo tratado manualmente em _input().
 	confirm_button = Button.new()
 	confirm_button.z_index = 199
 	confirm_button.text = "OK"
-	confirm_button.focus_mode = Control.FOCUS_ALL
+	confirm_button.focus_mode = Control.FOCUS_NONE
 	confirm_button.mouse_filter = Control.MOUSE_FILTER_STOP
 	confirm_button.pressed.connect(_on_confirm_pressed)
 
+	skip_button = Button.new()
+	skip_button.z_index = 199
+	skip_button.text = "Pular tutorial"
+	skip_button.focus_mode = Control.FOCUS_NONE
+	skip_button.mouse_filter = Control.MOUSE_FILTER_STOP
+	skip_button.visible = false
+	skip_button.pressed.connect(_on_skip_pressed)
+
+	var button_row = HBoxContainer.new()
+	button_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	button_row.add_theme_constant_override("separation", 12)
+	button_row.add_child(confirm_button)
+	button_row.add_child(skip_button)
+
 	box.add_child(alert_label)
-	box.add_child(confirm_button)
+	box.add_child(button_row)
 
 	center_container.add_child(box)
 	panel.add_child(center_container)
@@ -77,11 +99,11 @@ func alert(text: String, step: bool = false):
 	panel.visible = true
 
 	alert_label.text = text
-	confirm_button.grab_focus()
+	skip_button.visible = TutorialManager.can_skip()
 
 	# 🔒 trava jogo
 	Global.play_time = false
-	Global.gameplay_locked = true
+	Global.lock_gameplay()
 	
 	next_step = step
 
@@ -92,23 +114,32 @@ func alert(text: String, step: bool = false):
 func _on_confirm_pressed():
 	_close_alert()
 
+func _on_skip_pressed():
+	TutorialManager.skip_tutorial()
+	# Impede que _close_alert() avance o tutorial que acabou de ser pulado.
+	next_step = false
+	_close_alert()
+
 # =============================
 # ⌨️ APENAS ESPAÇO FUNCIONA
 # =============================
-func _unhandled_input(event):
+func _input(event):
 	if not panel.visible:
 		return
-	if event is InputEventKey and event.pressed and event.keycode == KEY_SPACE:
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_SPACE:
+		# Consome o evento para o Espaço não vazar para o gameplay (pulo, etc.).
+		get_viewport().set_input_as_handled()
 		_close_alert()
 
 
 func _close_alert():
 	blocker.visible = false
 	panel.visible = false
+	skip_button.visible = false
 
 	# 🔓 destrava jogo
 	Global.play_time = true
-	Global.gameplay_locked = false
+	Global.unlock_gameplay()
 	
 	if next_step:
 		TutorialManager.continue_tutorial_after_alert()

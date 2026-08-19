@@ -13,10 +13,16 @@ func load_missions(phase: int):
 	# limpa lista
 	for child in mission_list.get_children():
 		child.queue_free()
-	
-	var missions = MissionManager.missions_data[phase]
-	print(missions)
-	
+
+	var missions = MissionManager.get_missions(phase)
+
+	if missions.is_empty() and phase > MissionManager.missions_data.keys().max():
+		var label = Label.new()
+		label.text = "Todas as missões foram concluídas!"
+		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		mission_list.add_child(label)
+		return
+
 	for m in missions:
 		var label = Label.new()
 		label.text = "- " + m["description"]

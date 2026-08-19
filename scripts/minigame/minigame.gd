@@ -17,7 +17,9 @@ func _ready() -> void:
 	if curr_level == 1:
 		player.global_position = marker1.global_position
 		camera.global_position = marker3.global_position
-	if curr_level == 2:
+	elif curr_level >= 2:
+		# Níveis 3+ ainda não têm marcadores próprios: reutiliza os do nível 2
+		# até que novos obstáculos/checkpoints sejam adicionados para eles.
 		player.global_position = marker2.global_position
 		camera.global_position = marker4.global_position
 

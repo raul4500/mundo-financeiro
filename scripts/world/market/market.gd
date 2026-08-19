@@ -88,6 +88,7 @@ var items: Dictionary = {
 var current_category: String = ""
 
 var total: float = 0.00
+var cart: Array = []
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -182,15 +183,6 @@ func _on_exit_pressed() -> void:
 
 func _on_buy_item(group_name: String, item_name: String) -> void:
 	var price = float(items[group_name][item_name]["price"])
-	if Global.player["money"] < price:
-		print("Dinheiro insuficiente para comprar este item.")
-		return
-	
-	Global.player["money"] = float(Global.player["money"]) - price
-	Global.register_expense(item_name.capitalize(), group_name, price, int(Global.player.get("day", 1)), int(Global.player.get("week", 1)))
-	Global.add_home_inventory_item(item_name.capitalize(), 1, "food" if group_name in ["foods", "drinks"] else "item")
-
-	total += price
 
 	var container = HBoxContainer.new()
 	var product_name = Label.new()
@@ -214,20 +206,58 @@ func _on_buy_item(group_name: String, item_name: String) -> void:
 	container.add_child(product_name)
 	container.add_child(remove_product)
 	kart_list.add_child(container)
+
+	var cart_entry := {
+		"group_name": group_name,
+		"item_name": item_name,
+		"price": price,
+		"row": container
+	}
+	cart.append(cart_entry)
+	remove_product.pressed.connect(_on_remove_from_cart.bind(cart_entry))
+
+	total += price
 	update_labels()
 
+
+func _on_remove_from_cart(cart_entry: Dictionary) -> void:
+	if not cart.has(cart_entry):
+		return
+	cart.erase(cart_entry)
+	total = max(0.0, total - float(cart_entry["price"]))
+	var row = cart_entry["row"]
+	if is_instance_valid(row):
+		row.queue_free()
+	update_labels()
+
+
 func _on_clean_kart_pressed() -> void:
+	cart.clear()
 	total = 0.00
 	for child in kart_list.get_children():
-		child.free()
+		child.queue_free()
 	update_labels()
 
 
 func _on_finish_pressed() -> void:
-	if total <= 0:
+	if cart.is_empty():
 		print("Carrinho vazio")
 		return
+
+	if float(Global.player["money"]) < total:
+		print("Dinheiro insuficiente para finalizar a compra.")
+		return
+
+	for cart_entry in cart:
+		var price = float(cart_entry["price"])
+		var group_name = cart_entry["group_name"]
+		var item_name = cart_entry["item_name"]
+		Global.player["money"] = float(Global.player["money"]) - price
+		Global.register_expense(item_name.capitalize(), group_name, price, int(Global.player.get("day", 1)), int(Global.player.get("week", 1)))
+		Global.add_home_inventory_item(item_name.capitalize(), 1, "food" if group_name in ["foods", "drinks"] else "item")
+
+	cart.clear()
 	for child in kart_list.get_children():
-		child.free()
+		child.queue_free()
 	total = 0.0
 	update_labels()

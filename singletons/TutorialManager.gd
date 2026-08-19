@@ -4,8 +4,11 @@ signal show_message(text)
 signal tutorial_finished
 signal focus(point)
 
+const FINAL_STEP := 8
+
 var step := 0
 var pending_messages: Array = []
+var skipped := false
 
 # =============================
 # 🧭 ROTEIRO DE APRESENTAÇÃO DO TUTORIAL
@@ -101,8 +104,22 @@ func teste():
 
 func start_tutorial():
 	step = 0
+	skipped = false
 	pending_messages.clear()
 	_next_step()
+
+# O botão de pular só aparece junto à primeira mensagem de boas-vindas.
+func can_skip() -> bool:
+	return not skipped and step == 1
+
+func skip_tutorial() -> void:
+	if skipped:
+		return
+	skipped = true
+	pending_messages.clear()
+	step = FINAL_STEP
+	Global.player["tutorial_step"] = FINAL_STEP
+	emit_signal("tutorial_finished")
 
 func queue_messages(list: Array) -> void:
 	if list.is_empty():

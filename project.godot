@@ -17,10 +17,11 @@ config/icon="res://icon.svg"
 
 [autoload]
 
+Logger="*res://singletons/Logger.gd"
+UnexpectedEvents="*uid://dn0fudhms8ha6"
 EventsManager="*uid://0i1kvfbj276t"
 SaveManager="*uid://h77e3658d661"
 Global="*uid://docig2r6rn8st"
-UnexpectedEvents="*uid://dn0fudhms8ha6"
 TimeManager="*uid://bc7phm8sp46xm"
 MissionManager="*uid://cvt4jycppg2xx"
 DoorManager="*uid://dcjoibsvo3jjk"
@@ -28,7 +29,6 @@ FIIManager="*uid://dkuxfl3tpqxf1"
 AlertManager="*uid://dv1iu0gs8mcid"
 CameraManager="*uid://bdu5ee4jnl6k"
 TutorialManager="*uid://7bk6pyllg58q"
-Logger="*res://singletons/Logger.gd"
 
 [display]
 
