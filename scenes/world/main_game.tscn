@@ -26,6 +26,7 @@
 [ext_resource type="Script" uid="uid://bsuphap1k57ac" path="res://scripts/world/doors/office_door.gd" id="19_drkwd"]
 [ext_resource type="Texture2D" uid="uid://c1g0nvfdqvb0s" path="res://assests/sprites/trees/oak2.png" id="19_hcvlt"]
 [ext_resource type="Texture2D" uid="uid://d0mxgosie8emv" path="res://assests/sprites/buildings/Assets/Square table.png" id="19_nkiop"]
+[ext_resource type="Script" uid="uid://ciya2vgmkwum" path="res://scripts/world/doors/home_door.gd" id="20_l0vhb"]
 [ext_resource type="Texture2D" uid="uid://cs7cilipp5yfu" path="res://assests/sprites/buildings/Assets/Light Pole.png" id="20_n6ekm"]
 [ext_resource type="Texture2D" uid="uid://bneiq2uh75ud1" path="res://assests/sprites/trees/oak3.png" id="20_uqkuf"]
 [ext_resource type="Texture2D" uid="uid://02ym4pveopfq" path="res://assests/sprites/buildings/Assets/Fire Hidrant.png" id="21_1mux6"]
@@ -912,6 +913,13 @@ script = ExtResource("19_drkwd")
 position = Vector2(284, 711)
 shape = SubResource("CircleShape2D_70vka")
 
+[node name="Home_door" type="Area2D" parent="Doors" unique_id=1023727724]
+script = ExtResource("20_l0vhb")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Doors/Home_door" unique_id=531423552]
+position = Vector2(273, 114)
+shape = SubResource("CircleShape2D_70vka")
+
 [node name="Light-poles" type="Node2D" parent="." unique_id=608088435]
 y_sort_enabled = true
 
@@ -1352,3 +1360,5 @@ position = Vector2(150, 426)
 [connection signal="body_shape_exited" from="Doors/Bank_door" to="Doors/Bank_door" method="_on_body_shape_exited"]
 [connection signal="body_shape_entered" from="Doors/Office_door" to="Doors/Office_door" method="_on_body_shape_entered"]
 [connection signal="body_shape_exited" from="Doors/Office_door" to="Doors/Office_door" method="_on_body_shape_exited"]
+[connection signal="body_shape_entered" from="Doors/Home_door" to="Doors/Home_door" method="_on_body_shape_entered"]
+[connection signal="body_shape_exited" from="Doors/Home_door" to="Doors/Home_door" method="_on_body_shape_exited"]

@@ -181,8 +181,15 @@ func _on_exit_pressed() -> void:
 
 
 func _on_buy_item(group_name: String, item_name: String) -> void:
-	var price = items[group_name][item_name]["price"]
+	var price = float(items[group_name][item_name]["price"])
+	if Global.player["money"] < price:
+		print("Dinheiro insuficiente para comprar este item.")
+		return
 	
+	Global.player["money"] = float(Global.player["money"]) - price
+	Global.register_expense(item_name.capitalize(), group_name, price, int(Global.player.get("day", 1)), int(Global.player.get("week", 1)))
+	Global.add_home_inventory_item(item_name.capitalize(), 1, "food" if group_name in ["foods", "drinks"] else "item")
+
 	total += price
 
 	var container = HBoxContainer.new()
@@ -191,16 +198,9 @@ func _on_buy_item(group_name: String, item_name: String) -> void:
 	
 	kart_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
-# =============================
-#    Button
-# =============================
 	remove_product.text = "X"
 	remove_product.theme = load("res://themes/sell_button.tres")
 
-
-# =============================
-# 📐 CONTAINER (layout)
-# =============================
 	container.anchor_right = 1.0
 	container.anchor_bottom = 1.0
 	container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -208,15 +208,9 @@ func _on_buy_item(group_name: String, item_name: String) -> void:
 	container.alignment = BoxContainer.ALIGNMENT_CENTER
 	container.add_theme_constant_override("separation", 5)
 
-# =============================
-# 🏷️ LABEL
-# =============================
-	product_name.text = "%s - $%d" % [item_name.capitalize(), price]
+	product_name.text = "%s - $%d" % [item_name.capitalize(), int(price)]
 	product_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 
-# =============================
-# 🔗 HIERARQUIA CORRETA
-# =============================
 	container.add_child(product_name)
 	container.add_child(remove_product)
 	kart_list.add_child(container)
@@ -230,8 +224,10 @@ func _on_clean_kart_pressed() -> void:
 
 
 func _on_finish_pressed() -> void:
-	if Global.player["money"] >= total:
-		Global.player["money"] = int(Global.player["money"] - total)
-		update_labels()
-	else:
-		print("Saldo insuficiente")
+	if total <= 0:
+		print("Carrinho vazio")
+		return
+	for child in kart_list.get_children():
+		child.free()
+	total = 0.0
+	update_labels()

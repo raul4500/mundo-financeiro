@@ -1,8 +1,24 @@
 extends Node
 
-# =============================
-# 📦 DADOS DAS MISSÕES (3 POR SEMANA)
-# =============================
+func _logger() -> Node:
+	if get_tree() == null or get_tree().root == null:
+		return null
+	return get_tree().root.get_node_or_null("/root/Logger")
+
+func _log_info(message: String) -> void:
+	var logger = _logger()
+	if logger != null:
+		logger.log_info(message)
+	else:
+		print("[INFO] %s" % message)
+
+func _log_warning(message: String) -> void:
+	var logger = _logger()
+	if logger != null:
+		logger.log_warning(message)
+	else:
+		print("[WARN] %s" % message)
+
 var missions_data: Dictionary = {
 	1: [
 		{
@@ -22,7 +38,6 @@ var missions_data: Dictionary = {
 			"type": "log_expense"
 		}
 	],
-
 	2: [
 		{
 			"id": "poupanca",
@@ -41,7 +56,6 @@ var missions_data: Dictionary = {
 			"type": "no_impulse"
 		}
 	],
-
 	3: [
 		{
 			"id": "investir_fundo",
@@ -60,7 +74,6 @@ var missions_data: Dictionary = {
 			"value": 500
 		}
 	],
-
 	4: [
 		{
 			"id": "investir_acoes",
@@ -79,7 +92,6 @@ var missions_data: Dictionary = {
 			"value": 200
 		}
 	],
-
 	5: [
 		{
 			"id": "carteira",
@@ -101,79 +113,52 @@ var missions_data: Dictionary = {
 	]
 }
 
-
-# =============================
-# 📥 PEGAR MISSÕES
-# =============================
 func get_missions(week: int) -> Array:
 	return missions_data.get(week, [])
 
-
-# =============================
-# ✔ VERIFICAR MISSÕES
-# =============================
 func verify_missions(week: int) -> bool:
 	var missions = get_missions(week)
-	
+	if missions.is_empty():
+		return true
 	for mission in missions:
 		if not _check_mission(mission):
-			print("❌ Falhou na missão:", mission["description"])
+			_log_warning("Missão falhou: %s" % mission["description"])
 			_game_over()
 			return false
-	
-	print("✅ Todas as missões concluídas!")
+	_log_info("Missões da semana concluidas com sucesso")
 	return true
 
-
-# =============================
-# 🧠 VERIFICAÇÃO
-# =============================
 func _check_mission(mission: Dictionary) -> bool:
+	var player = Global.player
+	if player == null:
+		return false
 	match mission["type"]:
-		
 		"money_min":
-			return Global.player["money"] >= mission.get("value", 0)
-		
+			return float(player.get("money", 0.0)) >= float(mission.get("value", 0.0))
 		"no_spend_day":
-			return true
-			#return ExpenseManager.get_total_day(TimeManager.current_day) == 0
-		
+			return float(player.get("spend_today", 0.0)) == 0.0
 		"log_expense":
-			return true
-			#return ExpenseManager.purchases.size() > 0
-		
+			return player.get("expense_history", []).size() > 0
 		"no_impulse":
-			return true
-			#return ExpenseManager.get_superfluous_ratio() < 0.3
-		
+			return float(player.get("spend_today", 0.0)) <= float(player.get("salary", 0.0)) * 0.5
 		"invest":
-			return true
-		
+			return FIIManager.get_portfolio_value() > 0.0
 		"analyze":
-			return true
-		
+			return player.get("expense_history", []).size() > 0
 		"diversify":
-			return true
-		
+			return FIIManager.portfolio.keys().size() > 1
 		"profit":
-			return Global.player["saldo"] >= mission.get("value", 0)
-		
+			return float(player.get("saldo", 0.0)) >= float(mission.get("value", 0.0))
 		"portfolio":
-			return true
-		
+			return FIIManager.get_portfolio_value() > 0.0
 		"positive_days":
-			return true
-		
+			return int(player.get("positive_days_count", 0)) >= int(mission.get("value", 0))
 		_:
-			print("⚠ Tipo não implementado:", mission["type"])
+			_log_warning("Tipo de missão não implementado: %s" % mission["type"])
 			return true
 
-
-# =============================
-# 💀 GAME OVER
-# =============================
 func _game_over():
-	print("💀 Game Over!")
+	_log_warning("Game Over acionado")
 	var name = Global.player.get("name", "Player")
 	var money = Global.player.get("salary", 0)
 	Global.new_game(name, money)
