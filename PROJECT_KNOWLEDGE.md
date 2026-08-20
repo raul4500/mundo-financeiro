@@ -12,6 +12,7 @@ O jogo é um simulador/educação financeira em Godot 4 com loop principal basea
 - progresso por semanas
 - objetivos/missões semanais
 - investimentos em FIIs
+- compra e administração de empreendimentos
 - manutenção de fome e felicidade em casa
 - persistência de save
 
@@ -27,12 +28,20 @@ Arquivos centrais:
 - `singletons/TimeManager.gd` — tempo do jogo
 - `singletons/MissionManager.gd` — missões semanais
 - `singletons/FIIManager.gd` — gestão de FIIs
+- `singletons/EnterpriseManager.gd` — compra, estoque, equipamentos, contas e operação dos empreendimentos
 - `singletons/Logger.gd` — log de runtime
 - `scripts/world/home/home.gd` — cena da casa do jogador
 - `scripts/world/market/market.gd` — mercado e compras
 - `scripts/world/bank/banco.gd` — banco e histórico de despesas
 - `scripts/world/office/office.gd` — navegador de conteúdo educacional (níveis/tópicos); a progressão de `school_level`/salário vem do minigame (`scripts/minigame/level.gd`), não do escritório
 - `scripts/world/main_game.gd` — fluxo principal do mapa
+- `scripts/enterprise/enterprise_management.gd` — interface única de administração dos empreendimentos
+- `scripts/enterprise/data/restaurant_info.gd` — dados do restaurante pequeno
+- `scripts/enterprise/data/arcade_info.gd` — dados do fliperama médio
+- `scripts/enterprise/data/shopping_info.gd` — dados do centro comercial grande
+- `scenes/world/places/restaurant.tscn` — cena de administração do restaurante
+- `scenes/world/places/arcade.tscn` — cena de administração do fliperama
+- `scenes/world/places/shopping.tscn` — cena de administração do centro comercial
 
 ## 3. Arquitetura e padrão do projeto
 
@@ -45,6 +54,7 @@ Em `project.godot`, vários nodes ficam automaticamente disponíveis globalmente
 - `TimeManager` — avanço de tempo/dia/semana
 - `MissionManager` — validação de missões
 - `FIIManager` — compra/venda de FIIs
+- `EnterpriseManager` — regras compartilhadas dos três empreendimentos
 - `Logger` — grava logs de runtime em arquivo
 - `EventsManager` — sorteia e dispara eventos inesperados (dados vêm de `UnexpectedEvents`, que serve só como fonte de dados, não como sistema ativo)
 - `DoorManager`, `AlertManager`, etc. — utilitários do jogo
@@ -77,6 +87,7 @@ O `Global.gd` define um `data_model` com os campos principais:
 - `hour`: hora atual
 - `tutorial_step`: etapa do tutorial
 - `investments`: estado de investimentos
+- `enterprises`: estado persistente dos empreendimentos comprados
 - `expense_history`: histórico de gastos
 - `spend_today`: gasto do dia
 - `positive_days_count`: quantidade de dias positivos
@@ -85,6 +96,27 @@ O `Global.gd` define um `data_model` com os campos principais:
 - `home_inventory`: estoque da casa
 - `home_actions_log`: registro de ações da casa
 - `last_week_status`: status final da semana
+
+### Estado dos empreendimentos
+
+`Global.player["enterprises"]` contém um registro para cada negócio disponível:
+
+- `restaurant_small`
+- `arcade_medium`
+- `shopping_large`
+
+Cada registro mantém:
+
+- `owned`: se o jogador comprou o negócio;
+- `level`: nível de aprimoramento;
+- `cash_balance`: lucro acumulado do caixa empresarial;
+- `stock`: quantidade de cada item de estoque;
+- `equipment`: equipamentos comprados;
+- `pending_bills`: contas de água e luz pendentes;
+- `daily_revenue` e `daily_expenses`: valores da última operação;
+- `total_revenue`, `total_expenses` e `total_profit`: contabilidade acumulada;
+- `last_operation_day` e `last_operation_week`: proteção contra processamento duplicado;
+- `history`: histórico de compras, contas e operações.
 
 ### Funções importantes de Global
 
@@ -388,7 +420,103 @@ Ciclo típico:
 10. a semana termina e missões são avaliadas
 11. progresso financeiro e da jornada continua
 
-## 14. Principais regras de design e gameplay
+## 14. Sistema de empreendimentos
+
+O jogo possui três empreendimentos com faixas de investimento distintas:
+
+| ID | Negócio | Tamanho | Preço de compra |
+|---|---|---|---:|
+| `restaurant_small` | Restaurante Sabor da Praça | pequeno | R$ 1.500,00 |
+| `arcade_medium` | Fliperama Neon | médio | R$ 12.000,00 |
+| `shopping_large` | Centro Comercial Mundo Mix | grande | R$ 85.000,00 |
+
+As cenas dos empreendimentos já existem, mas as portas que as conectam aos prédios do mapa principal ainda serão criadas pelo Dev.
+
+### Dados separados por negócio
+
+Os arquivos de dados retornam Dictionaries com preço de compra, receita, despesas, contas, capacidade, estoque e equipamentos específicos:
+
+- `scripts/enterprise/data/restaurant_info.gd`;
+- `scripts/enterprise/data/arcade_info.gd`;
+- `scripts/enterprise/data/shopping_info.gd`.
+
+A interface e as regras não devem ser duplicadas para cada negócio. Novos empreendimentos devem fornecer apenas um novo catálogo de dados e uma cena configurada com outro ID.
+
+### EnterpriseManager
+
+`singletons/EnterpriseManager.gd` é um autoload que concentra as regras comuns dos três empreendimentos. A interface chama o manager usando o `enterprise_id`.
+
+Funções principais:
+
+- `can_buy()` e `buy_enterprise()`;
+- `buy_stock()`;
+- `buy_equipment()`;
+- `generate_weekly_bills()`;
+- `get_pending_bills()` e `pay_bill()`;
+- `calculate_daily_revenue()`;
+- `calculate_daily_expenses()`;
+- `calculate_daily_profit()`;
+- `process_daily_operation()`;
+- `get_dashboard_data()`.
+
+As operações retornam Dictionaries com `success`, `message`, `reason` e valores financeiros relevantes. Falhas emitem o signal `enterprise_error`.
+
+### Compra de estoque
+
+O estoque é comprado por lote. Cada item informa preço, unidades recebidas, consumo e bônus de receita.
+
+No restaurante:
+
+- ingredientes básicos: R$ 80,00 por lote;
+- bebidas: R$ 45,00 por lote;
+- itens de limpeza: R$ 35,00 por lote.
+
+Os preços aparecem na lista e também nos botões de compra. O estoque é consumido durante a operação diária. Sem estoque, o negócio continua com receita reduzida.
+
+### Equipamentos
+
+Equipamentos aumentam receita e capacidade, mas podem gerar manutenção. No restaurante:
+
+- fogão industrial: R$ 350,00;
+- geladeira maior: R$ 600,00;
+- mesas confortáveis: R$ 900,00.
+
+Cada equipamento pode exigir nível mínimo e não pode ser comprado duas vezes.
+
+### Operação financeira
+
+Ao passar um dia, `TimeManager` chama `EnterpriseManager.process_all_daily_operations()`.
+
+Para cada empreendimento comprado, o manager calcula receita, calcula despesas, consome estoque, registra os totais, atualiza o caixa, adiciona o lucro ao dinheiro do jogador e grava a operação no histórico.
+
+`last_operation_day` e `last_operation_week` impedem que a mesma operação seja processada duas vezes no mesmo dia.
+
+### Contas semanais
+
+No fechamento da semana, o manager gera contas de água e luz para cada empreendimento comprado. As contas ficam em `pending_bills` até serem pagas.
+
+O pagamento reduz `Global.player["money"]`, marca a conta como paga, atualiza despesas e lucro, registra a saída em `expense_history` com categoria `enterprise_bill` e atualiza a interface.
+
+### Interface compartilhada
+
+As cenas `restaurant.tscn`, `arcade.tscn` e `shopping.tscn` usam o mesmo script: `scripts/enterprise/enterprise_management.gd`. A diferença entre elas é apenas o valor de `enterprise_id`.
+
+A interface gera dinamicamente:
+
+- nome, nível e status;
+- dinheiro, receita, despesas, lucro e capacidade;
+- lista de estoque, preço por lote e quantidade atual;
+- lista de contas pendentes;
+- lista de equipamentos, preços e estado de compra;
+- botões de compra, pagamento e retorno ao mapa.
+
+### Alertas de compra
+
+Operações recusadas atualizam o status e chamam `AlertManager.alert()`. Isso inclui dinheiro insuficiente, empreendimento não comprado, item inválido, equipamento já comprado, nível insuficiente e conta inválida.
+
+Quando falta dinheiro, a mensagem informa o valor necessário, por exemplo: `Dinheiro insuficiente para comprar este equipamento. Você precisa de R$ 350,00.`
+
+## 15. Principais regras de design e gameplay
 
 ### Decisões de projeto observadas
 
@@ -414,7 +542,7 @@ Isso adiciona motivação para:
 - comer em casa
 - equilibrar vida pessoal e dinheiro
 
-## 15. Gotchas / problemas conhecidos
+## 16. Gotchas / problemas conhecidos
 
 Algumas áreas exigem atenção:
 
@@ -423,8 +551,10 @@ Algumas áreas exigem atenção:
 - a lógica de tempo e missões precisa ser validada em runtime real do Godot
 - muitas cenas podem ter dependências semânticas em nomes de nó específicos
 - em alguns pontos a arquitetura ainda mistura cena e lógica global
+- as portas dos três empreendimentos ainda precisam ser criadas no mapa principal pelo Dev
+- o processamento financeiro e o balanceamento dos preços ainda precisam ser validados em runtime real do Godot
 
-## 16. Como continuar sem quebrar a base
+## 17. Como continuar sem quebrar a base
 
 Ao trabalhar no projeto:
 
@@ -434,8 +564,11 @@ Ao trabalhar no projeto:
 - favoreça alterações em singletons em vez de espalhar lógica de estado em cenas
 - serialize tudo que deve persistir em `SaveManager`
 - sempre que criar um novo comportamento relevante para a semana, atualize `MissionManager`
+- ao alterar empreendimentos, mantenha os dados específicos nos arquivos `*_info.gd`
+- use `EnterpriseManager` para qualquer compra, conta, estoque, equipamento ou cálculo de lucro
+- preserve `enterprise_id` e o formato de `Global.player["enterprises"]` para não quebrar saves
 
-## 17. Checklist de desenvolvimento ideal
+## 18. Checklist de desenvolvimento ideal
 
 Antes de alterar qualquer gameplay, verificar:
 
@@ -446,8 +579,13 @@ Antes de alterar qualquer gameplay, verificar:
 - [ ] UI da casa continua renderizando corretamente
 - [ ] Inventário da casa continua consistente
 - [ ] Missões continuam válidas
+- [ ] Empreendimentos continuam usando `Global.player["enterprises"]`
+- [ ] Compras empresariais aparecem no histórico de despesas
+- [ ] Operações diárias não são duplicadas
+- [ ] Contas semanais aparecem e podem ser pagas
+- [ ] Interface continua reutilizável nos três IDs
 
-## 18. Conclusão
+## 19. Conclusão
 
 O projeto já está estruturado em torno de uma arquitetura interessante para um jogo de educação financeira: estado global, gestão por singletons, tempo, missões, inventário e economia. A parte principal do ciclo funcional e educativo está consolidada em:
 
@@ -462,7 +600,7 @@ O projeto já está estruturado em torno de uma arquitetura interessante para um
 
 Esse conjunto permite que um novo agente entenda o comportamento do projeto e continue implementando sem perder a lógica base já construída.
 
-## 19. Arquivos-chave para consulta rápida
+## 20. Arquivos-chave para consulta rápida
 
 - `project.godot`
 - `singletons/Global.gd`
@@ -473,6 +611,11 @@ Esse conjunto permite que um novo agente entenda o comportamento do projeto e co
 - `scripts/world/home/home.gd`
 - `scripts/world/market/market.gd`
 - `scripts/world/bank/banco.gd`
+- `singletons/EnterpriseManager.gd`
+- `scripts/enterprise/enterprise_management.gd`
+- `scripts/enterprise/data/restaurant_info.gd`
+- `scripts/enterprise/data/arcade_info.gd`
+- `scripts/enterprise/data/shopping_info.gd`
 - `singletons/Logger.gd`
 
 Este documento deve ser usado como material de contexto para qualquer tarefa futura do projeto.

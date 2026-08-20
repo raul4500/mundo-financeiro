@@ -3,9 +3,8 @@
 [ext_resource type="Script" uid="uid://dgc20ckx6otos" path="res://scripts/world/main_game.gd" id="1_02s2o"]
 [ext_resource type="Texture2D" uid="uid://ckdbm80jkr20q" path="res://assests/sprites/trees/pine1.png" id="3_pkjhv"]
 [ext_resource type="Texture2D" uid="uid://bug2x04ffhbb4" path="res://assests/sprites/road.png" id="3_yls0m"]
-[ext_resource type="Texture2D" uid="uid://62w5yrcdqt4r" path="res://assests/sprites/68908f99-a84b-46a7-b953-04ed86e010d2.jpg" id="4_atnbu"]
 [ext_resource type="Script" uid="uid://c0fdy3dk8vb0s" path="res://scripts/world/doors/minigame_door.gd" id="5_284u4"]
-[ext_resource type="Script" uid="uid://ld1a4gtiqh5s" path="res://scripts/world/doors/shop_door.gd" id="6_02s2o"]
+[ext_resource type="Script" uid="uid://ld1a4gtiqh5s" path="res://scripts/world/doors/market_door.gd" id="6_02s2o"]
 [ext_resource type="Texture2D" uid="uid://dkcrso81q5kb3" path="res://assests/sprites/buildings/Buildings/Pngs/Building2.png" id="6_b558i"]
 [ext_resource type="FontFile" uid="uid://bf1r20swxoymi" path="res://assests/fonts/QuinqueFive.otf" id="7_b558i"]
 [ext_resource type="Texture2D" uid="uid://c6xi35vbwkewp" path="res://assests/sprites/cerca.png" id="7_paufq"]
@@ -26,11 +25,14 @@
 [ext_resource type="Script" uid="uid://bsuphap1k57ac" path="res://scripts/world/doors/office_door.gd" id="19_drkwd"]
 [ext_resource type="Texture2D" uid="uid://c1g0nvfdqvb0s" path="res://assests/sprites/trees/oak2.png" id="19_hcvlt"]
 [ext_resource type="Texture2D" uid="uid://d0mxgosie8emv" path="res://assests/sprites/buildings/Assets/Square table.png" id="19_nkiop"]
+[ext_resource type="Script" uid="uid://dnanf4nspc7ty" path="res://scripts/world/doors/restaurant_door.gd" id="20_jwcxe"]
 [ext_resource type="Script" uid="uid://ciya2vgmkwum" path="res://scripts/world/doors/home_door.gd" id="20_l0vhb"]
 [ext_resource type="Texture2D" uid="uid://cs7cilipp5yfu" path="res://assests/sprites/buildings/Assets/Light Pole.png" id="20_n6ekm"]
 [ext_resource type="Texture2D" uid="uid://bneiq2uh75ud1" path="res://assests/sprites/trees/oak3.png" id="20_uqkuf"]
 [ext_resource type="Texture2D" uid="uid://02ym4pveopfq" path="res://assests/sprites/buildings/Assets/Fire Hidrant.png" id="21_1mux6"]
+[ext_resource type="Script" uid="uid://dpaaydlx3lxkt" path="res://scripts/world/doors/arcade_door.gd" id="21_nkiop"]
 [ext_resource type="Texture2D" uid="uid://bsejjsjjsxk3i" path="res://assests/sprites/buildings/Assets/Bush1.png" id="21_xmodc"]
+[ext_resource type="Script" uid="uid://dpri5qvvunqu6" path="res://scripts/world/doors/shopping_door.gd" id="22_n6ekm"]
 [ext_resource type="Texture2D" uid="uid://bhr6u86qjpt58" path="res://assests/sprites/buildings/Assets/Bush2.png" id="22_p5roh"]
 [ext_resource type="Texture2D" uid="uid://chne5ltq2bbev" path="res://assests/sprites/buildings/Assets/Green Vending Machine.png" id="22_paixt"]
 [ext_resource type="Texture2D" uid="uid://bm8be14nd0fal" path="res://assests/sprites/buildings/Assets/Tree1.png" id="23_eu6j1"]
@@ -704,6 +706,9 @@ radius = 22.022715
 [sub_resource type="FontVariation" id="FontVariation_2l77h"]
 base_font = ExtResource("7_b558i")
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_snp3k"]
+radius = 22.0
+
 [node name="main_game" type="Node2D" unique_id=2056535382]
 y_sort_enabled = true
 script = ExtResource("1_02s2o")
@@ -786,11 +791,6 @@ position = Vector2(1728, -5)
 texture = ExtResource("40_l0vhb")
 
 [node name="Buildings" type="Node2D" parent="." unique_id=2125031835]
-
-[node name="Sprite2D" type="Sprite2D" parent="Buildings" unique_id=707239924]
-texture_filter = 1
-position = Vector2(-1716, -28)
-texture = ExtResource("4_atnbu")
 
 [node name="Building12" type="Sprite2D" parent="Buildings" unique_id=1283919986]
 position = Vector2(1148, 32)
@@ -919,6 +919,27 @@ script = ExtResource("20_l0vhb")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Doors/Home_door" unique_id=531423552]
 position = Vector2(273, 114)
 shape = SubResource("CircleShape2D_70vka")
+
+[node name="Restaurant_door" type="Area2D" parent="Doors" unique_id=1982848480]
+script = ExtResource("20_jwcxe")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Doors/Restaurant_door" unique_id=1246075484]
+position = Vector2(926, 116)
+shape = SubResource("CircleShape2D_snp3k")
+
+[node name="Arcade_door" type="Area2D" parent="Doors" unique_id=1457749963]
+script = ExtResource("21_nkiop")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Doors/Arcade_door" unique_id=1018673056]
+position = Vector2(996, 89)
+shape = SubResource("CircleShape2D_snp3k")
+
+[node name="Shopping_door" type="Area2D" parent="Doors" unique_id=1855887624]
+script = ExtResource("22_n6ekm")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Doors/Shopping_door" unique_id=371851667]
+position = Vector2(68, 686)
+shape = SubResource("CircleShape2D_snp3k")
 
 [node name="Light-poles" type="Node2D" parent="." unique_id=608088435]
 y_sort_enabled = true
@@ -1340,10 +1361,13 @@ polygon = PackedVector2Array(492, 246, 653, 246, 655, 90, 490, 91)
 position = Vector2(-9, -78)
 polygon = PackedVector2Array(452, 758, 465.3437, 757.99994, 471, 755, 471, 744, 496, 744, 496, 755, 501, 758, 509, 758, 515, 755, 515, 744, 545, 744, 545, 755, 550, 758, 561, 758, 564, 755, 564, 744, 610, 744, 610, 755, 615.4946, 758.6055, 623.42065, 758.5605, 629, 755, 629, 744, 659, 744, 659, 754, 664.7409, 758.3256, 672.78143, 758.27997, 679, 754, 679, 744, 703, 744, 703, 754, 708.6283, 758.07605, 722, 758, 722.2027, 746.30084, 721, 745, 721, 679, 724, 673, 725, 571, 630.7899, 571, 587, 521, 543.60095, 571, 450, 571, 450.00006, 674.25476, 453, 679, 453, 745, 452, 746)
 
-[node name="StaticBody2D8" type="StaticBody2D" parent="Colisions" unique_id=1274033664]
+[node name="Restaurant" type="StaticBody2D" parent="Colisions" unique_id=1274033664]
 position = Vector2(7, 190)
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Colisions/StaticBody2D8" unique_id=1254993295]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Colisions/Restaurant" unique_id=1254993295]
+position = Vector2(-2.657959, 0)
+scale = Vector2(1.0035827, 1)
+polygon = PackedVector2Array(946, -68, 790, -67, 789, -154, 946, -154)
 
 [node name="Camera-focusPoints" type="Node2D" parent="." unique_id=438827463]
 
@@ -1362,3 +1386,9 @@ position = Vector2(150, 426)
 [connection signal="body_shape_exited" from="Doors/Office_door" to="Doors/Office_door" method="_on_body_shape_exited"]
 [connection signal="body_shape_entered" from="Doors/Home_door" to="Doors/Home_door" method="_on_body_shape_entered"]
 [connection signal="body_shape_exited" from="Doors/Home_door" to="Doors/Home_door" method="_on_body_shape_exited"]
+[connection signal="body_shape_entered" from="Doors/Restaurant_door" to="Doors/Restaurant_door" method="_on_body_shape_entered"]
+[connection signal="body_shape_exited" from="Doors/Restaurant_door" to="Doors/Restaurant_door" method="_on_body_shape_exited"]
+[connection signal="body_shape_entered" from="Doors/Arcade_door" to="Doors/Arcade_door" method="_on_body_shape_entered"]
+[connection signal="body_shape_exited" from="Doors/Arcade_door" to="Doors/Arcade_door" method="_on_body_shape_exited"]
+[connection signal="body_shape_entered" from="Doors/Shopping_door" to="Doors/Shopping_door" method="_on_body_shape_entered"]
+[connection signal="body_shape_exited" from="Doors/Shopping_door" to="Doors/Shopping_door" method="_on_body_shape_exited"]
