@@ -39,9 +39,11 @@ Arquivos centrais:
 - `scripts/enterprise/data/restaurant_info.gd` — dados do restaurante pequeno
 - `scripts/enterprise/data/arcade_info.gd` — dados do fliperama médio
 - `scripts/enterprise/data/shopping_info.gd` — dados do centro comercial grande
-- `scenes/world/places/restaurant.tscn` — cena de administração do restaurante
-- `scenes/world/places/arcade.tscn` — cena de administração do fliperama
-- `scenes/world/places/shopping.tscn` — cena de administração do centro comercial
+- `scenes/world/ui/enterprise-view.tscn` — cena base com o layout fixo da administração de empreendimentos
+- `scenes/world/places/restaurant.tscn` — cena de administração do restaurante (herda de `enterprise-view.tscn`)
+- `scenes/world/places/arcade.tscn` — cena de administração do fliperama (herda de `enterprise-view.tscn`)
+- `scenes/world/places/shopping.tscn` — cena de administração do centro comercial (herda de `enterprise-view.tscn`)
+- `scenes/world/places/home.tscn` — layout fixo da casa, usado como âncora por `home.gd`
 
 ## 3. Arquitetura e padrão do projeto
 
@@ -57,11 +59,54 @@ Em `project.godot`, vários nodes ficam automaticamente disponíveis globalmente
 - `EnterpriseManager` — regras compartilhadas dos três empreendimentos
 - `Logger` — grava logs de runtime em arquivo
 - `EventsManager` — sorteia e dispara eventos inesperados (dados vêm de `UnexpectedEvents`, que serve só como fonte de dados, não como sistema ativo)
-- `DoorManager`, `AlertManager`, etc. — utilitários do jogo
+- `TutorialManager` — roteiro do onboarding (mensagens, passos, pular tutorial)
+- `AlertManager` — `CanvasLayer` de alerta modal, compartilhado por todo o jogo
+- `CameraManager` — cutscenes de câmera
+- `DoorManager` — utilitário de portas
 
 Esse padrão centraliza dados do jogo e evita acoplamento excessivo entre cenas.
 
-### 3.2 Regra de ouro do estado
+**Ordem importa.** `Logger` é o primeiro autoload da lista em `project.godot`, porque vários singletons registram log no próprio `_ready()`. `UnexpectedEvents` vem antes de `EventsManager`, que lê os dados dele na inicialização. `Global` vem antes de `EnterpriseManager` e `FIIManager`, que dependem de `Global.player`.
+
+### 3.2 Trava de gameplay (`gameplay_locked`)
+
+`Global.gameplay_locked` é derivado de um **contador** (`_gameplay_lock_count`), não de um booleano solto. Quem precisa travar o jogador chama `Global.lock_gameplay()` e, ao terminar, `Global.unlock_gameplay()`.
+
+Isso existe porque `AlertManager` e `CameraManager` podem travar o gameplay ao mesmo tempo (um alerta de tutorial durante uma cutscene). Com booleano simples, o primeiro a terminar destravava o jogador no meio da ação do outro.
+
+Nunca atribua `Global.gameplay_locked = true/false` diretamente — use as duas funções, sempre em par.
+
+> Pendência conhecida: `Global.play_time` ainda é um booleano sem contador e é escrito direto por `AlertManager` e por `enterprise_door.gd`. Sofre do mesmo problema que `gameplay_locked` já resolveu.
+
+### 3.3 Alertas e tutorial
+
+`AlertManager` é um `CanvasLayer` autoload com `layer = 100`. A layer alta é obrigatória: autoloads entram na árvore **antes** da cena atual, então qualquer `CanvasLayer` da cena (HUD, missões, pause) ficaria por cima do alerta e roubaria os cliques.
+
+Estrutura do alerta, montada em `_create_alert_ui()`:
+
+- `blocker` — `ColorRect` em tela cheia, preto a 10%, com `MOUSE_FILTER_STOP`;
+- `panel` — `Control` transparente em tela cheia (não é `Panel`: um `Panel` full-rect pintaria por cima de tudo e esconderia o overlay);
+- `dialog` — `Panel` central com `font_theme.tres`, contendo o texto (`label.tres`) e o botão OK;
+- `skip_button` — botão "Pular tutorial" ancorado no canto superior direito, visível apenas quando `TutorialManager.can_skip()` é verdadeiro.
+
+Os botões usam `focus_mode = FOCUS_NONE` de propósito. Um botão com foco é acionado pela ação `ui_accept`, que inclui **Enter** por padrão — e o atalho de confirmação do alerta deve ser somente a barra de espaço, tratada manualmente em `_input()` com `set_input_as_handled()`.
+
+`TutorialManager.skip_tutorial()` marca `skipped`, limpa a fila de mensagens e pula `step` e `tutorial_step` para `FINAL_STEP`. O botão de pular só aparece na primeira mensagem (`can_skip()` exige `step == 1`).
+
+### 3.4 Layout na cena, conteúdo no script
+
+Padrão adotado para as interfaces do jogo: **a cena `.tscn` é a fonte de verdade do layout; o script é a fonte de verdade do conteúdo.**
+
+O script captura os nodos fixos com `@onready` e só cria/limpa os filhos dinâmicos dentro dos containers que já existem. Nunca recria painéis, containers de seção ou labels de cabeçalho.
+
+Já seguem esse padrão:
+
+- `scripts/world/home/home.gd` sobre `scenes/world/places/home.tscn`;
+- `scripts/enterprise/enterprise_management.gd` sobre `scenes/world/ui/enterprise-view.tscn`.
+
+Ainda constroem a interface inteira por script (candidatos ao mesmo tratamento): `banco.gd`, `market.gd`, `office.gd`, `AlertManager.gd`.
+
+### 3.5 Regra de ouro do estado
 
 O estado principal do jogador fica em `Global.player`, que é um dicionário com todas as propriedades fundamentais. Qualquer lógica que dependa do jogador deve preferencialmente ler/escrever em `Global.player` em vez de variáveis locais em cena.
 
@@ -334,14 +379,25 @@ Ele escreve em arquivo em `logs/game_runtime.log`, criando pastas quando necess�
 
 ## 10. Sistema de casa do jogador
 
-`scripts/world/home/home.gd` foi pensado para controlar a casa do jogador como uma UI central.
+`scripts/world/home/home.gd` controla a casa do jogador, ancorado no layout fixo de `scenes/world/places/home.tscn` (ver seção 3.4).
+
+### Nodos fixos usados pelo script
+
+Capturados com `@onready`, todos definidos no editor:
+
+- `Money-label` e `Time-label` — dinheiro e dia/semana no topo;
+- `HBoxContainer/Actions/VBoxContainer` — container **vazio** na cena, preenchido em runtime com os botões Comer, Descansar e Assistir TV;
+- `.../Hunger-container/ProgressBar` e `.../Happiness-container/ProgressBar` — as barras usam `show_percentage`, então não existem labels separados de porcentagem;
+- `.../status-message` — mensagem de retorno das ações;
+- `Inventory-scroll` e `History-scroll` — recebem um `VBoxContainer` criado em runtime para as linhas;
+- `Exit` — botão fixo da cena, conectado por código (a cena não tem seção `[connection]`).
 
 ### Funções principais
 
-- `_build_ui()` — monta interface por script
+- `_build_ui()` — só cria o que é dinâmico: botões de ação e os containers de lista dentro dos scrolls
 - `_update_ui()` — atualiza status da UI
 - `_render_inventory()` — exibe estoque
-- `_render_history()` — exibe histórico de ações
+- `_render_history()` — exibe histórico de ações (últimas 10)
 - `_on_eat_pressed()` — chama `Global.consume_food()`
 - `_on_rest_pressed()` — chama `Global.apply_home_action("rest", -12.0, 18.0, 1.0)`
 - `_on_tv_pressed()` — chama `Global.apply_home_action("watch_tv", -6.0, 14.0, 1.0)`
@@ -527,16 +583,47 @@ O pagamento reduz `Global.player["money"]`, **remove a conta de `pending_bills`*
 
 ### Interface compartilhada
 
-As cenas `restaurant.tscn`, `arcade.tscn` e `shopping.tscn` usam o mesmo script: `scripts/enterprise/enterprise_management.gd`. A diferença entre elas é apenas o valor de `enterprise_id`.
+O layout fica em `scenes/world/ui/enterprise-view.tscn`. As cenas `restaurant.tscn`, `arcade.tscn` e `shopping.tscn` **herdam** dessa cena base — cada uma tem 7 linhas: herda o layout, anexa `enterprise_management.gd` e define o `enterprise_id`. Editar a cena base propaga para os três negócios.
 
-A interface gera dinamicamente:
+Árvore da cena base:
 
-- nome, nível e status;
-- dinheiro, receita, despesas, lucro e capacidade;
-- lista de estoque, preço por lote e quantidade atual;
-- lista de contas pendentes;
-- lista de equipamentos, preços e estado de compra;
-- botões de compra, pagamento e retorno ao mapa.
+```text
+EnterpriseView (Control)
+└── Margin (MarginContainer 32/24/32/24)
+    └── VBoxContainer (separation 12)
+        ├── Title-label      (font_size 28)
+        ├── Summary-label    (autowrap)
+        ├── Status-label     (autowrap)
+        ├── Sections (HBoxContainer, expand vertical, separation 18)
+        │   ├── Business-panel   → VBoxContainer → Title + Business-list
+        │   ├── Stock-panel      → VBoxContainer → Title + Stock-list
+        │   ├── Bills-panel      → VBoxContainer → Title + Bills-list
+        │   └── Equipment-panel  → VBoxContainer → Title + Equipment-list
+        └── Exit-button
+```
+
+Todo o posicionamento é por container (`size_flags`), sem offsets em pixel — o layout se adapta à resolução.
+
+**Fixo na cena:** painéis, labels de cabeçalho, títulos de seção e o botão Voltar.
+
+**Dinâmico no script**, sempre dentro dos quatro `*-list`:
+
+- `_render_business()` — linha de aprimoramento de nível e linha de funcionários (contratar/demitir);
+- `_render_stock()` — nome, preço por lote, quantidade atual e botão de compra;
+- `_render_bills()` — contas pendentes e botão de pagamento;
+- `_render_equipment()` — equipamentos, preço e estado de compra.
+
+`_clear_list()` faz `remove_child()` antes do `queue_free()`. Sem isso, dois `_refresh_ui()` no mesmo frame duplicariam as linhas, porque `queue_free()` só libera no fim do frame.
+
+### Conteúdo educativo correspondente no escritório
+
+O nível 5 do escritório (`scripts/world/office/office.gd`) ensina **exatamente** as mecânicas acima, com os números reais dos arquivos de dados. São 11 tópicos: escolher e comprar o negócio, cálculo do lucro diário, estoque como capital de giro, custos fixos x variáveis, inadimplência, payback de equipamentos, gargalo de capacidade, folha de pagamento, aprimoramento de nível, ponto de equilíbrio e quando escalar.
+
+Esse acoplamento é intencional e precisa ser mantido: **ao mudar um valor de balanceamento em `*_info.gd` ou uma regra no `EnterpriseManager`, confira se algum tópico do nível 5 cita aquele número.** Conteúdo educativo com número errado é pior que conteúdo ausente.
+
+Exemplos de números hoje citados no escritório: preço dos três negócios, queda a 35% sem estoque, penalidade de 25% por inadimplência, payback do fogão (R$ 350 ÷ (R$ 18 − R$ 8) = 35 dias), teto de receita do restaurante (capacidade 10 × `revenue_per_capacity` 10 = R$ 100/dia), salário e bônus de funcionário, multiplicadores de nível e as contas semanais do shopping (R$ 1.550).
+
+O escritório libera um nível por semana (`player_level = Global.player["week"]`), então o nível 5 só fica acessível na semana 5.
 
 ### Alertas de compra
 
@@ -549,10 +636,11 @@ Quando falta dinheiro, a mensagem informa o valor necessário, por exemplo: `Din
 ### Decisões de projeto observadas
 
 - Estado centralizado em `Global.player`
-- UI dinâmica criada em script para reduzir acoplamento
+- Layout na cena, conteúdo no script (ver 3.4) — substitui a abordagem antiga de montar a UI inteira em código, que gerava interfaces duplicadas sobrepostas
 - lógica de inventário e economia centralizada
 - Zonas do jogo são separadas em cenas, mas o estado fica global
 - o roteiro enfatiza educação financeira, planejamento e autocuidado
+- as mecânicas de empreendedorismo têm conteúdo educativo espelhado no escritório, com os mesmos números
 
 ### Motivação para gastar dinheiro e tempo
 
@@ -579,8 +667,12 @@ Algumas áreas exigem atenção:
 - a lógica de tempo e missões precisa ser validada em runtime real do Godot
 - muitas cenas podem ter dependências semânticas em nomes de nó específicos
 - em alguns pontos a arquitetura ainda mistura cena e lógica global
-- `spend_today` é zerado a cada hora de jogo em `TimeManager._add_minute()`, não a cada dia — isso afeta as missões `no_spend_day` e `no_impulse`
+- `spend_today` é zerado a cada hora de jogo em `TimeManager._add_minute()`, não a cada dia — isso afeta as missões `no_spend_day` e `no_impulse`. O `emit_signal("day_changed")` está no mesmo bloco horário, com o mesmo problema
 - o processamento financeiro e o balanceamento dos preços ainda precisam ser validados em runtime real do Godot
+- `EnterpriseManager.process_all_daily_operations()` é chamado **antes** de `Global.player["day"]` ser atualizado no `TimeManager`, então o dia gravado no histórico e nas despesas fica defasado em 1. A operação não duplica (o guard `last_operation_day` funciona), mas as datas registradas estão erradas
+- `restaurant.tscn`, `arcade.tscn` e `shopping.tscn` foram escritas à mão como cenas herdadas e **ainda não foram abertas no editor do Godot**. Se falharem ao carregar, recrie-as pelo editor (clique direito em `enterprise-view.tscn` → Nova Cena Herdada), anexe o script e defina o `enterprise_id`
+- `scenes/world/ui/enterprise-view.tscn` não tem `uid://` nem campos `unique_id` — o Godot atribui na primeira vez que abrir e salvar
+- o `history` de cada empreendimento é limitado a 50 entradas, mas `Global.player["expense_history"]` e `home_actions_log` continuam crescendo sem limite no save
 
 ## 17. Como continuar sem quebrar a base
 
@@ -595,6 +687,11 @@ Ao trabalhar no projeto:
 - ao alterar empreendimentos, mantenha os dados específicos nos arquivos `*_info.gd`
 - use `EnterpriseManager` para qualquer compra, conta, estoque, equipamento ou cálculo de lucro
 - preserve `enterprise_id` e o formato de `Global.player["enterprises"]` para não quebrar saves
+- ao adicionar chaves novas ao estado de um empreendimento, inclua em `_default_state()` — `_normalize_state()` preenche automaticamente os saves antigos
+- escreva no histórico de empreendimento só via `_append_history()`, nunca com `state["history"].append()` direto, ou o limite de 50 entradas é furado
+- não crie estrutura de UI em script se a cena já tem o nodo (ver 3.4); se faltar um nodo fixo, avise antes de improvisar
+- não atribua `Global.gameplay_locked` direto — use `lock_gameplay()` / `unlock_gameplay()` em par
+- ao mudar balanceamento de empreendimentos, revise os números citados no nível 5 do escritório
 
 ## 18. Checklist de desenvolvimento ideal
 
@@ -612,6 +709,10 @@ Antes de alterar qualquer gameplay, verificar:
 - [ ] Operações diárias não são duplicadas
 - [ ] Contas semanais aparecem e podem ser pagas
 - [ ] Interface continua reutilizável nos três IDs
+- [ ] Nenhuma interface aparece duplicada (script não recriou a árvore da cena)
+- [ ] Os caminhos `@onready` batem com os nomes reais dos nodos na cena
+- [ ] Números citados no escritório continuam iguais aos dos `*_info.gd`
+- [ ] Alerta continua clicável e só a barra de espaço confirma
 
 ## 19. Conclusão
 
@@ -644,6 +745,11 @@ Esse conjunto permite que um novo agente entenda o comportamento do projeto e co
 - `scripts/enterprise/data/restaurant_info.gd`
 - `scripts/enterprise/data/arcade_info.gd`
 - `scripts/enterprise/data/shopping_info.gd`
+- `scenes/world/ui/enterprise-view.tscn`
+- `scenes/world/places/home.tscn`
+- `singletons/AlertManager.gd`
+- `singletons/TutorialManager.gd`
+- `scripts/world/office/office.gd`
 - `singletons/Logger.gd`
 
 Este documento deve ser usado como material de contexto para qualquer tarefa futura do projeto.

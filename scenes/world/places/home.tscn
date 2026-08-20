@@ -1,6 +1,17 @@
 [gd_scene format=3 uid="uid://ctgcos5muhc2v"]
 
 [ext_resource type="Script" uid="uid://brqyirmkigsp3" path="res://scripts/world/home/home.gd" id="1_ecgb0"]
+[ext_resource type="Theme" uid="uid://b2pfdp8p48jam" path="res://themes/font_theme.tres" id="2_22txc"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5t7o5"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1kn83"]
+bg_color = Color(0.32761508, 0.27060032, 0.20298055, 1)
+corner_radius_top_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w05is"]
+bg_color = Color(0.6462829, 0.5642851, 0.44263944, 1)
 
 [node name="Home" type="Control" unique_id=994487351]
 layout_mode = 3
@@ -10,3 +21,163 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ecgb0")
+
+[node name="Money-label" type="Label" parent="." unique_id=1303134132]
+modulate = Color(0.9696924, 0.9696924, 0.9696924, 1)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -555.0
+offset_top = 25.0
+offset_right = -296.0
+offset_bottom = 71.0
+grow_horizontal = 2
+theme = ExtResource("2_22txc")
+text = "R$ 200,00"
+horizontal_alignment = 1
+
+[node name="Time-label" type="Label" parent="." unique_id=1280499585]
+layout_mode = 0
+offset_left = 647.0
+offset_top = 23.0
+offset_right = 1124.0
+offset_bottom = 70.0
+theme = ExtResource("2_22txc")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=237041843]
+layout_mode = 0
+offset_left = 17.0
+offset_top = 90.0
+offset_right = 1136.0
+offset_bottom = 554.0
+
+[node name="Actions" type="Panel" parent="HBoxContainer" unique_id=1254404211]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.7
+theme = ExtResource("2_22txc")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/Actions" unique_id=487912555]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 9.0
+offset_top = 11.0
+offset_right = -11.0
+offset_bottom = -11.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Main-panel" type="Panel" parent="HBoxContainer" unique_id=743018584]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_5t7o5")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/Main-panel" unique_id=590604411]
+layout_mode = 0
+offset_right = 524.0
+offset_bottom = 167.0
+
+[node name="Status-panel" type="Panel" parent="HBoxContainer/Main-panel/VBoxContainer" unique_id=913373877]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("2_22txc")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel" unique_id=181958207]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 9.0
+offset_top = 10.0
+offset_right = -9.0
+offset_bottom = 160.0
+grow_horizontal = 2
+
+[node name="Hunger-container" type="HBoxContainer" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer" unique_id=1979286062]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Hunger-container" unique_id=396427205]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.5
+text = "Fome"
+
+[node name="ProgressBar" type="ProgressBar" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Hunger-container" unique_id=1922615308]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme_override_font_sizes/font_size = 24
+theme_override_styles/background = SubResource("StyleBoxFlat_1kn83")
+theme_override_styles/fill = SubResource("StyleBoxFlat_w05is")
+
+[node name="Happiness-container" type="HBoxContainer" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer" unique_id=1661655551]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Happiness-container" unique_id=954268840]
+layout_mode = 2
+text = "Felicidade"
+
+[node name="ProgressBar" type="ProgressBar" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Happiness-container" unique_id=618480214]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme_override_font_sizes/font_size = 24
+theme_override_styles/background = SubResource("StyleBoxFlat_1kn83")
+theme_override_styles/fill = SubResource("StyleBoxFlat_w05is")
+
+[node name="status-message" type="Label" parent="HBoxContainer/Main-panel/VBoxContainer" unique_id=700110184]
+layout_mode = 2
+theme = ExtResource("2_22txc")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer" unique_id=1897515743]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.5
+
+[node name="Inventory-panel" type="Panel" parent="HBoxContainer/VBoxContainer" unique_id=1505798132]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = ExtResource("2_22txc")
+
+[node name="Inventory-scroll" type="ScrollContainer" parent="HBoxContainer/VBoxContainer/Inventory-panel" unique_id=1998840259]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 7.0
+offset_top = 9.0
+offset_right = -9.0
+offset_bottom = -11.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="History-panel" type="Panel" parent="HBoxContainer/VBoxContainer" unique_id=299438473]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("2_22txc")
+
+[node name="History-scroll" type="ScrollContainer" parent="HBoxContainer/VBoxContainer/History-panel" unique_id=2066290618]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 7.0
+offset_top = 9.0
+offset_right = -9.0
+offset_bottom = -11.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Exit" type="Button" parent="." unique_id=426372766]
+layout_mode = 0
+offset_left = 26.0
+offset_top = 491.0
+offset_right = 191.0
+offset_bottom = 543.0
+theme = ExtResource("2_22txc")
+text = "SAIR
+"

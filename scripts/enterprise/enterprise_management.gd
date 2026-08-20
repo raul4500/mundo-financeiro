@@ -2,17 +2,24 @@ extends Control
 
 @export var enterprise_id: String = "restaurant_small"
 
-var title_label: Label
-var summary_label: Label
-var status_label: Label
-var stock_list: VBoxContainer
-var bills_list: VBoxContainer
-var equipment_list: VBoxContainer
-var business_list: VBoxContainer
+# =============================================================
+# NODOS FIXOS DA CENA (scenes/world/ui/enterprise-view.tscn)
+# O layout é definido no editor. Este script só preenche os
+# containers dinâmicos (*-list) com o conteúdo do empreendimento.
+# =============================================================
+@onready var title_label: Label = $"Margin/VBoxContainer/Title-label"
+@onready var summary_label: Label = $"Margin/VBoxContainer/Summary-label"
+@onready var status_label: Label = $"Margin/VBoxContainer/Status-label"
+@onready var business_list: VBoxContainer = $"Margin/VBoxContainer/Sections/Business-panel/VBoxContainer/Business-list"
+@onready var stock_list: VBoxContainer = $"Margin/VBoxContainer/Sections/Stock-panel/VBoxContainer/Stock-list"
+@onready var bills_list: VBoxContainer = $"Margin/VBoxContainer/Sections/Bills-panel/VBoxContainer/Bills-list"
+@onready var equipment_list: VBoxContainer = $"Margin/VBoxContainer/Sections/Equipment-panel/VBoxContainer/Equipment-list"
+@onready var exit_button: Button = $"Margin/VBoxContainer/Exit-button"
 
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	_build_ui()
+	if not exit_button.pressed.is_connected(_on_exit_pressed):
+		exit_button.pressed.connect(_on_exit_pressed)
 	_connect_manager()
 	_refresh_ui()
 
@@ -21,75 +28,6 @@ func _connect_manager() -> void:
 		EnterpriseManager.enterprise_updated.connect(_on_enterprise_updated)
 	if not EnterpriseManager.enterprise_error.is_connected(_on_enterprise_error):
 		EnterpriseManager.enterprise_error.connect(_on_enterprise_error)
-
-func _build_ui() -> void:
-	var margin = MarginContainer.new()
-	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
-	margin.add_theme_constant_override("margin_left", 32)
-	margin.add_theme_constant_override("margin_top", 24)
-	margin.add_theme_constant_override("margin_right", 32)
-	margin.add_theme_constant_override("margin_bottom", 24)
-	add_child(margin)
-
-	var root = VBoxContainer.new()
-	root.add_theme_constant_override("separation", 12)
-	margin.add_child(root)
-
-	title_label = Label.new()
-	title_label.add_theme_font_size_override("font_size", 28)
-	root.add_child(title_label)
-
-	summary_label = Label.new()
-	summary_label.autowrap_mode = TextServer.AUTOWRAP_WORD
-	root.add_child(summary_label)
-
-	status_label = Label.new()
-	status_label.autowrap_mode = TextServer.AUTOWRAP_WORD
-	root.add_child(status_label)
-
-	var sections = HBoxContainer.new()
-	sections.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	sections.add_theme_constant_override("separation", 18)
-	root.add_child(sections)
-
-	var business_panel = _create_section("Negócio")
-	business_list = business_panel.get_meta("list")
-	sections.add_child(business_panel)
-
-	var stock_panel = _create_section("Estoque")
-	stock_list = stock_panel.get_meta("list")
-	sections.add_child(stock_panel)
-
-	var bills_panel = _create_section("Contas")
-	bills_list = bills_panel.get_meta("list")
-	sections.add_child(bills_panel)
-
-	var equipment_panel = _create_section("Equipamentos")
-	equipment_list = equipment_panel.get_meta("list")
-	sections.add_child(equipment_panel)
-
-	var exit_button = Button.new()
-	exit_button.text = "Voltar"
-	exit_button.custom_minimum_size = Vector2(160, 42)
-	exit_button.pressed.connect(_on_exit_pressed)
-	root.add_child(exit_button)
-
-func _create_section(section_title: String) -> PanelContainer:
-	var panel = PanelContainer.new()
-	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	var box = VBoxContainer.new()
-	box.add_theme_constant_override("separation", 8)
-	panel.add_child(box)
-	var title = Label.new()
-	title.text = section_title
-	title.add_theme_font_size_override("font_size", 20)
-	box.add_child(title)
-	var list = VBoxContainer.new()
-	list.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	box.add_child(list)
-	panel.set_meta("list", list)
-	return panel
 
 func _refresh_ui() -> void:
 	var data = EnterpriseManager.get_dashboard_data(enterprise_id)

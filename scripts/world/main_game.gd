@@ -40,7 +40,7 @@ func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("ui_page_up"):
 		get_tree().change_scene_to_file("res://scenes/world/places/market.tscn")
 	if Input.is_action_just_pressed("ui_end"):
-		get_tree().change_scene_to_file("res://scenes/world/places/office.tscn")
+		Global.get_paid()
 		
 func _focus(point: String) -> void:
 	var target_node = get_node("Camera-focusPoints/" + point)

@@ -1,0 +1,122 @@
+[gd_scene format=3]
+
+[node name="EnterpriseView" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 24
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title-label" type="Label" parent="Margin/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Restaurante Sabor da Praca | Nível 1 de 5"
+
+[node name="Summary-label" type="Label" parent="Margin/VBoxContainer"]
+layout_mode = 2
+text = "Dinheiro: R$ 0,00 | Receita diária: R$ 0,00 | Despesas: R$ 0,00 | Lucro estimado: R$ 0,00 | Capacidade: 0 (teto de receita R$ 0,00)"
+autowrap_mode = 2
+
+[node name="Status-label" type="Label" parent="Margin/VBoxContainer"]
+layout_mode = 2
+text = "Operando normalmente | Contas pendentes: 0 (0 em atraso) | Folha semanal: R$ 0,00 | Lucro acumulado: R$ 0,00"
+autowrap_mode = 2
+
+[node name="Sections" type="HBoxContainer" parent="Margin/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 18
+
+[node name="Business-panel" type="PanelContainer" parent="Margin/VBoxContainer/Sections"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Margin/VBoxContainer/Sections/Business-panel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Margin/VBoxContainer/Sections/Business-panel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Negócio"
+
+[node name="Business-list" type="VBoxContainer" parent="Margin/VBoxContainer/Sections/Business-panel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Stock-panel" type="PanelContainer" parent="Margin/VBoxContainer/Sections"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Margin/VBoxContainer/Sections/Stock-panel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Margin/VBoxContainer/Sections/Stock-panel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Estoque"
+
+[node name="Stock-list" type="VBoxContainer" parent="Margin/VBoxContainer/Sections/Stock-panel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Bills-panel" type="PanelContainer" parent="Margin/VBoxContainer/Sections"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Margin/VBoxContainer/Sections/Bills-panel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Margin/VBoxContainer/Sections/Bills-panel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Contas"
+
+[node name="Bills-list" type="VBoxContainer" parent="Margin/VBoxContainer/Sections/Bills-panel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Equipment-panel" type="PanelContainer" parent="Margin/VBoxContainer/Sections"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Margin/VBoxContainer/Sections/Equipment-panel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Margin/VBoxContainer/Sections/Equipment-panel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Equipamentos"
+
+[node name="Equipment-list" type="VBoxContainer" parent="Margin/VBoxContainer/Sections/Equipment-panel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Exit-button" type="Button" parent="Margin/VBoxContainer"]
+custom_minimum_size = Vector2(160, 42)
+layout_mode = 2
+text = "Voltar"
