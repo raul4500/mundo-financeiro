@@ -59,9 +59,9 @@ var presentation_guide = [
 	},
 	{
 		"step": 8,
-		"title": "Conclusão",
-		"goal": "Encerrar o onboarding e liberar o jogador para explorar e evoluir.",
-		"speaker_note": "A mensagem final é que o progresso vem de decisões consistentes e conscientes."
+		"title": "Empreendimentos e conclusão",
+		"goal": "Apresentar os três empreendimentos como etapa avançada e encerrar o onboarding.",
+		"speaker_note": "Explique que os empreendimentos (restaurante, fliperama e centro comercial) são a parte mais difícil do jogo, que exigem capital e geram despesas fixas semanais, e que o nível 5 do escritório é pré-requisito prático. A mensagem final é que o progresso vem de decisões consistentes e conscientes."
 	}
 ]
 
@@ -90,6 +90,18 @@ var messages = [
 	"No banco, você pode guardar seu dinheiro, acompanhar o saldo e explorar oportunidades de investimento. Essa é a base para construir uma reserva financeira e tomar decisões mais inteligentes.",
 
 	"No escritório de consultoria, você encontra conteúdos educativos, dicas e ferramentas para compreender melhor o mundo financeiro. Aproveite esses aprendizados para melhorar sua estratégia e evoluir no jogo.",
+
+	"ATENÇÃO: existe uma parte avançada do jogo, os empreendimentos. São três prédios que você pode comprar para virar dono do próprio negócio. Não tenha pressa: essa é a etapa mais difícil e mais arriscada do Mundo Financeiro, porque exige investir um valor alto e assumir despesas fixas que chegam toda semana, com ou sem lucro.",
+
+	"Todo negócio funciona da mesma forma por dentro. Você compra estoque para manter as vendas, paga as contas de água e luz antes do vencimento, contrata funcionários que aumentam a receita e a capacidade de atendimento, e sobe do nível 1 ao nível 5 para liberar equipamentos melhores. Ficar sem estoque derruba a receita para 35%, e deixar uma conta vencer corta outros 25%.",
+
+	"O primeiro é o Restaurante Sabor da Praça, por R$ 1.500. É o negócio de entrada: atende 10 clientes por dia, precisa de ingredientes, bebidas e itens de limpeza no estoque, e as contas somam apenas R$ 50 por semana. É o lugar certo para aprender a rotina de um negócio errando pouco dinheiro.",
+
+	"O segundo é o Fliperama Neon, por R$ 12.000. Um negócio de porte médio: começa atendendo 25 clientes e a receita é bem maior, mas as contas sobem para R$ 300 por semana e cada funcionário custa R$ 420 por semana. Aqui você aprende a equilibrar equipe, equipamentos e caixa sem ficar no vermelho.",
+
+	"O terceiro é o Centro Comercial Mundo Mix, por R$ 85.000. É o maior desafio do jogo: atende 100 clientes desde o início e gera uma receita alta, mas só as contas de água e luz custam R$ 1.550 por semana e os aprimoramentos vão de R$ 60.000 a R$ 400.000. Só compre depois de já ter dominado os negócios menores.",
+
+	"Um aviso importante: antes de comprar qualquer empreendimento, estude no escritório de consultoria. O nível 5 do conteúdo, liberado na semana 5, é dedicado ao empreendedorismo e explica capacidade, giro de estoque, folha de pagamento, contas em atraso e o retorno de cada equipamento. Sem esse conhecimento, é muito fácil comprar um negócio e vê-lo dar prejuízo.",
 
 	"Lembre-se: gastar com consciência, economizar e investir são as chaves para o sucesso. Pequenas decisões bem tomadas ao longo do tempo fazem uma grande diferença no futuro.",
 
@@ -173,8 +185,16 @@ func _next_step():
 				messages[9],
 				messages[10],
 				messages[11],
+				# Bloco dos empreendimentos: conteúdo avançado, apresentado depois
+				# do escritório porque depende do que é ensinado lá.
 				messages[12],
-				messages[13]
+				messages[13],
+				messages[14],
+				messages[15],
+				messages[16],
+				messages[17],
+				messages[18],
+				messages[19]
 			])
 			emit_signal("tutorial_finished")
 

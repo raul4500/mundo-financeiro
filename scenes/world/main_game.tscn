@@ -44,6 +44,8 @@
 [ext_resource type="Texture2D" uid="uid://87x2bbb20fly" path="res://assests/sprites/buildings/Assets/Front chair.png" id="33_lf7ue"]
 [ext_resource type="Texture2D" uid="uid://b8ajuklcad458" path="res://assests/sprites/trees/forest.png" id="40_l0vhb"]
 [ext_resource type="Texture2D" uid="uid://cvg7de5fvj2op" path="res://assests/sprites/trees/small-forest-1.png" id="42_jwcxe"]
+[ext_resource type="Theme" uid="uid://b2pfdp8p48jam" path="res://themes/font_theme.tres" id="60_dinfo"]
+[ext_resource type="Theme" uid="uid://8cd7r8xa15ac" path="res://themes/label.tres" id="61_dlabl"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_yls0m"]
 texture = ExtResource("3_yls0m")
@@ -1009,6 +1011,56 @@ offset_right = 200.0
 offset_bottom = 409.0
 text = "Minigame"
 
+
+[node name="Info-panel" type="Panel" parent="Doors/Minigame_door" unique_id=1700000001]
+visible = false
+z_index = 100
+offset_left = 80.0
+offset_top = 404.0
+offset_right = 500.0
+offset_bottom = 536.0
+scale = Vector2(0.333333, 0.333333)
+theme = ExtResource("60_dinfo")
+
+[node name="Margin" type="MarginContainer" parent="Doors/Minigame_door/Info-panel" unique_id=1700000002]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Doors/Minigame_door/Info-panel/Margin" unique_id=1700000003]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Doors/Minigame_door/Info-panel/Margin/VBoxContainer" unique_id=1700000004]
+layout_mode = 2
+theme = ExtResource("61_dlabl")
+theme_override_font_sizes/font_size = 20
+text = "Escola"
+autowrap_mode = 2
+
+[node name="Description" type="Label" parent="Doors/Minigame_door/Info-panel/Margin/VBoxContainer" unique_id=1700000005]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("61_dlabl")
+theme_override_font_sizes/font_size = 14
+text = "Estude e aumente sua formação e seu salário."
+autowrap_mode = 2
+
+[node name="Hint" type="Label" parent="Doors/Minigame_door/Info-panel/Margin/VBoxContainer" unique_id=1700000006]
+layout_mode = 2
+theme = ExtResource("61_dlabl")
+theme_override_colors/font_color = Color(0.16, 0.2, 0.45, 1)
+theme_override_font_sizes/font_size = 13
+text = "Pressione ENTER para entrar"
+autowrap_mode = 2
+
 [node name="Market_door" type="Area2D" parent="Doors" unique_id=233731835]
 script = ExtResource("6_02s2o")
 
@@ -1027,6 +1079,56 @@ theme_override_fonts/font = SubResource("FontVariation_2l77h")
 theme_override_font_sizes/font_size = 14
 text = "COMPRAR"
 horizontal_alignment = 1
+
+
+[node name="Info-panel" type="Panel" parent="Doors/Market_door" unique_id=1700000011]
+visible = false
+z_index = 100
+offset_left = 502.0
+offset_top = 218.0
+offset_right = 922.0
+offset_bottom = 350.0
+scale = Vector2(0.333333, 0.333333)
+theme = ExtResource("60_dinfo")
+
+[node name="Margin" type="MarginContainer" parent="Doors/Market_door/Info-panel" unique_id=1700000012]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Doors/Market_door/Info-panel/Margin" unique_id=1700000013]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Doors/Market_door/Info-panel/Margin/VBoxContainer" unique_id=1700000014]
+layout_mode = 2
+theme = ExtResource("61_dlabl")
+theme_override_font_sizes/font_size = 20
+text = "Mercado"
+autowrap_mode = 2
+
+[node name="Description" type="Label" parent="Doors/Market_door/Info-panel/Margin/VBoxContainer" unique_id=1700000015]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("61_dlabl")
+theme_override_font_sizes/font_size = 14
+text = "Compre comida e itens essenciais do dia a dia."
+autowrap_mode = 2
+
+[node name="Hint" type="Label" parent="Doors/Market_door/Info-panel/Margin/VBoxContainer" unique_id=1700000016]
+layout_mode = 2
+theme = ExtResource("61_dlabl")
+theme_override_colors/font_color = Color(0.16, 0.2, 0.45, 1)
+theme_override_font_sizes/font_size = 13
+text = "Pressione ENTER para entrar"
+autowrap_mode = 2
 
 [node name="Bank_door" type="Area2D" parent="Doors" unique_id=2021245623]
 position = Vector2(0, -3)
@@ -1048,6 +1150,56 @@ theme_override_font_sizes/font_size = 14
 text = "BANCO"
 horizontal_alignment = 1
 
+
+[node name="Info-panel" type="Panel" parent="Doors/Bank_door" unique_id=1700000021]
+visible = false
+z_index = 100
+offset_left = 508.0
+offset_top = 642.0
+offset_right = 928.0
+offset_bottom = 774.0
+scale = Vector2(0.333333, 0.333333)
+theme = ExtResource("60_dinfo")
+
+[node name="Margin" type="MarginContainer" parent="Doors/Bank_door/Info-panel" unique_id=1700000022]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Doors/Bank_door/Info-panel/Margin" unique_id=1700000023]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Doors/Bank_door/Info-panel/Margin/VBoxContainer" unique_id=1700000024]
+layout_mode = 2
+theme = ExtResource("61_dlabl")
+theme_override_font_sizes/font_size = 20
+text = "Banco"
+autowrap_mode = 2
+
+[node name="Description" type="Label" parent="Doors/Bank_door/Info-panel/Margin/VBoxContainer" unique_id=1700000025]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("61_dlabl")
+theme_override_font_sizes/font_size = 14
+text = "Guarde seu dinheiro e invista em fundos imobiliários."
+autowrap_mode = 2
+
+[node name="Hint" type="Label" parent="Doors/Bank_door/Info-panel/Margin/VBoxContainer" unique_id=1700000026]
+layout_mode = 2
+theme = ExtResource("61_dlabl")
+theme_override_colors/font_color = Color(0.16, 0.2, 0.45, 1)
+theme_override_font_sizes/font_size = 13
+text = "Pressione ENTER para entrar"
+autowrap_mode = 2
+
 [node name="Office_door" type="Area2D" parent="Doors" unique_id=959449584]
 position = Vector2(0, -6)
 script = ExtResource("19_drkwd")
@@ -1056,12 +1208,112 @@ script = ExtResource("19_drkwd")
 position = Vector2(284, 711)
 shape = SubResource("CircleShape2D_70vka")
 
+
+[node name="Info-panel" type="Panel" parent="Doors/Office_door" unique_id=1700000031]
+visible = false
+z_index = 100
+offset_left = 214.0
+offset_top = 689.0
+offset_right = 634.0
+offset_bottom = 821.0
+scale = Vector2(0.333333, 0.333333)
+theme = ExtResource("60_dinfo")
+
+[node name="Margin" type="MarginContainer" parent="Doors/Office_door/Info-panel" unique_id=1700000032]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Doors/Office_door/Info-panel/Margin" unique_id=1700000033]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Doors/Office_door/Info-panel/Margin/VBoxContainer" unique_id=1700000034]
+layout_mode = 2
+theme = ExtResource("61_dlabl")
+theme_override_font_sizes/font_size = 20
+text = "Consultoria"
+autowrap_mode = 2
+
+[node name="Description" type="Label" parent="Doors/Office_door/Info-panel/Margin/VBoxContainer" unique_id=1700000035]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("61_dlabl")
+theme_override_font_sizes/font_size = 14
+text = "Conteúdos de educação financeira, um nível novo por semana."
+autowrap_mode = 2
+
+[node name="Hint" type="Label" parent="Doors/Office_door/Info-panel/Margin/VBoxContainer" unique_id=1700000036]
+layout_mode = 2
+theme = ExtResource("61_dlabl")
+theme_override_colors/font_color = Color(0.16, 0.2, 0.45, 1)
+theme_override_font_sizes/font_size = 13
+text = "Pressione ENTER para entrar"
+autowrap_mode = 2
+
 [node name="Home_door" type="Area2D" parent="Doors" unique_id=1023727724]
 script = ExtResource("20_l0vhb")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Doors/Home_door" unique_id=531423552]
 position = Vector2(273, 114)
 shape = SubResource("CircleShape2D_70vka")
+
+
+[node name="Info-panel" type="Panel" parent="Doors/Home_door" unique_id=1700000041]
+visible = false
+z_index = 100
+offset_left = 203.0
+offset_top = 92.0
+offset_right = 623.0
+offset_bottom = 224.0
+scale = Vector2(0.333333, 0.333333)
+theme = ExtResource("60_dinfo")
+
+[node name="Margin" type="MarginContainer" parent="Doors/Home_door/Info-panel" unique_id=1700000042]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Doors/Home_door/Info-panel/Margin" unique_id=1700000043]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Doors/Home_door/Info-panel/Margin/VBoxContainer" unique_id=1700000044]
+layout_mode = 2
+theme = ExtResource("61_dlabl")
+theme_override_font_sizes/font_size = 20
+text = "Sua casa"
+autowrap_mode = 2
+
+[node name="Description" type="Label" parent="Doors/Home_door/Info-panel/Margin/VBoxContainer" unique_id=1700000045]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("61_dlabl")
+theme_override_font_sizes/font_size = 14
+text = "Coma, descanse e cuide das suas necessidades."
+autowrap_mode = 2
+
+[node name="Hint" type="Label" parent="Doors/Home_door/Info-panel/Margin/VBoxContainer" unique_id=1700000046]
+layout_mode = 2
+theme = ExtResource("61_dlabl")
+theme_override_colors/font_color = Color(0.16, 0.2, 0.45, 1)
+theme_override_font_sizes/font_size = 13
+text = "Pressione ENTER para entrar"
+autowrap_mode = 2
 
 [node name="Restaurant_door" type="Area2D" parent="Doors" unique_id=1982848480]
 script = ExtResource("20_jwcxe")
@@ -1070,6 +1322,56 @@ script = ExtResource("20_jwcxe")
 position = Vector2(926, 116)
 shape = SubResource("CircleShape2D_snp3k")
 
+
+[node name="Info-panel" type="Panel" parent="Doors/Restaurant_door" unique_id=1700000051]
+visible = false
+z_index = 100
+offset_left = 856.0
+offset_top = 94.0
+offset_right = 1276.0
+offset_bottom = 226.0
+scale = Vector2(0.333333, 0.333333)
+theme = ExtResource("60_dinfo")
+
+[node name="Margin" type="MarginContainer" parent="Doors/Restaurant_door/Info-panel" unique_id=1700000052]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Doors/Restaurant_door/Info-panel/Margin" unique_id=1700000053]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Doors/Restaurant_door/Info-panel/Margin/VBoxContainer" unique_id=1700000054]
+layout_mode = 2
+theme = ExtResource("61_dlabl")
+theme_override_font_sizes/font_size = 20
+text = "Restaurante"
+autowrap_mode = 2
+
+[node name="Description" type="Label" parent="Doors/Restaurant_door/Info-panel/Margin/VBoxContainer" unique_id=1700000055]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("61_dlabl")
+theme_override_font_sizes/font_size = 14
+text = "Negócio de entrada. Custa R$ 1.500."
+autowrap_mode = 2
+
+[node name="Hint" type="Label" parent="Doors/Restaurant_door/Info-panel/Margin/VBoxContainer" unique_id=1700000056]
+layout_mode = 2
+theme = ExtResource("61_dlabl")
+theme_override_colors/font_color = Color(0.16, 0.2, 0.45, 1)
+theme_override_font_sizes/font_size = 13
+text = "Pressione ENTER para entrar"
+autowrap_mode = 2
+
 [node name="Arcade_door" type="Area2D" parent="Doors" unique_id=1457749963]
 script = ExtResource("21_nkiop")
 
@@ -1077,12 +1379,112 @@ script = ExtResource("21_nkiop")
 position = Vector2(1022, 100)
 shape = SubResource("CircleShape2D_snp3k")
 
+
+[node name="Info-panel" type="Panel" parent="Doors/Arcade_door" unique_id=1700000061]
+visible = false
+z_index = 100
+offset_left = 952.0
+offset_top = 78.0
+offset_right = 1372.0
+offset_bottom = 210.0
+scale = Vector2(0.333333, 0.333333)
+theme = ExtResource("60_dinfo")
+
+[node name="Margin" type="MarginContainer" parent="Doors/Arcade_door/Info-panel" unique_id=1700000062]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Doors/Arcade_door/Info-panel/Margin" unique_id=1700000063]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Doors/Arcade_door/Info-panel/Margin/VBoxContainer" unique_id=1700000064]
+layout_mode = 2
+theme = ExtResource("61_dlabl")
+theme_override_font_sizes/font_size = 20
+text = "Fliperama"
+autowrap_mode = 2
+
+[node name="Description" type="Label" parent="Doors/Arcade_door/Info-panel/Margin/VBoxContainer" unique_id=1700000065]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("61_dlabl")
+theme_override_font_sizes/font_size = 14
+text = "Negócio de porte médio. Custa R$ 12.000."
+autowrap_mode = 2
+
+[node name="Hint" type="Label" parent="Doors/Arcade_door/Info-panel/Margin/VBoxContainer" unique_id=1700000066]
+layout_mode = 2
+theme = ExtResource("61_dlabl")
+theme_override_colors/font_color = Color(0.16, 0.2, 0.45, 1)
+theme_override_font_sizes/font_size = 13
+text = "Pressione ENTER para entrar"
+autowrap_mode = 2
+
 [node name="Shopping_door" type="Area2D" parent="Doors" unique_id=1855887624]
 script = ExtResource("22_n6ekm")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Doors/Shopping_door" unique_id=371851667]
 position = Vector2(68, 686)
 shape = SubResource("CircleShape2D_snp3k")
+
+
+[node name="Info-panel" type="Panel" parent="Doors/Shopping_door" unique_id=1700000071]
+visible = false
+z_index = 100
+offset_left = -2.0
+offset_top = 664.0
+offset_right = 418.0
+offset_bottom = 796.0
+scale = Vector2(0.333333, 0.333333)
+theme = ExtResource("60_dinfo")
+
+[node name="Margin" type="MarginContainer" parent="Doors/Shopping_door/Info-panel" unique_id=1700000072]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Doors/Shopping_door/Info-panel/Margin" unique_id=1700000073]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Doors/Shopping_door/Info-panel/Margin/VBoxContainer" unique_id=1700000074]
+layout_mode = 2
+theme = ExtResource("61_dlabl")
+theme_override_font_sizes/font_size = 20
+text = "Centro Comercial"
+autowrap_mode = 2
+
+[node name="Description" type="Label" parent="Doors/Shopping_door/Info-panel/Margin/VBoxContainer" unique_id=1700000075]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("61_dlabl")
+theme_override_font_sizes/font_size = 14
+text = "O maior negócio do jogo. Custa R$ 85.000."
+autowrap_mode = 2
+
+[node name="Hint" type="Label" parent="Doors/Shopping_door/Info-panel/Margin/VBoxContainer" unique_id=1700000076]
+layout_mode = 2
+theme = ExtResource("61_dlabl")
+theme_override_colors/font_color = Color(0.16, 0.2, 0.45, 1)
+theme_override_font_sizes/font_size = 13
+text = "Pressione ENTER para entrar"
+autowrap_mode = 2
 
 [node name="Light-poles" type="Node2D" parent="." unique_id=608088435]
 y_sort_enabled = true

@@ -28,6 +28,7 @@ theme_override_constants/separation = 12
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "Restaurante Sabor da Praca | Nível 1 de 5"
+autowrap_mode = 2
 
 [node name="Summary-label" type="Label" parent="Margin/VBoxContainer"]
 layout_mode = 2
@@ -39,10 +40,12 @@ layout_mode = 2
 text = "Operando normalmente | Contas pendentes: 0 (0 em atraso) | Folha semanal: R$ 0,00 | Lucro acumulado: R$ 0,00"
 autowrap_mode = 2
 
-[node name="Sections" type="HBoxContainer" parent="Margin/VBoxContainer"]
+[node name="Sections" type="GridContainer" parent="Margin/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 18
+theme_override_constants/h_separation = 18
+theme_override_constants/v_separation = 18
+columns = 2
 
 [node name="Business-panel" type="PanelContainer" parent="Margin/VBoxContainer/Sections"]
 layout_mode = 2
@@ -58,9 +61,14 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Negócio"
 
-[node name="Business-list" type="VBoxContainer" parent="Margin/VBoxContainer/Sections/Business-panel/VBoxContainer"]
+[node name="Business-scroll" type="ScrollContainer" parent="Margin/VBoxContainer/Sections/Business-panel/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Business-list" type="VBoxContainer" parent="Margin/VBoxContainer/Sections/Business-panel/VBoxContainer/Business-scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="Stock-panel" type="PanelContainer" parent="Margin/VBoxContainer/Sections"]
 layout_mode = 2
@@ -76,9 +84,14 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Estoque"
 
-[node name="Stock-list" type="VBoxContainer" parent="Margin/VBoxContainer/Sections/Stock-panel/VBoxContainer"]
+[node name="Stock-scroll" type="ScrollContainer" parent="Margin/VBoxContainer/Sections/Stock-panel/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Stock-list" type="VBoxContainer" parent="Margin/VBoxContainer/Sections/Stock-panel/VBoxContainer/Stock-scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="Bills-panel" type="PanelContainer" parent="Margin/VBoxContainer/Sections"]
 layout_mode = 2
@@ -94,9 +107,14 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Contas"
 
-[node name="Bills-list" type="VBoxContainer" parent="Margin/VBoxContainer/Sections/Bills-panel/VBoxContainer"]
+[node name="Bills-scroll" type="ScrollContainer" parent="Margin/VBoxContainer/Sections/Bills-panel/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Bills-list" type="VBoxContainer" parent="Margin/VBoxContainer/Sections/Bills-panel/VBoxContainer/Bills-scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="Equipment-panel" type="PanelContainer" parent="Margin/VBoxContainer/Sections"]
 layout_mode = 2
@@ -112,9 +130,14 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Equipamentos"
 
-[node name="Equipment-list" type="VBoxContainer" parent="Margin/VBoxContainer/Sections/Equipment-panel/VBoxContainer"]
+[node name="Equipment-scroll" type="ScrollContainer" parent="Margin/VBoxContainer/Sections/Equipment-panel/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Equipment-list" type="VBoxContainer" parent="Margin/VBoxContainer/Sections/Equipment-panel/VBoxContainer/Equipment-scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="Exit-button" type="Button" parent="Margin/VBoxContainer"]
 custom_minimum_size = Vector2(160, 42)

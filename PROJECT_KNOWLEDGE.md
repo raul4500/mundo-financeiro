@@ -93,6 +93,8 @@ Os botões usam `focus_mode = FOCUS_NONE` de propósito. Um botão com foco é a
 
 `TutorialManager.skip_tutorial()` marca `skipped`, limpa a fila de mensagens e pula `step` e `tutorial_step` para `FINAL_STEP`. O botão de pular só aparece na primeira mensagem (`can_skip()` exige `step == 1`).
 
+O roteiro tem 20 mensagens em `messages` e 8 passos em `_next_step()`. O passo 8 enfileira a cauda inteira (`messages[7]` a `messages[19]`), que inclui o bloco dos empreendimentos (`messages[12]` a `messages[17]`): aviso de conteúdo avançado, mecânica comum a todo negócio, um resumo de cada um dos três empreendimentos com preço e contas semanais reais, e o aviso de que o nível 5 do escritório é pré-requisito prático. **Os números dessas mensagens são copiados dos arquivos em `scripts/enterprise/data/`** — ao mexer em `purchase_price`, `water_bill`, `electricity_bill`, `starting_capacity`, `employee_salary` ou `upgrade_costs`, atualize o texto do tutorial junto, senão ele passa a ensinar valores errados.
+
 ### 3.4 Layout na cena, conteúdo no script
 
 Padrão adotado para as interfaces do jogo: **a cena `.tscn` é a fonte de verdade do layout; o script é a fonte de verdade do conteúdo.**
@@ -106,7 +108,21 @@ Já seguem esse padrão:
 
 Ainda constroem a interface inteira por script (candidatos ao mesmo tratamento): `banco.gd`, `market.gd`, `office.gd`, `AlertManager.gd`.
 
-### 3.5 Regra de ouro do estado
+### 3.5 Armadilha de largura: `Label` sem autowrap
+
+Esta causou um bug real na tela dos empreendimentos e provavelmente afeta as telas que ainda montam UI por script.
+
+Um `Label` **sem** `autowrap_mode` reporta como largura mínima a largura do **texto inteiro em uma linha**. Ele se recusa a encolher. E quando os filhos de um `Container` do Godot somam mais que o espaço disponível, o container **não comprime ninguém — ele transborda**, empurrando os últimos filhos para fora da tela.
+
+Foi o que aconteceu: quatro painéis em um `HBoxContainer` de 1034 px exigiam ~1844 px de mínimo, porque as linhas de estoque/contas/equipamentos tinham labels sem autowrap. Contas e Equipamentos ficaram inteiramente fora da tela, o que parecia "zoom da câmera".
+
+Regras que saíram disso:
+
+- todo `Label` de conteúdo variável recebe `autowrap_mode = TextServer.AUTOWRAP_WORD` (com autowrap, a largura mínima cai para a da palavra mais longa). Em `enterprise_management.gd` isso está centralizado em `_make_row_label()`;
+- ao colocar conteúdo dentro de um `ScrollContainer`, defina `horizontal_scroll_mode = 0`. Com o scroll horizontal habilitado, o Godot dá ao filho a largura mínima que ele pedir e mostra uma barra lateral, em vez de deixar o texto quebrar;
+- o viewport base é **1152×648** (`[display]` do `project.godot` não define `viewport_width`, então vale o padrão). Faça a conta de largura disponível antes de dividir a tela em colunas.
+
+### 3.6 Regra de ouro do estado
 
 O estado principal do jogador fica em `Global.player`, que é um dicionário com todas as propriedades fundamentais. Qualquer lógica que dependa do jogador deve preferencialmente ler/escrever em `Global.player` em vez de variáveis locais em cena.
 
@@ -298,6 +314,8 @@ Exemplos:
 - `log_expense`: precisa registrar pelos menos um gasto
 - `invest`: carteira de FIIs precisa ter valor > 0
 - `positive_days`: precisar ter pelo menos N dias positivos
+- `profit`: usa `FIIManager.get_profit()` (valor da carteira + dividendos recebidos − total aportado). Antes olhava `player["saldo"]`, que só muda por depósito/saque no banco — dava para cumprir a missão "Ganhe R$200 com investimentos" sem nunca comprar um FII
+- `diversify`: precisa ter mais de um fundo na carteira
 
 ## 7. Sistema de FIIs
 
@@ -428,13 +446,14 @@ Durante o tempo, ambos descem. Se o jogador não comer ou não investir em desca
 
 ### Regra de compra
 
-Ao comprar um item:
+O mercado tem um **carrinho real**. Nada é debitado ao adicionar um item — só ao finalizar.
 
-1. valida se há dinheiro suficiente
-2. retira dinheiro de `Global.player["money"]`
-3. registra gasto em `expense_history`
-4. adiciona item ao estoque da casa via `Global.add_home_inventory_item()`
-5. atualiza UI de compra
+1. `_on_buy_item()` apenas acrescenta o item ao array `cart` e desenha a linha no carrinho, com um botão "X" conectado a `_on_remove_from_cart()`
+2. `_on_remove_from_cart()` remove o item do array, subtrai do total e apaga a linha
+3. `_on_clean_kart_pressed()` esvazia o carrinho inteiro
+4. `_on_finish_pressed()` valida o dinheiro contra o **total** e só então, para cada item: debita `Global.player["money"]`, registra em `expense_history` e chama `Global.add_home_inventory_item()`
+
+Antes o débito acontecia no "Adicionar" e o botão "X" não estava conectado a nada — o carrinho era decorativo e não havia como cancelar uma compra.
 
 ### Itens do mercado
 
@@ -591,18 +610,22 @@ O layout fica em `scenes/world/ui/enterprise-view.tscn`. As cenas `restaurant.ts
 EnterpriseView (Control)
 └── Margin (MarginContainer 32/24/32/24)
     └── VBoxContainer (separation 12)
-        ├── Title-label      (font_size 28)
+        ├── Title-label      (font_size 28, autowrap)
         ├── Summary-label    (autowrap)
         ├── Status-label     (autowrap)
-        ├── Sections (HBoxContainer, expand vertical, separation 18)
-        │   ├── Business-panel   → VBoxContainer → Title + Business-list
-        │   ├── Stock-panel      → VBoxContainer → Title + Stock-list
-        │   ├── Bills-panel      → VBoxContainer → Title + Bills-list
-        │   └── Equipment-panel  → VBoxContainer → Title + Equipment-list
+        ├── Sections (GridContainer, columns = 2, expand vertical, h/v_separation 18)
+        │   ├── Business-panel   → VBoxContainer → Title + Business-scroll  → Business-list
+        │   ├── Stock-panel      → VBoxContainer → Title + Stock-scroll     → Stock-list
+        │   ├── Bills-panel      → VBoxContainer → Title + Bills-scroll     → Bills-list
+        │   └── Equipment-panel  → VBoxContainer → Title + Equipment-scroll → Equipment-list
         └── Exit-button
 ```
 
-Todo o posicionamento é por container (`size_flags`), sem offsets em pixel — o layout se adapta à resolução.
+Todo o posicionamento é por container (`size_flags`), sem offsets em pixel — o layout se adapta à resolução. **Validado em runtime.**
+
+O grid é 2×2, não 4 colunas: com 4 colunas cada painel ficava com 258 px e a tela estourava (ver 3.5). Em 2×2 cada coluna tem ~535 px. Os quatro `ScrollContainer` (com `horizontal_scroll_mode = 0`) garantem que nem a largura nem a altura possam transbordar — o texto quebra e o painel rola.
+
+Os nomes dos quatro `*-list` são o contrato com o script. Ao mexer no layout, preserve-os (ou atualize os `@onready` junto).
 
 **Fixo na cena:** painéis, labels de cabeçalho, títulos de seção e o botão Voltar.
 
@@ -670,7 +693,8 @@ Algumas áreas exigem atenção:
 - `spend_today` é zerado a cada hora de jogo em `TimeManager._add_minute()`, não a cada dia — isso afeta as missões `no_spend_day` e `no_impulse`. O `emit_signal("day_changed")` está no mesmo bloco horário, com o mesmo problema
 - o processamento financeiro e o balanceamento dos preços ainda precisam ser validados em runtime real do Godot
 - `EnterpriseManager.process_all_daily_operations()` é chamado **antes** de `Global.player["day"]` ser atualizado no `TimeManager`, então o dia gravado no histórico e nas despesas fica defasado em 1. A operação não duplica (o guard `last_operation_day` funciona), mas as datas registradas estão erradas
-- `restaurant.tscn`, `arcade.tscn` e `shopping.tscn` foram escritas à mão como cenas herdadas e **ainda não foram abertas no editor do Godot**. Se falharem ao carregar, recrie-as pelo editor (clique direito em `enterprise-view.tscn` → Nova Cena Herdada), anexe o script e defina o `enterprise_id`
+- `restaurant.tscn`, `arcade.tscn` e `shopping.tscn` foram escritas à mão como cenas herdadas (`[node name="X" instance=ExtResource(...)]` na raiz). **Validado em runtime**: carregam e renderizam corretamente. O mesmo padrão pode ser reusado para outras telas
+- o ambiente do agente **não tem o Godot disponível por CLI**. Nenhuma alteração de cena ou script pode ser validada automaticamente — tudo precisa ser testado no editor. Priorize layout por container (que é autocorretivo) em vez de offsets em pixel
 - `scenes/world/ui/enterprise-view.tscn` não tem `uid://` nem campos `unique_id` — o Godot atribui na primeira vez que abrir e salvar
 - o `history` de cada empreendimento é limitado a 50 entradas, mas `Global.player["expense_history"]` e `home_actions_log` continuam crescendo sem limite no save
 
@@ -753,3 +777,15 @@ Esse conjunto permite que um novo agente entenda o comportamento do projeto e co
 - `singletons/Logger.gd`
 
 Este documento deve ser usado como material de contexto para qualquer tarefa futura do projeto.
+
+## 21. Estado dos planos na raiz do projeto
+
+| Arquivo | Status |
+|---|---|
+| `FIX_PLAN.md` | **concluído** — as 13 etapas de correção foram aplicadas |
+| `ENTERPRISE_PLAN.md` | **concluído** na primeira versão, mais as mecânicas de nível, funcionários, capacidade e inadimplência |
+| `CLAUDE_HOME_REFACTOR_PROMPT.md` | **concluído** — `home.gd` ancorado em `home.tscn` |
+| `CLAUDE_ENTERPRISE_VIEW_REFACTOR_PLAN.md` | **concluído e validado em runtime** — as 8 tarefas, mais o ajuste de layout 2×2 |
+| `SAVE_SLOTS_PLAN.md` | **não implementado** — plano aprovado, nenhuma etapa executada. O save continua único em `user://savegame.json` |
+
+Ao retomar o `SAVE_SLOTS_PLAN.md`, dois ajustes que o plano ainda não reflete: `Global.player` ganhou a chave `enterprises`, e o `EnterpriseManager` **não** precisa de um `reset()` como o `FIIManager`, porque não guarda estado próprio no autoload. Inclua no checklist "empreendimentos comprados não vazam entre slots".

@@ -11,7 +11,17 @@ var purchase_label: Label
 var buy_button: Button
 var exit_button: Button
 
+# Painel de informação da porta: existe na cena, escondido, e só aparece
+# enquanto o jogador estiver dentro da Area2D.
+# Resolvido dentro de _ready() e não com @onready porque este script é a base
+# de restaurant_door/arcade_door/shopping_door, que sobrescrevem _ready().
+var info_panel: Panel
+var info_hint: Label
+
 func _ready() -> void:
+	info_panel = get_node_or_null("Info-panel")
+	if info_panel != null:
+		info_hint = info_panel.get_node_or_null("Margin/VBoxContainer/Hint")
 	_build_purchase_ui()
 
 func _process(_delta: float) -> void:
@@ -25,6 +35,29 @@ func _open_or_enter() -> void:
 		get_tree().change_scene_to_file(destination_scene)
 		return
 	_show_purchase_dialog()
+
+# =============================
+# 🪧 PAINEL DE INFORMAÇÃO DA PORTA
+# =============================
+func _show_info_panel() -> void:
+	if info_panel == null:
+		return
+	_update_info_hint()
+	info_panel.show()
+
+func _hide_info_panel() -> void:
+	if info_panel != null:
+		info_panel.hide()
+
+func _update_info_hint() -> void:
+	if info_hint == null:
+		return
+	# A tecla é sempre ENTER, mas o resultado muda: quem já é dono entra no
+	# negócio, quem não é vê primeiro a proposta de compra.
+	if EnterpriseManager.is_owned(enterprise_id):
+		info_hint.text = "Pressione ENTER para entrar"
+	else:
+		info_hint.text = "Pressione ENTER para ver a proposta"
 
 func _build_purchase_ui() -> void:
 	purchase_layer = CanvasLayer.new()
@@ -99,6 +132,8 @@ func _show_purchase_dialog() -> void:
 	]
 	buy_button.disabled = money < price
 	buy_button.tooltip_text = "" if money >= price else "Dinheiro insuficiente. Faltam R$ %.2f." % (price - money)
+	# O diálogo de compra ocupa a tela inteira, então o painel da porta sai de cena.
+	_hide_info_panel()
 	purchase_layer.get_node("Blocker").visible = true
 	purchase_panel.visible = true
 	if not dialog_locked:
@@ -130,13 +165,18 @@ func _close_purchase_dialog() -> void:
 	# Só volta a correr o tempo se nada mais estiver travando o gameplay.
 	if not Global.gameplay_locked:
 		Global.play_time = true
+	# Se o jogador continua na porta, o painel de informação volta a aparecer.
+	if player_inside:
+		_show_info_panel()
 
 func _on_body_shape_entered(_body_rid: RID, body: Node2D, _body_shape_index: int, _local_shape_index: int) -> void:
 	if body is CharacterBody2D:
 		player_inside = true
+		_show_info_panel()
 
 func _on_body_shape_exited(_body_rid: RID, body: Node2D, _body_shape_index: int, _local_shape_index: int) -> void:
 	if body is CharacterBody2D:
 		player_inside = false
+		_hide_info_panel()
 		if purchase_panel != null and purchase_panel.visible:
 			_close_purchase_dialog()

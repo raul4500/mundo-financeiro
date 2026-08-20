@@ -10,10 +10,10 @@ extends Control
 @onready var title_label: Label = $"Margin/VBoxContainer/Title-label"
 @onready var summary_label: Label = $"Margin/VBoxContainer/Summary-label"
 @onready var status_label: Label = $"Margin/VBoxContainer/Status-label"
-@onready var business_list: VBoxContainer = $"Margin/VBoxContainer/Sections/Business-panel/VBoxContainer/Business-list"
-@onready var stock_list: VBoxContainer = $"Margin/VBoxContainer/Sections/Stock-panel/VBoxContainer/Stock-list"
-@onready var bills_list: VBoxContainer = $"Margin/VBoxContainer/Sections/Bills-panel/VBoxContainer/Bills-list"
-@onready var equipment_list: VBoxContainer = $"Margin/VBoxContainer/Sections/Equipment-panel/VBoxContainer/Equipment-list"
+@onready var business_list: VBoxContainer = $"Margin/VBoxContainer/Sections/Business-panel/VBoxContainer/Business-scroll/Business-list"
+@onready var stock_list: VBoxContainer = $"Margin/VBoxContainer/Sections/Stock-panel/VBoxContainer/Stock-scroll/Stock-list"
+@onready var bills_list: VBoxContainer = $"Margin/VBoxContainer/Sections/Bills-panel/VBoxContainer/Bills-scroll/Bills-list"
+@onready var equipment_list: VBoxContainer = $"Margin/VBoxContainer/Sections/Equipment-panel/VBoxContainer/Equipment-scroll/Equipment-list"
 @onready var exit_button: Button = $"Margin/VBoxContainer/Exit-button"
 
 func _ready() -> void:
@@ -110,6 +110,14 @@ func _render_business(data: Dictionary, info: Dictionary, state: Dictionary) -> 
 
 	business_list.add_child(staff_row)
 
+# autowrap é obrigatório: sem ele o Label reporta a largura do texto inteiro
+# como largura mínima e o painel se recusa a encolher, estourando a tela.
+func _make_row_label() -> Label:
+	var label = Label.new()
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	return label
+
 func _clear_list(list: VBoxContainer) -> void:
 	# remove_child antes do queue_free: sem isso, dois _refresh_ui() no mesmo
 	# frame duplicariam as linhas, já que queue_free só libera no fim do frame.
@@ -122,8 +130,7 @@ func _render_stock(items: Array, state: Dictionary) -> void:
 	var stock = state.get("stock", {})
 	for item in items:
 		var row = HBoxContainer.new()
-		var label = Label.new()
-		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		var label = _make_row_label()
 		label.text = "%s | R$ %.2f por lote | Estoque: %d" % [item.get("name", item.get("id", "item")), float(item.get("price", 0.0)), int(stock.get(item.get("id", ""), 0))]
 		row.add_child(label)
 		var button = Button.new()
@@ -135,14 +142,13 @@ func _render_stock(items: Array, state: Dictionary) -> void:
 func _render_bills(bills: Array) -> void:
 	_clear_list(bills_list)
 	if bills.is_empty():
-		var empty = Label.new()
+		var empty = _make_row_label()
 		empty.text = "Nenhuma conta pendente."
 		bills_list.add_child(empty)
 		return
 	for bill in bills:
 		var row = HBoxContainer.new()
-		var label = Label.new()
-		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		var label = _make_row_label()
 		label.text = "%s: R$ %.2f" % [bill.get("name", "Conta"), float(bill.get("amount", 0.0))]
 		row.add_child(label)
 		var button = Button.new()
@@ -156,8 +162,7 @@ func _render_equipment(items: Array, state: Dictionary) -> void:
 	var equipment = state.get("equipment", {})
 	for item in items:
 		var row = HBoxContainer.new()
-		var label = Label.new()
-		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		var label = _make_row_label()
 		var owned = equipment.has(item.get("id", ""))
 		label.text = "%s%s" % [item.get("name", item.get("id", "item")), " (comprado)" if owned else " - R$ %.2f" % float(item.get("price", 0.0))]
 		row.add_child(label)
