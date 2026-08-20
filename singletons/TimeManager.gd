@@ -50,9 +50,11 @@ func _add_minute():
 			current_day += 1
 			Global.decay_need_state()
 			Global.player["positive_days_count"] = int(Global.player.get("positive_days_count", 0)) + 1
+			EnterpriseManager.process_all_daily_operations()
 			if current_day > 7:
 				current_day = 1
 				var week = int(Global.player.get("week", 1))
+				EnterpriseManager.generate_all_weekly_bills()
 				Global.evaluate_week_status()
 				FIIManager.pay_dividends()
 				if MissionManager.verify_missions(week):

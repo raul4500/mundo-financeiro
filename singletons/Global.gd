@@ -17,6 +17,7 @@ var data_model = {
 	"hour": 8,
 	"tutorial_step": 1,
 	"investments": {},
+	"enterprises": {},
 	"expense_history": [],
 	"spend_today": 0.0,
 	"positive_days_count": 0,
@@ -58,6 +59,8 @@ func ensure_player_state() -> void:
 		player["position"] = {"x": 180.0, "y": 210.0}
 	if not player.has("investments"):
 		player["investments"] = {}
+	if not player.has("enterprises"):
+		player["enterprises"] = {}
 	if not player.has("expense_history"):
 		player["expense_history"] = []
 	if not player.has("home_inventory"):
