@@ -6,6 +6,8 @@ signal enterprise_operation_finished(enterprise_id, result)
 signal enterprise_error(message)
 signal enterprise_balance_changed(enterprise_id)
 
+const MAX_HISTORY_ENTRIES := 50
+
 const RestaurantInfo = preload("res://scripts/enterprise/data/restaurant_info.gd")
 const ArcadeInfo = preload("res://scripts/enterprise/data/arcade_info.gd")
 const ShoppingInfo = preload("res://scripts/enterprise/data/shopping_info.gd")
@@ -25,6 +27,7 @@ func _default_state() -> Dictionary:
 	return {
 		"owned": false,
 		"level": 0,
+		"employees": 0,
 		"cash_balance": 0.0,
 		"stock": {},
 		"equipment": {},
@@ -53,6 +56,15 @@ func _ensure_states() -> void:
 	for enterprise_id in enterprises.keys():
 		if not Global.player["enterprises"].has(enterprise_id):
 			Global.player["enterprises"][enterprise_id] = _default_state()
+		else:
+			_normalize_state(Global.player["enterprises"][enterprise_id])
+
+# Preenche chaves novas em saves criados antes de elas existirem.
+func _normalize_state(state: Dictionary) -> void:
+	var defaults = _default_state()
+	for key in defaults.keys():
+		if not state.has(key):
+			state[key] = defaults[key]
 
 func get_enterprise_info(enterprise_id: String) -> Dictionary:
 	return enterprises.get(enterprise_id, {}).duplicate(true)
@@ -86,13 +98,93 @@ func buy_enterprise(enterprise_id: String) -> Dictionary:
 	Global.player["money"] = float(Global.player["money"]) - price
 	state["owned"] = true
 	state["level"] = 1
-	state["history"].append(_history_entry("purchase", "Compra do empreendimento", -price))
+	_append_history(state, "purchase", "Compra do empreendimento", -price)
 	Global.player["enterprises"][enterprise_id] = state
 	Global.register_expense(info["name"], "enterprise_purchase", price, int(Global.player["day"]), int(Global.player["week"]))
 	emit_signal("enterprise_purchased", enterprise_id)
 	emit_signal("enterprise_updated", enterprise_id)
 	emit_signal("enterprise_balance_changed", enterprise_id)
 	return {"success": true, "message": "%s comprado com sucesso." % info["name"], "money_spent": price}
+
+# =============================
+# NÍVEL E APRIMORAMENTO
+# =============================
+
+func get_upgrade_cost(enterprise_id: String) -> float:
+	var info = get_enterprise_info(enterprise_id)
+	var state = get_player_enterprise(enterprise_id)
+	var level = int(state.get("level", 0))
+	if level <= 0 or level >= int(info.get("max_level", 5)):
+		return 0.0
+	var costs: Array = info.get("upgrade_costs", [])
+	if level - 1 >= costs.size():
+		return 0.0
+	return float(costs[level - 1])
+
+func upgrade_level(enterprise_id: String) -> Dictionary:
+	if not is_owned(enterprise_id):
+		return _failure("Compre o empreendimento antes de aprimorá-lo.", "not_owned")
+	var info = get_enterprise_info(enterprise_id)
+	var state = Global.player["enterprises"][enterprise_id]
+	if int(state.get("level", 1)) >= int(info.get("max_level", 5)):
+		return _failure("Este empreendimento já está no nível máximo.", "max_level")
+	var cost = get_upgrade_cost(enterprise_id)
+	if cost <= 0.0:
+		return _failure("Não há aprimoramento disponível.", "no_upgrade")
+	if float(Global.player.get("money", 0.0)) < cost:
+		return _failure("Dinheiro insuficiente para aprimorar. Você precisa de R$ %.2f." % cost, "insufficient_money")
+	Global.player["money"] = float(Global.player["money"]) - cost
+	state["level"] = int(state.get("level", 1)) + 1
+	_append_history(state, "upgrade", "Aprimoramento para o nível %d" % int(state["level"]), -cost)
+	Global.player["enterprises"][enterprise_id] = state
+	Global.register_expense("Aprimoramento: %s" % info.get("name", enterprise_id), "enterprise_upgrade", cost, int(Global.player["day"]), int(Global.player["week"]))
+	emit_signal("enterprise_updated", enterprise_id)
+	emit_signal("enterprise_balance_changed", enterprise_id)
+	return {"success": true, "message": "Empreendimento aprimorado para o nível %d." % int(state["level"]), "money_spent": cost}
+
+# =============================
+# FUNCIONÁRIOS
+# =============================
+
+func get_weekly_payroll(enterprise_id: String) -> float:
+	var info = get_enterprise_info(enterprise_id)
+	var state = get_player_enterprise(enterprise_id)
+	return float(state.get("employees", 0)) * float(info.get("employee_salary", 0.0))
+
+func hire_employee(enterprise_id: String) -> Dictionary:
+	if not is_owned(enterprise_id):
+		return _failure("Compre o empreendimento antes de contratar.", "not_owned")
+	var info = get_enterprise_info(enterprise_id)
+	var state = Global.player["enterprises"][enterprise_id]
+	var employees = int(state.get("employees", 0))
+	if employees >= int(info.get("max_employees", 0)):
+		return _failure("Você já atingiu o limite de funcionários deste negócio.", "max_employees")
+	state["employees"] = employees + 1
+	_append_history(state, "employee", "Contratação de funcionário", 0.0)
+	Global.player["enterprises"][enterprise_id] = state
+	emit_signal("enterprise_updated", enterprise_id)
+	return {
+		"success": true,
+		"message": "Funcionário contratado. A folha semanal agora é de R$ %.2f." % get_weekly_payroll(enterprise_id),
+		"employees": state["employees"]
+	}
+
+func fire_employee(enterprise_id: String) -> Dictionary:
+	if not is_owned(enterprise_id):
+		return _failure("Empreendimento não comprado.", "not_owned")
+	var state = Global.player["enterprises"][enterprise_id]
+	var employees = int(state.get("employees", 0))
+	if employees <= 0:
+		return _failure("Não há funcionários para demitir.", "no_employees")
+	state["employees"] = employees - 1
+	_append_history(state, "employee", "Demissão de funcionário", 0.0)
+	Global.player["enterprises"][enterprise_id] = state
+	emit_signal("enterprise_updated", enterprise_id)
+	return {
+		"success": true,
+		"message": "Funcionário demitido. A folha semanal agora é de R$ %.2f." % get_weekly_payroll(enterprise_id),
+		"employees": state["employees"]
+	}
 
 func get_available_stock(enterprise_id: String) -> Array:
 	return get_enterprise_info(enterprise_id).get("stock_items", []).duplicate(true)
@@ -112,7 +204,7 @@ func buy_stock(enterprise_id: String, item_id: String, quantity: int) -> Diction
 	var stock = state.get("stock", {})
 	stock[item_id] = int(stock.get(item_id, 0)) + quantity * int(item.get("units", 1))
 	state["stock"] = stock
-	state["history"].append(_history_entry("stock", "Compra de estoque: %s" % item["name"], -total))
+	_append_history(state, "stock", "Compra de estoque: %s" % item["name"], -total)
 	Global.player["enterprises"][enterprise_id] = state
 	Global.player["money"] = float(Global.player["money"]) - total
 	Global.register_expense(item["name"], "enterprise_stock", total, int(Global.player["day"]), int(Global.player["week"]))
@@ -151,15 +243,54 @@ func generate_weekly_bills(enterprise_id: String) -> void:
 	_add_bill(bills, "water_%d" % week, "Conta de água (semana %d)" % week, float(info.get("water_bill", 0.0)), week)
 	_add_bill(bills, "electricity_%d" % week, "Conta de luz (semana %d)" % week, float(info.get("electricity_bill", 0.0)), week)
 
+	var payroll = float(state.get("employees", 0)) * float(info.get("employee_salary", 0.0))
+	if payroll > 0.0:
+		_add_bill(bills, "payroll_%d" % week, "Folha de pagamento (semana %d)" % week, payroll, week)
+
 	state["pending_bills"] = bills
-	state["history"].append(_history_entry("bill", "Contas da semana %d geradas" % week, 0.0))
+	_append_history(state, "bill", "Contas da semana %d geradas" % week, 0.0)
 	Global.player["enterprises"][enterprise_id] = state
 	emit_signal("enterprise_updated", enterprise_id)
 
 func _add_bill(bills: Dictionary, bill_id: String, bill_name: String, amount: float, week: int) -> void:
 	if bills.has(bill_id):
 		return
-	bills[bill_id] = {"name": bill_name, "amount": amount, "paid": false, "week": week}
+	# O jogador tem a semana seguinte inteira para pagar antes de ficar em atraso.
+	bills[bill_id] = {"name": bill_name, "amount": amount, "paid": false, "week": week, "due_week": week + 1}
+
+func get_overdue_bills(enterprise_id: String) -> Array:
+	var current_week = int(Global.player.get("week", 1))
+	var overdue: Array = []
+	for bill in get_pending_bills(enterprise_id):
+		var due_week = int(bill.get("due_week", int(bill.get("week", current_week)) + 1))
+		if current_week > due_week:
+			overdue.append(bill)
+	return overdue
+
+func has_overdue_bills(enterprise_id: String) -> bool:
+	return not get_overdue_bills(enterprise_id).is_empty()
+
+# "closed" = sem estoque e em atraso; "warning" = um dos dois; "ok" = operando bem.
+func get_status(enterprise_id: String) -> String:
+	if not is_owned(enterprise_id):
+		return "not_owned"
+	var problems := 0
+	if has_overdue_bills(enterprise_id):
+		problems += 1
+	if not _has_stock(enterprise_id):
+		problems += 1
+	if problems >= 2:
+		return "closed"
+	if problems == 1:
+		return "warning"
+	return "ok"
+
+func _has_stock(enterprise_id: String) -> bool:
+	var state = get_player_enterprise(enterprise_id)
+	for stock_amount in state.get("stock", {}).values():
+		if int(stock_amount) > 0:
+			return true
+	return false
 
 func pay_bill(enterprise_id: String, bill_id: String) -> Dictionary:
 	if not is_owned(enterprise_id):
@@ -177,7 +308,7 @@ func pay_bill(enterprise_id: String, bill_id: String) -> Dictionary:
 	state["pending_bills"] = bills
 	state["total_expenses"] = float(state.get("total_expenses", 0.0)) + amount
 	state["total_profit"] = float(state.get("total_profit", 0.0)) - amount
-	state["history"].append(_history_entry("bill", "Conta paga: %s" % bill.get("name", bill_id), -amount))
+	_append_history(state, "bill", "Conta paga: %s" % bill.get("name", bill_id), -amount)
 	Global.player["enterprises"][enterprise_id] = state
 	Global.register_expense(str(bill.get("name", bill_id)), "enterprise_bill", amount, int(Global.player["day"]), int(Global.player["week"]))
 	emit_signal("enterprise_updated", enterprise_id)
@@ -200,7 +331,7 @@ func buy_equipment(enterprise_id: String, equipment_id: String) -> Dictionary:
 		return _failure("Dinheiro insuficiente para comprar este equipamento. Você precisa de R$ %.2f." % price, "insufficient_money")
 	Global.player["money"] = float(Global.player["money"]) - price
 	state["equipment"][equipment_id] = true
-	state["history"].append(_history_entry("equipment", "Compra de equipamento: %s" % item["name"], -price))
+	_append_history(state, "equipment", "Compra de equipamento: %s" % item["name"], -price)
 	Global.player["enterprises"][enterprise_id] = state
 	Global.register_expense(item["name"], "enterprise_equipment", price, int(Global.player["day"]), int(Global.player["week"]))
 	emit_signal("enterprise_updated", enterprise_id)
@@ -215,12 +346,7 @@ func calculate_daily_revenue(enterprise_id: String) -> float:
 	var level = max(1, int(state.get("level", 1)))
 	var level_multiplier = [1.0, 1.2, 1.45, 1.75, 2.15][min(level - 1, 4)]
 	var revenue = float(info.get("base_daily_revenue", 0.0)) * level_multiplier
-	var has_stock := false
-	for stock_amount in state.get("stock", {}).values():
-		if int(stock_amount) > 0:
-			has_stock = true
-			break
-	if not has_stock:
+	if not _has_stock(enterprise_id):
 		revenue *= 0.35
 	for item in info.get("equipment_items", []):
 		if state.get("equipment", {}).has(item["id"]):
@@ -229,7 +355,21 @@ func calculate_daily_revenue(enterprise_id: String) -> float:
 		var stock_item = _find_item(info.get("stock_items", []), item_id)
 		if not stock_item.is_empty() and int(state["stock"][item_id]) > 0:
 			revenue += float(stock_item.get("revenue_bonus", 0.0))
+	revenue += float(state.get("employees", 0)) * float(info.get("employee_revenue_bonus", 0.0))
+
+	# Gargalo de capacidade: não se atende mais gente do que a estrutura permite.
+	var ceiling = get_revenue_ceiling(enterprise_id)
+	if ceiling > 0.0:
+		revenue = min(revenue, ceiling)
+
+	# Inadimplência: contas vencidas cortam serviços e afastam clientes.
+	if has_overdue_bills(enterprise_id):
+		revenue *= 0.75
 	return revenue
+
+func get_revenue_ceiling(enterprise_id: String) -> float:
+	var info = get_enterprise_info(enterprise_id)
+	return float(_calculate_capacity(enterprise_id)) * float(info.get("revenue_per_capacity", 0.0))
 
 func calculate_daily_expenses(enterprise_id: String) -> float:
 	var info = get_enterprise_info(enterprise_id)
@@ -268,7 +408,7 @@ func process_daily_operation(enterprise_id: String) -> Dictionary:
 	state["last_operation_day"] = day
 	state["last_operation_week"] = week
 	state["cash_balance"] = float(state.get("cash_balance", 0.0)) + profit
-	state["history"].append(_history_entry("operation", "Operação diária", profit))
+	_append_history(state, "operation", "Operação diária", profit)
 	Global.player["money"] = float(Global.player["money"]) + profit
 	Global.player["enterprises"][enterprise_id] = state
 	emit_signal("enterprise_operation_finished", enterprise_id, {"success": true, "revenue": revenue, "expenses": expenses, "profit": profit})
@@ -298,6 +438,11 @@ func get_dashboard_data(enterprise_id: String) -> Dictionary:
 		"daily_expenses": calculate_daily_expenses(enterprise_id),
 		"daily_profit": calculate_daily_profit(enterprise_id),
 		"capacity": _calculate_capacity(enterprise_id),
+		"revenue_ceiling": get_revenue_ceiling(enterprise_id),
+		"status": get_status(enterprise_id),
+		"overdue_count": get_overdue_bills(enterprise_id).size(),
+		"upgrade_cost": get_upgrade_cost(enterprise_id),
+		"weekly_payroll": get_weekly_payroll(enterprise_id),
 		"stock": get_available_stock(enterprise_id),
 		"equipment": info.get("equipment_items", [])
 	}
@@ -309,6 +454,7 @@ func _calculate_capacity(enterprise_id: String) -> int:
 	for item in info.get("equipment_items", []):
 		if state.get("equipment", {}).has(item["id"]):
 			capacity += int(item.get("capacity_bonus", 0))
+	capacity += int(state.get("employees", 0)) * int(info.get("employee_capacity_bonus", 0))
 	return capacity
 
 func _find_item(items: Array, item_id: String) -> Dictionary:
@@ -319,6 +465,15 @@ func _find_item(items: Array, item_id: String) -> Dictionary:
 
 func _history_entry(entry_type: String, description: String, amount: float) -> Dictionary:
 	return {"type": entry_type, "description": description, "amount": amount, "day": Global.player.get("day", 1), "week": Global.player.get("week", 1)}
+
+# Único ponto de escrita no histórico: mantém apenas as entradas mais recentes
+# para o save não crescer sem limite em partidas longas.
+func _append_history(state: Dictionary, entry_type: String, description: String, amount: float) -> void:
+	var history: Array = state.get("history", [])
+	history.append(_history_entry(entry_type, description, amount))
+	if history.size() > MAX_HISTORY_ENTRIES:
+		history = history.slice(history.size() - MAX_HISTORY_ENTRIES)
+	state["history"] = history
 
 func _failure(message: String, reason: String) -> Dictionary:
 	emit_signal("enterprise_error", message)

@@ -76,19 +76,51 @@ var levels_data: Array = [
 	{
 		"id": 5,
 		"title": "Nível 5 – Empreendedorismo",
-		"objective": "Ensinar noções básicas de administração de um negócio próprio.",
+		"objective": "Ensinar a administrar um negócio próprio usando as decisões reais disponíveis no jogo.",
 		"topics": [
 			{
-				"name": "Investimento em negócios",
-				"description": "Investir em um negócio significa usar dinheiro para criar ou expandir uma atividade que pode gerar lucro no futuro.\n\nPode ser abrir uma loja, vender produtos ou prestar serviços.\n\nÉ como plantar uma semente: você investe agora esperando colher resultados depois."
+				"name": "Escolher e comprar o negócio",
+				"description": "Abrir um negócio começa por uma decisão de capital: você troca dinheiro que já tem por uma fonte de renda que ainda não existe.\n\nNo jogo existem três negócios, com portas próprias no mapa:\n\n• Restaurante Sabor da Praça — R$ 1.500\n• Fliperama Neon — R$ 12.000\n• Centro Comercial Mundo Mix — R$ 85.000\n\nO preço de compra é só a entrada. Depois dela você ainda precisa de dinheiro para estoque, contas e funcionários. Comprar um negócio com o caixa raspado é o erro mais comum de quem começa: o negócio abre e trava por falta de capital de giro.\n\nRegra prática: só compre quando sobrar dinheiro suficiente para operar as primeiras semanas sem depender do lucro."
 			},
 			{
-				"name": "Lucro e prejuízo",
-				"description": "Lucro é o dinheiro que sobra depois de pagar todos os custos. Prejuízo acontece quando você gasta mais do que ganha.\n\nPor exemplo: se você vende um produto por R$50 e gastou R$30 para produzi-lo, seu lucro é R$20.\n\nEntender isso é essencial para manter qualquer negócio saudável."
+				"name": "Como o negócio gera lucro",
+				"description": "Todo dia que passa no jogo, cada negócio que você possui opera automaticamente e calcula:\n\nLucro do dia = Receita do dia − Despesas do dia\n\nA receita vem do movimento do negócio; as despesas são os custos de manter as portas abertas. O resultado entra (ou sai) direto do seu dinheiro.\n\nExemplo com o restaurante: receita de R$ 70 e despesa operacional de R$ 25 dão lucro de R$ 45 por dia, ou seja, R$ 315 na semana.\n\nMas atenção: esse cálculo diário não inclui as contas semanais nem a folha de pagamento. Um negócio pode ter lucro diário positivo e ainda assim fechar a semana no prejuízo. Sempre olhe o resultado da semana inteira, não só o do dia."
 			},
 			{
-				"name": "Reinvestimento",
-				"description": "Reinvestir é usar parte do lucro para melhorar ou expandir o negócio, em vez de gastar tudo.\n\nPor exemplo: comprar mais produtos, melhorar equipamentos ou aumentar a produção.\n\nÉ como alimentar uma máquina para que ela produza ainda mais.\n\nNegócios que reinvestem tendem a crescer mais rápido ao longo do tempo."
+				"name": "Estoque e capital de giro",
+				"description": "Estoque é o dinheiro que você transforma em mercadoria para poder vender. No jogo ele é comprado por lote e consumido um pouco por dia.\n\nO ponto crítico: um negócio sem nenhum estoque não fecha as portas, mas passa a render apenas 35% da receita normal. Ele continua pagando as despesas e quase não fatura — o pior dos dois mundos.\n\nExemplo no restaurante: um lote de ingredientes custa R$ 80 e rende 5 unidades, consumidas em 5 dias. Se você esquecer de repor, na sexta-feira a receita cai de R$ 70 para cerca de R$ 25.\n\nAlguns itens ainda dão bônus de receita: bebidas somam R$ 8 por dia enquanto houver estoque delas. Repor estoque não é gasto, é o que mantém o faturamento vivo."
+			},
+			{
+				"name": "Custos fixos e custos variáveis",
+				"description": "Essa é a distinção mais importante para não quebrar um negócio.\n\nCustos variáveis acompanham a operação. O estoque é o exemplo: se o movimento cai, você compra menos.\n\nCustos fixos chegam mesmo que você não venda nada. No jogo são três:\n\n• despesa operacional diária;\n• contas de água e luz, geradas toda semana;\n• folha de pagamento dos funcionários, também semanal.\n\nQuanto maior a fatia de custos fixos, mais frágil o negócio fica em uma semana ruim. É por isso que o Centro Comercial, com R$ 1.550 só de água e luz por semana, exige uma reserva muito maior que o restaurante, com R$ 50.\n\nAntes de assumir qualquer custo fixo novo, pergunte: se o faturamento cair pela metade, eu ainda consigo pagar isso?"
+			},
+			{
+				"name": "Contas em atraso e inadimplência",
+				"description": "No fim de cada semana o negócio recebe as contas de água e luz e, se você tiver equipe, a folha de pagamento. Elas ficam na lista de contas pendentes e você tem a semana seguinte inteira para pagar.\n\nSe passar desse prazo, a conta vira atraso — e atraso tem preço: a receita do negócio cai 25% enquanto existir qualquer conta vencida. Serviços são cortados, a estrutura piora e o cliente vai embora.\n\nPior ainda: a conta não desaparece. Ela continua na lista e as contas da semana seguinte se somam a ela. É assim que uma dívida pequena vira uma bola de neve que consome o negócio.\n\nPagar conta em dia não é burocracia, é proteção da receita. Na dúvida entre comprar estoque e pagar uma conta vencida, pague a conta: ela está cortando 25% de tudo que você fatura."
+			},
+			{
+				"name": "Equipamentos: investir com manutenção",
+				"description": "Equipamentos são investimentos que melhoram o negócio de forma permanente. Cada um aumenta a receita diária e a capacidade de atendimento.\n\nMas todo equipamento tem duas faces. O fogão industrial do restaurante custa R$ 350 uma única vez e traz R$ 18 de receita por dia — porém acrescenta R$ 8 de manutenção às despesas diárias, para sempre.\n\nO ganho líquido real é R$ 18 − R$ 8 = R$ 10 por dia. Nesse ritmo, o fogão se paga em 35 dias. Esse cálculo se chama payback, e é ele que separa um bom investimento de uma armadilha.\n\nAntes de comprar qualquer equipamento, calcule: quanto ele acrescenta de receita por dia, menos quanto ele acrescenta de manutenção, e em quantos dias o preço se paga."
+			},
+			{
+				"name": "Capacidade: o gargalo do negócio",
+				"description": "Um negócio não fatura mais do que sua estrutura consegue atender. No jogo isso é a capacidade, e ela define um teto de receita: por mais bônus que você acumule, a receita para nesse limite.\n\nÉ o gargalo clássico. Não adianta atrair mais clientes se não há mesa para sentar, máquina para jogar ou loja para entrar.\n\nExemplo: o restaurante começa com capacidade 10 e teto de receita de R$ 100 por dia. Se você comprar itens que somam R$ 130 de receita mas não aumentar a capacidade, você ainda vai faturar R$ 100 — e o dinheiro investido nos bônus foi desperdiçado.\n\nA capacidade cresce de duas formas: equipamentos e funcionários. Sempre confira o teto de receita na tela do negócio antes de investir em bônus: se a receita já está batendo no teto, o próximo investimento tem que ser em capacidade."
+			},
+			{
+				"name": "Contratar funcionários",
+				"description": "Contratar é assumir um custo fixo em troca de mais capacidade de produzir.\n\nCada funcionário do restaurante custa R$ 90 por semana de salário e traz R$ 18 de receita por dia, ou seja, R$ 126 na semana. O ganho líquido é de R$ 36 semanais — positivo, mas apertado. Ele também soma 3 de capacidade, o que muitas vezes vale mais que a receita direta, porque levanta o teto do negócio.\n\nO risco: o salário é cobrado toda semana, independente do movimento. Contratar demais em um negócio que ainda não fatura o suficiente é uma das formas mais rápidas de quebrar.\n\nContrate quando a receita estiver batendo no teto de capacidade e você tiver reserva para pagar a folha por algumas semanas mesmo em um período ruim. E lembre: demitir resolve o custo, mas derruba a capacidade junto."
+			},
+			{
+				"name": "Aprimorar o nível do negócio",
+				"description": "Cada negócio tem 5 níveis. O nível 1 vem com a compra; subir de nível exige investimento em dinheiro, não apenas tempo.\n\nAprimorar tem dois efeitos:\n\n• multiplica a receita base — nível 2 rende 1,2 vez, nível 3 rende 1,45 vez, e assim até 2,15 vez no nível 5;\n• desbloqueia equipamentos melhores, que exigem nível mínimo.\n\nNo restaurante, a geladeira maior só pode ser comprada a partir do nível 2 e as mesas confortáveis a partir do nível 3. Sem aprimorar, metade do catálogo de equipamentos fica inacessível para sempre.\n\nO aprimoramento é o principal caminho de crescimento de um negócio que você já domina. Antes de comprar um segundo negócio, pergunte se o dinheiro não renderia mais aprimorando o que você já tem."
+			},
+			{
+				"name": "Reinvestimento e ponto de equilíbrio",
+				"description": "O ponto de equilíbrio é o faturamento em que a receita cobre exatamente todos os custos: não há lucro nem prejuízo. Abaixo dele, o negócio consome seu dinheiro; acima, ele gera caixa.\n\nPara calcular no jogo, some tudo o que sai em uma semana: despesas diárias vezes 7, contas de água e luz, folha de pagamento e o estoque que você precisa repor. Compare com a receita da semana.\n\nSó depois de passar do ponto de equilíbrio com folga faz sentido reinvestir — usar parte do lucro para aprimorar, comprar equipamento ou contratar, em vez de gastar tudo.\n\nReinvestir cedo demais, antes do negócio se sustentar, é apostar dinheiro em uma estrutura que ainda não se paga. Reinvestir tarde demais é deixar o negócio estagnado enquanto o dinheiro fica parado."
+			},
+			{
+				"name": "Escalar para negócios maiores",
+				"description": "Os três negócios do jogo formam uma escada de risco e retorno, a mesma lógica dos investimentos.\n\nO restaurante custa R$ 1.500 e fatura pouco, mas erra barato: se algo der errado, o prejuízo é pequeno. O Centro Comercial custa R$ 85.000 e fatura R$ 2.600 por dia, mas só de água e luz consome R$ 1.550 por semana — um mês de descuido ali custa mais que o restaurante inteiro.\n\nEscalar não é só ter dinheiro para o preço de compra. É ter reserva para aguentar as semanas ruins de um negócio com custos fixos muito maiores.\n\nO caminho saudável é o mesmo de uma carteira de investimentos: comece pequeno, aprenda a administrar de verdade — estoque, contas, capacidade, equipe —, acumule reserva e só então suba um degrau. Empreender bem é menos sobre ter a ideia certa e mais sobre sobreviver ao tempo suficiente para ela dar resultado."
 			}
 		]
 	}
@@ -137,7 +169,8 @@ func _build_level_section() -> void:
 			continue
 		
 		if i >= player_level:
-			level_button.text = "🔒"
+			# Mantém o número visível: o jogador precisa saber o que vem depois.
+			level_button.text = "🔒 Nível %d" % (i + 1)
 			level_button.disabled = true
 		else:
 			level_button.pressed.connect(build_topics_section.bind(i))

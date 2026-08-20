@@ -8,6 +8,7 @@ var status_label: Label
 var stock_list: VBoxContainer
 var bills_list: VBoxContainer
 var equipment_list: VBoxContainer
+var business_list: VBoxContainer
 
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -50,6 +51,10 @@ func _build_ui() -> void:
 	sections.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	sections.add_theme_constant_override("separation", 18)
 	root.add_child(sections)
+
+	var business_panel = _create_section("Negócio")
+	business_list = business_panel.get_meta("list")
+	sections.add_child(business_panel)
 
 	var stock_panel = _create_section("Estoque")
 	stock_list = stock_panel.get_meta("list")
@@ -94,15 +99,84 @@ func _refresh_ui() -> void:
 		status_label.text = "Empreendimento inválido: %s" % enterprise_id
 		return
 
-	title_label.text = "%s | Nível %d" % [info.get("name", enterprise_id), int(state.get("level", 0))]
-	summary_label.text = "Dinheiro: R$ %.2f | Receita diária: R$ %.2f | Despesas: R$ %.2f | Lucro estimado: R$ %.2f | Capacidade: %d" % [float(data.get("money", 0.0)), float(data.get("daily_revenue", 0.0)), float(data.get("daily_expenses", 0.0)), float(data.get("daily_profit", 0.0)), int(data.get("capacity", 0))]
-	status_label.text = "Contas pendentes: %d | Lucro acumulado: R$ %.2f" % [EnterpriseManager.get_pending_bills(enterprise_id).size(), float(state.get("total_profit", 0.0))]
+	title_label.text = "%s | Nível %d de %d" % [info.get("name", enterprise_id), int(state.get("level", 0)), int(info.get("max_level", 5))]
+	summary_label.text = "Dinheiro: R$ %.2f | Receita diária: R$ %.2f | Despesas: R$ %.2f | Lucro estimado: R$ %.2f | Capacidade: %d (teto de receita R$ %.2f)" % [float(data.get("money", 0.0)), float(data.get("daily_revenue", 0.0)), float(data.get("daily_expenses", 0.0)), float(data.get("daily_profit", 0.0)), int(data.get("capacity", 0)), float(data.get("revenue_ceiling", 0.0))]
+	status_label.text = "%s | Contas pendentes: %d (%d em atraso) | Folha semanal: R$ %.2f | Lucro acumulado: R$ %.2f" % [
+		_status_text(str(data.get("status", "ok"))),
+		EnterpriseManager.get_pending_bills(enterprise_id).size(),
+		int(data.get("overdue_count", 0)),
+		float(data.get("weekly_payroll", 0.0)),
+		float(state.get("total_profit", 0.0))
+	]
+	_render_business(data, info, state)
 	_render_stock(data.get("stock", []), state)
 	_render_bills(EnterpriseManager.get_pending_bills(enterprise_id))
 	_render_equipment(data.get("equipment", []), state)
 
+func _status_text(status: String) -> String:
+	match status:
+		"closed":
+			return "SITUAÇÃO CRÍTICA: sem estoque e com contas em atraso"
+		"warning":
+			return "ATENÇÃO: falta estoque ou há contas em atraso"
+		"not_owned":
+			return "Empreendimento não comprado"
+		_:
+			return "Operando normalmente"
+
+func _render_business(data: Dictionary, info: Dictionary, state: Dictionary) -> void:
+	_clear_list(business_list)
+
+	# Aprimoramento de nível
+	var upgrade_cost = float(data.get("upgrade_cost", 0.0))
+	var upgrade_row = HBoxContainer.new()
+	var upgrade_label = Label.new()
+	upgrade_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	upgrade_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	if upgrade_cost > 0.0:
+		upgrade_label.text = "Aprimorar para o nível %d — desbloqueia equipamentos e aumenta a receita" % (int(state.get("level", 1)) + 1)
+		var upgrade_button = Button.new()
+		upgrade_button.text = "Aprimorar (R$ %.2f)" % upgrade_cost
+		upgrade_button.pressed.connect(_on_upgrade_pressed)
+		upgrade_row.add_child(upgrade_label)
+		upgrade_row.add_child(upgrade_button)
+	else:
+		upgrade_label.text = "Nível máximo alcançado."
+		upgrade_row.add_child(upgrade_label)
+	business_list.add_child(upgrade_row)
+
+	# Funcionários
+	var staff_row = HBoxContainer.new()
+	var staff_label = Label.new()
+	staff_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	staff_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	staff_label.text = "Funcionários: %d de %d | Salário: R$ %.2f por semana cada | +R$ %.2f de receita por dia cada" % [
+		int(state.get("employees", 0)),
+		int(info.get("max_employees", 0)),
+		float(info.get("employee_salary", 0.0)),
+		float(info.get("employee_revenue_bonus", 0.0))
+	]
+	staff_row.add_child(staff_label)
+
+	var hire_button = Button.new()
+	hire_button.text = "Contratar"
+	hire_button.disabled = int(state.get("employees", 0)) >= int(info.get("max_employees", 0))
+	hire_button.pressed.connect(_on_hire_pressed)
+	staff_row.add_child(hire_button)
+
+	var fire_button = Button.new()
+	fire_button.text = "Demitir"
+	fire_button.disabled = int(state.get("employees", 0)) <= 0
+	fire_button.pressed.connect(_on_fire_pressed)
+	staff_row.add_child(fire_button)
+
+	business_list.add_child(staff_row)
+
 func _clear_list(list: VBoxContainer) -> void:
+	# remove_child antes do queue_free: sem isso, dois _refresh_ui() no mesmo
+	# frame duplicariam as linhas, já que queue_free só libera no fim do frame.
 	for child in list.get_children():
+		list.remove_child(child)
 		child.queue_free()
 
 func _render_stock(items: Array, state: Dictionary) -> void:
@@ -155,6 +229,15 @@ func _render_equipment(items: Array, state: Dictionary) -> void:
 			button.pressed.connect(_on_buy_equipment.bind(str(item.get("id", ""))))
 			row.add_child(button)
 		equipment_list.add_child(row)
+
+func _on_upgrade_pressed() -> void:
+	_show_result(EnterpriseManager.upgrade_level(enterprise_id))
+
+func _on_hire_pressed() -> void:
+	_show_result(EnterpriseManager.hire_employee(enterprise_id))
+
+func _on_fire_pressed() -> void:
+	_show_result(EnterpriseManager.fire_employee(enterprise_id))
 
 func _on_buy_stock(item_id: String) -> void:
 	var result = EnterpriseManager.buy_stock(enterprise_id, item_id, 1)

@@ -14,6 +14,12 @@ static func get_data() -> Dictionary:
 		"electricity_bill": 30.0,
 		"starting_capacity": 10,
 		"max_level": 5,
+		"revenue_per_capacity": 10.0,
+		"upgrade_costs": [1200.0, 2500.0, 4500.0, 8000.0],
+		"employee_salary": 90.0,
+		"employee_revenue_bonus": 18.0,
+		"employee_capacity_bonus": 3,
+		"max_employees": 4,
 		"stock_items": [
 			{"id": "ingredients", "name": "Ingredientes basicos", "price": 80.0, "units": 5, "consumption": 1, "revenue_bonus": 0.0},
 			{"id": "drinks", "name": "Bebidas", "price": 45.0, "units": 5, "consumption": 1, "revenue_bonus": 8.0},

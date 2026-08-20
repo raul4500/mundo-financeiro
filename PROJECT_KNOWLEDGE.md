@@ -108,7 +108,8 @@ O `Global.gd` define um `data_model` com os campos principais:
 Cada registro mantém:
 
 - `owned`: se o jogador comprou o negócio;
-- `level`: nível de aprimoramento;
+- `level`: nível de aprimoramento (1 a `max_level`, sobe via `upgrade_level()`);
+- `employees`: número de funcionários contratados;
 - `cash_balance`: lucro acumulado do caixa empresarial;
 - `stock`: quantidade de cada item de estoque;
 - `equipment`: equipamentos comprados;
@@ -116,7 +117,7 @@ Cada registro mantém:
 - `daily_revenue` e `daily_expenses`: valores da última operação;
 - `total_revenue`, `total_expenses` e `total_profit`: contabilidade acumulada;
 - `last_operation_day` e `last_operation_week`: proteção contra processamento duplicado;
-- `history`: histórico de compras, contas e operações.
+- `history`: histórico de compras, contas e operações, limitado às últimas `EnterpriseManager.MAX_HISTORY_ENTRIES` (50) entradas para o save não crescer sem limite. Toda escrita passa por `_append_history()`, que é o único ponto que mexe nessa lista.
 
 ### Funções importantes de Global
 
@@ -449,17 +450,42 @@ A interface e as regras não devem ser duplicadas para cada negócio. Novos empr
 Funções principais:
 
 - `can_buy()` e `buy_enterprise()`;
+- `get_upgrade_cost()` e `upgrade_level()`;
+- `hire_employee()`, `fire_employee()` e `get_weekly_payroll()`;
 - `buy_stock()`;
 - `buy_equipment()`;
 - `generate_weekly_bills()`;
-- `get_pending_bills()` e `pay_bill()`;
-- `calculate_daily_revenue()`;
+- `get_pending_bills()`, `get_overdue_bills()`, `has_overdue_bills()` e `pay_bill()`;
+- `get_status()` — `ok`, `warning`, `closed` ou `not_owned`;
+- `calculate_daily_revenue()` e `get_revenue_ceiling()`;
 - `calculate_daily_expenses()`;
 - `calculate_daily_profit()`;
 - `process_daily_operation()`;
 - `get_dashboard_data()`.
 
 As operações retornam Dictionaries com `success`, `message`, `reason` e valores financeiros relevantes. Falhas emitem o signal `enterprise_error`.
+
+### Nível e aprimoramento
+
+O nível começa em 1 na compra e sobe apenas por investimento, via `upgrade_level()`. Os custos ficam em `upgrade_costs` (um valor por nível a partir do 2) em cada arquivo de dados.
+
+O nível tem dois efeitos: multiplica a receita base (`1.0`, `1.2`, `1.45`, `1.75`, `2.15`) e libera equipamentos com `level_required` maior. Sem aprimoramento, os equipamentos de nível 2 e 3 são inalcançáveis.
+
+### Funcionários
+
+Cada negócio define `employee_salary` (semanal), `employee_revenue_bonus` (diário), `employee_capacity_bonus` e `max_employees`.
+
+Contratar não cobra nada na hora: o salário entra como a conta `payroll_<semana>` no fechamento da semana, junto de água e luz. É a mecânica que ensina custo fixo.
+
+### Capacidade e teto de receita
+
+`get_revenue_ceiling()` = capacidade × `revenue_per_capacity`. A receita diária é limitada por esse teto **antes** da penalidade de inadimplência.
+
+A capacidade vem de `starting_capacity` + bônus de equipamentos + funcionários. Isso faz bônus de receita sem estrutura serem desperdiçados — o gargalo é intencional e didático.
+
+### Inadimplência
+
+Toda conta nasce com `due_week = week + 1`, dando ao jogador a semana seguinte inteira para pagar. Passado o prazo, ela conta como atraso e a receita diária do negócio cai 25% enquanto existir qualquer conta vencida. A conta não desaparece: continua pendente e acumula com as das semanas seguintes.
 
 ### Compra de estoque
 
