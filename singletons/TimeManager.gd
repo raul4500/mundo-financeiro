@@ -48,11 +48,17 @@ func _add_minute():
 		if current_hour >= 24:
 			current_hour = 0
 			current_day += 1
+			var week_rollover := current_day > 7
+			if week_rollover:
+				current_day = 1
+			# Sincroniza antes de qualquer sistema que leia Global.player["day"],
+			# senão a operação diária é registrada com o dia anterior.
+			Global.player["day"] = current_day
+			Global.player["hour"] = current_hour
 			Global.decay_need_state()
 			Global.player["positive_days_count"] = int(Global.player.get("positive_days_count", 0)) + 1
 			EnterpriseManager.process_all_daily_operations()
-			if current_day > 7:
-				current_day = 1
+			if week_rollover:
 				var week = int(Global.player.get("week", 1))
 				EnterpriseManager.generate_all_weekly_bills()
 				Global.evaluate_week_status()

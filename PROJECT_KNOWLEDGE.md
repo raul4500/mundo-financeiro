@@ -430,7 +430,7 @@ O jogo possui três empreendimentos com faixas de investimento distintas:
 | `arcade_medium` | Fliperama Neon | médio | R$ 12.000,00 |
 | `shopping_large` | Centro Comercial Mundo Mix | grande | R$ 85.000,00 |
 
-As cenas dos empreendimentos já existem, mas as portas que as conectam aos prédios do mapa principal ainda serão criadas pelo Dev.
+As cenas dos empreendimentos e as portas que as conectam ao mapa principal já existem. `scripts/world/doors/enterprise_door.gd` é a porta base: se o negócio já foi comprado ela troca de cena, senão abre um diálogo de compra. As três portas concretas (`restaurant_door.gd`, `arcade_door.gd`, `shopping_door.gd`) herdam dela e só definem `enterprise_id` e `destination_scene`.
 
 ### Dados separados por negócio
 
@@ -495,7 +495,9 @@ Para cada empreendimento comprado, o manager calcula receita, calcula despesas, 
 
 No fechamento da semana, o manager gera contas de água e luz para cada empreendimento comprado. As contas ficam em `pending_bills` até serem pagas.
 
-O pagamento reduz `Global.player["money"]`, marca a conta como paga, atualiza despesas e lucro, registra a saída em `expense_history` com categoria `enterprise_bill` e atualiza a interface.
+A chave da conta inclui o número da semana (`water_3`, `electricity_3`), então **contas não pagas de semanas anteriores continuam pendentes e acumulam** em vez de serem sobrescritas pelas da semana seguinte.
+
+O pagamento reduz `Global.player["money"]`, **remove a conta de `pending_bills`**, atualiza despesas e lucro, registra a saída em `expense_history` com categoria `enterprise_bill` e atualiza a interface. `get_pending_bills()` retorna apenas contas em aberto.
 
 ### Interface compartilhada
 
@@ -551,7 +553,7 @@ Algumas áreas exigem atenção:
 - a lógica de tempo e missões precisa ser validada em runtime real do Godot
 - muitas cenas podem ter dependências semânticas em nomes de nó específicos
 - em alguns pontos a arquitetura ainda mistura cena e lógica global
-- as portas dos três empreendimentos ainda precisam ser criadas no mapa principal pelo Dev
+- `spend_today` é zerado a cada hora de jogo em `TimeManager._add_minute()`, não a cada dia — isso afeta as missões `no_spend_day` e `no_impulse`
 - o processamento financeiro e o balanceamento dos preços ainda precisam ser validados em runtime real do Godot
 
 ## 17. Como continuar sem quebrar a base

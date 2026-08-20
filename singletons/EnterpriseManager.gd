@@ -100,14 +100,14 @@ func get_available_stock(enterprise_id: String) -> Array:
 func buy_stock(enterprise_id: String, item_id: String, quantity: int) -> Dictionary:
 	if quantity <= 0:
 		return _failure("A quantidade deve ser positiva.", "invalid_quantity")
+	if not is_owned(enterprise_id):
+		return _failure("Compre o empreendimento antes de comprar estoque.", "not_owned")
 	var item = _find_item(get_available_stock(enterprise_id), item_id)
 	if item.is_empty():
 		return _failure("Item de estoque inexistente.", "invalid_item")
 	var total = float(item["price"]) * quantity
 	if float(Global.player["money"]) < total:
 		return _failure("Dinheiro insuficiente para comprar estoque. Você precisa de R$ %.2f." % total, "insufficient_money")
-	if not is_owned(enterprise_id):
-		return _failure("Compre o empreendimento antes de comprar estoque.", "not_owned")
 	var state = Global.player["enterprises"][enterprise_id]
 	var stock = state.get("stock", {})
 	stock[item_id] = int(stock.get(item_id, 0)) + quantity * int(item.get("units", 1))
@@ -124,9 +124,13 @@ func get_pending_bills(enterprise_id: String) -> Array:
 	var state = get_player_enterprise(enterprise_id)
 	var bills: Array = []
 	for bill_id in state.get("pending_bills", {}).keys():
-		var bill = state["pending_bills"][bill_id].duplicate(true)
-		bill["id"] = bill_id
-		bills.append(bill)
+		var bill = state["pending_bills"][bill_id]
+		# Saves antigos marcavam a conta como paga em vez de removê-la.
+		if bool(bill.get("paid", false)):
+			continue
+		var entry = bill.duplicate(true)
+		entry["id"] = bill_id
+		bills.append(entry)
 	return bills
 
 func generate_weekly_bills(enterprise_id: String) -> void:
@@ -135,22 +139,27 @@ func generate_weekly_bills(enterprise_id: String) -> void:
 	var info = get_enterprise_info(enterprise_id)
 	var state = Global.player["enterprises"][enterprise_id]
 	var bills = state.get("pending_bills", {})
-	bills["water"] = {
-		"name": "Conta de água",
-		"amount": float(info.get("water_bill", 0.0)),
-		"paid": false,
-		"week": int(Global.player.get("week", 1))
-	}
-	bills["electricity"] = {
-		"name": "Conta de luz",
-		"amount": float(info.get("electricity_bill", 0.0)),
-		"paid": false,
-		"week": int(Global.player.get("week", 1))
-	}
+	var week = int(Global.player.get("week", 1))
+
+	# Limpa resíduo de saves antigos: hoje a conta paga é removida do dicionário.
+	for bill_id in bills.keys():
+		if bool(bills[bill_id].get("paid", false)):
+			bills.erase(bill_id)
+
+	# A chave inclui a semana, então contas não pagas de semanas anteriores
+	# continuam pendentes em vez de serem sobrescritas.
+	_add_bill(bills, "water_%d" % week, "Conta de água (semana %d)" % week, float(info.get("water_bill", 0.0)), week)
+	_add_bill(bills, "electricity_%d" % week, "Conta de luz (semana %d)" % week, float(info.get("electricity_bill", 0.0)), week)
+
 	state["pending_bills"] = bills
-	state["history"].append(_history_entry("bill", "Contas semanais geradas", 0.0))
+	state["history"].append(_history_entry("bill", "Contas da semana %d geradas" % week, 0.0))
 	Global.player["enterprises"][enterprise_id] = state
 	emit_signal("enterprise_updated", enterprise_id)
+
+func _add_bill(bills: Dictionary, bill_id: String, bill_name: String, amount: float, week: int) -> void:
+	if bills.has(bill_id):
+		return
+	bills[bill_id] = {"name": bill_name, "amount": amount, "paid": false, "week": week}
 
 func pay_bill(enterprise_id: String, bill_id: String) -> Dictionary:
 	if not is_owned(enterprise_id):
@@ -164,8 +173,7 @@ func pay_bill(enterprise_id: String, bill_id: String) -> Dictionary:
 	if float(Global.player.get("money", 0.0)) < amount:
 		return _failure("Dinheiro insuficiente para pagar a conta.", "insufficient_money")
 	Global.player["money"] = float(Global.player["money"]) - amount
-	bill["paid"] = true
-	bills[bill_id] = bill
+	bills.erase(bill_id)
 	state["pending_bills"] = bills
 	state["total_expenses"] = float(state.get("total_expenses", 0.0)) + amount
 	state["total_profit"] = float(state.get("total_profit", 0.0)) - amount
@@ -177,19 +185,19 @@ func pay_bill(enterprise_id: String, bill_id: String) -> Dictionary:
 	return {"success": true, "message": "Conta paga.", "money_spent": amount}
 
 func buy_equipment(enterprise_id: String, equipment_id: String) -> Dictionary:
+	if not is_owned(enterprise_id):
+		return _failure("Compre o empreendimento antes de comprar equipamentos.", "not_owned")
 	var item = _find_item(get_enterprise_info(enterprise_id).get("equipment_items", []), equipment_id)
 	if item.is_empty():
 		return _failure("Equipamento inexistente.", "invalid_item")
-	var price = float(item["price"])
-	if float(Global.player["money"]) < price:
-		return _failure("Dinheiro insuficiente para comprar este equipamento. Você precisa de R$ %.2f." % price, "insufficient_money")
-	if not is_owned(enterprise_id):
-		return _failure("Compre o empreendimento antes de comprar equipamentos.", "not_owned")
 	var state = Global.player["enterprises"][enterprise_id]
 	if state.get("equipment", {}).has(equipment_id):
 		return _failure("Este equipamento já foi comprado.", "already_owned")
 	if int(state.get("level", 1)) < int(item.get("level_required", 1)):
 		return _failure("Nível insuficiente para este equipamento.", "level_required")
+	var price = float(item["price"])
+	if float(Global.player["money"]) < price:
+		return _failure("Dinheiro insuficiente para comprar este equipamento. Você precisa de R$ %.2f." % price, "insufficient_money")
 	Global.player["money"] = float(Global.player["money"]) - price
 	state["equipment"][equipment_id] = true
 	state["history"].append(_history_entry("equipment", "Compra de equipamento: %s" % item["name"], -price))

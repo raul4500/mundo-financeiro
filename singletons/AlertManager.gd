@@ -175,9 +175,11 @@ func _close_alert():
 	panel.visible = false
 	skip_button.visible = false
 
-	# 🔓 destrava jogo
-	Global.play_time = true
+	# 🔓 destrava jogo. O tempo só volta a correr se nada mais estiver
+	# travando o gameplay (cutscene de câmera, diálogo de compra, etc.).
 	Global.unlock_gameplay()
+	if not Global.gameplay_locked:
+		Global.play_time = true
 	
 	if next_step:
 		TutorialManager.continue_tutorial_after_alert()

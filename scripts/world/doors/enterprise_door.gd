@@ -4,6 +4,7 @@ extends Area2D
 @export var destination_scene: String = "res://scenes/world/places/restaurant.tscn"
 
 var player_inside := false
+var dialog_locked := false
 var purchase_layer: CanvasLayer
 var purchase_panel: Panel
 var purchase_label: Label
@@ -88,17 +89,22 @@ func _show_purchase_dialog() -> void:
 	var info = EnterpriseManager.get_enterprise_info(enterprise_id)
 	if info.is_empty():
 		return
+	var price = float(info.get("purchase_price", 0.0))
+	var money = float(Global.player.get("money", 0.0))
 	purchase_label.text = "%s\n\n%s\n\nPreço: R$ %.2f\nSeu dinheiro: R$ %.2f" % [
 		info.get("name", "Empreendimento"),
 		info.get("description", "Este prédio está disponível para compra."),
-		float(info.get("purchase_price", 0.0)),
-		float(Global.player.get("money", 0.0))
+		price,
+		money
 	]
-	buy_button.disabled = false
+	buy_button.disabled = money < price
+	buy_button.tooltip_text = "" if money >= price else "Dinheiro insuficiente. Faltam R$ %.2f." % (price - money)
 	purchase_layer.get_node("Blocker").visible = true
 	purchase_panel.visible = true
-	Global.play_time = false
-	Global.lock_gameplay()
+	if not dialog_locked:
+		dialog_locked = true
+		Global.play_time = false
+		Global.lock_gameplay()
 
 func _on_buy_pressed() -> void:
 	var result = EnterpriseManager.buy_enterprise(enterprise_id)
@@ -118,9 +124,12 @@ func _on_blocker_input(event: InputEvent) -> void:
 func _close_purchase_dialog() -> void:
 	purchase_layer.get_node("Blocker").visible = false
 	purchase_panel.visible = false
-	if Global.gameplay_locked:
+	if dialog_locked:
+		dialog_locked = false
 		Global.unlock_gameplay()
-	Global.play_time = true
+	# Só volta a correr o tempo se nada mais estiver travando o gameplay.
+	if not Global.gameplay_locked:
+		Global.play_time = true
 
 func _on_body_shape_entered(_body_rid: RID, body: Node2D, _body_shape_index: int, _local_shape_index: int) -> void:
 	if body is CharacterBody2D:
