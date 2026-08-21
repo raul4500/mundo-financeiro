@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://b2uh8vqd4nvos" path="res://scripts/world/bank/fii_shop.gd" id="3_80ajf"]
 [ext_resource type="Theme" uid="uid://b2pfdp8p48jam" path="res://themes/font_theme.tres" id="4_0nfyk"]
 [ext_resource type="Script" uid="uid://dlr7yp7ahwfch" path="res://scripts/world/bank/portfolio.gd" id="4_klp1j"]
+[ext_resource type="Theme" uid="uid://8cd7r8xa15ac" path="res://themes/label.tres" id="5_evlbl"]
 
 [node name="Bank" type="Control" unique_id=11116231]
 layout_mode = 3
@@ -161,5 +162,46 @@ grow_vertical = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Portfolio/ScrollContainer" unique_id=632646492]
 layout_mode = 2
+
+
+[node name="Events-panel" type="Panel" parent="." unique_id=1700200001]
+layout_mode = 0
+offset_left = 34.0
+offset_top = 496.0
+offset_right = 700.0
+offset_bottom = 628.0
+theme = ExtResource("4_0nfyk")
+
+[node name="Margin" type="MarginContainer" parent="Events-panel" unique_id=1700200002]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Events-panel/Margin" unique_id=1700200003]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Events-panel/Margin/VBoxContainer" unique_id=1700200004]
+layout_mode = 2
+theme = ExtResource("5_evlbl")
+theme_override_font_sizes/font_size = 18
+text = "Contas e bônus pendentes"
+
+[node name="Events-scroll" type="ScrollContainer" parent="Events-panel/Margin/VBoxContainer" unique_id=1700200005]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Events-list" type="VBoxContainer" parent="Events-panel/Margin/VBoxContainer/Events-scroll" unique_id=1700200006]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
 
 [connection signal="pressed" from="Actions/Exit" to="." method="_on_exit_pressed"]

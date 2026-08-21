@@ -132,6 +132,10 @@ func skip_tutorial() -> void:
 	step = FINAL_STEP
 	Global.player["tutorial_step"] = FINAL_STEP
 	emit_signal("tutorial_finished")
+	# Em casos onde locks possam ter sido deixados por erro, garantir liberação
+	# para que o jogador não fique travado permanentemente após pular.
+	if has_node("/root/Global"):
+		Global.force_release_all_gameplay_locks()
 
 func queue_messages(list: Array) -> void:
 	if list.is_empty():
@@ -197,6 +201,9 @@ func _next_step():
 				messages[19]
 			])
 			emit_signal("tutorial_finished")
+			# Garantir liberação de locks ao finalizar o tutorial
+			if has_node("/root/Global"):
+				Global.force_release_all_gameplay_locks()
 
 
 # =============================

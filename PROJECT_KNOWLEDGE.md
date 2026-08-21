@@ -58,7 +58,7 @@ Em `project.godot`, vários nodes ficam automaticamente disponíveis globalmente
 - `FIIManager` — compra/venda de FIIs
 - `EnterpriseManager` — regras compartilhadas dos três empreendimentos
 - `Logger` — grava logs de runtime em arquivo
-- `EventsManager` — sorteia e dispara eventos inesperados (dados vêm de `UnexpectedEvents`, que serve só como fonte de dados, não como sistema ativo)
+- `EventsManager` — sorteia eventos inesperados e mantém as pendências (contas/bônus) que o jogador resolve no banco; dados vêm de `UnexpectedEvents`, que serve só como fonte de dados. Ver seção 12.1
 - `TutorialManager` — roteiro do onboarding (mensagens, passos, pular tutorial)
 - `AlertManager` — `CanvasLayer` de alerta modal, compartilhado por todo o jogo
 - `CameraManager` — cutscenes de câmera
@@ -84,10 +84,15 @@ Nunca atribua `Global.gameplay_locked = true/false` diretamente — use as duas 
 
 Estrutura do alerta, montada em `_create_alert_ui()`:
 
-- `blocker` — `ColorRect` em tela cheia, preto a 10%, com `MOUSE_FILTER_STOP`;
+- `blocker` — `ColorRect` em tela cheia, preto a 50%, com `MOUSE_FILTER_STOP`;
 - `panel` — `Control` transparente em tela cheia (não é `Panel`: um `Panel` full-rect pintaria por cima de tudo e esconderia o overlay);
-- `dialog` — `Panel` central com `font_theme.tres`, contendo o texto (`label.tres`) e o botão OK;
+- `dialog` — **`PanelContainer`** central com `font_theme.tres` → `MarginContainer` (28) → `VBoxContainer` → `text_scroll` + botão OK;
+- `text_scroll` — `ScrollContainer` de `TEXT_WIDTH × TEXT_VISIBLE_HEIGHT` (700×230) com `horizontal_scroll_mode` desabilitado, contendo o `alert_label` (`label.tres`, autowrap);
 - `skip_button` — botão "Pular tutorial" ancorado no canto superior direito, visível apenas quando `TutorialManager.can_skip()` é verdadeiro.
+
+**Por que `PanelContainer` e não `Panel`.** O `dialog` era um `Panel` com `custom_minimum_size = Vector2(560, 160)`. `Panel` não é container: ele não lê o tamanho mínimo dos filhos, então o `CenterContainer` o mantinha travado em 560×160 enquanto o texto do tutorial (até 380 caracteres, ~6 linhas no corpo 23) crescia para fora da caixa. O comentário no código dizia "a altura acompanha o tamanho do texto", o que nunca foi verdade nessa estrutura. `PanelContainer` se dimensiona pelo conteúdo.
+
+O tamanho da caixa é **fixo** de propósito: quem define a área de texto é o `custom_minimum_size` do `text_scroll`, não a mensagem. Assim a caixa não muda de tamanho a cada alerta. Textos maiores que a área rolam — e `alert()` zera `scroll_vertical`, senão a mensagem seguinte abriria já rolada. O `alert_label` fica com `MOUSE_FILTER_IGNORE` para a roda do mouse chegar ao `ScrollContainer`.
 
 Os botões usam `focus_mode = FOCUS_NONE` de propósito. Um botão com foco é acionado pela ação `ui_accept`, que inclui **Enter** por padrão — e o atalho de confirmação do alerta deve ser somente a barra de espaço, tratada manualmente em `_input()` com `set_input_as_handled()`.
 
@@ -106,7 +111,9 @@ Já seguem esse padrão:
 - `scripts/world/home/home.gd` sobre `scenes/world/places/home.tscn`;
 - `scripts/enterprise/enterprise_management.gd` sobre `scenes/world/ui/enterprise-view.tscn`.
 
-Ainda constroem a interface inteira por script (candidatos ao mesmo tratamento): `banco.gd`, `market.gd`, `office.gd`, `AlertManager.gd`.
+Parcialmente: `banco.gd` — o painel de contas/bônus já vem da cena (`Events-panel`), mas `history_panel` ainda é montado por script.
+
+Ainda constroem a interface inteira por script (candidatos ao mesmo tratamento): `market.gd`, `office.gd`, `AlertManager.gd`.
 
 ### 3.5 Armadilha de largura: `Label` sem autowrap
 
@@ -164,6 +171,23 @@ Consequências práticas:
 `enterprise_door.gd` resolve os nós com `get_node_or_null()` dentro de `_ready()`, e **não** com `@onready`, porque é a classe base de `restaurant_door.gd`, `arcade_door.gd` e `shopping_door.gd`, que sobrescrevem `_ready()`. Ele também troca o texto do `Hint` conforme a posse: "Pressione ENTER para entrar" para quem já é dono, "Pressione ENTER para ver a proposta" para quem ainda não comprou. O painel é escondido enquanto o diálogo de compra está aberto e volta se o jogador ainda estiver na porta.
 
 Os `Label` antigos dessas portas (`Minigame`, `Market`, `Bank`) foram removidos da cena, porque o painel já mostra o nome do lugar. As referências `$Minigame` / `$Market` / `$Bank` saíram dos scripts junto — se voltarem a aparecer, é sinal de que alguém restaurou uma versão antiga.
+
+### 3.8 Convenção de temas: painel x label
+
+Regra do projeto: **containers e painéis usam `font_theme.tres`; `Label` de conteúdo usa `label.tres`.**
+
+O motivo é que `font_theme.tres` define `Label/styles/normal = label_round.png` e `Label/font_sizes/font_size = 24`, e **tema propaga para todos os descendentes**. Um `Label` criado em runtime dentro de um container que carrega `font_theme` nasce com fundo de caixa arredondada e corpo 24 — numa lista densa isso vira uma pilha de caixas gigantes.
+
+Onde isso está aplicado:
+
+- `enterprise_management.gd` → `ROW_LABEL_THEME` + `_make_row_label()` (corpo 16);
+- `banco.gd` → `EVENT_LABEL_THEME` + `_make_event_label()` (corpo 15);
+- `AlertManager.gd` → `alert_label` com `label.tres`, `dialog` e botões com `font_theme.tres`;
+- na própria cena `enterprise-view.tscn`, os labels de cabeçalho declaram `theme = label.tres` à mão.
+
+O `font_theme.tres` também define `PanelContainer/styles/panel` e os estilos de `TabContainer` (`panel`, `tab_selected`, `tab_unselected`, `tab_focus`), então esses dois tipos já saem com o visual pixel-art sem override nenhum.
+
+Nota: `label.tres` **não** define `Label/fonts/font`, só cor (preto), corpo 23 e um `StyleBoxFlat` transparente. Quem usa `label.tres` renderiza com a fonte padrão do Godot, não com a pixel font.
 
 ## 4. Modelo do jogador (Global.player)
 
@@ -455,6 +479,18 @@ const CHARACTER_ANIMATION = "default"
 
 Esses três valores **são o contrato visual**: se o sprite sair de lugar na casa, é aqui que se ajusta, não na cena. Os cinco personagens (`raul`, `matheus`, `phillip`, `melissa`, `enzo`) têm raiz `AnimatedSprite2D` e as animações `default`, `down`, `up` e `walk`, com `autoplay = "default"` — mas o script chama `play("default")` explicitamente para não depender disso.
 
+Há ainda um ajuste fino por personagem, somado ao Y da posição base:
+
+```gdscript
+const CHARACTER_Y_OFFSET = {
+	"Phillip": 85.0
+}
+```
+
+O Phillip desce 85 px para alinhar com os outros; quem não está no dicionário usa `0.0`. É um dicionário em vez de um `if` para que um personagem novo com o mesmo problema seja uma linha, sem tocar na lógica. As chaves precisam bater exatamente com a string gravada em `Global.player["name"]` por `choose_character.gd` — a comparação é sensível a maiúsculas.
+
+Na função, a variável local se chama `sprite_position` e não `position` de propósito: `position` sombrearia a propriedade do próprio `Control` e o Godot emitiria aviso.
+
 > Duplicação conhecida: o mapa nome → cena (`CHARACTER_SCENES`) agora existe em três lugares — `home.gd`, `scripts/player/player.gd` e `scripts/player/raul_minigame.gd`. Um personagem novo precisa ser adicionado nos três. Candidato a virar uma constante única em `Global`.
 
 ### Funções principais
@@ -526,6 +562,56 @@ Seu papel inclui:
 - funcionar como fonte visual do registro de gastos
 
 Histórico de gastos é representado em `Global.player["expense_history"]` e pode ser renderizado com `VBoxContainer`/`ScrollContainer`.
+
+### Painel de contas e bônus pendentes
+
+Fica em `bank.tscn`, em `Events-panel/Margin/VBoxContainer/Events-scroll/Events-list`. O layout é da cena; `banco.gd` só preenche a lista, escutando `EventsManager.events_updated` para se redesenhar. É aqui que os eventos inesperados são resolvidos — ver seção 12.1.
+
+> Atenção ao layout do banco: `history_panel` é criado por script em `(710, 25)` com tamanho `(390, 590)` e fica **exatamente por cima** de `FII-shop` e `Portfolio`, que também compartilham o mesmo retângulo `(705, 21)-(1123, 624)` entre si e não têm `visible = false`. São três painéis empilhados. O `Events-panel` foi colocado em `(34, 496)-(700, 628)`, a única região realmente livre da tela, justamente para não piorar isso.
+
+## 12.1 Eventos inesperados (contas e bônus pendentes)
+
+O sistema foi remodelado: **um evento nunca mexe direto em `Global.player["money"]`**. Ele cria uma pendência que o jogador resolve manualmente no banco.
+
+Fluxo:
+
+1. `EventsManager.maybe_spawn_events(week)` é o único ponto de entrada da geração. Ele barra qualquer semana abaixo de `FIRST_EVENT_WEEK = 2`.
+2. Dois gatilhos chamam essa função: o timer de `SPAWN_INTERVAL = 100.0` segundos em `_process` (frequência original preservada) e o avanço de semana em `TimeManager`, logo após `week_changed`.
+3. `sortear_evento()` percorre `UnexpectedEvents` e devolve o primeiro evento cuja `probabilidade` passar no `randf()`.
+4. Sem `escolhas`, `create_pending_event()` grava a pendência. Com `escolhas`, nada é gravado até o jogador clicar numa opção em `event_ui.gd` — e então só a opção escolhida vira pendência.
+5. No banco, `Pagar`/`Resgatar` chamam `pay_event()`/`collect_event()`, que devolvem `{"success": bool, "message": String}` como o `EnterpriseManager`.
+
+Forma de uma pendência em `Global.player["pending_events"]`:
+
+```gdscript
+{
+    "id": "quebra_carro_1755792000_3",  # source_id + unix time + índice
+    "title": "Problema no carro",
+    "description": "...",
+    "week_generated": 3,
+    "amount": 500.0,                    # SEMPRE positivo
+    "is_bonus": false,                  # o sinal vive aqui
+    "status": "pending",                # pending | paid | collected
+    "location": "bank",
+    "source_id": "quebra_carro"
+}
+```
+
+Armadilhas que este desenho evita, e que valem lembrar:
+
+- **`amount` é sempre positivo.** Os dados em `UnexpectedEvents` usam `"dinheiro": -500` para contas. Guardar esse valor cru fazia `pay_event()` calcular `money - (-500)` e **creditar** o jogador ao pagar uma conta. Quem lê o valor usa `abs()`, e o sinal fica só em `is_bonus`;
+- **o timer respeita `Global.play_time` e `gameplay_locked`.** `EventsManager` é autoload e nunca sai da árvore, então sem essa guarda o sorteio corria no menu inicial, na escolha de personagem e por cima de alertas modais;
+- **`has_pending_from_source()` impede empilhar o mesmo evento.** Com um sorteio a cada 100 s, sem isso o banco enchia de contas idênticas de "Problema no carro";
+- **`Time.get_unix_time_from_system()`, não `OS.get_unix_time()`** — este último não existe no Godot 4 e derrubava a criação da pendência;
+- **`MAX_RESOLVED_EVENTS = 30`** limita só as pendências já resolvidas; as abertas nunca são podadas.
+
+Persistência sai de graça: `SaveManager.save_game()` serializa `Global.player` inteiro, então `pending_events` já é salvo. Como o JSON devolve números como float no load, quem exibe `week_generated` precisa de `int()`.
+
+**Decisões deliberadas**, para não serem "corrigidas" por engano:
+
+- não existe expiração nem multa automática. O plano pedia para documentar antes de aplicar penalidades, e uma conta vencida que se cobra sozinha reintroduziria exatamente o débito automático que a mudança removeu. `due_week` não é usado;
+- a UI fica só no banco, não em casa. `location` existe no modelo e `get_pending_events(location)` já filtra, então acrescentar um painel em casa é só passar `"home"`;
+- o nível 2 do escritório ganhou o tópico "Eventos inesperados no jogo", que explica a mecânica e diz onde resolver. O nível 2 destrava na semana 2, a mesma em que os eventos começam.
 
 ## 13. Fluxo do jogo em alto nível
 
@@ -764,8 +850,10 @@ Algumas áreas exigem atenção:
 - `EnterpriseManager.process_all_daily_operations()` é chamado **antes** de `Global.player["day"]` ser atualizado no `TimeManager`, então o dia gravado no histórico e nas despesas fica defasado em 1. A operação não duplica (o guard `last_operation_day` funciona), mas as datas registradas estão erradas
 - `restaurant.tscn`, `arcade.tscn` e `shopping.tscn` foram escritas à mão como cenas herdadas (`[node name="X" instance=ExtResource(...)]` na raiz). **Validado em runtime**: carregam e renderizam corretamente. O mesmo padrão pode ser reusado para outras telas
 - o ambiente do agente **não tem o Godot disponível por CLI**. Nenhuma alteração de cena ou script pode ser validada automaticamente — tudo precisa ser testado no editor. Priorize layout por container (que é autocorretivo) em vez de offsets em pixel
-- `scenes/world/ui/enterprise-view.tscn` não tem `uid://` nem campos `unique_id` — o Godot atribui na primeira vez que abrir e salvar
-- o `history` de cada empreendimento é limitado a 50 entradas, mas `Global.player["expense_history"]` e `home_actions_log` continuam crescendo sem limite no save
+- o `history` de cada empreendimento é limitado a 50 entradas e as pendências resolvidas de `pending_events` a 30, mas `Global.player["expense_history"]` e `home_actions_log` continuam crescendo sem limite no save
+- **a tela do banco tem três painéis empilhados no mesmo lugar**: `FII-shop` e `Portfolio` compartilham o retângulo `(705,21)-(1123,624)` e nenhum tem `visible = false`, e o `history_panel` criado por script em `banco.gd` fica em cima dos dois. Nada alterna a visibilidade deles. O `Events-panel` foi para `(34,496)-(700,628)` justamente para não entrar nessa pilha
+- `scripts/world/main_game.gd` tem três teclas de debug no `_process`: **Page Down** entra no restaurante, **Page Up** entra no mercado e **End** dá R$ 10.000 ao jogador. Precisam sair antes de qualquer build de entrega
+- `AlertManager._close_alert()` sempre devolve `Global.play_time = true` quando destrava. Como as cenas de interior (banco, casa, empreendimentos, mercado) rodam com `play_time = false`, qualquer alerta aberto lá dentro faz o tempo voltar a correr ao fechar. Afeta `enterprise_management.gd` e agora também `banco.gd`. É a mesma pendência do `play_time` sem contador, citada em 3.2
 
 ## 17. Como continuar sem quebrar a base
 
@@ -842,7 +930,14 @@ Esse conjunto permite que um novo agente entenda o comportamento do projeto e co
 - `scenes/world/places/home.tscn`
 - `singletons/AlertManager.gd`
 - `singletons/TutorialManager.gd`
+- `singletons/EventsManager.gd`
+- `singletons/UnexpectedEvents.gd`
+- `scripts/hud/event_ui.gd`
+- `scenes/world/places/bank.tscn`
+- `scenes/world/main_game.tscn`
+- `scripts/world/doors/enterprise_door.gd`
 - `scripts/world/office/office.gd`
+- `themes/font_theme.tres` e `themes/label.tres`
 - `singletons/Logger.gd`
 
 Este documento deve ser usado como material de contexto para qualquer tarefa futura do projeto.
@@ -854,7 +949,8 @@ Este documento deve ser usado como material de contexto para qualquer tarefa fut
 | `FIX_PLAN.md` | **concluído** — as 13 etapas de correção foram aplicadas |
 | `ENTERPRISE_PLAN.md` | **concluído** na primeira versão, mais as mecânicas de nível, funcionários, capacidade e inadimplência |
 | `CLAUDE_HOME_REFACTOR_PROMPT.md` | **concluído** — `home.gd` ancorado em `home.tscn` |
-| `CLAUDE_ENTERPRISE_VIEW_REFACTOR_PLAN.md` | **concluído e validado em runtime** — as 8 tarefas, mais o ajuste de layout 2×2 |
+| `CLAUDE_ENTERPRISE_VIEW_REFACTOR_PLAN.md` | **concluído** — as 8 tarefas; o layout evoluiu depois para grid 2×2 e por fim para `TabContainer` |
+| `CLAUDE_EVENTS_REWORK_PLAN.md` | **concluído** — ver seção 12.1. Fora do escopo por decisão registrada: expiração/multa automática e painel de eventos em casa |
 | `SAVE_SLOTS_PLAN.md` | **não implementado** — plano aprovado, nenhuma etapa executada. O save continua único em `user://savegame.json` |
 
-Ao retomar o `SAVE_SLOTS_PLAN.md`, dois ajustes que o plano ainda não reflete: `Global.player` ganhou a chave `enterprises`, e o `EnterpriseManager` **não** precisa de um `reset()` como o `FIIManager`, porque não guarda estado próprio no autoload. Inclua no checklist "empreendimentos comprados não vazam entre slots".
+Ao retomar o `SAVE_SLOTS_PLAN.md`, três ajustes que o plano ainda não reflete: `Global.player` ganhou as chaves `enterprises` e `pending_events`; o `EnterpriseManager` **não** precisa de um `reset()` como o `FIIManager`, porque não guarda estado próprio no autoload. Inclua no checklist "empreendimentos comprados e contas pendentes não vazam entre slots".

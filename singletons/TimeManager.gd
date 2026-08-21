@@ -67,6 +67,9 @@ func _add_minute():
 					Global.player["week"] = week + 1
 					Global.get_paid()
 					emit_signal("week_changed", Global.player["week"])
+					# Eventos inesperados começam na semana 2: o próprio
+					# maybe_spawn_events() decide se a semana já permite.
+					EventsManager.maybe_spawn_events(int(Global.player["week"]))
 				else:
 					return
 		Global.player["day"] = current_day

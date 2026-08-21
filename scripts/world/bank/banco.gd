@@ -1,10 +1,14 @@
 extends Control
 
+const EVENT_LABEL_THEME = preload("res://themes/label.tres")
+
 @onready var label_money = $"Account-info/Label_Money"
 @onready var label_saldo = $"Account-info/Label-saldo"
 @onready var input = $Input
 @onready var btn_deposit = $Actions/Deposit
 @onready var btn_withdraw = $Actions/Withdraw
+# Painel de contas/bônus pendentes: layout fixo na cena, conteúdo no script.
+@onready var events_list: VBoxContainer = $"Events-panel/Margin/VBoxContainer/Events-scroll/Events-list"
 
 var history_panel: Panel
 var history_list: VBoxContainer
@@ -13,6 +17,9 @@ func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	Global.ensure_player_state()
 	_build_history_panel()
+	# Redesenha quando uma pendência nasce ou é resolvida em qualquer lugar.
+	if not EventsManager.events_updated.is_connected(render_events):
+		EventsManager.events_updated.connect(render_events)
 	update_labels()
 	btn_deposit.pressed.connect(deposit)
 	btn_withdraw.pressed.connect(withdraw)
@@ -47,7 +54,9 @@ func _build_history_panel() -> void:
 func render_history() -> void:
 	if history_list == null:
 		return
+	# remove_child antes do queue_free, mesmo motivo de render_events().
 	for child in history_list.get_children():
+		history_list.remove_child(child)
 		child.queue_free()
 	var entries = Global.player.get("expense_history", [])
 	if entries.is_empty():
@@ -66,11 +75,80 @@ func render_history() -> void:
 		row.add_child(label)
 		history_list.add_child(row)
 
+# O painel é fixo na cena (bank.tscn). Aqui só preenchemos a lista.
+func render_events() -> void:
+	if events_list == null:
+		return
+	# remove_child antes do queue_free: sem isso, dois renders no mesmo frame
+	# duplicam as linhas, porque queue_free só libera no fim do frame.
+	for child in events_list.get_children():
+		events_list.remove_child(child)
+		child.queue_free()
+
+	var entries = EventsManager.get_pending_events("bank")
+	if entries.is_empty():
+		events_list.add_child(_make_event_label("Nenhuma conta ou bônus pendente."))
+		return
+
+	for ev in entries:
+		var row = HBoxContainer.new()
+		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_theme_constant_override("separation", 10)
+
+		var is_bonus = bool(ev.get("is_bonus", false))
+		var label = _make_event_label("%s | %s de R$ %.2f | semana %d" % [
+			str(ev.get("title", "-")),
+			"Bônus" if is_bonus else "Conta",
+			abs(float(ev.get("amount", 0.0))),
+			# int() é obrigatório: depois de um load, o JSON devolve números
+			# como float e o texto sairia "semana 3.0".
+			int(ev.get("week_generated", 0))
+		])
+		label.tooltip_text = str(ev.get("description", ""))
+		row.add_child(label)
+
+		var btn = Button.new()
+		btn.custom_minimum_size = Vector2(120, 36)
+		if is_bonus:
+			btn.text = "Resgatar"
+			btn.pressed.connect(_on_collect_pressed.bind(str(ev.get("id", ""))))
+		else:
+			btn.text = "Pagar"
+			btn.pressed.connect(_on_pay_pressed.bind(str(ev.get("id", ""))))
+		row.add_child(btn)
+		events_list.add_child(row)
+
+# label.tres em vez do tema do painel: o Label do font_theme.tres tem fundo
+# (label_round.png) e corpo 24, que numa lista densa viram caixas gigantes.
+func _make_event_label(text: String) -> Label:
+	var label = Label.new()
+	label.theme = EVENT_LABEL_THEME
+	label.add_theme_font_size_override("font_size", 15)
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	label.text = text
+	return label
+
+func _on_pay_pressed(event_id: String) -> void:
+	_handle_event_result(EventsManager.pay_event(event_id))
+
+func _on_collect_pressed(event_id: String) -> void:
+	_handle_event_result(EventsManager.collect_event(event_id))
+
+# Sem isto, falhar por saldo insuficiente ficava só num print no console e o
+# jogador clicava em "Pagar" sem entender por que nada acontecia.
+func _handle_event_result(result: Dictionary) -> void:
+	update_labels()
+	if not result.get("success", false):
+		AlertManager.alert(str(result.get("message", "Não foi possível concluir a operação.")))
+
 func update_labels():
 	label_money.text = "Dinheiro: $" + str(Global.player["money"])
 	label_saldo.text = "Banco: $" + str(Global.player["saldo"])
 	if history_panel != null:
 		render_history()
+	render_events()
 
 func deposit():
 	var value = int(input.text)

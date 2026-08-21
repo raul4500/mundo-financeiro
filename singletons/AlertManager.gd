@@ -1,7 +1,17 @@
 extends CanvasLayer
 
-var panel: Control      # raiz em tela cheia (transparente)
-var dialog: Panel       # caixa central com o texto e o botão
+# Largura de quebra do texto e altura visível antes de começar a rolar.
+# A caixa tem tamanho fixo de propósito: assim ela não muda de tamanho de uma
+# mensagem para a outra, e textos longos rolam em vez de esticar a caixa.
+# Calibrado para a maior mensagem do tutorial (380 caracteres, ~6 linhas no
+# corpo 23 do label.tres) caber sem precisar rolar; a rolagem é a rede de
+# segurança para textos maiores que venham a ser adicionados.
+const TEXT_WIDTH := 700
+const TEXT_VISIBLE_HEIGHT := 230
+
+var panel: Control          # raiz em tela cheia (transparente)
+var dialog: PanelContainer  # caixa central com o texto e o botão
+var text_scroll: ScrollContainer
 var alert_label: Label
 var confirm_button: Button
 var skip_button: Button
@@ -24,7 +34,7 @@ func _create_alert_ui():
 	# =============================
 	blocker = ColorRect.new()
 	blocker.set_anchors_preset(Control.PRESET_FULL_RECT)
-	blocker.color = Color(0, 0, 0, 0.1) # fundo escuro transparente (10%)
+	blocker.color = Color(0, 0, 0, 0.5) # fundo escuro transparente (50%)
 	blocker.visible = false
 	blocker.mouse_filter = Control.MOUSE_FILTER_STOP # 🚨 ESSENCIAL
 
@@ -48,38 +58,44 @@ func _create_alert_ui():
 	# =============================
 	var panel_theme = load("res://themes/font_theme.tres")
 
-	dialog = Panel.new()
+	# PanelContainer, e não Panel: um Panel não é container, não lê o tamanho
+	# mínimo dos filhos e ficava travado em 560x160 enquanto o texto crescia
+	# para fora dele. O PanelContainer se dimensiona pelo conteúdo.
+	dialog = PanelContainer.new()
 	dialog.theme = panel_theme
-	# Largura fixa; a altura acompanha o tamanho do texto.
-	dialog.custom_minimum_size = Vector2(560, 160)
 	dialog.mouse_filter = Control.MOUSE_FILTER_STOP
 
 	var margin = MarginContainer.new()
-	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
-	margin.offset_left = 0.0
-	margin.offset_top = 0.0
-	margin.offset_right = 0.0
-	margin.offset_bottom = 0.0
-	margin.add_theme_constant_override("margin_left", 24)
-	margin.add_theme_constant_override("margin_right", 24)
-	margin.add_theme_constant_override("margin_top", 24)
-	margin.add_theme_constant_override("margin_bottom", 24)
+	margin.add_theme_constant_override("margin_left", 28)
+	margin.add_theme_constant_override("margin_right", 28)
+	margin.add_theme_constant_override("margin_top", 28)
+	margin.add_theme_constant_override("margin_bottom", 28)
 
 	var box = VBoxContainer.new()
 	box.alignment = BoxContainer.ALIGNMENT_CENTER
-	box.add_theme_constant_override("separation", 12)
+	box.add_theme_constant_override("separation", 16)
 
 	# =============================
-	# 🏷️ TEXTO
+	# 🏷️ TEXTO (com rolagem)
 	# =============================
+	# O scroll é quem define o tamanho da área de texto. Com o scroll
+	# horizontal desabilitado, o Label recebe a largura do scroll e quebra
+	# nela; com o vertical habilitado, textos muito longos rolam em vez de
+	# esticar a caixa para fora da tela.
+	text_scroll = ScrollContainer.new()
+	text_scroll.custom_minimum_size = Vector2(TEXT_WIDTH, TEXT_VISIBLE_HEIGHT)
+	text_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	text_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	text_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+
 	alert_label = Label.new()
 	alert_label.theme = load("res://themes/label.tres")
-	# Largura de quebra fixa (560 do painel - 24 de margem de cada lado),
-	# assim a altura do texto é calculada corretamente e nada estoura o painel.
-	alert_label.custom_minimum_size = Vector2(512, 0)
 	alert_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	alert_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	alert_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	# IGNORE para a roda do mouse chegar ao ScrollContainer e rolar o texto.
 	alert_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	text_scroll.add_child(alert_label)
 
 	# =============================
 	# 🔘 BOTÃO
@@ -96,7 +112,7 @@ func _create_alert_ui():
 	confirm_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	confirm_button.pressed.connect(_on_confirm_pressed)
 
-	box.add_child(alert_label)
+	box.add_child(text_scroll)
 	box.add_child(confirm_button)
 
 	margin.add_child(box)
@@ -137,6 +153,9 @@ func alert(text: String, step: bool = false):
 	panel.visible = true
 
 	alert_label.text = text
+	# Sem isto, uma mensagem longa deixa o scroll no meio e a próxima abre
+	# já rolada, escondendo o começo do texto.
+	text_scroll.scroll_vertical = 0
 	skip_button.visible = TutorialManager.can_skip()
 
 	# 🔒 trava jogo

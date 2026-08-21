@@ -25,6 +25,7 @@ var data_model = {
 	"happiness": 100.0,
 	"home_inventory": {},
 	"home_actions_log": [],
+	"pending_events": [],
 	"last_week_status": {
 		"hunger": 100.0,
 		"happiness": 100.0
@@ -42,6 +43,18 @@ func lock_gameplay() -> void:
 func unlock_gameplay() -> void:
 	_gameplay_lock_count = max(0, _gameplay_lock_count - 1)
 	gameplay_locked = _gameplay_lock_count > 0
+
+# For situations where a lock/unlock pairing may be missed (e.g., during complex
+# tutorial flows or unexpected errors), this helper force-releases all locks.
+# Use sparingly: prefer pairwise lock_gameplay()/unlock_gameplay(), but calling
+# this during the end of the tutorial ensures the player isn't permanently
+# prevented from moving.
+func force_release_all_gameplay_locks() -> void:
+	_gameplay_lock_count = 0
+	gameplay_locked = false
+	# Also ensure game time resumes
+	play_time = true
+	print("Global: force released all gameplay locks")
 
 func _new_player_data() -> Dictionary:
 	var new_player = data_model.duplicate(true)
@@ -67,6 +80,9 @@ func ensure_player_state() -> void:
 		player["home_inventory"] = {}
 	if not player.has("home_actions_log"):
 		player["home_actions_log"] = []
+	# Inicializa lista de eventos pendentes (contas / bônus) se não existir
+	if not player.has("pending_events"):
+		player["pending_events"] = []
 	if not player.has("last_week_status"):
 		player["last_week_status"] = {"hunger": 100.0, "happiness": 100.0}
 	player["money"] = float(player.get("money", 0.0))
@@ -118,6 +134,7 @@ func new_game(name: String, money: float) -> void:
 	player["happiness"] = 100.0
 	player["home_inventory"] = {}
 	player["home_actions_log"] = []
+	player["pending_events"] = []
 	player["last_week_status"] = {"hunger": 100.0, "happiness": 100.0}
 
 	TimeManager.update_time()

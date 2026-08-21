@@ -6,6 +6,9 @@ extends CanvasLayer
 @onready var botao = $Panel/Button
 
 var choice_buttons: Array = []
+# Guardado porque a pendência só é criada quando o jogador clica numa escolha,
+# e aí precisamos do evento que originou os botões.
+var current_evento: Dictionary = {}
 
 func _ready():
 	panel.visible = false
@@ -13,6 +16,7 @@ func _ready():
 
 
 func _on_evento(evento):
+	current_evento = evento
 	panel.visible = true
 	titulo.text = evento.get("titulo", "Evento")
 	descricao.text = evento.get("descricao", "")
@@ -40,7 +44,15 @@ func _build_choice_buttons(escolhas: Array) -> void:
 
 
 func _on_choice_pressed(escolha: Dictionary) -> void:
-	EventsManager.aplicar_impacto(escolha.get("impacto", {}))
+	# Refatorado: a escolha não debita/credita na hora. Ela cria uma pendência
+	# que o jogador resolve no banco, igual aos eventos automáticos. Opções de
+	# impacto zero ("Não comprar") não geram nada.
+	var evento = current_evento.duplicate(true)
+	evento["titulo"] = "%s — %s" % [
+		str(current_evento.get("titulo", "Evento")),
+		str(escolha.get("descricao", ""))
+	]
+	EventsManager.create_pending_event(evento, escolha.get("impacto", {}))
 	panel.visible = false
 	_clear_choice_buttons()
 
