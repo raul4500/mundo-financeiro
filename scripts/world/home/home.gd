@@ -2,6 +2,28 @@ extends Control
 
 const UI_THEME = preload("res://themes/font_theme.tres")
 
+# Mesmo mapa usado por player.gd e raul_minigame.gd: o nome salvo em
+# Global.player["name"] aponta para a cena do sprite animado.
+const CHARACTER_SCENES = {
+	"Raul": "res://scenes/players/raul.tscn",
+	"Matheus": "res://scenes/players/matheus.tscn",
+	"Phillip": "res://scenes/players/phillip.tscn",
+	"Melissa": "res://scenes/players/melissa.tscn",
+	"Enzo": "res://scenes/players/enzo.tscn"
+}
+
+# Copiados do sprite de exemplo (raul.tscn) que estava fixo dentro do Node2D:
+# o personagem do jogador precisa aparecer exatamente no mesmo lugar e tamanho.
+const CHARACTER_POSITION = Vector2(458, 430)
+const CHARACTER_SCALE = Vector2(16, 16)
+const CHARACTER_ANIMATION = "default"
+
+# Ajuste fino por personagem, somado ao Y de CHARACTER_POSITION. O Phillip
+# precisa descer 85 px para ficar alinhado com os outros na casa.
+const CHARACTER_Y_OFFSET = {
+	"Phillip": 85.0
+}
+
 # =============================================================
 # NODOS FIXOS DA CENA (scenes/world/places/home.tscn)
 # A estrutura é montada no editor. O script apenas a usa como
@@ -16,10 +38,13 @@ const UI_THEME = preload("res://themes/font_theme.tres")
 @onready var inventory_scroll: ScrollContainer = $"HBoxContainer/VBoxContainer/Inventory-panel/Inventory-scroll"
 @onready var history_scroll: ScrollContainer = $"HBoxContainer/VBoxContainer/History-panel/History-scroll"
 @onready var exit_button: Button = $"Exit"
+# Node2D vazio na cena que serve de âncora para o sprite do personagem.
+@onready var character_holder: Node2D = $"Node2D"
 
 # Containers criados em runtime dentro dos scrolls fixos.
 var inventory_list: VBoxContainer
 var history_list: VBoxContainer
+var character_sprite: AnimatedSprite2D
 
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -33,6 +58,7 @@ func _ready() -> void:
 
 func _build_ui() -> void:
 	_build_action_buttons()
+	_build_character()
 	inventory_list = _get_or_create_list(inventory_scroll)
 	history_list = _get_or_create_list(history_scroll)
 	_setup_bar(hunger_bar)
@@ -96,6 +122,39 @@ func _clear_children(container: Node) -> void:
 	for child in container.get_children():
 		container.remove_child(child)
 		child.queue_free()
+
+# Instancia o sprite do personagem escolhido pelo jogador dentro do Node2D,
+# na mesma posição e escala do sprite de exemplo que existia na cena.
+func _build_character() -> void:
+	if character_holder == null:
+		push_error("home: o Node2D âncora do personagem não existe na cena.")
+		return
+	_clear_children(character_holder)
+
+	var char_name = str(Global.player.get("name", ""))
+	if not CHARACTER_SCENES.has(char_name):
+		push_warning("Personagem inválido: '%s'. Usando personagem padrão." % char_name)
+		char_name = CHARACTER_SCENES.keys()[0]
+
+	var scene: PackedScene = load(CHARACTER_SCENES[char_name])
+	if scene == null:
+		push_error("home: não foi possível carregar a cena do personagem '%s'." % char_name)
+		return
+
+	character_sprite = scene.instantiate() as AnimatedSprite2D
+	if character_sprite == null:
+		push_error("home: a cena de '%s' não tem um AnimatedSprite2D na raiz." % char_name)
+		return
+
+	character_holder.add_child(character_sprite)
+	var sprite_position = CHARACTER_POSITION
+	sprite_position.y += float(CHARACTER_Y_OFFSET.get(char_name, 0.0))
+	character_sprite.position = sprite_position
+	character_sprite.scale = CHARACTER_SCALE
+	# As cenas de personagem já têm autoplay = "default", mas deixar explícito
+	# evita depender disso e garante o mesmo frame do sprite de exemplo.
+	if character_sprite.sprite_frames != null and character_sprite.sprite_frames.has_animation(CHARACTER_ANIMATION):
+		character_sprite.play(CHARACTER_ANIMATION)
 
 # =============================================================
 # ATUALIZAÇÃO DA INTERFACE

@@ -8,7 +8,6 @@ bg_color = Color(0.6, 0.6, 0.6, 0)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1kn83"]
 bg_color = Color(0.32761508, 0.27060032, 0.20298055, 1)
-corner_radius_top_left = 2
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w05is"]
 bg_color = Color(0.6462829, 0.5642851, 0.44263944, 1)
@@ -181,3 +180,5 @@ offset_bottom = 543.0
 theme = ExtResource("2_22txc")
 text = "SAIR
 "
+
+[node name="Node2D" type="Node2D" parent="." unique_id=452569176]

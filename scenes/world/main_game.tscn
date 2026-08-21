@@ -6,7 +6,6 @@
 [ext_resource type="Script" uid="uid://c0fdy3dk8vb0s" path="res://scripts/world/doors/minigame_door.gd" id="5_284u4"]
 [ext_resource type="Script" uid="uid://ld1a4gtiqh5s" path="res://scripts/world/doors/market_door.gd" id="6_02s2o"]
 [ext_resource type="Texture2D" uid="uid://dkcrso81q5kb3" path="res://assests/sprites/buildings/Buildings/Pngs/Building2.png" id="6_b558i"]
-[ext_resource type="FontFile" uid="uid://bf1r20swxoymi" path="res://assests/fonts/QuinqueFive.otf" id="7_b558i"]
 [ext_resource type="Texture2D" uid="uid://c6xi35vbwkewp" path="res://assests/sprites/cerca.png" id="7_paufq"]
 [ext_resource type="Texture2D" uid="uid://c6jbhv7qscelf" path="res://assests/sprites/buildings/Buildings/Pngs/Building7.png" id="8_1ykqh"]
 [ext_resource type="Script" uid="uid://b87wemh64khlu" path="res://scripts/world/doors/bank_door.gd" id="8_yls0m"]
@@ -711,9 +710,6 @@ radius = 23.021729
 [sub_resource type="CircleShape2D" id="CircleShape2D_70vka"]
 radius = 22.022715
 
-[sub_resource type="FontVariation" id="FontVariation_2l77h"]
-base_font = ExtResource("7_b558i")
-
 [sub_resource type="CircleShape2D" id="CircleShape2D_snp3k"]
 radius = 22.0
 
@@ -1003,17 +999,7 @@ script = ExtResource("5_284u4")
 position = Vector2(150, 426)
 shape = SubResource("CircleShape2D_ipu61")
 
-[node name="Minigame" type="Label" parent="Doors/Minigame_door" unique_id=652777388]
-visible = false
-offset_left = 108.0
-offset_top = 386.0
-offset_right = 200.0
-offset_bottom = 409.0
-text = "Minigame"
-
-
 [node name="Info-panel" type="Panel" parent="Doors/Minigame_door" unique_id=1700000001]
-visible = false
 z_index = 100
 offset_left = 80.0
 offset_top = 404.0
@@ -1068,21 +1054,7 @@ script = ExtResource("6_02s2o")
 position = Vector2(572, 240)
 shape = SubResource("CircleShape2D_70vka")
 
-[node name="Market" type="Label" parent="Doors/Market_door" unique_id=720853210]
-visible = false
-offset_left = 518.0
-offset_top = 220.0
-offset_right = 636.0
-offset_bottom = 237.0
-theme_override_constants/outline_size = 9
-theme_override_fonts/font = SubResource("FontVariation_2l77h")
-theme_override_font_sizes/font_size = 14
-text = "COMPRAR"
-horizontal_alignment = 1
-
-
 [node name="Info-panel" type="Panel" parent="Doors/Market_door" unique_id=1700000011]
-visible = false
 z_index = 100
 offset_left = 502.0
 offset_top = 218.0
@@ -1138,21 +1110,7 @@ script = ExtResource("8_yls0m")
 position = Vector2(578, 664)
 shape = SubResource("CircleShape2D_70vka")
 
-[node name="Bank" type="Label" parent="Doors/Bank_door" unique_id=1578286873]
-visible = false
-offset_left = 543.0
-offset_top = 422.0
-offset_right = 627.0
-offset_bottom = 439.0
-theme_override_constants/outline_size = 9
-theme_override_fonts/font = SubResource("FontVariation_2l77h")
-theme_override_font_sizes/font_size = 14
-text = "BANCO"
-horizontal_alignment = 1
-
-
 [node name="Info-panel" type="Panel" parent="Doors/Bank_door" unique_id=1700000021]
-visible = false
 z_index = 100
 offset_left = 508.0
 offset_top = 642.0
@@ -1208,9 +1166,7 @@ script = ExtResource("19_drkwd")
 position = Vector2(284, 711)
 shape = SubResource("CircleShape2D_70vka")
 
-
 [node name="Info-panel" type="Panel" parent="Doors/Office_door" unique_id=1700000031]
-visible = false
 z_index = 100
 offset_left = 214.0
 offset_top = 689.0
@@ -1265,14 +1221,12 @@ script = ExtResource("20_l0vhb")
 position = Vector2(273, 114)
 shape = SubResource("CircleShape2D_70vka")
 
-
 [node name="Info-panel" type="Panel" parent="Doors/Home_door" unique_id=1700000041]
-visible = false
 z_index = 100
-offset_left = 203.0
-offset_top = 92.0
-offset_right = 623.0
-offset_bottom = 224.0
+offset_left = 277.0
+offset_top = 52.499996
+offset_right = 697.0
+offset_bottom = 184.5
 scale = Vector2(0.333333, 0.333333)
 theme = ExtResource("60_dinfo")
 
@@ -1322,9 +1276,7 @@ script = ExtResource("20_jwcxe")
 position = Vector2(926, 116)
 shape = SubResource("CircleShape2D_snp3k")
 
-
 [node name="Info-panel" type="Panel" parent="Doors/Restaurant_door" unique_id=1700000051]
-visible = false
 z_index = 100
 offset_left = 856.0
 offset_top = 94.0
@@ -1379,9 +1331,7 @@ script = ExtResource("21_nkiop")
 position = Vector2(1022, 100)
 shape = SubResource("CircleShape2D_snp3k")
 
-
 [node name="Info-panel" type="Panel" parent="Doors/Arcade_door" unique_id=1700000061]
-visible = false
 z_index = 100
 offset_left = 952.0
 offset_top = 78.0
@@ -1436,9 +1386,7 @@ script = ExtResource("22_n6ekm")
 position = Vector2(68, 686)
 shape = SubResource("CircleShape2D_snp3k")
 
-
 [node name="Info-panel" type="Panel" parent="Doors/Shopping_door" unique_id=1700000071]
-visible = false
 z_index = 100
 offset_left = -2.0
 offset_top = 664.0
@@ -1741,7 +1689,7 @@ position = Vector2(356, 92)
 texture = ExtResource("22_p5roh")
 
 [node name="Bush6" type="Sprite2D" parent="Park-trees" unique_id=1166871279]
-position = Vector2(230, 109)
+position = Vector2(304, 69.5)
 texture = ExtResource("21_xmodc")
 
 [node name="Bush7" type="Sprite2D" parent="Park-trees" unique_id=1222793894]

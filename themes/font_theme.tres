@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://dbsgqysmkaiey" path="res://assests/sprites/ui_assets/label_round.png" id="4_p86dj"]
 [ext_resource type="Texture2D" uid="uid://dfxxep7h65ywp" path="res://assests/sprites/ui_assets/input_round.png" id="5_p86dj"]
 [ext_resource type="Texture2D" uid="uid://b1ljkh12elee6" path="res://assests/sprites/ui_assets/panel.png" id="6_47whx"]
+[ext_resource type="Texture2D" uid="uid://bu3rjqrk6dol" path="res://assests/sprites/ui_assets/button.png" id="7_47whx"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_47whx"]
 texture = ExtResource("2_n5xnf")
@@ -56,6 +57,41 @@ texture_margin_top = 16.0
 texture_margin_right = 16.0
 texture_margin_bottom = 16.0
 
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1kn83"]
+texture = ExtResource("6_47whx")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_nkiop"]
+texture = ExtResource("6_47whx")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_n6ekm"]
+texture = ExtResource("7_47whx")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1mux6"]
+texture = ExtResource("2_n5xnf")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_paixt"]
+texture = ExtResource("7_47whx")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+
 [resource]
 Button/colors/font_color = Color(7.546413e-05, 1.3102213e-05, 2.0507794e-06, 1)
 Button/colors/font_hover_color = Color(0, 0, 0, 1)
@@ -72,3 +108,11 @@ LineEdit/colors/font_color = Color(0, 0, 0, 1)
 LineEdit/fonts/font = ExtResource("1_xe4a7")
 LineEdit/styles/normal = SubResource("StyleBoxTexture_4tbb8")
 Panel/styles/panel = SubResource("StyleBoxTexture_03ieg")
+PanelContainer/styles/panel = SubResource("StyleBoxTexture_1kn83")
+TabContainer/colors/font_selected_color = Color(1, 1, 1, 1)
+TabContainer/colors/font_unselected_color = Color(0, 0, 0, 1)
+TabContainer/fonts/font = null
+TabContainer/styles/panel = SubResource("StyleBoxTexture_nkiop")
+TabContainer/styles/tab_focus = SubResource("StyleBoxTexture_n6ekm")
+TabContainer/styles/tab_selected = SubResource("StyleBoxTexture_1mux6")
+TabContainer/styles/tab_unselected = SubResource("StyleBoxTexture_paixt")

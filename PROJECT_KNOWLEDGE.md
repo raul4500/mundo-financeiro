@@ -133,6 +133,38 @@ Isso garante:
 - compatibilidade com save/load
 - manutenção mais fácil do código
 
+### 3.7 Painéis das portas (UI em espaço de mundo)
+
+Cada uma das 8 portas de `scenes/world/main_game.tscn` tem um filho `Info-panel` com o nome do lugar, uma descrição curta e a dica "Pressione ENTER para entrar". O painel nasce com `visible = false` na cena e o script da porta o mostra em `_on_body_shape_entered` e o esconde em `_on_body_shape_exited`.
+
+Estrutura, igual nas 8 portas:
+
+```
+<Nome>_door (Area2D)
+├── CollisionShape2D
+└── Info-panel (Panel, visible = false, z_index = 100, scale = 0.333333)
+    └── Margin (MarginContainer 22/16/22/16, full rect)
+        └── VBoxContainer (separation 6)
+            ├── Title       (font_size 20)
+            ├── Description (font_size 14, expand vertical)
+            └── Hint        (font_size 13, cor azulada)
+```
+
+O painel é centralizado na `CollisionShape2D` da porta: `offset_left = shape.position.x - 70` e `offset_top = shape.position.y - 22`, com tamanho local 420×132.
+
+**Por que `scale = 0.333333`.** A câmera do jogador tem `zoom = Vector2(3, 3)`, então a área visível do mundo é de apenas 384×216 unidades. Um painel de 420 unidades de largura ocuparia mais de uma tela inteira. Como `1/3 × 3 = 1`, a escala de 1/3 faz o painel ocupar 140×44 unidades de mundo e ainda assim renderizar exatamente 420×132 pixels no viewport — ou seja, as fontes são desenhadas em escala 1:1 e ficam nítidas, sem o borrão de texto pequeno esticado pelo zoom.
+
+Consequências práticas:
+
+- os `font_size` do painel são valores normais de UI (20/14/13), não unidades de mundo. Não os reduza "para caber": quem controla o tamanho na tela é a escala;
+- se mudar o `zoom` da câmera em `scenes/players/player.tscn`, a escala dos 8 painéis precisa virar `1/zoom` para o texto continuar nítido;
+- `pivot_offset` fica em (0,0), então a escala é aplicada a partir do canto superior esquerdo. É isso que faz a conta de centralização (`- 70`, `- 22`) funcionar;
+- `z_index = 100` é obrigatório: o nó `Doors` vem antes de `Light-poles` na cena, então sem isso os postes de luz desenhariam por cima do painel.
+
+`enterprise_door.gd` resolve os nós com `get_node_or_null()` dentro de `_ready()`, e **não** com `@onready`, porque é a classe base de `restaurant_door.gd`, `arcade_door.gd` e `shopping_door.gd`, que sobrescrevem `_ready()`. Ele também troca o texto do `Hint` conforme a posse: "Pressione ENTER para entrar" para quem já é dono, "Pressione ENTER para ver a proposta" para quem ainda não comprou. O painel é escondido enquanto o diálogo de compra está aberto e volta se o jogador ainda estiver na porta.
+
+Os `Label` antigos dessas portas (`Minigame`, `Market`, `Bank`) foram removidos da cena, porque o painel já mostra o nome do lugar. As referências `$Minigame` / `$Market` / `$Bank` saíram dos scripts junto — se voltarem a aparecer, é sinal de que alguém restaurou uma versão antiga.
+
 ## 4. Modelo do jogador (Global.player)
 
 O `Global.gd` define um `data_model` com os campos principais:
@@ -408,7 +440,22 @@ Capturados com `@onready`, todos definidos no editor:
 - `.../Hunger-container/ProgressBar` e `.../Happiness-container/ProgressBar` — as barras usam `show_percentage`, então não existem labels separados de porcentagem;
 - `.../status-message` — mensagem de retorno das ações;
 - `Inventory-scroll` e `History-scroll` — recebem um `VBoxContainer` criado em runtime para as linhas;
-- `Exit` — botão fixo da cena, conectado por código (a cena não tem seção `[connection]`).
+- `Exit` — botão fixo da cena, conectado por código (a cena não tem seção `[connection]`);
+- `Node2D` — âncora **vazia** onde `_build_character()` instancia o sprite do personagem em runtime.
+
+### Sprite do personagem na casa
+
+A cena tinha um `raul.tscn` fixo dentro do `Node2D`, o que mostrava o Raul mesmo para quem escolheu outro personagem. Agora `_build_character()` lê `Global.player["name"]`, carrega a cena correspondente e a instancia no `Node2D`, reproduzindo exatamente a transformação do sprite de exemplo que foi removido:
+
+```gdscript
+const CHARACTER_POSITION = Vector2(458, 405)
+const CHARACTER_SCALE = Vector2(17, 17.911)
+const CHARACTER_ANIMATION = "default"
+```
+
+Esses três valores **são o contrato visual**: se o sprite sair de lugar na casa, é aqui que se ajusta, não na cena. Os cinco personagens (`raul`, `matheus`, `phillip`, `melissa`, `enzo`) têm raiz `AnimatedSprite2D` e as animações `default`, `down`, `up` e `walk`, com `autoplay = "default"` — mas o script chama `play("default")` explicitamente para não depender disso.
+
+> Duplicação conhecida: o mapa nome → cena (`CHARACTER_SCENES`) agora existe em três lugares — `home.gd`, `scripts/player/player.gd` e `scripts/player/raul_minigame.gd`. Um personagem novo precisa ser adicionado nos três. Candidato a virar uma constante única em `Global`.
 
 ### Funções principais
 
@@ -610,22 +657,44 @@ O layout fica em `scenes/world/ui/enterprise-view.tscn`. As cenas `restaurant.ts
 EnterpriseView (Control)
 └── Margin (MarginContainer 32/24/32/24)
     └── VBoxContainer (separation 12)
-        ├── Title-label      (font_size 28, autowrap)
-        ├── Summary-label    (autowrap)
-        ├── Status-label     (autowrap)
-        ├── Sections (GridContainer, columns = 2, expand vertical, h/v_separation 18)
-        │   ├── Business-panel   → VBoxContainer → Title + Business-scroll  → Business-list
-        │   ├── Stock-panel      → VBoxContainer → Title + Stock-scroll     → Stock-list
-        │   ├── Bills-panel      → VBoxContainer → Title + Bills-scroll     → Bills-list
-        │   └── Equipment-panel  → VBoxContainer → Title + Equipment-scroll → Equipment-list
-        └── Exit-button
+        ├── Business-panel (PanelContainer, font_theme, expand vertical, stretch_ratio 0.6)
+        │   └── VBoxContainer (separation 8)
+        │       ├── Title-label   (font_size 28)
+        │       ├── Status-label  (font_size 18, cor por situação)
+        │       ├── Stats-grid (GridContainer, columns = 3, h_sep 24, v_sep 6)
+        │       │   ├── Money-label     ├── Revenue-label  ├── Expenses-label
+        │       │   ├── Profit-label    ├── Capacity-label ├── Ceiling-label
+        │       │   └── Bills-label     └── Payroll-label  └── Total-profit-label
+        │       └── Message-label (resultado da última operação)
+        ├── Sections (TabContainer, font_theme, expand vertical)
+        │   ├── Negócio      (ScrollContainer) → Business-list
+        │   ├── Estoque      (ScrollContainer) → Stock-list
+        │   ├── Contas       (ScrollContainer) → Bills-list
+        │   └── Equipamentos (ScrollContainer) → Equipment-list
+        └── Exit-button (font_theme)
 ```
 
-Todo o posicionamento é por container (`size_flags`), sem offsets em pixel — o layout se adapta à resolução. **Validado em runtime.**
+**As seções são abas, não cards.** Antes eram quatro `PanelContainer` em um grid 2×2, todos visíveis. Agora é um `TabContainer` e só uma seção aparece por vez. Três consequências:
 
-O grid é 2×2, não 4 colunas: com 4 colunas cada painel ficava com 258 px e a tela estourava (ver 3.5). Em 2×2 cada coluna tem ~535 px. Os quatro `ScrollContainer` (com `horizontal_scroll_mode = 0`) garantem que nem a largura nem a altura possam transbordar — o texto quebra e o painel rola.
+- **o nome do nó da aba é o título que o jogador lê** — é assim que o `TabContainer` funciona. Por isso as abas se chamam `Negócio`, `Estoque`, `Contas` e `Equipamentos`, com acento. Renomear uma aba muda o texto na tela **e** o caminho no script;
+- o `Label` de título dentro de cada seção foi removido: a barra de abas já cumpre esse papel. O `PanelContainer` de cada seção também saiu, porque o `TabContainer` desenha o próprio fundo. Cada aba é diretamente um `ScrollContainer` (com `horizontal_scroll_mode = 0`) contendo o `*-list`;
+- `_refresh_ui()` só mexe no conteúdo dos `*-list`, nunca no `TabContainer`. Isso é intencional: a aba seguidamente selecionada continua selecionada depois de comprar estoque ou pagar conta.
 
-Os nomes dos quatro `*-list` são o contrato com o script. Ao mexer no layout, preserve-os (ou atualize os `@onready` junto).
+O `font_theme.tres` já traz os estilos de `TabContainer` (`panel`, `tab_selected`, `tab_unselected`, `tab_focus` e as cores de fonte selecionada/não selecionada), então a barra de abas segue o visual pixel-art do resto da tela.
+
+Os quatro `ScrollContainer` (com `horizontal_scroll_mode = 0`) garantem que nem a largura nem a altura possam transbordar — o texto quebra e a aba rola.
+
+**Os nomes dos nós são o contrato com o script, e esse contrato já quebrou três vezes** — sempre com o mesmo sintoma: `Node not found` no `@implicit_ready()` e, em seguida, `Invalid assignment of property 'text' ... on a base object of type 'null instance'` em `_refresh_ui()`. As quebras foram: os labels de cabeçalho ganharem um pai (`Margin/VBoxContainer/` → `.../Panel/`), esse pai ser renomeado para `Business-panel`, e as seções virarem abas.
+
+Por isso o script não usa mais `$"caminho"` direto. Todos os nós passam por `_find(path)`, que tenta o caminho esperado e, se falhar, procura o nó **pelo nome na árvore inteira** (`find_child(nome, true, false)`), avisando no console qual caminho atualizar. Reorganizar o layout agora degrada para um aviso em vez de derrubar a tela — desde que os nomes de folha (`Money-label`, `Business-list`, …) continuem únicos.
+
+Convenção de tema da tela: **painéis usam `font_theme.tres`, labels usam `label.tres`**. Isso importa porque `Sections` carrega `font_theme.tres`, cujo `Label/styles/normal` é `label_round.png` e cujo corpo é 24 — e o tema propaga para os descendentes. Sem isso, cada linha criada em runtime viria com fundo de caixa arredondada e fonte gigante. Por isso `_make_row_label()` aplica `label.tres` e reduz o corpo para 16.
+
+**Um label por indicador.** O cabeçalho já teve um `Summary-label` e um `Status-label` com todos os números concatenados por `|`. Foram quebrados em nove labels dentro de `Stats-grid` (3 colunas × 3 linhas): dinheiro, receita diária, despesas diárias, lucro estimado, capacidade, teto de receita, contas pendentes, folha semanal e lucro acumulado. `Status-label` ficou só com a frase da situação, e `Message-label` recebe o resultado da última operação.
+
+`Message-label` existe porque `_show_result()` escrevia a mensagem no `status_label` **antes** de chamar `_refresh_ui()`, que a sobrescrevia no mesmo frame — a mensagem nunca aparecia. Agora a ordem é invertida e o destino é outro label.
+
+**Lembrete de `PanelContainer`:** ele chama `fit_child_in_rect()` com o **mesmo retângulo para todos os filhos**, porque foi feito para receber um único filho. Os três labels já ficaram empilhados um sobre o outro por estarem direto sob o `Business-panel`. Por isso existe o `VBoxContainer` no meio — não o remova.
 
 **Fixo na cena:** painéis, labels de cabeçalho, títulos de seção e o botão Voltar.
 
