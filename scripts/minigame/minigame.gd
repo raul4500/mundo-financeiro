@@ -9,9 +9,10 @@ const LABEL_THEME = preload("res://themes/label.tres")
 # reconquistar um nível que já tem.
 const SPAWN_MARKERS := [
 	"map/levels/Marker_1",         # nível 1 — início do mapa
-	"map/levels/Level1/Marker_2",  # nível 2 — depois do Level1
+	"map/levels/Marker_2",  # nível 2 — depois do Level1
 	"map/levels/Marker_3",         # nível 3 — depois do Level2
-	"map/levels/Marker_4"          # nível 4 — depois do Level3
+	"map/levels/Marker_4",         # nível 4 — depois do Level3
+	"map/levels/Marker_5"
 ]
 # A câmera nasce um pouco à frente do jogador, como nos marcadores originais
 # (jogador 170 / câmera 212 no nível 1).
@@ -20,6 +21,9 @@ const CAMERA_OFFSET := Vector2(42, -32)
 @onready var player = $"raul-minigame"
 @onready var camera = $Camera2D
 @onready var level_label = $Camera2D/Level
+
+# Label que mostra o salário atual na câmera
+@onready var salary_label = null
 
 var time_display: Label
 var curr_level = Global.player["school_level"]
@@ -33,12 +37,19 @@ var countdown_left := 0.0
 var counting := false
 var started := false
 
+# Run-in state: quando o jogador parte de fora da câmera correndo até o
+# ponto onde a câmera começa a segui-lo. Enquanto run_in_active a câmera fica
+# parada; ao chegar, 'started' é ativado e a câmera passa a acompanhar o X do
+# jogador.
+var run_in_active := false
+var run_in_target_x := 0.0
+var run_in_padding := 300.0 # distância em px que o jogador nasce antes do ponto de acompanhamento
+
 func notify_tutorial_minigame_finished() -> void:
 	TutorialManager.on_minigame_finished()
 
 func _ready() -> void:
 	Global.play_time = true
-	_create_time_display()
 	_place_player()
 	_create_start_screen()
 	# Trava até o jogador começar. O contador de Global convive com o lock do
@@ -65,15 +76,9 @@ func _place_player() -> void:
 		return
 	player.global_position = marker.global_position
 	camera.global_position = marker.global_position + CAMERA_OFFSET
-
-func _create_time_display() -> void:
-	var layer = CanvasLayer.new()
-	layer.layer = 5
-	add_child(layer)
-	time_display = preload("res://scripts/ui/time_display.gd").new()
-	time_display.position = Vector2(24, 20)
-	time_display.add_theme_font_size_override("font_size", 22)
-	layer.add_child(time_display)
+	# Desliga smoothing da câmera do minigame — o comportamento desejado é seguir
+	# apenas no eixo X sem suavização e manter Y fixo mesmo durante pulos.
+	camera.position_smoothing_enabled = false
 
 # =============================
 # 🎬 TELA DE INÍCIO
@@ -135,44 +140,78 @@ func _make_label(text: String, font_size: int) -> Label:
 	return label
 
 func _on_start_pressed() -> void:
-	if counting or started:
+	# Inicia a sequência de run-in: a câmera fica parada enquanto o jogador
+	# surge fora da tela e corre até o ponto em que a câmera deverá começar a
+	# seguir. Não usamos o contador de 3s — o jogador corre imediatamente.
+	if counting or started or run_in_active:
 		return
-	counting = true
-	countdown_left = COUNTDOWN_SECONDS
+	# Esconde a UI de início
+	start_layer.visible = false
 	start_button.visible = false
+	# Inicia a sessão do minigame e libera controle do jogador
+	MinigameManager.begin_session()
+	Global.unlock_gameplay()
+	# Calcula a posição do jogador onde a câmera começará a segui-lo. A fórmula
+	# é consistente com a implementação de follow (camera.x = player.x + OFFSET.x)
+	var follow_player_x = camera.global_position.x - CAMERA_OFFSET.x
+	# Posiciona o jogador 300px antes desse ponto e inicia auto-run
+	player.global_position.x = follow_player_x - run_in_padding
+	player.global_position.y = player.global_position.y
+	player.call_deferred("start_auto_run", follow_player_x, 140.0)
+	run_in_target_x = follow_player_x
+	run_in_active = true
 
 func _process_start_screen(delta: float) -> void:
-	if counting:
-		countdown_left -= delta
-		if countdown_left <= 0.0:
-			_begin_game()
-			return
-		start_countdown_label.text = str(int(ceil(countdown_left)))
-		return
-
 	# Enquanto houver mensagem de tutorial na tela ou na fila, o botão fica
 	# escondido: a caixa de início só aparece depois das explicações.
 	var tutorial_busy = AlertManager.panel.visible or not TutorialManager.pending_messages.is_empty()
 	start_button.visible = not tutorial_busy
 
 func _begin_game() -> void:
+	# Mantido para compatibilidade, mas a nova lógica usa run_in_active. Caso
+	# seja chamado, garante que o minigame iniciará imediatamente.
 	if started:
 		return
 	started = true
 	start_layer.visible = false
-	# A corrida só passa a valer aqui. Antes disso o jogador está parado na
-	# tela de início, e nos níveis 2+ ele nasce colado no checkpoint — sem
-	# esta ordem, a área dispararia antes de ele sequer poder jogar.
 	MinigameManager.begin_session()
 	Global.unlock_gameplay()
 
+func _process_run_in(delta: float) -> void:
+	# Enquanto o run-in estiver ativo, a câmera não se move (fica na posição
+	# definida em _place_player). Aguardamos o jogador chegar ao ponto onde a
+	# câmera deve começar a segui-lo.
+	if not run_in_active:
+		return
+	# verifica chegada no ponto alvo
+	if abs(player.global_position.x - run_in_target_x) <= 4.0:
+		# finaliza run-in e ativa o loop principal
+		run_in_active = false
+		# garante que o jogador pare o auto-run (caso ainda esteja ativo)
+		player.call_deferred("stop_auto_run")
+		started = true
+		# sinal opcional: caso exista lógica de início de tentativa em MinigameManager
+		if MinigameManager.has_method("on_run_in_finished"):
+			MinigameManager.on_run_in_finished()
+
 func _process(delta: float) -> void:
 	if not started:
-		_process_start_screen(delta)
+		# Se estiver na sequência de run-in, processa-a; caso contrário mostra a
+		# tela de início.
+		if run_in_active:
+			_process_run_in(delta)
+		else:
+			_process_start_screen(delta)
 		return
 
 	if Global.gameplay_locked:
 		return
 
-	camera.global_position.x += 1.6666666
-	level_label.text = str(int(Global.player["school_level"]))
+	# Segue o jogador apenas no eixo X, mantendo a coordenada Y atual da câmera.
+	# Não há smoothing — posição é atualizada diretamente.
+	var target_x = player.global_position.x + CAMERA_OFFSET.x
+	camera.global_position = Vector2(target_x, camera.global_position.y)
+	level_label.text = "Level %s" %str(int(Global.player["school_level"]))
+	# Atualiza o label de salário
+	if salary_label != null:
+		salary_label.text = "Salário: R$ %d" % int(Global.player.get("salary", 0))

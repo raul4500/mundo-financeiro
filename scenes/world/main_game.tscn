@@ -902,13 +902,13 @@ theme_override_font_sizes/font_size = 9
 text = "SABOR"
 
 [node name="Label2" type="Label" parent="Buildings/Building2" unique_id=1911120470]
-offset_left = 34.0
-offset_top = 23.0
-offset_right = 65.0
-offset_bottom = 30.0
+offset_left = 35.0
+offset_top = 22.0
+offset_right = 66.0
+offset_bottom = 29.0
 theme_override_colors/font_color = Color(0, 0.44116154, 0.24903914, 1)
 theme_override_font_sizes/font_size = 5
-text = "brasileiro"
+text = "da praça"
 
 [node name="Building10" type="Sprite2D" parent="Buildings" unique_id=136559684]
 position = Vector2(714, 155)
@@ -1798,6 +1798,27 @@ texture = ExtResource("25_8uhhx")
 
 [node name="School" type="Marker2D" parent="Camera-focusPoints" unique_id=1633439240]
 position = Vector2(150, 426)
+
+[node name="Market" type="Marker2D" parent="Camera-focusPoints" unique_id=692359959]
+position = Vector2(572, 240)
+
+[node name="Restaurant" type="Marker2D" parent="Camera-focusPoints" unique_id=72786890]
+position = Vector2(926, 115)
+
+[node name="Shopping" type="Marker2D" parent="Camera-focusPoints" unique_id=922811930]
+position = Vector2(68, 687)
+
+[node name="Office" type="Marker2D" parent="Camera-focusPoints" unique_id=914924971]
+position = Vector2(283, 706)
+
+[node name="Home" type="Marker2D" parent="Camera-focusPoints" unique_id=1083804723]
+position = Vector2(274, 118)
+
+[node name="Arcade" type="Marker2D" parent="Camera-focusPoints" unique_id=1460533523]
+position = Vector2(1022, 100)
+
+[node name="Bank" type="Marker2D" parent="Camera-focusPoints" unique_id=224065423]
+position = Vector2(578, 660)
 
 [node name="Parking-lines" type="Control" parent="." unique_id=719537061]
 layout_mode = 3

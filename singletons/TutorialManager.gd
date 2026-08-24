@@ -10,6 +10,14 @@ var step := 0
 var pending_messages: Array = []
 var skipped := false
 
+# Mapeamento de mensagens para pontos de foco (nomes de nodes sob
+# Camera-focusPoints). Índices referem-se a posições no array `messages`.
+var message_focus_map := {
+	11: "Market",
+	12: "Bank",
+	13: "Office"
+}
+
 # =============================
 # 🧭 ROTEIRO DE APRESENTAÇÃO DO TUTORIAL
 # =============================
@@ -213,17 +221,52 @@ func skip_tutorial() -> void:
 	if has_node("/root/Global"):
 		Global.force_release_all_gameplay_locks()
 
+func _message_index(text: String) -> int:
+	for i in range(messages.size()):
+		if messages[i] == text:
+			return i
+	return -1
+
 func queue_messages(list: Array) -> void:
 	if list.is_empty():
 		return
-	pending_messages = list.duplicate()
+	# Normalize para um Array de dicionários com {"text":..., "focus":...}
+	pending_messages.clear()
+	for item in list:
+		var idx = _message_index(str(item))
+		var focus_name = null
+		if idx >= 0 and message_focus_map.has(idx):
+			focus_name = message_focus_map[idx]
+		pending_messages.append({"text": str(item), "focus": focus_name})
 	_show_next_queued_message()
 
 func _show_next_queued_message() -> void:
 	if pending_messages.is_empty():
 		return
-	var text = pending_messages.pop_front()
-	emit_signal("show_message", text, true)
+	var entry = pending_messages.pop_front()
+	var text = entry.get("text", "")
+	var focus = entry.get("focus", null)
+	# Se houver um foco, pede ao mundo para mover a câmera até ele e espera a
+	# confirmação de chegada antes de mostrar a mensagem.
+	if focus != null and focus != "":
+		# Emite o sinal que a cena principal escuta (main_game._focus)
+		emit_signal("focus", focus)
+		# Espera a câmera chegar ao ponto — o CameraManager emite focus_arrived.
+		var args = await CameraManager.focus_arrived
+		# Se o foco chegado não for o esperado, apenas prossegue — não bloqueia.
+		#if args.size() == 0 or str(args[0]) != str(focus):
+			# aviso opcional
+			#print("TutorialManager: focus_arrived mismatch: esperado %s, chegou %s" % [focus, args.size() > 0 ? str(args[0]) : "(nenhum)"])
+		# Agora mostra a mensagem com o alerta normal
+		emit_signal("show_message", text, true)
+	else:
+		# Sem foco — garante que a câmera esteja no jogador antes de mostrar a
+		# mensagem, aguardando o retorno se necessário.
+		# Pede ao CameraManager para retornar e espera confirmação.
+		# Se a câmera já estiver no player, a chamada é rápida.
+		CameraManager.return_to_player()
+		await CameraManager.focus_returned
+		emit_signal("show_message", text, true)
 
 func continue_tutorial_after_alert() -> void:
 	if not pending_messages.is_empty():

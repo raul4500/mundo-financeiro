@@ -42,5 +42,20 @@ func _process(delta: float) -> void:
 		Global.player["money"] += 10000
 		
 func _focus(point: String) -> void:
-	var target_node = get_node("Camera-focusPoints/" + point)
-	await CameraManager.focus(target_node)
+	# Busca o nó de foco sob Camera-focusPoints; se não existir, faz return.
+	var path = "Camera-focusPoints/" + point
+	if not has_node(path):
+		push_warning("main_game._focus: foco não encontrado: %s" % path)
+		return
+	var target_node = get_node(path)
+	# Se há mensagens enfileiradas no TutorialManager, usamos goto() — isto
+	# move a câmera até o ponto e a mantém lá; o TutorialManager aguardará
+	# CameraManager.focus_arrived antes de exibir o alerta.
+	# Se não há mensagens (ex.: passo 5, ir para a escola), usamos o comportamento
+	# legado focus() que move para o ponto, espera e retorna a câmera ao jogador
+	# automaticamente para evitar travar o jogo aguardando que o jogador entre.
+	if not TutorialManager.pending_messages.is_empty():
+		await CameraManager.goto(target_node)
+	else:
+		# Mantém compatibilidade com fluxo antigo (vai e volta)
+		await CameraManager.focus(target_node)

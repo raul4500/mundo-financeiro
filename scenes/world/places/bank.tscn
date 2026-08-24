@@ -6,6 +6,8 @@
 [ext_resource type="Script" uid="uid://dlr7yp7ahwfch" path="res://scripts/world/bank/portfolio.gd" id="4_klp1j"]
 [ext_resource type="Theme" uid="uid://8cd7r8xa15ac" path="res://themes/label.tres" id="5_evlbl"]
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0k17t"]
+
 [node name="Bank" type="Control" unique_id=11116231]
 layout_mode = 3
 anchors_preset = 15
@@ -143,6 +145,7 @@ offset_top = 21.0
 offset_right = 1123.0
 offset_bottom = 624.0
 theme = ExtResource("4_0nfyk")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_0k17t")
 current_tab = 0
 
 [node name="FII-shop" type="Panel" parent="Investimentos" unique_id=830567245]
