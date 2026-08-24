@@ -187,7 +187,7 @@ func update_labels() -> void:
 
 
 func _on_exit_pressed() -> void:
-	get_tree().change_scene_to_file("res://scenes/world/main_game.tscn")
+	TransitionManager.change_scene("res://scenes/world/main_game.tscn")
 
 
 func _on_buy_item(group_name: String, item_name: String) -> void:

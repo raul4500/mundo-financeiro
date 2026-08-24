@@ -16,6 +16,9 @@ var data_model = {
 	"day": 1,
 	"hour": 8,
 	"tutorial_step": 1,
+	# Semanas cujo aviso semanal do tutorial já foi mostrado, para um reload
+	# não repetir o que o jogador já leu. Ver TutorialManager.weekly_messages.
+	"tutorial_weeks_shown": [],
 	"investments": {},
 	"enterprises": {},
 	"expense_history": [],
@@ -26,6 +29,15 @@ var data_model = {
 	"home_inventory": {},
 	"home_actions_log": [],
 	"pending_events": [],
+	# Travas do minigame. Valores padrão já satisfeitos, então a primeira
+	# partida começa com a escola liberada. `sessions_played` distingue a
+	# corrida de formação inicial (sem limite de níveis) das demais.
+	# Espelha MinigameManager.default_progress(), que normaliza saves antigos.
+	"minigame_progress": {
+		"unlock_week": 1,
+		"unlock_day": 0,
+		"sessions_played": 0
+	},
 	"last_week_status": {
 		"hunger": 100.0,
 		"happiness": 100.0
@@ -83,6 +95,10 @@ func ensure_player_state() -> void:
 	# Inicializa lista de eventos pendentes (contas / bônus) se não existir
 	if not player.has("pending_events"):
 		player["pending_events"] = []
+	if not player.has("minigame_progress") or typeof(player["minigame_progress"]) != TYPE_DICTIONARY:
+		player["minigame_progress"] = MinigameManager.default_progress()
+	if not player.has("tutorial_weeks_shown") or typeof(player["tutorial_weeks_shown"]) != TYPE_ARRAY:
+		player["tutorial_weeks_shown"] = []
 	if not player.has("last_week_status"):
 		player["last_week_status"] = {"hunger": 100.0, "happiness": 100.0}
 	player["money"] = float(player.get("money", 0.0))
@@ -126,6 +142,7 @@ func new_game(name: String, money: float) -> void:
 	player["day"] = 1
 	player["hour"] = 8
 	player["tutorial_step"] = 1
+	player["tutorial_weeks_shown"] = []
 	player["investments"] = {}
 	player["expense_history"] = []
 	player["spend_today"] = 0.0
@@ -135,6 +152,7 @@ func new_game(name: String, money: float) -> void:
 	player["home_inventory"] = {}
 	player["home_actions_log"] = []
 	player["pending_events"] = []
+	player["minigame_progress"] = MinigameManager.default_progress()
 	player["last_week_status"] = {"hunger": 100.0, "happiness": 100.0}
 
 	TimeManager.update_time()
@@ -151,6 +169,12 @@ func load_data() -> void:
 		player = _new_player_data()
 		ensure_player_state()
 		print("game loaded")
+
+# Dia absoluto desde o começo da partida. player["day"] vai de 1 a 7 e reseta
+# na virada de semana, então não serve para cooldown: um cooldown de 2 dias
+# iniciado no dia 6 precisa continuar valendo no dia 1 da semana seguinte.
+func get_absolute_day() -> int:
+	return (int(player.get("week", 1)) - 1) * 7 + int(player.get("day", 1))
 
 func update_salary() -> void:
 	var base_salary = 200.0

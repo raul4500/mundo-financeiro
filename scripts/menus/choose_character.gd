@@ -12,4 +12,4 @@ func select_character(name: String, k: float) -> void:
 	Global.new_game(name, k*200)
 
 func _on_return_pressed() -> void:
-	get_tree().change_scene_to_file("res://scenes/menus/main_menu.tscn")
+	TransitionManager.change_scene("res://scenes/menus/main_menu.tscn")

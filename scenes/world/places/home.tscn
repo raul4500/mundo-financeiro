@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://brqyirmkigsp3" path="res://scripts/world/home/home.gd" id="1_ecgb0"]
 [ext_resource type="Theme" uid="uid://b2pfdp8p48jam" path="res://themes/font_theme.tres" id="2_22txc"]
+[ext_resource type="Texture2D" uid="uid://bflybnt72b4wy" path="res://assests/sprites/home.jpeg" id="2_tq22s"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5t7o5"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -20,6 +21,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ecgb0")
+
+[node name="Home" type="Sprite2D" parent="." unique_id=982492122]
+position = Vector2(575.50006, 322.75)
+scale = Vector2(0.8045581, 0.9032921)
+texture = ExtResource("2_tq22s")
 
 [node name="Money-label" type="Label" parent="." unique_id=1303134132]
 modulate = Color(0.9696924, 0.9696924, 0.9696924, 1)

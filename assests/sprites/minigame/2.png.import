@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://yxmmv1bxgkfm"
-path="res://.godot/imported/bank.jpg-8630d41c5774c89900fb9ee1b6388ff1.ctex"
+uid="uid://s2xvpyn4pjg4"
+path="res://.godot/imported/2.png-a0b7653975280a0e49108ad31d890c4b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assests/sprites/bank.jpg"
-dest_files=["res://.godot/imported/bank.jpg-8630d41c5774c89900fb9ee1b6388ff1.ctex"]
+source_file="res://assests/sprites/minigame/2.png"
+dest_files=["res://.godot/imported/2.png-a0b7653975280a0e49108ad31d890c4b.ctex"]
 
 [params]
 

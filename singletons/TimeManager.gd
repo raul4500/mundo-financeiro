@@ -78,6 +78,10 @@ func _add_minute():
 					Global.player["week"] = week + 1
 					Global.get_paid()
 					emit_signal("week_changed", Global.player["week"])
+					# Aviso do tutorial daquela semana, se houver. Vem antes
+					# do sorteio de evento para o jogador ler a explicação
+					# antes de receber a primeira conta inesperada.
+					TutorialManager.on_week_changed(int(Global.player["week"]))
 					# Eventos inesperados começam na semana 2: o próprio
 					# maybe_spawn_events() decide se a semana já permite.
 					EventsManager.maybe_spawn_events(int(Global.player["week"]))

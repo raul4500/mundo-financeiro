@@ -19,7 +19,7 @@ func _on_sair_pressed() -> void:
 	get_tree().paused = false
 	visible = false
 	SaveManager.save_game()
-	get_tree().change_scene_to_file("res://scenes/menus/main_menu.tscn")
+	TransitionManager.change_scene("res://scenes/menus/main_menu.tscn")
 
 
 func _on_continuar_pressed() -> void:

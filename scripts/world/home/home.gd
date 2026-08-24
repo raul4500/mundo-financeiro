@@ -269,4 +269,4 @@ func _on_tv_pressed() -> void:
 	_update_ui()
 
 func _on_exit_pressed() -> void:
-	get_tree().change_scene_to_file("res://scenes/world/main_game.tscn")
+	TransitionManager.change_scene("res://scenes/world/main_game.tscn")

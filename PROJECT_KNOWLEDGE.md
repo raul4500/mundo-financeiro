@@ -57,9 +57,11 @@ Em `project.godot`, vários nodes ficam automaticamente disponíveis globalmente
 - `MissionManager` — validação de missões
 - `FIIManager` — compra/venda de FIIs
 - `EnterpriseManager` — regras compartilhadas dos três empreendimentos
+- `MinigameManager` — travas e cooldown da escola/minigame (ver seção 12.2)
+- `TransitionManager` — fade entre cenas; ponto único de troca de cena (ver 3.9)
 - `Logger` — grava logs de runtime em arquivo
 - `EventsManager` — sorteia eventos inesperados e mantém as pendências (contas/bônus) que o jogador resolve no banco; dados vêm de `UnexpectedEvents`, que serve só como fonte de dados. Ver seção 12.1
-- `TutorialManager` — roteiro do onboarding (mensagens, passos, pular tutorial)
+- `TutorialManager` — onboarding da semana 1 e avisos semanais do tutorial (ver 3.3)
 - `AlertManager` — `CanvasLayer` de alerta modal, compartilhado por todo o jogo
 - `CameraManager` — cutscenes de câmera
 - `DoorManager` — utilitário de portas
@@ -98,7 +100,26 @@ Os botões usam `focus_mode = FOCUS_NONE` de propósito. Um botão com foco é a
 
 `TutorialManager.skip_tutorial()` marca `skipped`, limpa a fila de mensagens e pula `step` e `tutorial_step` para `FINAL_STEP`. O botão de pular só aparece na primeira mensagem (`can_skip()` exige `step == 1`).
 
-O roteiro tem 20 mensagens em `messages` e 8 passos em `_next_step()`. O passo 8 enfileira a cauda inteira (`messages[7]` a `messages[19]`), que inclui o bloco dos empreendimentos (`messages[12]` a `messages[17]`): aviso de conteúdo avançado, mecânica comum a todo negócio, um resumo de cada um dos três empreendimentos com preço e contas semanais reais, e o aviso de que o nível 5 do escritório é pré-requisito prático. **Os números dessas mensagens são copiados dos arquivos em `scripts/enterprise/data/`** — ao mexer em `purchase_price`, `water_bill`, `electricity_bill`, `starting_capacity`, `employee_salary` ou `upgrade_costs`, atualize o texto do tutorial junto, senão ele passa a ensinar valores errados.
+**O tutorial tem dois estágios.**
+
+*Estágio 1 — onboarding linear.* `messages` (15 entradas) e a máquina de 8 passos de `_next_step()`, que roda uma vez só, da abertura do jogo até o fim da semana 1. Os passos 1–4 são as boas-vindas, o 5 foca a câmera na escola, o 6 explica o minigame (`messages[4]` a `messages[7]`, incluindo as regras de trava da escola), o 7 espera o minigame terminar e o 8 fecha apresentando mercado, banco e escritório (`messages[8]` a `messages[14]`).
+
+*Estágio 2 — avisos semanais.* `weekly_messages` é um dicionário `semana → Array[String]`, disparado por `TutorialManager.on_week_changed(week)`, que o `TimeManager` chama na virada de semana logo após `week_changed`. Cada semana ensina só o que acabou de destravar:
+
+| Semana | Conteúdo |
+|---|---|
+| 2 | Eventos inesperados viram contas/bônus pendentes no banco; ligação com o nível 2 do escritório (reserva de emergência) |
+| 3 | Investimentos básicos e os FIIs no banco (nível 3 do escritório) |
+| 4 | Mercado financeiro (nível 4 do escritório) |
+| 5 | Bloco dos empreendimentos: 6 mensagens com preço, capacidade e contas semanais reais de cada negócio |
+
+As semanas escolhidas acompanham o que o resto do jogo já libera: `EventsManager.FIRST_EVENT_WEEK = 2` e `office.gd` usa `player_level = Global.player["week"]`, então o nível N do escritório destrava na semana N.
+
+`Global.player["tutorial_weeks_shown"]` guarda as semanas já mostradas, para um reload não repetir. A comparação passa por `_week_already_shown()`, que converte cada item com `int()` — depois de salvar e carregar, o JSON devolve os números como float e comparar `2` com `2.0` direto no `Array.has()` é frágil.
+
+`skip_tutorial()` marca **todas** as semanas de `weekly_messages` como vistas: o botão diz "Pular tutorial", então pula o tutorial inteiro, não só o onboarding. Isso vai para `Global.player` de propósito — a variável `skipped` não é salva, então checá-la faria os avisos semanais voltarem após um reload.
+
+**Os números das mensagens dos empreendimentos são copiados dos arquivos em `scripts/enterprise/data/`** — ao mexer em `purchase_price`, `water_bill`, `electricity_bill`, `starting_capacity`, `employee_salary` ou `upgrade_costs`, atualize o texto do tutorial junto, senão ele passa a ensinar valores errados.
 
 ### 3.4 Layout na cena, conteúdo no script
 
@@ -111,7 +132,7 @@ Já seguem esse padrão:
 - `scripts/world/home/home.gd` sobre `scenes/world/places/home.tscn`;
 - `scripts/enterprise/enterprise_management.gd` sobre `scenes/world/ui/enterprise-view.tscn`.
 
-Parcialmente: `banco.gd` — o painel de contas/bônus já vem da cena (`Events-panel`), mas `history_panel` ainda é montado por script.
+Parcialmente: `banco.gd` — os painéis de investimentos e de contas/bônus já vêm da cena (abas do `TabContainer` `Investimentos`), mas `history_panel` ainda é montado por script.
 
 Ainda constroem a interface inteira por script (candidatos ao mesmo tratamento): `market.gd`, `office.gd`, `AlertManager.gd`.
 
@@ -188,6 +209,21 @@ Onde isso está aplicado:
 O `font_theme.tres` também define `PanelContainer/styles/panel` e os estilos de `TabContainer` (`panel`, `tab_selected`, `tab_unselected`, `tab_focus`), então esses dois tipos já saem com o visual pixel-art sem override nenhum.
 
 Nota: `label.tres` **não** define `Label/fonts/font`, só cor (preto), corpo 23 e um `StyleBoxFlat` transparente. Quem usa `label.tres` renderiza com a fonte padrão do Godot, não com a pixel font.
+
+### 3.9 Transições entre cenas
+
+**Toda troca de cena passa por `TransitionManager.change_scene(caminho)`.** Nunca chame `get_tree().change_scene_to_file()` direto — se aparecer um, é código que escapou da conversão.
+
+`TransitionManager` é um `CanvasLayer` autoload com um `ColorRect` preto em tela cheia. `change_scene()` faz fade-out, troca, espera um frame para a cena nova entrar na árvore, e faz fade-in. Duração e cor ficam em um lugar só (`FADE_DURATION`).
+
+Quatro detalhes que sustentam isso:
+
+- **quem chama não pode dar `await`.** Ao trocar de cena, o nó que chamou é liberado; se estivesse esperando a corrotina, retomaria já morto. A corrotina vive no autoload, que sobrevive à troca. Os call sites chamam e retornam;
+- **`_transitioning` bloqueia chamada repetida.** As portas usam `Input.is_key_pressed()` dentro de `_process`, que é verdadeiro **todo frame** enquanto a tecla está segurada. Sem a guarda, um fade de 0.35 s viraria dezenas de chamadas seguidas. Isto já era um problema latente antes das transições — só não aparecia porque a troca era instantânea;
+- **`process_mode = PROCESS_MODE_ALWAYS`.** Um `Tween` segue o `process_mode` do nó dono. Se uma transição começasse com a árvore pausada (menu de pausa), o tween congelaria, o `await` nunca voltaria e o jogo ficaria travado com `_transitioning = true` para sempre;
+- **`layer = 200`**, acima do `AlertManager` (100) e do diálogo de compra das portas (90), para o fade cobrir tudo. E `unlock_gameplay()` roda mesmo quando `change_scene_to_file` retorna erro, senão o contador de `gameplay_locked` ficaria preso.
+
+**Exceção deliberada:** `Global.new_game()` continua trocando de cena direto. É a passagem da escolha de personagem para o mundo, e `Global` é a base de que todos dependem — fazê-lo consumir um singleton de UI inverteria a direção das dependências do projeto. Para ter fade também ali, o caminho limpo é `choose_character.gd` chamar a transição e `new_game()` deixar de trocar de cena.
 
 ## 4. Modelo do jogador (Global.player)
 
@@ -565,9 +601,9 @@ Histórico de gastos é representado em `Global.player["expense_history"]` e pod
 
 ### Painel de contas e bônus pendentes
 
-Fica em `bank.tscn`, em `Events-panel/Margin/VBoxContainer/Events-scroll/Events-list`. O layout é da cena; `banco.gd` só preenche a lista, escutando `EventsManager.events_updated` para se redesenhar. É aqui que os eventos inesperados são resolvidos — ver seção 12.1.
+Fica em `bank.tscn`, em `Investimentos/Eventos/Margin/VBoxContainer/Events-scroll/Events-list`. O painel virou uma aba do `TabContainer` chamado `Investimentos`, junto com a loja de FIIs e a carteira — o que resolveu o empilhamento de painéis que existia antes. O layout é da cena; `banco.gd` só preenche a lista, escutando `EventsManager.events_updated` para se redesenhar. É aqui que os eventos inesperados são resolvidos — ver seção 12.1.
 
-> Atenção ao layout do banco: `history_panel` é criado por script em `(710, 25)` com tamanho `(390, 590)` e fica **exatamente por cima** de `FII-shop` e `Portfolio`, que também compartilham o mesmo retângulo `(705, 21)-(1123, 624)` entre si e não têm `visible = false`. São três painéis empilhados. O `Events-panel` foi colocado em `(34, 496)-(700, 628)`, a única região realmente livre da tela, justamente para não piorar isso.
+> `history_panel` ainda é criado por script em `(710, 25)` com tamanho `(390, 590)`, o que o coloca por cima da área do `TabContainer`. É o último resquício do layout antigo do banco e o candidato natural a virar mais uma aba.
 
 ## 12.1 Eventos inesperados (contas e bônus pendentes)
 
@@ -612,6 +648,57 @@ Persistência sai de graça: `SaveManager.save_game()` serializa `Global.player`
 - não existe expiração nem multa automática. O plano pedia para documentar antes de aplicar penalidades, e uma conta vencida que se cobra sozinha reintroduziria exatamente o débito automático que a mudança removeu. `due_week` não é usado;
 - a UI fica só no banco, não em casa. `location` existe no modelo e `get_pending_events(location)` já filtra, então acrescentar um painel em casa é só passar `"home"`;
 - o nível 2 do escritório ganhou o tópico "Eventos inesperados no jogo", que explica a mecânica e diz onde resolver. O nível 2 destrava na semana 2, a mesma em que os eventos começam.
+
+## 12.2 Minigame: travas, cooldown e tela de início
+
+`MinigameManager` (autoload, registrado depois de `Global`) guarda a regra. **A primeira sessão é diferente das demais** — este é o ponto que mais confunde:
+
+- **primeira corrida** (`sessions_played == 0`): é a formação inicial, **sem limite de níveis**. O jogador atravessa quantos checkpoints conseguir e a corrida só acaba quando ele bate. Depois dela, a escola trava até a semana seguinte, tenha ele subido muito ou pouco;
+- **das próximas em diante**: alcançar o checkpoint sobe 1 nível e **encerra** a corrida, travando até a semana seguinte; bater antes disso trava por 2 dias de jogo.
+
+`on_checkpoint_reached()` devolve `true` só quando a corrida deve terminar ali — na primeira sessão devolve `false` e o jogador segue correndo. `on_obstacle_hit()` sempre encerra.
+
+Ao gravar uma trava, a outra é zerada, senão um cooldown antigo continuaria somando por cima do novo.
+
+Estado em `Global.player["minigame_progress"] = {"unlock_week": int, "unlock_day": int, "sessions_played": int}`. Os padrões já estão satisfeitos, então uma partida nova começa com a escola aberta. `_progress()` normaliza chaves ausentes, como `EnterpriseManager._normalize_state()`.
+
+**`MAX_SCHOOL_LEVEL = 5`** casa com os 5 níveis do escritório e com os 4 checkpoints do mapa (`Level1`..`Level4` levam do nível 1 ao 5). No nível máximo `can_play()` devolve `false`. Sem esse teto, um jogador no topo nasceria depois do último checkpoint e correria até o fim do chão, caindo no vazio sem nada encerrar a corrida.
+
+**`Global.get_absolute_day()`** existe por causa disso: `Global.player["day"]` vai de 1 a 7 e reseta na virada de semana, então não serve para cooldown — um cooldown de 2 dias iniciado no dia 6 precisa continuar valendo no dia 1 da semana seguinte. O helper devolve `(week - 1) * 7 + day`.
+
+**O limite de nível é por corrida, não por área.** `MinigameManager._session_active` é ligado por `begin_session()` e o desfecho o consome. Já foi feito errado uma vez: cada `Area2D` tinha o próprio guard `finished`, o que só impedia a **mesma** área de disparar duas vezes — com vários checkpoints no mapa, o jogador subia um nível em cada um que atravessasse. Um guard por área é sempre insuficiente aqui.
+
+A ordem de `begin_session()` também importa: ela é chamada em `_begin_game()`, quando a contagem termina, e **não** em `_ready()`. Nos níveis 2+ o jogador nasce logo depois do checkpoint anterior; se a sessão já estivesse ativa, uma área poderia disparar antes de ele poder jogar. `_exit_tree()` chama `end_session()` para nenhuma sessão aberta sobrar para a próxima entrada.
+
+### Mapa do minigame
+
+Layout em `scenes/minigame/minigame.tscn`, com 4 obstáculos por checkpoint:
+
+| x | nó | papel |
+|---|---|---|
+| 170 | `Marker_1` | spawn do nível 1 |
+| 449 | `Level1` | checkpoint → nível 2 |
+| 465 | `Level1/Marker_2` | spawn do nível 2 |
+| 564, 720, 876, 1032 | `obstacle2`..`obstacle5` | |
+| 1188 | `Level2` | checkpoint → nível 3 |
+| 1204 | `Marker_3` | spawn do nível 3 |
+| 1344, 1500, 1656, 1812 | `obstacle6`..`obstacle9` | |
+| 1968 | `Level3` | checkpoint → nível 4 |
+| 1984 | `Marker_4` | spawn do nível 4 |
+| 2124, 2280, 2436, 2592 | `obstacle10`..`obstacle13` | |
+| 2748 | `Level4` | checkpoint → nível 5 (máximo) |
+
+Obstáculos em `y = -43`, checkpoints em `y = -115`, espaçamento de 156 px entre obstáculos — o mesmo dos dois originais. O trecho inicial (`Marker_1` → `Level1`) não tem obstáculos: são só 279 px, curtos demais para quatro, e os nós existentes não foram movidos.
+
+`minigame.gd` escolhe o spawn por `SPAWN_MARKERS[school_level - 1]` e posiciona a câmera em `marker + CAMERA_OFFSET`, em vez dos antigos `cam_marker`/`cam_marker2` (que continuam na cena, sem uso).
+
+**O chão é um `TileMapLayer` e precisou ser estendido junto.** Ele é gravado como `tile_map_data = PackedByteArray(...)`: 2 bytes de cabeçalho e 12 bytes por célula (6 × int16 LE: `x`, `y`, `source_id`, `atlas_x`, `atlas_y`, `alternative`). A linha do chão fica em `y = -2`, `source_id = 4`, e `atlas_x` segue o ciclo `4,5,6` a partir de `x = 31`. Ia de `x = 6` a `69` (mundo 96–1120) e agora vai até `x = 190` (mundo 96–3056). Ao mexer nisso de novo, **valide gerando as células já existentes e comparando byte a byte com o arquivo antes de escrever** — um erro aqui apaga o chão inteiro.
+
+`minigame_door.gd` checa `can_play()` antes de entrar, mostra `lock_reason()` no `Hint` do painel da porta e dispara um alerta se o jogador insistir no ENTER (uma vez só por aproximação — `is_key_pressed` é verdadeiro todo frame).
+
+**Tela de início.** `minigame.gd` monta um `CanvasLayer` em `layer = 50` (acima do display de tempo em 5, abaixo do `AlertManager` em 100, para as mensagens de tutorial ficarem por cima). O fluxo é: `_ready()` trava com `Global.lock_gameplay()` → o botão "Começar" só aparece quando `AlertManager.panel.visible` é falso e `TutorialManager.pending_messages` está vazio → clicar inicia a contagem de 3 s → `_begin_game()` destrava.
+
+O `_exit_tree()` devolve o lock se a cena for abandonada antes de começar. Isso não é teórico: o minigame tem um menu de pausa que leva ao menu principal, e sem essa devolução o contador de `gameplay_locked` ficaria preso e travaria o jogo inteiro.
 
 ## 13. Fluxo do jogo em alto nível
 
@@ -851,7 +938,7 @@ Algumas áreas exigem atenção:
 - `restaurant.tscn`, `arcade.tscn` e `shopping.tscn` foram escritas à mão como cenas herdadas (`[node name="X" instance=ExtResource(...)]` na raiz). **Validado em runtime**: carregam e renderizam corretamente. O mesmo padrão pode ser reusado para outras telas
 - o ambiente do agente **não tem o Godot disponível por CLI**. Nenhuma alteração de cena ou script pode ser validada automaticamente — tudo precisa ser testado no editor. Priorize layout por container (que é autocorretivo) em vez de offsets em pixel
 - o `history` de cada empreendimento é limitado a 50 entradas e as pendências resolvidas de `pending_events` a 30, mas `Global.player["expense_history"]` e `home_actions_log` continuam crescendo sem limite no save
-- **a tela do banco tem três painéis empilhados no mesmo lugar**: `FII-shop` e `Portfolio` compartilham o retângulo `(705,21)-(1123,624)` e nenhum tem `visible = false`, e o `history_panel` criado por script em `banco.gd` fica em cima dos dois. Nada alterna a visibilidade deles. O `Events-panel` foi para `(34,496)-(700,628)` justamente para não entrar nessa pilha
+- **a tela do banco ainda tem o `history_panel` criado por script** em `(710,25)`-`(1100,615)`, sobreposto à área do `TabContainer` `Investimentos`. Os demais painéis (FIIs, carteira, eventos) já viraram abas e não se empilham mais
 - `scripts/world/main_game.gd` tem três teclas de debug no `_process`: **Page Down** entra no restaurante, **Page Up** entra no mercado e **End** dá R$ 10.000 ao jogador. Precisam sair antes de qualquer build de entrega
 - `AlertManager._close_alert()` sempre devolve `Global.play_time = true` quando destrava. Como as cenas de interior (banco, casa, empreendimentos, mercado) rodam com `play_time = false`, qualquer alerta aberto lá dentro faz o tempo voltar a correr ao fechar. Afeta `enterprise_management.gd` e agora também `banco.gd`. É a mesma pendência do `play_time` sem contador, citada em 3.2
 
@@ -872,7 +959,9 @@ Ao trabalhar no projeto:
 - escreva no histórico de empreendimento só via `_append_history()`, nunca com `state["history"].append()` direto, ou o limite de 50 entradas é furado
 - não crie estrutura de UI em script se a cena já tem o nodo (ver 3.4); se faltar um nodo fixo, avise antes de improvisar
 - não atribua `Global.gameplay_locked` direto — use `lock_gameplay()` / `unlock_gameplay()` em par
+- **toda troca de cena passa por `TransitionManager.change_scene()`**, nunca por `get_tree().change_scene_to_file()` direto, e **sem `await`** no call site (ver 3.9)
 - ao mudar balanceamento de empreendimentos, revise os números citados no nível 5 do escritório
+- ao adicionar conteúdo de tutorial, decida a qual semana ele pertence e use `weekly_messages` (ver 3.3); o onboarding linear é só a semana 1
 
 ## 18. Checklist de desenvolvimento ideal
 
@@ -951,6 +1040,9 @@ Este documento deve ser usado como material de contexto para qualquer tarefa fut
 | `CLAUDE_HOME_REFACTOR_PROMPT.md` | **concluído** — `home.gd` ancorado em `home.tscn` |
 | `CLAUDE_ENTERPRISE_VIEW_REFACTOR_PLAN.md` | **concluído** — as 8 tarefas; o layout evoluiu depois para grid 2×2 e por fim para `TabContainer` |
 | `CLAUDE_EVENTS_REWORK_PLAN.md` | **concluído** — ver seção 12.1. Fora do escopo por decisão registrada: expiração/multa automática e painel de eventos em casa |
+| `MINIGAME_LOCK_PLAN.md` | **concluído** — ver seção 12.2 |
+| `WEEKLY_TUTORIAL_PLAN.md` | **concluído** — ver seção 3.3 |
+| `SCENE_TRANSITIONS_PLAN.md` | **concluído** — ver seção 3.9. Exceção deliberada: `Global.new_game()` continua trocando de cena direto |
 | `SAVE_SLOTS_PLAN.md` | **não implementado** — plano aprovado, nenhuma etapa executada. O save continua único em `user://savegame.json` |
 
-Ao retomar o `SAVE_SLOTS_PLAN.md`, três ajustes que o plano ainda não reflete: `Global.player` ganhou as chaves `enterprises` e `pending_events`; o `EnterpriseManager` **não** precisa de um `reset()` como o `FIIManager`, porque não guarda estado próprio no autoload. Inclua no checklist "empreendimentos comprados e contas pendentes não vazam entre slots".
+Ao retomar o `SAVE_SLOTS_PLAN.md`, ajustes que o plano ainda não reflete: `Global.player` ganhou as chaves `enterprises`, `pending_events`, `minigame_progress` e `tutorial_weeks_shown`; o `EnterpriseManager` **não** precisa de um `reset()` como o `FIIManager`, porque não guarda estado próprio no autoload. Inclua no checklist "empreendimentos, contas pendentes, trava do minigame e progresso do tutorial não vazam entre slots".

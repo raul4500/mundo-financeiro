@@ -282,4 +282,4 @@ func _on_enterprise_error(message: String) -> void:
 	message_label.text = str(message)
 
 func _on_exit_pressed() -> void:
-	get_tree().change_scene_to_file("res://scenes/world/main_game.tscn")
+	TransitionManager.change_scene("res://scenes/world/main_game.tscn")

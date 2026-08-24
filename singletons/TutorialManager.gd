@@ -59,9 +59,41 @@ var presentation_guide = [
 	},
 	{
 		"step": 8,
-		"title": "Empreendimentos e conclusão",
-		"goal": "Apresentar os três empreendimentos como etapa avançada e encerrar o onboarding.",
-		"speaker_note": "Explique que os empreendimentos (restaurante, fliperama e centro comercial) são a parte mais difícil do jogo, que exigem capital e geram despesas fixas semanais, e que o nível 5 do escritório é pré-requisito prático. A mensagem final é que o progresso vem de decisões consistentes e conscientes."
+		"title": "Conclusão do onboarding",
+		"goal": "Apresentar mercado, banco e escritório e encerrar a introdução da semana 1.",
+		"speaker_note": "Explique o papel de cada local e feche dizendo que o progresso vem de decisões consistentes. Os empreendimentos NÃO entram aqui: eles são o aviso da semana 5."
+	}
+]
+
+# =============================
+# 📅 GUIA DOS AVISOS SEMANAIS
+# =============================
+# Complementa o roteiro acima: depois do onboarding, o tutorial continua em
+# doses, uma por semana, sempre sobre o que acabou de destravar.
+var weekly_guide = [
+	{
+		"week": 2,
+		"title": "Eventos inesperados e reserva",
+		"goal": "Explicar que imprevistos viram contas/bônus pendentes no banco.",
+		"speaker_note": "Ligue o conteúdo do escritório nível 2 (reserva de emergência) com a mecânica: a reserva é o que permite pagar a conta quando ela aparece."
+	},
+	{
+		"week": 3,
+		"title": "Primeiros investimentos",
+		"goal": "Apontar o jogador para os FIIs no banco, depois de ler o nível 3.",
+		"speaker_note": "Reforce a ordem: estudar primeiro, investir depois."
+	},
+	{
+		"week": 4,
+		"title": "Mercado financeiro",
+		"goal": "Contextualizar a variação de valor dos investimentos.",
+		"speaker_note": "Aviso curto; o conteúdo em si está no escritório nível 4."
+	},
+	{
+		"week": 5,
+		"title": "Empreendimentos",
+		"goal": "Apresentar os três negócios como etapa avançada do jogo.",
+		"speaker_note": "É o bloco mais longo do tutorial. Destaque que exige capital, gera despesas fixas semanais, e que o nível 5 do escritório é pré-requisito prático."
 	}
 ]
 
@@ -81,6 +113,10 @@ var messages = [
 
 	"O objetivo é melhorar seu nível de escolaridade para conquistar um salário maior no futuro. Sempre pense em como cada decisão pode abrir ou fechar portas para suas metas financeiras.",
 
+	"Esta primeira corrida é a sua formação inicial: vá o mais longe que conseguir. Cada checkpoint que você atravessar vale um nível de escolaridade, sem limite — a corrida só termina quando você bater em um obstáculo.",
+
+	"Das próximas vezes a regra muda: cada tentativa vale no máximo 1 nível. Alcançou o checkpoint, sobe de nível e a aula acaba ali, e a escola só reabre na semana seguinte. Bateu antes de chegar nele, precisa esperar 2 dias para tentar de novo. Repare no aviso da porta: ele diz quando a escola volta a abrir.",
+
 	"Parabéns! Você concluiu o minigame e recebeu seu primeiro salário. Agora é hora de começar a administrar melhor seu dinheiro e aprender a lidar com gastos, poupança e investimentos.",
 
 	"O mundo do jogo oferece vários lugares estratégicos. Cada um deles tem um papel importante na sua rotina financeira e no seu desenvolvimento como jogador.",
@@ -91,22 +127,47 @@ var messages = [
 
 	"No escritório de consultoria, você encontra conteúdos educativos, dicas e ferramentas para compreender melhor o mundo financeiro. Aproveite esses aprendizados para melhorar sua estratégia e evoluir no jogo.",
 
-	"ATENÇÃO: existe uma parte avançada do jogo, os empreendimentos. São três prédios que você pode comprar para virar dono do próprio negócio. Não tenha pressa: essa é a etapa mais difícil e mais arriscada do Mundo Financeiro, porque exige investir um valor alto e assumir despesas fixas que chegam toda semana, com ou sem lucro.",
-
-	"Todo negócio funciona da mesma forma por dentro. Você compra estoque para manter as vendas, paga as contas de água e luz antes do vencimento, contrata funcionários que aumentam a receita e a capacidade de atendimento, e sobe do nível 1 ao nível 5 para liberar equipamentos melhores. Ficar sem estoque derruba a receita para 35%, e deixar uma conta vencer corta outros 25%.",
-
-	"O primeiro é o Restaurante Sabor da Praça, por R$ 1.500. É o negócio de entrada: atende 10 clientes por dia, precisa de ingredientes, bebidas e itens de limpeza no estoque, e as contas somam apenas R$ 50 por semana. É o lugar certo para aprender a rotina de um negócio errando pouco dinheiro.",
-
-	"O segundo é o Fliperama Neon, por R$ 12.000. Um negócio de porte médio: começa atendendo 25 clientes e a receita é bem maior, mas as contas sobem para R$ 300 por semana e cada funcionário custa R$ 420 por semana. Aqui você aprende a equilibrar equipe, equipamentos e caixa sem ficar no vermelho.",
-
-	"O terceiro é o Centro Comercial Mundo Mix, por R$ 85.000. É o maior desafio do jogo: atende 100 clientes desde o início e gera uma receita alta, mas só as contas de água e luz custam R$ 1.550 por semana e os aprimoramentos vão de R$ 60.000 a R$ 400.000. Só compre depois de já ter dominado os negócios menores.",
-
-	"Um aviso importante: antes de comprar qualquer empreendimento, estude no escritório de consultoria. O nível 5 do conteúdo, liberado na semana 5, é dedicado ao empreendedorismo e explica capacidade, giro de estoque, folha de pagamento, contas em atraso e o retorno de cada equipamento. Sem esse conhecimento, é muito fácil comprar um negócio e vê-lo dar prejuízo.",
-
 	"Lembre-se: gastar com consciência, economizar e investir são as chaves para o sucesso. Pequenas decisões bem tomadas ao longo do tempo fazem uma grande diferença no futuro.",
 
 	"Agora é com você. Explore o mundo, cumpra suas missões, tome decisões inteligentes e construa uma vida financeira forte, estável e bem planejada!"
 ]
+
+# =============================
+# 📅 AVISOS SEMANAIS
+# =============================
+# Cada semana ensina só a mecânica que acabou de destravar naquela semana, em
+# vez de despejar tudo no fim do onboarding. As semanas escolhidas acompanham
+# o que o resto do jogo já libera: eventos inesperados começam na semana 2
+# (EventsManager.FIRST_EVENT_WEEK) e cada nível do escritório destrava na
+# semana de mesmo número (office.gd usa player_level = week).
+var weekly_messages = {
+	2: [
+		"Semana 2. A partir de agora podem acontecer eventos inesperados: o carro quebra, aparece uma despesa médica, ou você recebe um bônus por um trabalho extra. Eles não tiram nem colocam dinheiro na sua conta na hora — viram uma pendência que fica esperando por você.",
+
+		"Todas essas contas e bônus ficam no banco, no painel \"Contas e bônus pendentes\". Uma conta só sai do seu bolso quando você aperta Pagar, e para isso precisa ter o dinheiro na mão. Por isso o nível 2 do escritório, liberado agora, é sobre reserva de emergência: é ela que faz um imprevisto virar só um susto."
+	],
+	3: [
+		"Semana 3. O nível 3 do escritório abriu e é sobre investimentos básicos: poupança e renda fixa. Se você já tem uma reserva formada, é a hora de fazer o dinheiro parado começar a render.",
+
+		"No banco você encontra os fundos imobiliários para investir. Leia o conteúdo do escritório antes de aplicar: investir sem entender o que se está comprando é como assinar um contrato sem ler."
+	],
+	4: [
+		"Semana 4. O nível 4 do escritório destravou e fala sobre mercado financeiro. É o conteúdo que ajuda a entender por que o valor dos seus investimentos sobe e desce, e por que ninguém deve colocar tudo em um lugar só."
+	],
+	5: [
+		"ATENÇÃO: existe uma parte avançada do jogo, os empreendimentos. São três prédios que você pode comprar para virar dono do próprio negócio. Não tenha pressa: essa é a etapa mais difícil e mais arriscada do Mundo Financeiro, porque exige investir um valor alto e assumir despesas fixas que chegam toda semana, com ou sem lucro.",
+
+		"Todo negócio funciona da mesma forma por dentro. Você compra estoque para manter as vendas, paga as contas de água e luz antes do vencimento, contrata funcionários que aumentam a receita e a capacidade de atendimento, e sobe do nível 1 ao nível 5 para liberar equipamentos melhores. Ficar sem estoque derruba a receita para 35%, e deixar uma conta vencer corta outros 25%.",
+
+		"O primeiro é o Restaurante Sabor da Praça, por R$ 1.500. É o negócio de entrada: atende 10 clientes por dia, precisa de ingredientes, bebidas e itens de limpeza no estoque, e as contas somam apenas R$ 50 por semana. É o lugar certo para aprender a rotina de um negócio errando pouco dinheiro.",
+
+		"O segundo é o Fliperama Neon, por R$ 12.000. Um negócio de porte médio: começa atendendo 25 clientes e a receita é bem maior, mas as contas sobem para R$ 300 por semana e cada funcionário custa R$ 420 por semana. Aqui você aprende a equilibrar equipe, equipamentos e caixa sem ficar no vermelho.",
+
+		"O terceiro é o Centro Comercial Mundo Mix, por R$ 85.000. É o maior desafio do jogo: atende 100 clientes desde o início e gera uma receita alta, mas só as contas de água e luz custam R$ 1.550 por semana e os aprimoramentos vão de R$ 60.000 a R$ 400.000. Só compre depois de já ter dominado os negócios menores.",
+
+		"Um aviso importante: antes de comprar qualquer empreendimento, estude no escritório de consultoria. O nível 5 do conteúdo, liberado nesta semana, é dedicado ao empreendedorismo e explica capacidade, giro de estoque, folha de pagamento, contas em atraso e o retorno de cada equipamento. Sem esse conhecimento, é muito fácil comprar um negócio e vê-lo dar prejuízo."
+	]
+}
 
 func get_presentation_guide() -> Array:
 	return presentation_guide
@@ -121,6 +182,10 @@ func start_tutorial():
 	_next_step()
 
 # O botão de pular só aparece junto à primeira mensagem de boas-vindas.
+# Os avisos semanais não têm botão de pular de propósito: são curtos (1-2
+# mensagens) e, como passam pelo mesmo AlertManager que todos os alertas do
+# jogo, liberar o botão fora do passo 1 o faria aparecer em alertas que não
+# têm nada a ver com tutorial.
 func can_skip() -> bool:
 	return not skipped and step == 1
 
@@ -131,6 +196,15 @@ func skip_tutorial() -> void:
 	pending_messages.clear()
 	step = FINAL_STEP
 	Global.player["tutorial_step"] = FINAL_STEP
+	# "Pular tutorial" pula o tutorial inteiro, não só o onboarding: marca
+	# todas as semanas como já vistas. Vai para Global.player de propósito —
+	# a variável `skipped` não é salva, então recarregar o jogo faria os
+	# avisos semanais voltarem.
+	var shown: Array = Global.player.get("tutorial_weeks_shown", [])
+	for week in weekly_messages.keys():
+		if not _week_already_shown(int(week), shown):
+			shown.append(week)
+	Global.player["tutorial_weeks_shown"] = shown
 	emit_signal("tutorial_finished")
 	# Em casos onde locks possam ter sido deixados por erro, garantir liberação
 	# para que o jogador não fique travado permanentemente após pular.
@@ -175,7 +249,7 @@ func _next_step():
 
 		# minigame explicação (dentro do minigame)
 		6:
-			queue_messages([messages[4], messages[5], messages[6]])
+			queue_messages([messages[4], messages[5], messages[6], messages[7], messages[8]])
 
 		# espera terminar minigame
 		7:
@@ -183,22 +257,18 @@ func _next_step():
 
 		# pós minigame
 		8:
+			# Fecha o onboarding da semana 1 apresentando os locais do mapa.
+			# O bloco dos empreendimentos saiu daqui: agora é o aviso da
+			# semana 5, quando o nível 5 do escritório destrava e o jogador
+			# tem alguma chance de ter capital para pensar nisso.
 			queue_messages([
-				messages[7],
-				messages[8],
 				messages[9],
 				messages[10],
 				messages[11],
-				# Bloco dos empreendimentos: conteúdo avançado, apresentado depois
-				# do escritório porque depende do que é ensinado lá.
 				messages[12],
 				messages[13],
 				messages[14],
-				messages[15],
-				messages[16],
-				messages[17],
-				messages[18],
-				messages[19]
+				messages[15]
 			])
 			emit_signal("tutorial_finished")
 			# Garantir liberação de locks ao finalizar o tutorial
@@ -209,6 +279,32 @@ func _next_step():
 # =============================
 # 🎯 EVENTOS DO JOGO 
 # =============================
+
+# Chamado por TimeManager a cada virada de semana. Mostra o aviso daquela
+# semana uma única vez por partida — Global.player["tutorial_weeks_shown"]
+# guarda o que já foi visto, então recarregar o save não repete.
+func on_week_changed(week: int) -> void:
+	if not weekly_messages.has(week):
+		return
+	var shown: Array = Global.player.get("tutorial_weeks_shown", [])
+	if _week_already_shown(week, shown):
+		return
+	# Não atropela uma fila em andamento (ex.: o fechamento da semana 1 ainda
+	# na tela quando a semana vira).
+	if not pending_messages.is_empty():
+		return
+	shown.append(week)
+	Global.player["tutorial_weeks_shown"] = shown
+	queue_messages(weekly_messages[week])
+
+# int() em cada item: depois de salvar e carregar, o JSON devolve os números
+# como float, e comparar 2 com 2.0 direto no Array.has() é frágil.
+func _week_already_shown(week: int, shown: Array) -> bool:
+	for shown_week in shown:
+		if int(shown_week) == week:
+			return true
+	return false
+
 
 func on_player_entered_school():
 	if step == 5:

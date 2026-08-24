@@ -214,4 +214,4 @@ func _only_numbers(new_text, line_edit: LineEdit):
 		line_edit.text = filtered
 
 func _on_exit_pressed() -> void:
-	get_tree().change_scene_to_file("res://scenes/world/main_game.tscn")
+	TransitionManager.change_scene("res://scenes/world/main_game.tscn")

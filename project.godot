@@ -13,7 +13,7 @@ config_version=5
 config/name="Mundo Financeiro"
 run/main_scene="uid://b84dtjt10qpnb"
 config/features=PackedStringArray("4.7")
-config/icon="res://icon.svg"
+config/icon="uid://bev6n7nuaqym2"
 
 [autoload]
 
@@ -27,6 +27,8 @@ MissionManager="*uid://cvt4jycppg2xx"
 DoorManager="*uid://dcjoibsvo3jjk"
 FIIManager="*uid://dkuxfl3tpqxf1"
 EnterpriseManager="*res://singletons/EnterpriseManager.gd"
+MinigameManager="*res://singletons/MinigameManager.gd"
+TransitionManager="*res://singletons/TransitionManager.gd"
 AlertManager="*uid://dv1iu0gs8mcid"
 CameraManager="*uid://bdu5ee4jnl6k"
 TutorialManager="*uid://7bk6pyllg58q"

@@ -32,7 +32,7 @@ func _process(_delta: float) -> void:
 
 func _open_or_enter() -> void:
 	if EnterpriseManager.is_owned(enterprise_id):
-		get_tree().change_scene_to_file(destination_scene)
+		TransitionManager.change_scene(destination_scene)
 		return
 	_show_purchase_dialog()
 
@@ -147,7 +147,7 @@ func _on_buy_pressed() -> void:
 		AlertManager.alert(str(result.get("message", "Não foi possível comprar o empreendimento.")))
 		return
 	_close_purchase_dialog()
-	get_tree().change_scene_to_file(destination_scene)
+	TransitionManager.change_scene(destination_scene)
 
 func _on_exit_pressed() -> void:
 	_close_purchase_dialog()
