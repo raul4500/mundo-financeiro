@@ -4,18 +4,25 @@ const EVENT_LABEL_THEME = preload("res://themes/label.tres")
 
 @onready var label_money = $"Account-info/Label_Money"
 @onready var label_saldo = $"Account-info/Label-saldo"
-@onready var input = $Input
+@onready var transaction_panel: Panel = $"Transaction-panel"
+@onready var input: LineEdit = $"Transaction-panel/Input"
+@onready var confirm_button: Button = $"Transaction-panel/Confirm"
+@onready var cancel_button: Button = $"Transaction-panel/Cancel"
 @onready var btn_deposit = $Actions/Deposit
 @onready var btn_withdraw = $Actions/Withdraw
 # Painel de contas/bônus pendentes: layout fixo na cena, conteúdo no script.
-@onready var events_list: VBoxContainer = $"Events-panel/Margin/VBoxContainer/Events-scroll/Events-list"
+@onready var events_list: VBoxContainer = $"Investimentos/Eventos/Margin/VBoxContainer/Events-scroll/Events-list"
 
 var history_panel: Panel
 var history_list: VBoxContainer
+var time_display: Label
+var transaction_type: String = ""
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	Global.play_time = true
 	Global.ensure_player_state()
+	_create_time_display()
 	_build_history_panel()
 	# Redesenha quando uma pendência nasce ou é resolvida em qualquer lugar.
 	if not EventsManager.events_updated.is_connected(render_events):
@@ -23,7 +30,15 @@ func _ready():
 	update_labels()
 	btn_deposit.pressed.connect(deposit)
 	btn_withdraw.pressed.connect(withdraw)
+	confirm_button.pressed.connect(_confirm_transaction)
+	cancel_button.pressed.connect(_cancel_transaction)
 	input.text_changed.connect(_only_numbers.bind(input))
+
+func _create_time_display() -> void:
+	time_display = preload("res://scripts/ui/time_display.gd").new()
+	time_display.position = Vector2(24, 20)
+	time_display.add_theme_font_size_override("font_size", 22)
+	add_child(time_display)
 
 func _build_history_panel() -> void:
 	if history_panel != null:
@@ -151,28 +166,44 @@ func update_labels():
 	render_events()
 
 func deposit():
-	var value = int(input.text)
-	if value <= 0:
-		return
-	if value > Global.player["money"]:
-		print("Dinheiro insuficiente")
-		return
-	Global.player["money"] -= value
-	Global.player["saldo"] += value
-	input.text = ""
-	update_labels()
+	_open_transaction("deposit")
 
 func withdraw():
+	_open_transaction("withdraw")
+
+func _open_transaction(type: String) -> void:
+	transaction_type = type
+	input.clear()
+	input.placeholder_text = "Valor para depositar" if type == "deposit" else "Valor para sacar"
+	transaction_panel.visible = true
+	input.grab_focus()
+
+func _confirm_transaction() -> void:
 	var value = int(input.text)
 	if value <= 0:
+		transaction_panel.visible = false
 		return
-	if value > Global.player["saldo"]:
-		print("Saldo insuficiente")
-		return
-	Global.player["saldo"] -= value
-	Global.player["money"] += value
-	input.text = ""
+	if transaction_type == "deposit":
+		if value > Global.player["money"]:
+			transaction_panel.visible = false
+			AlertManager.alert("Dinheiro insuficiente para realizar este depósito.")
+			return
+		Global.player["money"] -= value
+		Global.player["saldo"] += value
+	else:
+		if value > Global.player["saldo"]:
+			transaction_panel.visible = false
+			AlertManager.alert("Saldo insuficiente para realizar este saque.")
+			return
+		Global.player["saldo"] -= value
+		Global.player["money"] += value
+	_cancel_transaction()
 	update_labels()
+
+func _cancel_transaction() -> void:
+	transaction_type = ""
+	input.clear()
+	transaction_panel.visible = false
 
 func _only_numbers(new_text, line_edit: LineEdit):
 	var filtered = ""

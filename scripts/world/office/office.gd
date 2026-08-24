@@ -132,6 +132,7 @@ var levels_data: Array = [
 
 
 var player_level: int = 1
+var time_display: Label
 
 @onready var level_container: VBoxContainer = $HBoxContainer/LevelPanel/Levels
 @onready var topics_container: VBoxContainer = $HBoxContainer/TopicPanel/ScrollContainer/Topics
@@ -139,9 +140,17 @@ var player_level: int = 1
 
 
 func _ready() -> void:
+	Global.play_time = true
+	_create_time_display()
 	_load_player_progress()
 	_build_ui()
 	_build_level_section()
+
+func _create_time_display() -> void:
+	time_display = preload("res://scripts/ui/time_display.gd").new()
+	time_display.position = Vector2(24, 20)
+	time_display.add_theme_font_size_override("font_size", 22)
+	add_child(time_display)
 
 
 # ---------------- PROGRESSO ----------------

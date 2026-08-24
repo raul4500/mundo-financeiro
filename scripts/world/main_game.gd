@@ -27,7 +27,6 @@ func _ready():
 			pass
 
 func _on_tree_exited() -> void:
-	Global.play_time = false
 	Global.player["position"]["x"] = character.global_position.x
 	Global.player["position"]["y"] = character.global_position.y
 

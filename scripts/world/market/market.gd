@@ -89,9 +89,12 @@ var current_category: String = ""
 
 var total: float = 0.00
 var cart: Array = []
+var time_display: Label
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	Global.play_time = true
+	_create_time_display()
 	item_list.columns = 3
 	update_labels()
 	_build_category_buttons()
@@ -99,6 +102,12 @@ func _ready():
 	# Abre a primeira categoria automaticamente
 	if items.keys().size() > 0:
 		_on_category_selected(items.keys()[0])
+
+func _create_time_display() -> void:
+	time_display = preload("res://scripts/ui/time_display.gd").new()
+	time_display.position = Vector2(24, 20)
+	time_display.add_theme_font_size_override("font_size", 22)
+	add_child(time_display)
 
 
 func _build_category_buttons() -> void:

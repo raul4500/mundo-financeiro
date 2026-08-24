@@ -38,6 +38,7 @@ const TABS := "Margin/VBoxContainer/Sections"
 @onready var bills_list := _find(TABS + "/Contas/Bills-list") as VBoxContainer
 @onready var equipment_list := _find(TABS + "/Equipamentos/Equipment-list") as VBoxContainer
 @onready var exit_button := _find("Margin/VBoxContainer/Exit-button") as Button
+var time_display: Label
 
 # O layout desta tela já foi reorganizado várias vezes e cada troca de pai
 # quebrava os caminhos fixos, derrubando a cena com "Node not found". Aqui o
@@ -57,10 +58,18 @@ func _find(path: String) -> Node:
 
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	Global.play_time = true
+	_create_time_display()
 	if not exit_button.pressed.is_connected(_on_exit_pressed):
 		exit_button.pressed.connect(_on_exit_pressed)
 	_connect_manager()
 	_refresh_ui()
+
+func _create_time_display() -> void:
+	time_display = preload("res://scripts/ui/time_display.gd").new()
+	time_display.position = Vector2(24, 20)
+	time_display.add_theme_font_size_override("font_size", 22)
+	add_child(time_display)
 
 func _connect_manager() -> void:
 	if not EnterpriseManager.enterprise_updated.is_connected(_on_enterprise_updated):

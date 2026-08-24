@@ -250,7 +250,7 @@ func consume_food() -> Dictionary:
 			chosen_name = key
 			chosen_item = item
 	if chosen_item == null:
-		return {"success": false, "message": "Sem comida no estoque."}
+		return {"success": false, "message": "SEM COMIDA NO ESTOQUE."}
 	inventory[chosen_name]["quantity"] = int(inventory[chosen_name].get("quantity", 0)) - 1
 	if inventory[chosen_name]["quantity"] <= 0:
 		inventory.erase(chosen_name)
@@ -268,6 +268,7 @@ func consume_food() -> Dictionary:
 		"hunger": player["hunger"],
 		"happiness": player["happiness"]
 	})
+	TimeManager.spend_hours(0.5)
 	return {"success": true, "message": "Você comeu %s." % chosen_item.get("name", chosen_name), "item": chosen_item.get("name", chosen_name)}
 
 func apply_home_action(action_name: String, hunger_delta: float, happiness_delta: float, time_cost: float = 0.0) -> Dictionary:
@@ -285,7 +286,8 @@ func apply_home_action(action_name: String, hunger_delta: float, happiness_delta
 		"time_cost": float(time_cost)
 	})
 	player["home_actions_log"] = log
-	return {"success": true, "message": "%s realizado." % action_name}
+	TimeManager.spend_hours(time_cost)
+	return {"success": true, "message": "%s" % action_name}
 
 func decay_need_state() -> void:
 	if player == null:

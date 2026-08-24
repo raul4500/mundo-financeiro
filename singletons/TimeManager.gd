@@ -1,6 +1,6 @@
 extends Node
 
-signal time_changed(hour)
+signal time_changed(hour, minute)
 signal day_changed(day)
 signal week_changed(week)
 
@@ -8,7 +8,7 @@ var current_day: int = 1
 var current_hour: int = 8
 var current_minute: int = 0
 
-var time_scale: float = 60.0
+var time_scale: float = 5.0
 var timer: float = 0.0
 
 func update_time():
@@ -17,7 +17,7 @@ func update_time():
 	current_day = int(Global.player.get("day", 1))
 	current_hour = int(Global.player.get("hour", 8))
 	current_minute = 0
-	emit_signal("time_changed", current_hour)
+	emit_signal("time_changed", current_hour, current_minute)
 	emit_signal("day_changed", current_day)
 
 func _logger() -> Node:
@@ -39,6 +39,17 @@ func _process(delta):
 		if timer >= 1.0:
 			timer = 0.0
 			_add_minute()
+
+func spend_hours(hours: float) -> Dictionary:
+	if hours <= 0.0:
+		return {"success": false, "message": "O tempo precisa ser maior que zero."}
+	if Global.player == null:
+		return {"success": false, "message": "Estado do jogador não inicializado."}
+
+	var minutes_to_spend := int(round(hours * 60.0))
+	for _minute in range(minutes_to_spend):
+		_add_minute()
+	return {"success": true, "minutes": minutes_to_spend}
 
 func _add_minute():
 	current_minute += 1
@@ -74,7 +85,6 @@ func _add_minute():
 					return
 		Global.player["day"] = current_day
 		Global.player["hour"] = current_hour
-		Global.player["spend_today"] = 0.0
 		emit_signal("day_changed", current_day)
 	Global.player["hour"] = current_hour
-	emit_signal("time_changed", current_hour)
+	emit_signal("time_changed", current_hour, current_minute)

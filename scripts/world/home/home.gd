@@ -48,9 +48,28 @@ var character_sprite: AnimatedSprite2D
 
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	Global.play_time = true
 	Global.ensure_player_state()
+	TimeManager.time_changed.connect(_on_time_changed)
+	TimeManager.day_changed.connect(_on_day_changed)
 	_build_ui()
 	_update_ui()
+
+func _exit_tree() -> void:
+	if TimeManager.time_changed.is_connected(_on_time_changed):
+		TimeManager.time_changed.disconnect(_on_time_changed)
+	if TimeManager.day_changed.is_connected(_on_day_changed):
+		TimeManager.day_changed.disconnect(_on_day_changed)
+
+func _on_time_changed(_hour: int, _minute: int) -> void:
+	_update_time_label()
+
+func _on_day_changed(_day: int) -> void:
+	_update_time_label()
+
+func _update_time_label() -> void:
+	if time_label != null:
+		time_label.text = "Dia %d | %02d:%02d" % [TimeManager.current_day, TimeManager.current_hour, TimeManager.current_minute]
 
 # =============================================================
 # MONTAGEM DOS ELEMENTOS DINÂMICOS
@@ -65,7 +84,7 @@ func _build_ui() -> void:
 	_setup_bar(happiness_bar)
 
 	status_label.autowrap_mode = TextServer.AUTOWRAP_WORD
-	status_label.text = "Tudo em ordem."
+	status_label.text = "TUDO EM ORDEM."
 
 	if not exit_button.pressed.is_connected(_on_exit_pressed):
 		exit_button.pressed.connect(_on_exit_pressed)
@@ -84,12 +103,12 @@ func _build_action_buttons() -> void:
 
 	var title = Label.new()
 	title.theme = UI_THEME
-	title.text = "Ações em casa"
+	title.text = "AÇÕES"
 	actions_box.add_child(title)
 
-	actions_box.add_child(_make_button("Comer", _on_eat_pressed))
-	actions_box.add_child(_make_button("Descansar", _on_rest_pressed))
-	actions_box.add_child(_make_button("Assistir TV", _on_tv_pressed))
+	actions_box.add_child(_make_button("COMER", _on_eat_pressed))
+	actions_box.add_child(_make_button("DESCANSAR", _on_rest_pressed))
+	actions_box.add_child(_make_button("ASSISTIR TV", _on_tv_pressed))
 
 func _make_button(text: String, callback: Callable) -> Button:
 	var button = Button.new()
@@ -97,6 +116,7 @@ func _make_button(text: String, callback: Callable) -> Button:
 	button.text = text
 	button.custom_minimum_size = Vector2(0, 44)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button.custom_maximum_size = Vector2(165, 52)
 	button.pressed.connect(callback)
 	return button
 
@@ -164,10 +184,7 @@ func _update_ui() -> void:
 	Global.ensure_player_state()
 
 	money_label.text = "R$ %.2f" % float(Global.player.get("money", 0.0))
-	time_label.text = "Dia %s - Semana %s" % [
-		str(Global.player.get("day", 1)),
-		str(Global.player.get("week", 1))
-	]
+	_update_time_label()
 
 	hunger_bar.value = clampf(float(Global.player.get("hunger", 100.0)), 0.0, 100.0)
 	happiness_bar.value = clampf(float(Global.player.get("happiness", 100.0)), 0.0, 100.0)
@@ -238,16 +255,16 @@ func _make_info_label(text: String) -> Label:
 
 func _on_eat_pressed() -> void:
 	var result = Global.consume_food()
-	status_label.text = result.get("message", "Você comeu.")
+	status_label.text = result.get("message", "VOCÊ COMEU.")
 	_update_ui()
 
 func _on_rest_pressed() -> void:
-	var result = Global.apply_home_action("rest", -12.0, 18.0, 1.0)
+	var result = Global.apply_home_action("VOCÊ DESCANSOU.", -12.0, 18.0, 1.0)
 	status_label.text = result.get("message", "Você descansou.")
 	_update_ui()
 
 func _on_tv_pressed() -> void:
-	var result = Global.apply_home_action("watch_tv", -6.0, 14.0, 1.0)
+	var result = Global.apply_home_action("VOCÊ ASSISTIU TV.", -6.0, 14.0, 1.0)
 	status_label.text = result.get("message", "Você assistiu TV.")
 	_update_ui()
 

@@ -15,12 +15,38 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_3bwp7")
 
-[node name="Input" type="LineEdit" parent="." unique_id=1171014670]
+[node name="Transaction-panel" type="Panel" parent="." unique_id=1171014670]
+visible = false
 layout_mode = 0
 offset_left = 356.0
 offset_top = 257.0
-offset_right = 494.0
-offset_bottom = 316.0
+offset_right = 650.0
+offset_bottom = 390.0
+theme = ExtResource("4_0nfyk")
+
+[node name="Input" type="LineEdit" parent="Transaction-panel" unique_id=1268258305]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 16.0
+offset_right = 276.0
+offset_bottom = 58.0
+placeholder_text = "Digite o valor"
+
+[node name="Confirm" type="Button" parent="Transaction-panel" unique_id=366724648]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 72.0
+offset_right = 138.0
+offset_bottom = 112.0
+text = "Confirmar"
+
+[node name="Cancel" type="Button" parent="Transaction-panel" unique_id=1884853944]
+layout_mode = 0
+offset_left = 156.0
+offset_top = 72.0
+offset_right = 276.0
+offset_bottom = 112.0
+text = "Cancelar"
 
 [node name="Account-info" type="Panel" parent="." unique_id=391941315]
 layout_mode = 1
@@ -84,8 +110,7 @@ offset_top = 166.0
 offset_right = 289.0
 offset_bottom = 218.0
 theme = ExtResource("4_0nfyk")
-text = "SAIR
-"
+text = "SAIR"
 
 [node name="Deposit" type="Button" parent="Actions" unique_id=1410965560]
 layout_mode = 0
@@ -111,68 +136,65 @@ offset_right = 296.0
 offset_bottom = 52.0
 text = "Ações disponíveis"
 
-[node name="FII-shop" type="Panel" parent="." unique_id=842104532]
+[node name="Investimentos" type="TabContainer" parent="." unique_id=842104532]
 layout_mode = 0
 offset_left = 705.0
 offset_top = 21.0
 offset_right = 1123.0
 offset_bottom = 624.0
+theme = ExtResource("4_0nfyk")
+current_tab = 0
+
+[node name="FII-shop" type="Panel" parent="Investimentos" unique_id=830567245]
+layout_mode = 2
 theme = ExtResource("4_0nfyk")
 script = ExtResource("3_80ajf")
+metadata/_tab_index = 0
 
-[node name="ScrollContainer" type="ScrollContainer" parent="FII-shop" unique_id=1857044755]
+[node name="ScrollContainer" type="ScrollContainer" parent="Investimentos/FII-shop" unique_id=1857044755]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -201.0
-offset_top = -290.5
-offset_right = 199.5
-offset_bottom = 289.5
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="FII-shop/ScrollContainer" unique_id=960911175]
+[node name="VBoxContainer" type="VBoxContainer" parent="Investimentos/FII-shop/ScrollContainer" unique_id=960911175]
 layout_mode = 2
 
-[node name="Portfolio" type="Panel" parent="." unique_id=1127985508]
-layout_mode = 0
-offset_left = 705.0
-offset_top = 21.0
-offset_right = 1123.0
-offset_bottom = 624.0
+[node name="Portfolio" type="Panel" parent="Investimentos" unique_id=1127985508]
+visible = false
+layout_mode = 2
 theme = ExtResource("4_0nfyk")
 script = ExtResource("4_klp1j")
+metadata/_tab_index = 1
 
-[node name="ScrollContainer" type="ScrollContainer" parent="Portfolio" unique_id=193056484]
+[node name="ScrollContainer" type="ScrollContainer" parent="Investimentos/Portfolio" unique_id=193056484]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -201.0
-offset_top = -289.5
-offset_right = 199.5
-offset_bottom = 291.5
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Portfolio/ScrollContainer" unique_id=632646492]
+[node name="VBoxContainer" type="VBoxContainer" parent="Investimentos/Portfolio/ScrollContainer" unique_id=632646492]
 layout_mode = 2
 
-
-[node name="Events-panel" type="Panel" parent="." unique_id=1700200001]
-layout_mode = 0
-offset_left = 34.0
-offset_top = 496.0
-offset_right = 700.0
-offset_bottom = 628.0
+[node name="Eventos" type="Panel" parent="Investimentos" unique_id=1700200001]
+visible = false
+layout_mode = 2
 theme = ExtResource("4_0nfyk")
+metadata/_tab_index = 2
 
-[node name="Margin" type="MarginContainer" parent="Events-panel" unique_id=1700200002]
+[node name="Margin" type="MarginContainer" parent="Investimentos/Eventos" unique_id=1700200002]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -184,22 +206,22 @@ theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 14
 theme_override_constants/margin_bottom = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Events-panel/Margin" unique_id=1700200003]
+[node name="VBoxContainer" type="VBoxContainer" parent="Investimentos/Eventos/Margin" unique_id=1700200003]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="Title" type="Label" parent="Events-panel/Margin/VBoxContainer" unique_id=1700200004]
+[node name="Title" type="Label" parent="Investimentos/Eventos/Margin/VBoxContainer" unique_id=1700200004]
 layout_mode = 2
 theme = ExtResource("5_evlbl")
 theme_override_font_sizes/font_size = 18
 text = "Contas e bônus pendentes"
 
-[node name="Events-scroll" type="ScrollContainer" parent="Events-panel/Margin/VBoxContainer" unique_id=1700200005]
+[node name="Events-scroll" type="ScrollContainer" parent="Investimentos/Eventos/Margin/VBoxContainer" unique_id=1700200005]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="Events-list" type="VBoxContainer" parent="Events-panel/Margin/VBoxContainer/Events-scroll" unique_id=1700200006]
+[node name="Events-list" type="VBoxContainer" parent="Investimentos/Eventos/Margin/VBoxContainer/Events-scroll" unique_id=1700200006]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6

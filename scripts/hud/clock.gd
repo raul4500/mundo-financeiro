@@ -12,12 +12,12 @@ func _ready():
 	_update_clock(Global.player["hour"])
 	_update_day(Global.player["day"])
 
-func _on_time_changed(hour):
-	_update_clock(hour)
+func _on_time_changed(hour, minute):
+	_update_clock(hour, minute)
 
-func _update_clock(hour):
+func _update_clock(hour, minute = 0):
 	var h = int(hour)
-	clock_label.text = "%dh" %h
+	clock_label.text = "%02d:%02d" % [h, int(minute)]
 
 func _on_day_changed(day):
 	_update_day(day)
