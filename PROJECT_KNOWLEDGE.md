@@ -29,6 +29,7 @@ Arquivos centrais:
 - `singletons/MissionManager.gd` — missões semanais
 - `singletons/FIIManager.gd` — gestão de FIIs
 - `singletons/EnterpriseManager.gd` — compra, estoque, equipamentos, contas e operação dos empreendimentos
+- `singletons/HouseBillsManager.gd` — geração e pagamento das contas semanais da casa
 - `singletons/Logger.gd` — log de runtime
 - `scripts/world/home/home.gd` — cena da casa do jogador
 - `scripts/world/market/market.gd` — mercado e compras
@@ -57,6 +58,7 @@ Em `project.godot`, vários nodes ficam automaticamente disponíveis globalmente
 - `MissionManager` — validação de missões
 - `FIIManager` — compra/venda de FIIs
 - `EnterpriseManager` — regras compartilhadas dos três empreendimentos
+- `HouseBillsManager` — regras das contas recorrentes da casa
 - `MinigameManager` — travas e cooldown da escola/minigame (ver seção 12.2)
 - `TransitionManager` — fade entre cenas; ponto único de troca de cena (ver 3.9)
 - `Logger` — grava logs de runtime em arquivo
@@ -108,7 +110,7 @@ Os botões usam `focus_mode = FOCUS_NONE` de propósito. Um botão com foco é a
 
 | Semana | Conteúdo |
 |---|---|
-| 2 | Eventos inesperados viram contas/bônus pendentes no banco; ligação com o nível 2 do escritório (reserva de emergência) |
+| 2 | Contas fixas da casa e eventos inesperados viram pendências no banco; ligação com o nível 2 do escritório (reserva de emergência) |
 | 3 | Investimentos básicos e os FIIs no banco (nível 3 do escritório) |
 | 4 | Mercado financeiro (nível 4 do escritório) |
 | 5 | Bloco dos empreendimentos: 6 mensagens com preço, capacidade e contas semanais reais de cada negócio |
@@ -248,6 +250,8 @@ O `Global.gd` define um `data_model` com os campos principais:
 - `happiness`: felicidade, de 0 a 100
 - `home_inventory`: estoque da casa
 - `home_actions_log`: registro de ações da casa
+- `pending_house_bills`: contas domésticas abertas que devem ser pagas no banco
+- `house_bill_history`: últimas contas domésticas quitadas
 - `last_week_status`: status final da semana
 
 ### Estado dos empreendimentos
@@ -586,6 +590,16 @@ O mercado usa uma estrutura de categorias:
 
 Cada item tem um preço e pode ser adicionado ao inventário doméstico.
 
+## 11.1 Contas da casa
+
+`HouseBillsManager.gd` concentra as despesas recorrentes da residência. A casa é ativa por padrão, portanto ao fim de cada semana `TimeManager` chama `HouseBillsManager.generate_weekly_bills()` antes do avanço de semana.
+
+São geradas três contas para a semana encerrada: água (R$ 30), luz (R$ 45) e aluguel/condomínio (R$ 75). Cada uma fica em `Global.player["pending_house_bills"]`, com ID que inclui a semana, prazo `due_week = week + 1` e sem alterar o dinheiro do jogador ao nascer. O ID é conferido também no histórico, evitando duplicação caso a rotina seja chamada novamente após a conta já ter sido paga.
+
+No banco, a aba **Contas da casa** lista somente as pendências, com valor, semana de criação, vencimento e botão **Pagar**. `HouseBillsManager.pay_bill()` valida o saldo, desconta o valor, remove a pendência, registra uma entrada de categoria `house_bill` em `expense_history` e move a conta para `house_bill_history` (limitado a 50 entradas).
+
+As duas listas fazem parte de `Global.player`, então já são persistidas pelo `SaveManager`; `ensure_player_state()` também as cria para saves antigos. O tutorial da semana 2 apresenta as contas domésticas, esclarecendo que elas aparecem no banco e só debitam dinheiro quando o jogador confirma o pagamento.
+
 ## 12. Sistema bancário
 
 `scripts/world/bank/banco.gd` é o ambiente do banco.
@@ -598,6 +612,8 @@ Seu papel inclui:
 - funcionar como fonte visual do registro de gastos
 
 Histórico de gastos é representado em `Global.player["expense_history"]` e pode ser renderizado com `VBoxContainer`/`ScrollContainer`.
+
+Além da aba **Eventos** para imprevistos e bônus, o `TabContainer` `Investimentos` tem a aba **Contas da casa**. Ela é um painel fixo na cena; `banco.gd` apenas preenche sua lista e reage ao sinal `HouseBillsManager.bills_updated`.
 
 ### Painel de contas e bônus pendentes
 
@@ -1011,6 +1027,7 @@ Esse conjunto permite que um novo agente entenda o comportamento do projeto e co
 - `scripts/world/market/market.gd`
 - `scripts/world/bank/banco.gd`
 - `singletons/EnterpriseManager.gd`
+- `singletons/HouseBillsManager.gd`
 - `scripts/enterprise/enterprise_management.gd`
 - `scripts/enterprise/data/restaurant_info.gd`
 - `scripts/enterprise/data/arcade_info.gd`

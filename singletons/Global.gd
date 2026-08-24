@@ -28,6 +28,8 @@ var data_model = {
 	"happiness": 100.0,
 	"home_inventory": {},
 	"home_actions_log": [],
+	"pending_house_bills": [],
+	"house_bill_history": [],
 	"pending_events": [],
 	# Travas do minigame. Valores padrão já satisfeitos, então a primeira
 	# partida começa com a escola liberada. `sessions_played` distingue a
@@ -92,6 +94,10 @@ func ensure_player_state() -> void:
 		player["home_inventory"] = {}
 	if not player.has("home_actions_log"):
 		player["home_actions_log"] = []
+	if not player.has("pending_house_bills") or typeof(player["pending_house_bills"]) != TYPE_ARRAY:
+		player["pending_house_bills"] = []
+	if not player.has("house_bill_history") or typeof(player["house_bill_history"]) != TYPE_ARRAY:
+		player["house_bill_history"] = []
 	# Inicializa lista de eventos pendentes (contas / bônus) se não existir
 	if not player.has("pending_events"):
 		player["pending_events"] = []
@@ -151,6 +157,8 @@ func new_game(name: String, money: float) -> void:
 	player["happiness"] = 100.0
 	player["home_inventory"] = {}
 	player["home_actions_log"] = []
+	player["pending_house_bills"] = []
+	player["house_bill_history"] = []
 	player["pending_events"] = []
 	player["minigame_progress"] = MinigameManager.default_progress()
 	player["last_week_status"] = {"hunger": 100.0, "happiness": 100.0}

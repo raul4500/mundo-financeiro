@@ -12,6 +12,7 @@ const EVENT_LABEL_THEME = preload("res://themes/label.tres")
 @onready var btn_withdraw = $Actions/Withdraw
 # Painel de contas/bônus pendentes: layout fixo na cena, conteúdo no script.
 @onready var events_list: VBoxContainer = $"Investimentos/Eventos/Margin/VBoxContainer/Events-scroll/Events-list"
+@onready var house_bills_list: VBoxContainer = $"Investimentos/Contas da casa/Margin/VBoxContainer/House-bills-scroll/House-bills-list"
 
 var history_panel: Panel
 var history_list: VBoxContainer
@@ -27,6 +28,8 @@ func _ready():
 	# Redesenha quando uma pendência nasce ou é resolvida em qualquer lugar.
 	if not EventsManager.events_updated.is_connected(render_events):
 		EventsManager.events_updated.connect(render_events)
+	if not HouseBillsManager.bills_updated.is_connected(render_house_bills):
+		HouseBillsManager.bills_updated.connect(render_house_bills)
 	update_labels()
 	btn_deposit.pressed.connect(deposit)
 	btn_withdraw.pressed.connect(withdraw)
@@ -151,6 +154,47 @@ func _on_pay_pressed(event_id: String) -> void:
 func _on_collect_pressed(event_id: String) -> void:
 	_handle_event_result(EventsManager.collect_event(event_id))
 
+# O painel também é fixo na cena. As contas da casa têm um armazenamento
+# próprio para não se misturarem a eventos inesperados ou empreendimentos.
+func render_house_bills() -> void:
+	if house_bills_list == null:
+		return
+	for child in house_bills_list.get_children():
+		house_bills_list.remove_child(child)
+		child.queue_free()
+
+	var bills := HouseBillsManager.get_pending_bills()
+	if bills.is_empty():
+		house_bills_list.add_child(_make_event_label("Nenhuma conta da casa pendente."))
+		return
+
+	for bill in bills:
+		var row = HBoxContainer.new()
+		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_theme_constant_override("separation", 10)
+
+		var label = _make_event_label("%s | R$ %.2f | gerada na semana %d | vence na semana %d" % [
+			str(bill.get("title", "Conta da casa")),
+			float(bill.get("amount", 0.0)),
+			int(bill.get("week", 0)),
+			int(bill.get("due_week", 0))
+		])
+		label.tooltip_text = str(bill.get("description", ""))
+		row.add_child(label)
+
+		var button = Button.new()
+		button.text = "Pagar"
+		button.custom_minimum_size = Vector2(120, 36)
+		button.pressed.connect(_on_house_bill_pay_pressed.bind(str(bill.get("id", ""))))
+		row.add_child(button)
+		house_bills_list.add_child(row)
+
+func _on_house_bill_pay_pressed(bill_id: String) -> void:
+	var result := HouseBillsManager.pay_bill(bill_id)
+	update_labels()
+	if not result.get("success", false):
+		AlertManager.alert(str(result.get("message", "Não foi possível pagar a conta da casa.")))
+
 # Sem isto, falhar por saldo insuficiente ficava só num print no console e o
 # jogador clicava em "Pagar" sem entender por que nada acontecia.
 func _handle_event_result(result: Dictionary) -> void:
@@ -164,6 +208,7 @@ func update_labels():
 	if history_panel != null:
 		render_history()
 	render_events()
+	render_house_bills()
 
 func deposit():
 	_open_transaction("deposit")

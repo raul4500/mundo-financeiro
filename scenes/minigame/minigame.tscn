@@ -1,7 +1,7 @@
 [gd_scene format=4 uid="uid://dun3niuvduqbh"]
 
 [ext_resource type="Script" uid="uid://cq12h13ej6w8n" path="res://scripts/minigame/minigame.gd" id="1_ms23d"]
-[ext_resource type="Texture2D" uid="uid://bx30034c2uwev" path="res://assests/sprites/minigame.png" id="2_wph28"]
+[ext_resource type="Texture2D" uid="uid://buy5xeypn4vys" path="res://assests/sprites/minigame/1.png" id="2_wph28"]
 [ext_resource type="Texture2D" uid="uid://bug2x04ffhbb4" path="res://assests/sprites/road.png" id="3_8k6tk"]
 [ext_resource type="Script" uid="uid://b5hbj4bopj53y" path="res://scripts/minigame/obstacle.gd" id="7_al4os"]
 [ext_resource type="Script" uid="uid://bkx5wsf3otk68" path="res://scripts/minigame/level.gd" id="9_b7ekc"]
@@ -139,13 +139,11 @@ base_font = ExtResource("12_8as1d")
 [node name="minigame" type="Node2D" unique_id=843873475]
 script = ExtResource("1_ms23d")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=125418881]
-position = Vector2(751, -627)
-texture = ExtResource("2_wph28")
+[node name="Background" type="Node2D" parent="." unique_id=1217592541]
 
-[node name="Parallax2D" type="Parallax2D" parent="." unique_id=1868959201]
-repeat_size = Vector2(368, 0)
-repeat_times = 14
+[node name="1" type="Sprite2D" parent="Background" unique_id=2076307378]
+position = Vector2(198, -154)
+texture = ExtResource("2_wph28")
 
 [node name="map" type="Node2D" parent="." unique_id=495728607]
 

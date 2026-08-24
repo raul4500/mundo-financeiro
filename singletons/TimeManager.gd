@@ -71,6 +71,7 @@ func _add_minute():
 			EnterpriseManager.process_all_daily_operations()
 			if week_rollover:
 				var week = int(Global.player.get("week", 1))
+				HouseBillsManager.generate_weekly_bills()
 				EnterpriseManager.generate_all_weekly_bills()
 				Global.evaluate_week_status()
 				FIIManager.pay_dividends()

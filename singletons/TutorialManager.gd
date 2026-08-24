@@ -73,9 +73,9 @@ var presentation_guide = [
 var weekly_guide = [
 	{
 		"week": 2,
-		"title": "Eventos inesperados e reserva",
-		"goal": "Explicar que imprevistos viram contas/bônus pendentes no banco.",
-		"speaker_note": "Ligue o conteúdo do escritório nível 2 (reserva de emergência) com a mecânica: a reserva é o que permite pagar a conta quando ela aparece."
+		"title": "Contas e reserva de emergência",
+		"goal": "Explicar que despesas da casa e imprevistos viram pendências no banco.",
+		"speaker_note": "Ligue o conteúdo do escritório nível 2 (reserva de emergência) às contas da casa e aos imprevistos: a reserva é o que permite pagá-los quando aparecem."
 	},
 	{
 		"week": 3,
@@ -142,9 +142,11 @@ var messages = [
 # semana de mesmo número (office.gd usa player_level = week).
 var weekly_messages = {
 	2: [
-		"Semana 2. A partir de agora podem acontecer eventos inesperados: o carro quebra, aparece uma despesa médica, ou você recebe um bônus por um trabalho extra. Eles não tiram nem colocam dinheiro na sua conta na hora — viram uma pendência que fica esperando por você.",
+		"Semana 2. Sua casa também gera contas fixas: água, luz e moradia. Elas aparecem toda semana no banco, na aba \"Contas da casa\", e ficam pendentes até você decidir pagá-las.",
 
-		"Todas essas contas e bônus ficam no banco, no painel \"Contas e bônus pendentes\". Uma conta só sai do seu bolso quando você aperta Pagar, e para isso precisa ter o dinheiro na mão. Por isso o nível 2 do escritório, liberado agora, é sobre reserva de emergência: é ela que faz um imprevisto virar só um susto."
+		"Receber uma conta não tira dinheiro do seu bolso automaticamente: a cobrança só acontece quando você aperta Pagar no banco. Planeje o orçamento para quitar as pendências antes do vencimento.",
+
+		"A partir de agora também podem acontecer eventos inesperados: o carro quebra, aparece uma despesa médica, ou você recebe um bônus por um trabalho extra. Essas contas e bônus ficam na aba \"Eventos\" do banco. O nível 2 do escritório é sobre reserva de emergência: é ela que faz uma pendência virar só um susto."
 	],
 	3: [
 		"Semana 3. O nível 3 do escritório abriu e é sobre investimentos básicos: poupança e renda fixa. Se você já tem uma reserva formada, é a hora de fazer o dinheiro parado começar a render.",

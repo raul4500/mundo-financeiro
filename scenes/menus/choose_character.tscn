@@ -69,70 +69,121 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -383.0
-offset_top = -100.0
-offset_right = 383.0
-offset_bottom = 100.0
+offset_left = -501.0
+offset_top = -114.5
+offset_right = 501.0
+offset_bottom = 114.5
 grow_horizontal = 2
 grow_vertical = 2
-alignment = 1
+theme = ExtResource("8_y1ocr")
+theme_override_constants/separation = 63
 
 [node name="raul" type="Button" parent="HBoxContainer" unique_id=2124784887]
-self_modulate = Color(1, 1, 1, 0)
-show_behind_parent = true
 custom_minimum_size = Vector2(150, 200)
 layout_mode = 2
+theme = ExtResource("8_y1ocr")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="HBoxContainer/raul" unique_id=1931265334]
-position = Vector2(75, 97.00001)
+[node name="Raul" type="AnimatedSprite2D" parent="HBoxContainer/raul" unique_id=1931265334]
+position = Vector2(80, 97.50001)
 scale = Vector2(9.25, 10.125001)
 sprite_frames = SubResource("SpriteFrames_cb8dg")
 autoplay = "default"
 frame_progress = 0.5018258
 
+[node name="Label" type="Label" parent="HBoxContainer/raul" unique_id=1853330632]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Raul"
+horizontal_alignment = 1
+
 [node name="matheus" type="Button" parent="HBoxContainer" unique_id=142425786]
-self_modulate = Color(1, 1, 1, 0)
-show_behind_parent = true
 custom_minimum_size = Vector2(150, 200)
 layout_mode = 2
 
 [node name="Matheus" parent="HBoxContainer/matheus" unique_id=1904495750 instance=ExtResource("4_veens")]
-position = Vector2(68, 101)
-scale = Vector2(9.2, 10)
+position = Vector2(75.99999, 111.5)
+scale = Vector2(8.2875, 8.931251)
 animation = &"default"
 
+[node name="Label" type="Label" parent="HBoxContainer/matheus" unique_id=547631886]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Matheus"
+horizontal_alignment = 1
+
 [node name="melissa" type="Button" parent="HBoxContainer" unique_id=1245701893]
-self_modulate = Color(1, 1, 1, 0)
-show_behind_parent = true
 custom_minimum_size = Vector2(150, 200)
 layout_mode = 2
 size_flags_horizontal = 4
-size_flags_vertical = 4
 
 [node name="Melissa" parent="HBoxContainer/melissa" unique_id=483421411 instance=ExtResource("4_6b5gi")]
-position = Vector2(72, 96)
+position = Vector2(83, 96.5)
 scale = Vector2(9.2, 10)
 animation = &"default"
 
+[node name="Label" type="Label" parent="HBoxContainer/melissa" unique_id=773989700]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -46.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Melissa"
+horizontal_alignment = 1
+
 [node name="enzo" type="Button" parent="HBoxContainer" unique_id=1733193355]
-self_modulate = Color(1, 1, 1, 0)
-show_behind_parent = true
 custom_minimum_size = Vector2(150, 200)
 layout_mode = 2
 
 [node name="Enzo" parent="HBoxContainer/enzo" unique_id=2095464486 instance=ExtResource("4_4iitr")]
-position = Vector2(74.999985, 106)
-scale = Vector2(10, 9.499999)
+position = Vector2(79.00001, 100.5)
+scale = Vector2(8.624997, 9.499999)
+
+[node name="Label" type="Label" parent="HBoxContainer/enzo" unique_id=656252898]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Enzo"
+horizontal_alignment = 1
 
 [node name="phillip" type="Button" parent="HBoxContainer" unique_id=1489132273]
-self_modulate = Color(1, 1, 1, 0)
-show_behind_parent = true
 custom_minimum_size = Vector2(150, 200)
 layout_mode = 2
 
 [node name="Phillip" parent="HBoxContainer/phillip" unique_id=1520360165 instance=ExtResource("6_6b5gi")]
-position = Vector2(82, 154)
-scale = Vector2(9.2, 10)
+position = Vector2(80.99999, 155.49998)
+scale = Vector2(9.0375, 9.671876)
+
+[node name="Label" type="Label" parent="HBoxContainer/phillip" unique_id=1623052769]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Phillip"
+horizontal_alignment = 1
 
 [node name="return" type="Button" parent="." unique_id=1528197018]
 layout_mode = 1
@@ -149,5 +200,18 @@ grow_horizontal = 2
 grow_vertical = 0
 theme = ExtResource("8_y1ocr")
 text = "Voltar"
+
+[node name="Label" type="Label" parent="." unique_id=1170292547]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -212.0
+offset_top = 77.0
+offset_right = 207.0
+offset_bottom = 129.0
+grow_horizontal = 2
+theme = ExtResource("8_y1ocr")
+text = "ESCOLHA SEU PERSONAGEM"
 
 [connection signal="pressed" from="return" to="." method="_on_return_pressed"]
