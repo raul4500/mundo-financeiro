@@ -40,9 +40,10 @@ var missions_data: Dictionary = {
 	],
 	2: [
 		{
-			"id": "poupanca",
-			"description": "Guarde dinheiro na poupança",
-			"type": "invest"
+			"id": "construir_reserva",
+			"description": "Construa uma reserva de emergência (guarde R$200)",
+			"type": "money_min",
+			"value": 200
 		},
 		{
 			"id": "economizar_300",
@@ -51,9 +52,9 @@ var missions_data: Dictionary = {
 			"value": 300
 		},
 		{
-			"id": "evitar_impulso",
-			"description": "Evite compras impulsivas",
-			"type": "no_impulse"
+			"id": "resolver_evento",
+			"description": "Resolva um evento inesperado (pague ou resgate no banco)",
+			"type": "pending_event_resolve"
 		}
 	],
 	3: [
@@ -94,21 +95,19 @@ var missions_data: Dictionary = {
 	],
 	5: [
 		{
-			"id": "carteira",
-			"description": "Monte uma carteira completa",
-			"type": "portfolio"
+			"id": "comprar_empreeendimento",
+			"description": "Compre pelo menos um empreendimento",
+			"type": "buy_any_enterprise"
 		},
 		{
-			"id": "alcancar_2000",
-			"description": "Alcance R$2000",
-			"type": "money_min",
-			"value": 2000
+			"id": "pagar_contas_emp",
+			"description": "Pague as contas pendentes do seu empreendimento",
+			"type": "pay_enterprise_bill"
 		},
 		{
-			"id": "saldo_positivo",
-			"description": "Mantenha saldo positivo por 7 dias",
-			"type": "positive_days",
-			"value": 7
+			"id": "repor_estoque",
+			"description": "Reponha o estoque de um empreendimento",
+			"type": "replenish_stock"
 		}
 	]
 }
@@ -120,13 +119,28 @@ func verify_missions(week: int) -> bool:
 	var missions = get_missions(week)
 	if missions.is_empty():
 		return true
+	var failed: Array = []
 	for mission in missions:
 		if not _check_mission(mission):
-			_log_warning("Missão falhou: %s" % mission["description"])
-			_game_over()
-			return false
-	_log_info("Missões da semana concluidas com sucesso")
-	return true
+			failed.append(mission)
+	if failed.size() == 0:
+		_log_info("Missões da semana concluídas com sucesso")
+		# Alerta de sucesso
+		var msg = "Parabéns! Você completou todas as missões desta semana.\n\nVocê será levado para a próxima semana."
+		if has_node("/root/AlertManager"):
+			AlertManager.alert(msg, true)
+		return true
+	else:
+		# Montar mensagem listando missões não concluídas
+		var text = "Você não completou todas as missões desta semana.\n\nMissões não cumpridas:\n"
+		for m in failed:
+			text += " - %s\n" % str(m.get("description", m.get("id", "missao")))
+		text += "\nVocê precisará repetir a semana até completar todas as missões para avançar. Boa sorte!"
+		_log_warning("Missões falharam: %s" % text)
+		if has_node("/root/AlertManager"):
+			AlertManager.alert(text, true)
+		return false
+
 
 func _check_mission(mission: Dictionary) -> bool:
 	var player = Global.player
@@ -153,6 +167,44 @@ func _check_mission(mission: Dictionary) -> bool:
 			return FIIManager.get_portfolio_value() > 0.0
 		"positive_days":
 			return int(player.get("positive_days_count", 0)) >= int(mission.get("value", 0))
+		"pending_event_resolve":
+			# Verifica se o jogador resolveu (pagou ou resgatou) ao menos um evento pendente
+			# produzido nesta semana. Só contam eventos com week_generated == semana atual.
+			var events = player.get("pending_events", [])
+			var current_week = int(player.get("week", 1))
+			for ev in events:
+				var ev_week = int(ev.get("week_generated", -1))
+				if ev_week == current_week and str(ev.get("status", "pending")) != "pending":
+					return true
+			return false
+		"buy_any_enterprise":
+			# Checa se o jogador possui qualquer empreendimento
+			for ent_id in EnterpriseManager.enterprises.keys():
+				if EnterpriseManager.is_owned(ent_id):
+					return true
+			return false
+		"pay_enterprise_bill":
+			# Se fornecido enterprise_id, checa essa; caso contrário, checa se existe algum empreendimento sem pendências
+			var eid = mission.get("enterprise_id", "")
+			if eid != "":
+				if not EnterpriseManager.is_owned(eid):
+					return false
+				return EnterpriseManager.get_pending_bills(eid).size() == 0
+			# any owned enterprise with no pending bills
+			for ent_id in EnterpriseManager.enterprises.keys():
+				if EnterpriseManager.is_owned(ent_id) and EnterpriseManager.get_pending_bills(ent_id).size() == 0:
+					return true
+			return false
+		"replenish_stock":
+			# Verifica se em algum empreendimento possuído há estoque maior que zero
+			for ent_id in EnterpriseManager.enterprises.keys():
+				if not EnterpriseManager.is_owned(ent_id):
+					continue
+				var state = EnterpriseManager.get_player_enterprise(ent_id)
+				for v in state.get("stock", {}).values():
+					if int(v) > 0:
+						return true
+			return false
 		_:
 			_log_warning("Tipo de missão não implementado: %s" % mission["type"])
 			return true

@@ -818,6 +818,55 @@ Equipamentos aumentam receita e capacidade, mas podem gerar manutenção. No res
 - geladeira maior: R$ 600,00;
 - mesas confortáveis: R$ 900,00.
 
+
+## 15. Missões — conexão com Escritório e Tutorial
+
+As missões semanais foram projetadas para reforçar, na prática, os tópicos apresentados no Escritório e as mensagens do tutorial. Abaixo está o mapeamento por semana que serve como referência para designers e para agentes (Claude) que vão editar ou criar missões.
+
+- Semana 1
+  - Missões: economizar_100, sem_gastar, registrar_gastos
+  - Escritório (Nível 1): Controle de gastos — Necessidade x Desejo, Planejamento de gastos, Orçamento semanal
+  - Tutorial: mensagens iniciais sobre começar a controlar gastos e onde ver o histórico (Banco/Casa).
+  - Justificativa: exercícios de economia básica e registro de despesas para ensinar o hábito de acompanhar gastos.
+
+- Semana 2
+  - Missões: construir_reserva (guardar R$200), economizar_300, resolver_evento
+  - Escritório (Nível 2): Reserva de emergência, Imprevistos financeiros, Eventos inesperados no jogo
+  - Tutorial: instrução para checar o painel "Contas / Bônus pendentes" no Banco e como pagar/resgatar
+  - Justificativa: força a prática de guardar reserva e a interação com o sistema de eventos (resolver pendências geradas nesta semana).
+
+- Semana 3
+  - Missões: investir_fundo, analise_gastos, economizar_500
+  - Escritório (Nível 3): Poupança e renda fixa
+  - Tutorial: guia sobre como investir no menu de investimentos (FII/portfolio)
+  - Justificativa: consolidar hábito de poupar e iniciar investimentos simples.
+
+- Semana 4
+  - Missões: investir_acoes, diversificar, lucro_200
+  - Escritório (Nível 4): Ações, Fundos Imobiliários, risco e retorno
+  - Tutorial: recomendações para diversificação e onde ver lucros/perdas na interface de investimentos
+  - Justificativa: introduzir risco/retorno e medir resultados práticos via lucro alvo.
+
+- Semana 5
+  - Missões: comprar_empreeendimento (compre ao menos 1 empreendimento), pagar_contas_emp (pague contas pendentes do empreendimento), repor_estoque
+  - Escritório (Nível 5): Empreendedorismo — estoque, contas semanais, folha, capacidade, equipamentos
+  - Tutorial: passo a passo para comprar um empreendimento, gerenciar estoque e pagar contas no banco
+  - Justificativa: forçar o jogador a praticar gestão de um negócio, incluindo pagamento de contas e reposição de estoque.
+
+Notas de implementação e manutenção
+
+- Quando criar novas missões, sempre indique a `week` alvo e associe `type` que pode ser verificado por `MissionManager._check_mission()`.
+- Missões que envolvem ações em UI (por exemplo, pagar no banco) devem ter checadores que validem o estado persistente (por exemplo, `pending_events` com `status != "pending"` ou `EnterpriseManager.get_pending_bills()` igual a 0).
+- A missão `pending_event_resolve` foi implementada para contar apenas eventos gerados na semana corrente (campo `week_generated` nos eventos). Isso evita que eventos antigos falsamente satisfaçam a missão da semana.
+- Evite chamar _game_over() diretamente ao falhar missões sem revisar a pedagogia — hoje a falha exibe alerta e obriga a repetir a semana, o que é menos punitivo e mais formativo.
+
+Referências:
+- Missions: `singletons/MissionManager.gd`
+- Escritório (conteúdo): `scripts/world/office/office.gd`
+- Eventos inesperados: `singletons/EventsManager.gd`, `singletons/UnexpectedEvents.gd`
+- Painel de contas e banco: `scripts/world/bank/banco.gd`
+
+
 Cada equipamento pode exigir nível mínimo e não pode ser comprado duas vezes.
 
 ### Operação financeira
