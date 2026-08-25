@@ -17,7 +17,7 @@ extends Control
 # ============================================================
 
 var items: Dictionary = {
-	"foods": {
+	"Comidas": {
 		"bread": {"price": 5},
 		"rice": {"price": 20},
 		"hamburger": {"price": 30},
@@ -29,7 +29,7 @@ var items: Dictionary = {
 		"egg": {"price": 6},
 		"fish": {"price": 22}
 	},
-	"drinks": {
+	"Bebidas": {
 		"water": {"price": 2},
 		"juice": {"price": 6},
 		"coffee": {"price": 10},
@@ -41,42 +41,6 @@ var items: Dictionary = {
 		"milkshake": {"price": 18},
 		"hot_chocolate": {"price": 14}
 	},
-	"home": {
-		"soap": {"price": 5},
-		"hygienic_paper": {"price": 3},
-		"mop": {"price": 10},
-		"detergent": {"price": 7},
-		"trash_bag": {"price": 4},
-		"broom": {"price": 9},
-		"bucket": {"price": 11},
-		"toothpaste": {"price": 6},
-		"shampoo": {"price": 13},
-		"towel": {"price": 20}
-	},
-	"tools": {
-		"hammer": {"price": 25},
-		"screwdriver": {"price": 15},
-		"axe": {"price": 40},
-		"pickaxe": {"price": 50},
-		"shovel": {"price": 22},
-		"pliers": {"price": 18},
-		"saw": {"price": 28},
-		"wrench": {"price": 16},
-		"drill": {"price": 75},
-		"toolbox": {"price": 60}
-	},
-	"electronics": {
-		"flashlight": {"price": 18},
-		"radio": {"price": 45},
-		"battery": {"price": 12},
-		"phone": {"price": 120},
-		"tv": {"price": 300},
-		"laptop": {"price": 500},
-		"headphones": {"price": 80},
-		"keyboard": {"price": 40},
-		"mouse": {"price": 25},
-		"speaker": {"price": 70}
-	}
 }
 
 @onready var category_list: VBoxContainer = $HBoxContainer/CategoryPanel/CategoryList

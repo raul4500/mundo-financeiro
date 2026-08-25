@@ -18,6 +18,7 @@ var skip_button: Button
 var blocker: ColorRect
 
 var next_step: bool = false
+var on_confirm_callback: Callable
 
 func _ready():
 	# Autoloads entram na árvore antes da cena atual, então qualquer CanvasLayer
@@ -148,11 +149,12 @@ func _create_alert_ui():
 # =============================
 # 🚨 MOSTRAR ALERTA
 # =============================
-func alert(text: String, step: bool = false):
+func alert(text: String, step: bool = false, callback: Callable = Callable()):
 	blocker.visible = true
 	panel.visible = true
 
 	alert_label.text = text
+	confirm_button.text = "Continuar" if callback.is_valid() else "OK"
 	# Sem isto, uma mensagem longa deixa o scroll no meio e a próxima abre
 	# já rolada, escondendo o começo do texto.
 	text_scroll.scroll_vertical = 0
@@ -163,6 +165,7 @@ func alert(text: String, step: bool = false):
 	Global.lock_gameplay()
 	
 	next_step = step
+	on_confirm_callback = callback
 
 
 # =============================
@@ -200,5 +203,10 @@ func _close_alert():
 	if not Global.gameplay_locked:
 		Global.play_time = true
 	
-	if next_step:
+	var callback = on_confirm_callback
+	on_confirm_callback = Callable()
+	confirm_button.text = "OK"
+	if callback.is_valid():
+		callback.call()
+	elif next_step:
 		TutorialManager.continue_tutorial_after_alert()

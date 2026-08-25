@@ -61,7 +61,7 @@ func _exit_tree() -> void:
 	if TimeManager.day_changed.is_connected(_on_day_changed):
 		TimeManager.day_changed.disconnect(_on_day_changed)
 
-func _on_time_changed(_hour: int, _minute: int) -> void:
+func _on_time_changed(_hour: int) -> void:
 	_update_time_label()
 
 func _on_day_changed(_day: int) -> void:
@@ -69,7 +69,7 @@ func _on_day_changed(_day: int) -> void:
 
 func _update_time_label() -> void:
 	if time_label != null:
-		time_label.text = "Dia %d | %02d:%02d" % [TimeManager.current_day, TimeManager.current_hour, TimeManager.current_minute]
+		time_label.text = "Dia %d | %02dh" % [TimeManager.current_day, TimeManager.current_hour]
 
 # =============================================================
 # MONTAGEM DOS ELEMENTOS DINÂMICOS

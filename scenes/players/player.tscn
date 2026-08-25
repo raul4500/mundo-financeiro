@@ -34,21 +34,67 @@ offset_left = -1.0
 offset_top = 2.0
 offset_right = 1152.0
 offset_bottom = 642.0
+theme = ExtResource("3_olb2f")
 script = ExtResource("3_phaeh")
 
-[node name="Label" type="Label" parent="Hud/HudControl" unique_id=924315269]
-modulate = Color(0.9696924, 0.9696924, 0.9696924, 1)
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -568.5
+[node name="Label" type="Label" parent="Hud/HudControl" unique_id=815588233]
+layout_mode = 0
+offset_left = 9.0
 offset_top = 8.0
-offset_right = -309.5
+offset_right = 216.0
 offset_bottom = 54.0
-grow_horizontal = 2
-theme = ExtResource("3_olb2f")
-horizontal_alignment = 1
+
+[node name="Hunger" type="Panel" parent="Hud/HudControl" unique_id=2079737224]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 540.0
+offset_right = 140.0
+offset_bottom = 642.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Hud/HudControl/Hunger" unique_id=2085554030]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 9.0
+offset_right = 126.0
+offset_bottom = 92.0
+
+[node name="Hunger-label" type="Label" parent="Hud/HudControl/Hunger/VBoxContainer" unique_id=1417561702]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Fome"
+
+[node name="Hunger-bar" type="ProgressBar" parent="Hud/HudControl/Hunger/VBoxContainer" unique_id=746413359]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="Happiness" type="Panel" parent="Hud/HudControl" unique_id=1825175620]
+layout_mode = 0
+offset_left = 960.0
+offset_top = 533.0
+offset_right = 1144.0
+offset_bottom = 635.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Hud/HudControl/Happiness" unique_id=1315963458]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 9.0
+offset_right = 126.0
+offset_bottom = 92.0
+
+[node name="Title" type="Label" parent="Hud/HudControl/Happiness/VBoxContainer" unique_id=1161587202]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "Felicidade"
+
+[node name="ProgressBar" type="ProgressBar" parent="Hud/HudControl/Happiness/VBoxContainer" unique_id=1439248072]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
 
 [node name="Pause" type="CanvasLayer" parent="." unique_id=926795539]
 process_mode = 3

@@ -260,17 +260,18 @@ func _show_next_queued_message() -> void:
 		# Agora mostra a mensagem com o alerta normal
 		emit_signal("show_message", text, true)
 	else:
-		# Sem foco — garante que a câmera esteja no jogador antes de mostrar a
-		# mensagem, aguardando o retorno se necessário.
-		# Pede ao CameraManager para retornar e espera confirmação.
-		# Se a câmera já estiver no player, a chamada é rápida.
-		CameraManager.return_to_player()
-		await CameraManager.focus_returned
+		# Sem foco, mostra imediatamente. Isso é importante ao trocar de cena
+		# para o minigame: não pode depender de um sinal da câmera antiga.
 		emit_signal("show_message", text, true)
 
 func continue_tutorial_after_alert() -> void:
 	if not pending_messages.is_empty():
 		_show_next_queued_message()
+		return
+	if step >= FINAL_STEP:
+		await CameraManager.return_to_player()
+		if has_node("/root/Global"):
+			Global.force_release_all_gameplay_locks()
 		return
 	_next_step()
 

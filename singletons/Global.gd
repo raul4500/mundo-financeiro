@@ -15,6 +15,7 @@ var data_model = {
 	},
 	"day": 1,
 	"hour": 8,
+	"return_home_next_day": false,
 	"tutorial_step": 1,
 	# Semanas cujo aviso semanal do tutorial já foi mostrado, para um reload
 	# não repetir o que o jogador já leu. Ver TutorialManager.weekly_messages.
@@ -23,6 +24,7 @@ var data_model = {
 	"enterprises": {},
 	"expense_history": [],
 	"spend_today": 0.0,
+	"no_spend_days_count": 0,
 	"positive_days_count": 0,
 	"hunger": 100.0,
 	"happiness": 100.0,
@@ -79,7 +81,7 @@ func _new_player_data() -> Dictionary:
 func ensure_player_state() -> void:
 	if player == null:
 		player = _new_player_data()
-	for key in ["money", "saldo", "week", "salary", "school_level", "day", "hour", "tutorial_step", "hunger", "happiness", "spend_today", "positive_days_count"]:
+	for key in ["money", "saldo", "week", "salary", "school_level", "day", "hour", "tutorial_step", "hunger", "happiness", "spend_today", "no_spend_days_count", "positive_days_count"]:
 		if not player.has(key):
 			player[key] = data_model.get(key, 0)
 	if not player.has("position") or typeof(player["position"]) != TYPE_DICTIONARY:
@@ -152,6 +154,7 @@ func new_game(name: String, money: float) -> void:
 	player["investments"] = {}
 	player["expense_history"] = []
 	player["spend_today"] = 0.0
+	player["no_spend_days_count"] = 0
 	player["positive_days_count"] = 0
 	player["hunger"] = 100.0
 	player["happiness"] = 100.0

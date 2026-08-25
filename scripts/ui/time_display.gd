@@ -11,15 +11,14 @@ func _exit_tree() -> void:
 	if TimeManager.day_changed.is_connected(_on_day_changed):
 		TimeManager.day_changed.disconnect(_on_day_changed)
 
-func _on_time_changed(_hour: int, _minute: int) -> void:
+func _on_time_changed(_hour: int) -> void:
 	_update_time()
 
 func _on_day_changed(_day: int) -> void:
 	_update_time()
 
 func _update_time() -> void:
-	text = "Dia %d | %02d:%02d" % [
+	text = "Dia %d | %02dh" % [
 		TimeManager.current_day,
-		TimeManager.current_hour,
-		TimeManager.current_minute
+		TimeManager.current_hour
 	]

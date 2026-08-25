@@ -150,7 +150,7 @@ func _check_mission(mission: Dictionary) -> bool:
 		"money_min":
 			return float(player.get("money", 0.0)) >= float(mission.get("value", 0.0))
 		"no_spend_day":
-			return float(player.get("spend_today", 0.0)) == 0.0
+			return int(player.get("no_spend_days_count", 0)) >= 1
 		"log_expense":
 			return player.get("expense_history", []).size() > 0
 		"no_impulse":

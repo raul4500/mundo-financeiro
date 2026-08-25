@@ -14,6 +14,13 @@ func _ready():
 	var pos = Global.player["position"]
 	character.global_position = Vector2(pos["x"], pos["y"])
 	player_node.add_child(character)
+	if Global.player.get("return_home_next_day", false):
+		var home_collision = get_node_or_null("Doors/Home_door/CollisionShape2D")
+		if home_collision != null:
+			character.global_position = home_collision.global_position + Vector2(0, 10)
+			Global.player["position"]["x"] = character.global_position.x
+			Global.player["position"]["y"] = character.global_position.y
+		Global.player["return_home_next_day"] = false
 	CameraManager.register_player(character)
 	
 	for pole in poles.get_children():

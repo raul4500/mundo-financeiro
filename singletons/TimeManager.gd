@@ -1,6 +1,6 @@
 extends Node
 
-signal time_changed(hour, minute)
+signal time_changed(hour)
 signal day_changed(day)
 signal week_changed(week)
 
@@ -8,8 +8,9 @@ var current_day: int = 1
 var current_hour: int = 8
 var current_minute: int = 0
 
-var time_scale: float = 5.0
+var time_scale: float = 7.0
 var timer: float = 0.0
+var day_end_pending := false
 
 func update_time():
 	if Global.player == null:
@@ -17,7 +18,7 @@ func update_time():
 	current_day = int(Global.player.get("day", 1))
 	current_hour = int(Global.player.get("hour", 8))
 	current_minute = 0
-	emit_signal("time_changed", current_hour, current_minute)
+	emit_signal("time_changed", current_hour)
 	emit_signal("day_changed", current_day)
 
 func _logger() -> Node:
@@ -48,14 +49,21 @@ func spend_hours(hours: float) -> Dictionary:
 
 	var minutes_to_spend := int(round(hours * 60.0))
 	for _minute in range(minutes_to_spend):
+		if day_end_pending:
+			break
 		_add_minute()
 	return {"success": true, "minutes": minutes_to_spend}
 
 func _add_minute():
+	if day_end_pending:
+		return
 	current_minute += 1
 	if current_minute >= 60:
 		current_minute = 0
 		current_hour += 1
+		if current_hour >= 18 and current_hour < 24:
+			_finish_day()
+			return
 		if current_hour >= 24:
 			current_hour = 0
 			current_day += 1
@@ -92,4 +100,53 @@ func _add_minute():
 		Global.player["hour"] = current_hour
 		emit_signal("day_changed", current_day)
 	Global.player["hour"] = current_hour
-	emit_signal("time_changed", current_hour, current_minute)
+	emit_signal("time_changed", current_hour)
+
+func _finish_day() -> void:
+	current_minute = 0
+	Global.player["hour"] = 18
+	if float(Global.player.get("spend_today", 0.0)) == 0.0:
+		Global.player["no_spend_days_count"] = int(Global.player.get("no_spend_days_count", 0)) + 1
+	EnterpriseManager.process_all_daily_operations()
+	Global.decay_need_state()
+	Global.player["positive_days_count"] = int(Global.player.get("positive_days_count", 0)) + 1
+	day_end_pending = true
+	Global.play_time = false
+	emit_signal("time_changed", 18)
+	AlertManager.alert(
+		"O dia terminou. O horário de funcionamento é das 08:00 às 18:00.\n\nClique em OK para descansar e continuar no próximo dia.",
+		false,
+		Callable(self, "_advance_to_next_day")
+	)
+
+func _advance_to_next_day() -> void:
+	var week_rollover := current_day >= 7
+	current_day = 1 if week_rollover else current_day + 1
+	current_hour = 8
+	current_minute = 0
+	timer = 0.0
+	Global.player["day"] = current_day
+	Global.player["hour"] = current_hour
+	Global.player["spend_today"] = 0.0
+	Global.player["return_home_next_day"] = true
+	day_end_pending = false
+	Global.play_time = false
+	emit_signal("day_changed", current_day)
+	emit_signal("time_changed", current_hour)
+	TransitionManager.change_scene("res://scenes/world/main_game.tscn")
+	if week_rollover:
+		call_deferred("_process_week_rollover")
+
+func _process_week_rollover() -> void:
+	var week := int(Global.player.get("week", 1))
+	EnterpriseManager.generate_all_weekly_bills()
+	HouseBillsManager.generate_weekly_bills()
+	Global.evaluate_week_status()
+	FIIManager.pay_dividends()
+	if MissionManager.verify_missions(week):
+		Global.player["week"] = week + 1
+		Global.player["no_spend_days_count"] = 0
+		Global.get_paid()
+		emit_signal("week_changed", Global.player["week"])
+		TutorialManager.on_week_changed(int(Global.player["week"]))
+		EventsManager.maybe_spawn_events(int(Global.player["week"]))
