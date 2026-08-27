@@ -13,9 +13,9 @@ const EVENT_LABEL_THEME = preload("res://themes/label.tres")
 # Painel de contas/bônus pendentes: layout fixo na cena, conteúdo no script.
 @onready var events_list: VBoxContainer = $"Investimentos/Eventos/Margin/VBoxContainer/Events-scroll/Events-list"
 @onready var house_bills_list: VBoxContainer = $"Investimentos/Contas da casa/Margin/VBoxContainer/House-bills-scroll/House-bills-list"
+@onready var history_panel: Panel = $"Investimentos/Histórico"
+@onready var history_list: VBoxContainer = $"Investimentos/Histórico/Margin/VBoxContainer/House-bills-scroll/History-list"
 
-var history_panel: Panel
-var history_list: VBoxContainer
 var time_display: Label
 var transaction_type: String = ""
 
@@ -24,7 +24,7 @@ func _ready():
 	Global.play_time = true
 	Global.ensure_player_state()
 	_create_time_display()
-	_build_history_panel()
+	render_history()
 	# Redesenha quando uma pendência nasce ou é resolvida em qualquer lugar.
 	if not EventsManager.events_updated.is_connected(render_events):
 		EventsManager.events_updated.connect(render_events)
@@ -42,32 +42,6 @@ func _create_time_display() -> void:
 	time_display.position = Vector2(24, 20)
 	time_display.add_theme_font_size_override("font_size", 22)
 	add_child(time_display)
-
-func _build_history_panel() -> void:
-	if history_panel != null:
-		return
-	history_panel = Panel.new()
-	history_panel.position = Vector2(710, 25)
-	history_panel.size = Vector2(390, 590)
-
-	var title = Label.new()
-	title.text = "Histórico de despesas"
-	title.position = Vector2(10, 10)
-	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-
-	var scroll = ScrollContainer.new()
-	scroll.position = Vector2(10, 40)
-	scroll.size = Vector2(370, 520)
-
-	history_list = VBoxContainer.new()
-	history_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	history_list.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	history_list.add_theme_constant_override("separation", 6)
-	scroll.add_child(history_list)
-	history_panel.add_child(title)
-	history_panel.add_child(scroll)
-	add_child(history_panel)
-	render_history()
 
 func render_history() -> void:
 	if history_list == null:

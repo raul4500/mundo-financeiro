@@ -355,4 +355,5 @@ func _ready() -> void:
 	print(player)
 
 func _process(delta: float) -> void:
-	pass
+	if player["hunger"] == 0.0:
+		AlertManager.alert("Você morreu de fome")

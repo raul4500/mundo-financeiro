@@ -27,7 +27,7 @@ func load_funds():
 		var container = VBoxContainer.new()
 		container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		container.size_flags_vertical = Control.SIZE_EXPAND_FILL
-		container.add_theme_constant_override("separation", 8)
+		container.add_theme_constant_override("separation", 16)
 
 # =============================
 # 🏷️ LABEL

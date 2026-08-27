@@ -55,10 +55,10 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -548.0
-offset_top = 28.0
-offset_right = -124.0
-offset_bottom = 193.0
+offset_left = -553.0
+offset_top = 22.0
+offset_right = -129.0
+offset_bottom = 187.0
 grow_horizontal = 2
 theme = ExtResource("4_0nfyk")
 
@@ -140,7 +140,7 @@ text = "Ações disponíveis"
 
 [node name="Investimentos" type="TabContainer" parent="." unique_id=842104532]
 layout_mode = 0
-offset_left = 705.0
+offset_left = 465.0
 offset_top = 21.0
 offset_right = 1123.0
 offset_bottom = 624.0
@@ -263,6 +263,44 @@ size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
 [node name="House-bills-list" type="VBoxContainer" parent="Investimentos/Contas da casa/Margin/VBoxContainer/House-bills-scroll" unique_id=1700200012]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="Histórico" type="Panel" parent="Investimentos" unique_id=1254925116]
+visible = false
+layout_mode = 2
+theme = ExtResource("4_0nfyk")
+metadata/_tab_index = 4
+
+[node name="Margin" type="MarginContainer" parent="Investimentos/Histórico" unique_id=269645786]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Investimentos/Histórico/Margin" unique_id=1448531382]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Investimentos/Histórico/Margin/VBoxContainer" unique_id=391163516]
+layout_mode = 2
+theme = ExtResource("5_evlbl")
+theme_override_font_sizes/font_size = 18
+text = "Histórico de despesas"
+
+[node name="House-bills-scroll" type="ScrollContainer" parent="Investimentos/Histórico/Margin/VBoxContainer" unique_id=1877559572]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="History-list" type="VBoxContainer" parent="Investimentos/Histórico/Margin/VBoxContainer/House-bills-scroll" unique_id=1868025354]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
