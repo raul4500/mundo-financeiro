@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cqsbpa3kjodac"
-path="res://.godot/imported/chair.png-d5c5c2d052c6bac670c2008d232df1a3.ctex"
+path="res://.godot/imported/chair.png-d7668874fced6d37d0281a133f0bba26.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assests/sprites/obstacles/chair.png"
-dest_files=["res://.godot/imported/chair.png-d5c5c2d052c6bac670c2008d232df1a3.ctex"]
+source_file="res://obstacles/chair.png"
+dest_files=["res://.godot/imported/chair.png-d7668874fced6d37d0281a133f0bba26.ctex"]
 
 [params]
 

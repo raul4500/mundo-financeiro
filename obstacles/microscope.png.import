@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://ode5ophmvd02"
-path="res://.godot/imported/microscope.png-f989124d11e1e02a4dde975619a150bf.ctex"
+path="res://.godot/imported/microscope.png-c57ac0122772c49becec31c991f4a26a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assests/sprites/obstacles/microscope.png"
-dest_files=["res://.godot/imported/microscope.png-f989124d11e1e02a4dde975619a150bf.ctex"]
+source_file="res://obstacles/microscope.png"
+dest_files=["res://.godot/imported/microscope.png-c57ac0122772c49becec31c991f4a26a.ctex"]
 
 [params]
 
