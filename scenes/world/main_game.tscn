@@ -1666,8 +1666,9 @@ scale = Vector2(0.65625, 0.65789473)
 texture = ExtResource("25_8uhhx")
 
 [node name="FireHidrant" type="Sprite2D" parent="Scenario" unique_id=1650013706]
-position = Vector2(718, 312)
+position = Vector2(718, 330)
 texture = ExtResource("21_1mux6")
+offset = Vector2(0, -18)
 
 [node name="FrontChair" type="Sprite2D" parent="Scenario" unique_id=1744220511]
 position = Vector2(1012, 595)
@@ -1691,12 +1692,14 @@ position = Vector2(864, 386)
 texture = ExtResource("19_nkiop")
 
 [node name="FireHidrant2" type="Sprite2D" parent="Scenario" unique_id=1903298362]
-position = Vector2(324, 216)
+position = Vector2(324, 234)
 texture = ExtResource("21_1mux6")
+offset = Vector2(0, -18)
 
 [node name="FireHidrant4" type="Sprite2D" parent="Scenario" unique_id=692091239]
-position = Vector2(785, 234)
+position = Vector2(785, 252)
 texture = ExtResource("21_1mux6")
+offset = Vector2(0, -18)
 
 [node name="FireHidrant5" type="Sprite2D" parent="Scenario" unique_id=1354022104]
 position = Vector2(356, 543)
@@ -1704,20 +1707,24 @@ texture = ExtResource("21_1mux6")
 offset = Vector2(0, -18)
 
 [node name="FireHidrant6" type="Sprite2D" parent="Scenario" unique_id=1045602188]
-position = Vector2(-58, 213)
+position = Vector2(-58, 231)
 texture = ExtResource("21_1mux6")
+offset = Vector2(0, -18)
 
 [node name="GreenVendingMachine" type="Sprite2D" parent="Scenario" unique_id=1510408972]
-position = Vector2(-39, 406)
+position = Vector2(-39, 426)
 texture = ExtResource("22_paixt")
+offset = Vector2(0, -20)
 
 [node name="RedVendingMachine" type="Sprite2D" parent="Scenario" unique_id=1738081303]
-position = Vector2(-66, 406)
+position = Vector2(-66, 426)
 texture = ExtResource("23_rc5wj")
+offset = Vector2(0, -20)
 
 [node name="BeigeVendingMachine" type="Sprite2D" parent="Scenario" unique_id=567684294]
-position = Vector2(-100, 406)
+position = Vector2(-100, 426)
 texture = ExtResource("24_uwant")
+offset = Vector2(0, -20)
 
 [node name="ClosedTrashbin2" type="Sprite2D" parent="Scenario" unique_id=1031677053]
 position = Vector2(465, 238)
@@ -1884,7 +1891,7 @@ polygon = PackedVector2Array(741, 805, -119, 812, -118, 816)
 [node name="StaticBody2D3" type="StaticBody2D" parent="Colisions" unique_id=2088575058]
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Colisions/StaticBody2D3" unique_id=1302933316]
-polygon = PackedVector2Array(-116, 431, -25, 434, -11, 434, -11, 428, 25, 428, 25, 435, 41, 435, 41, 428, 74, 427, 74, 439, 84, 439, 84, 443, 105, 444, 106, 461, 112, 461, 112, 425, 194, 425, 194, 462, 201, 462, 201, 443, 221, 444, 221, 438, 232, 438, 232, 427, 265, 427, 265, 434, 280, 434, 280, 428, 317, 428, 317, 433, 332, 434, 332, 300, 234, 300, 74, 300, -26, 300, -24, 399, -118, 399)
+polygon = PackedVector2Array(-116, 432, -26, 432, -25, 434, -11, 434, -11, 428, 25, 428, 25, 435, 41, 435, 41, 428, 74, 427, 74, 439, 84, 439, 84, 443, 105, 444, 106, 461, 112, 461, 112, 425, 194, 425, 194, 462, 201, 462, 201, 443, 221, 444, 221, 438, 232, 438, 232, 427, 265, 427, 265, 434, 280, 434, 280, 428, 317, 428, 317, 433, 332, 434, 332, 300, 234, 300, 74, 300, -26, 300, -25, 416, -116, 416)
 
 [node name="CollisionPolygon2D2" type="CollisionPolygon2D" parent="Colisions/StaticBody2D3" unique_id=1258411516]
 polygon = PackedVector2Array(1017, 225, 991.4365, 241.71638, 993, 298, 999, 347, 1025, 415, 1051, 417, 1057, 462, 1063, 506, 1093, 556, 1110, 558, 1169, 560, 1182, 514, 1205, 514)
@@ -1998,6 +2005,13 @@ polygon = PackedVector2Array(855, 206, 855, 209, 857, 210, 865, 210, 867, 208, 8
 [node name="CollisionPolygon2D34" type="CollisionPolygon2D" parent="Colisions/StaticBody2D3" unique_id=1685025578]
 position = Vector2(53, 121)
 polygon = PackedVector2Array(855, 206, 855, 209, 857, 210, 865, 210, 867, 208, 867, 206, 863, 205, 861, 205, 858, 205)
+
+[node name="CollisionPolygon2D35" type="CollisionPolygon2D" parent="Colisions/StaticBody2D3" unique_id=662269958]
+polygon = PackedVector2Array(835, 486, 875, 486, 875, 480, 835, 480)
+
+[node name="CollisionPolygon2D36" type="CollisionPolygon2D" parent="Colisions/StaticBody2D3" unique_id=913436340]
+position = Vector2(375, -384)
+polygon = PackedVector2Array(835, 486, 881, 486, 881, 480, 835, 480)
 
 [node name="Big-houses" type="StaticBody2D" parent="Colisions" unique_id=2015684205]
 
