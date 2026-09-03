@@ -17,13 +17,7 @@ func load_funds():
 	for fund_id in FIIManager.funds.keys():
 		var fund = FIIManager.funds[fund_id]
 		
-		# =============================
-		# 🎴 PANEL DO FUNDO
-		# =============================
-		var panel = Panel.new()
-		panel.custom_minimum_size = Vector2(0, 120)
-		panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-
+		
 		var container = VBoxContainer.new()
 		container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		container.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -81,8 +75,7 @@ func load_funds():
 		container.add_child(input)
 		container.add_child(btn_container)
 
-		panel.add_child(container)
-		fund_list.add_child(panel)
+		fund_list.add_child(container)
 
 
 # =============================

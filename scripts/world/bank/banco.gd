@@ -11,10 +11,10 @@ const EVENT_LABEL_THEME = preload("res://themes/label.tres")
 @onready var btn_deposit = $Actions/Deposit
 @onready var btn_withdraw = $Actions/Withdraw
 # Painel de contas/bônus pendentes: layout fixo na cena, conteúdo no script.
-@onready var events_list: VBoxContainer = $"Investimentos/Eventos/Margin/VBoxContainer/Events-scroll/Events-list"
-@onready var house_bills_list: VBoxContainer = $"Investimentos/Contas da casa/Margin/VBoxContainer/House-bills-scroll/House-bills-list"
-@onready var history_panel: Panel = $"Investimentos/Histórico"
-@onready var history_list: VBoxContainer = $"Investimentos/Histórico/Margin/VBoxContainer/House-bills-scroll/History-list"
+@onready var events_list: VBoxContainer = $"TabContainer/Eventos/Margin/VBoxContainer/Events-scroll/Events-list"
+@onready var house_bills_list: VBoxContainer = $"TabContainer/Contas da casa/Margin/VBoxContainer/House-bills-scroll/House-bills-list"
+@onready var history_panel: Panel = $"TabContainer/Histórico"
+@onready var history_list: VBoxContainer = $"TabContainer/Histórico/Margin/VBoxContainer/House-bills-scroll/History-list"
 
 var time_display: Label
 var transaction_type: String = ""
