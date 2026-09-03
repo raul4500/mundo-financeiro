@@ -227,7 +227,7 @@ func _on_finish_pressed() -> void:
 		var item_name = cart_entry["item_name"]
 		Global.player["money"] = float(Global.player["money"]) - price
 		Global.register_expense(item_name.capitalize(), group_name, price, int(Global.player.get("day", 1)), int(Global.player.get("week", 1)))
-		Global.add_home_inventory_item(item_name.capitalize(), 1, "food" if group_name in ["foods", "drinks"] else "item")
+		Global.add_home_inventory_item(item_name.capitalize(), 1, "food" if group_name in ["Comidas", "Bebidas"] else "item")
 
 	cart.clear()
 	for child in kart_list.get_children():

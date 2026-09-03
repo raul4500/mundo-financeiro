@@ -272,6 +272,8 @@ func get_home_inventory_items() -> Array:
 func consume_food() -> Dictionary:
 	if player == null:
 		return {"success": false, "message": "Estado do jogador não inicializado."}
+	if player["hunger"] == 100.00:
+		return {"success": false, "message": "Você não está com fome."}
 	var inventory = player.get("home_inventory", {})
 	var chosen_name = ""
 	var chosen_item = null
@@ -285,7 +287,7 @@ func consume_food() -> Dictionary:
 			chosen_name = key
 			chosen_item = item
 	if chosen_item == null:
-		return {"success": false, "message": "SEM COMIDA NO ESTOQUE."}
+		return {"success": false, "message": "Sem comida no estoque."}
 	inventory[chosen_name]["quantity"] = int(inventory[chosen_name].get("quantity", 0)) - 1
 	if inventory[chosen_name]["quantity"] <= 0:
 		inventory.erase(chosen_name)
