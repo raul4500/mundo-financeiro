@@ -17,7 +17,6 @@ func load_funds():
 	for fund_id in FIIManager.funds.keys():
 		var fund = FIIManager.funds[fund_id]
 		
-		
 		var container = VBoxContainer.new()
 		container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		container.size_flags_vertical = Control.SIZE_EXPAND_FILL
