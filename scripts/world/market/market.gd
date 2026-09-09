@@ -16,30 +16,37 @@ extends Control
 # nos @onready abaixo.
 # ============================================================
 
+# Cada item repoe fome e/ou sede. A coluna que ensina e' R$ por ponto reposto:
+# agua sai a 0,20 e vinho a 15,00 — 75x mais caro pelo mesmo efeito. O item
+# barato e sem graca e' o certo, que e' o "necessidade x desejo" do nivel 1 do
+# escritorio com um medidor.
+#
+# Os thirst_restore das Bebidas sao espelhados em Global.DRINK_THIRST, que
+# migra saves antigos. tests/test_mechanics.gd compara as duas listas.
 var items: Dictionary = {
 	"Comidas": {
-		"bread": {"price": 20, "hunger_restore": 10},
-		"rice": {"price": 90, "hunger_restore": 70},
-		"hamburger": {"price": 60, "hunger_restore": 50},
-		"apple": {"price": 15, "hunger_restore": 15},
-		"banana": {"price": 12, "hunger_restore": 12},
-		"milk": {"price": 25, "hunger_restore": 20},
-		"cheese": {"price": 35, "hunger_restore": 25},
-		"meat": {"price": 150, "hunger_restore": 100},
-		"egg": {"price": 18, "hunger_restore": 18},
-		"fish": {"price": 80, "hunger_restore": 65}
+		"bread": {"price": 20, "hunger_restore": 10, "thirst_restore": 0},
+		"rice": {"price": 90, "hunger_restore": 70, "thirst_restore": 5},
+		"hamburger": {"price": 60, "hunger_restore": 50, "thirst_restore": 0},
+		"apple": {"price": 15, "hunger_restore": 15, "thirst_restore": 8},
+		"banana": {"price": 12, "hunger_restore": 12, "thirst_restore": 3},
+		"milk": {"price": 25, "hunger_restore": 20, "thirst_restore": 15},
+		"cheese": {"price": 35, "hunger_restore": 25, "thirst_restore": 0},
+		"meat": {"price": 150, "hunger_restore": 100, "thirst_restore": 0},
+		"egg": {"price": 18, "hunger_restore": 18, "thirst_restore": 0},
+		"fish": {"price": 80, "hunger_restore": 65, "thirst_restore": 0}
 	},
 	"Bebidas": {
-		"water": {"price": 5, "hunger_restore": 3},
-		"juice": {"price": 20, "hunger_restore": 15},
-		"coffee": {"price": 30, "hunger_restore": 10},
-		"soda": {"price": 25, "hunger_restore": 12},
-		"tea": {"price": 15, "hunger_restore": 8},
-		"energy_drink": {"price": 45, "hunger_restore": 30},
-		"beer": {"price": 50, "hunger_restore": 5},
-		"wine": {"price": 120, "hunger_restore": 8},
-		"milkshake": {"price": 55, "hunger_restore": 40},
-		"hot_chocolate": {"price": 40, "hunger_restore": 25}
+		"water": {"price": 5, "hunger_restore": 3, "thirst_restore": 25},
+		"juice": {"price": 20, "hunger_restore": 15, "thirst_restore": 35},
+		"coffee": {"price": 30, "hunger_restore": 10, "thirst_restore": 15},
+		"soda": {"price": 25, "hunger_restore": 12, "thirst_restore": 20},
+		"tea": {"price": 15, "hunger_restore": 8, "thirst_restore": 30},
+		"energy_drink": {"price": 45, "hunger_restore": 30, "thirst_restore": 20},
+		"beer": {"price": 50, "hunger_restore": 5, "thirst_restore": 10},
+		"wine": {"price": 120, "hunger_restore": 8, "thirst_restore": 8},
+		"milkshake": {"price": 55, "hunger_restore": 40, "thirst_restore": 30},
+		"hot_chocolate": {"price": 40, "hunger_restore": 25, "thirst_restore": 25}
 	},
 }
 
@@ -87,6 +94,21 @@ func _on_category_selected(group_name: String) -> void:
 	_populate_items(group_name)
 
 
+# "10% fome" / "25% sede" / "20% fome, 15% sede". Omite o que for zero para o
+# card nao ficar poluido com "0% sede" na carne.
+func _restore_label(item_data: Dictionary) -> String:
+	var parts: Array = []
+	var hunger_restore = int(item_data.get("hunger_restore", 0))
+	var thirst_restore = int(item_data.get("thirst_restore", 0))
+	if hunger_restore > 0:
+		parts.append("%d%% fome" % hunger_restore)
+	if thirst_restore > 0:
+		parts.append("%d%% sede" % thirst_restore)
+	if parts.is_empty():
+		return "sem efeito"
+	return ", ".join(parts)
+
+
 func _populate_items(group_name: String) -> void:
 	# Limpa os itens antigos do painel central
 	for child in item_list.get_children():
@@ -95,7 +117,6 @@ func _populate_items(group_name: String) -> void:
 	var item_dict: Dictionary = items[group_name]
 	for item_name in item_dict.keys():
 		var price = item_dict[item_name]["price"]
-		var hunger_restore = item_dict[item_name].get("hunger_restore", 10)
 
 		var product = Panel.new()
 		var container = VBoxContainer.new()
@@ -103,7 +124,7 @@ func _populate_items(group_name: String) -> void:
 		var button = Button.new()
 	
 	# Texto
-		product_name.text = "%s\nR$ %d – %d%% fome" % [item_name.capitalize(), price, hunger_restore]
+		product_name.text = "%s\nR$ %d – %s" % [item_name.capitalize(), price, _restore_label(item_dict[item_name])]
 		button.text = "Adicionar"
 	
 	# Tamanho do painel
@@ -156,8 +177,10 @@ func _on_exit_pressed() -> void:
 
 
 func _on_buy_item(group_name: String, item_name: String) -> void:
-	var price = float(items[group_name][item_name]["price"])
-	var hunger_restore = items[group_name][item_name].get("hunger_restore", 10)
+	var item_data: Dictionary = items[group_name][item_name]
+	var price = float(item_data["price"])
+	var hunger_restore = item_data.get("hunger_restore", 0)
+	var thirst_restore = item_data.get("thirst_restore", 0)
 
 	var container = HBoxContainer.new()
 	var product_name = Label.new()
@@ -175,7 +198,7 @@ func _on_buy_item(group_name: String, item_name: String) -> void:
 	container.alignment = BoxContainer.ALIGNMENT_CENTER
 	container.add_theme_constant_override("separation", 5)
 
-	product_name.text = "%s - R$%d (%d%%)" % [item_name.capitalize(), int(price), hunger_restore]
+	product_name.text = "%s - R$%d (%s)" % [item_name.capitalize(), int(price), _restore_label(item_data)]
 	product_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 
 	container.add_child(product_name)
@@ -187,6 +210,7 @@ func _on_buy_item(group_name: String, item_name: String) -> void:
 		"item_name": item_name,
 		"price": price,
 		"hunger_restore": hunger_restore,
+		"thirst_restore": thirst_restore,
 		"row": container
 	}
 	cart.append(cart_entry)
@@ -228,10 +252,18 @@ func _on_finish_pressed() -> void:
 		var price = float(cart_entry["price"])
 		var group_name = cart_entry["group_name"]
 		var item_name = cart_entry["item_name"]
-		var hunger_restore = int(cart_entry.get("hunger_restore", 10))
+		var hunger_restore = int(cart_entry.get("hunger_restore", 0))
+		var thirst_restore = int(cart_entry.get("thirst_restore", 0))
+		# Bebida tem categoria propria: e' o que separa o botao BEBER do COMER
+		# na casa. Antes as duas caiam em "food" e bebida era comida ruim.
+		var category = "item"
+		if group_name == "Comidas":
+			category = "food"
+		elif group_name == "Bebidas":
+			category = "drink"
 		Global.player["money"] = float(Global.player["money"]) - price
 		Global.register_expense(item_name.capitalize(), group_name, price, int(Global.player.get("day", 1)), int(Global.player.get("week", 1)))
-		Global.add_home_inventory_item(item_name.capitalize(), 1, "food" if group_name in ["Comidas", "Bebidas"] else "item", hunger_restore)
+		Global.add_home_inventory_item(item_name.capitalize(), 1, category, hunger_restore, thirst_restore)
 
 	cart.clear()
 	for child in kart_list.get_children():

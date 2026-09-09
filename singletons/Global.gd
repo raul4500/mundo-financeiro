@@ -4,6 +4,21 @@ var player: Dictionary
 
 # Fome perdida por dia dormido. Comer no mercado/casa e' o que repoe.
 const HUNGER_DECAY_PER_DAY := 6.0
+# Sede perdida por dia dormido. Cai mais rapido que a fome de proposito: zera
+# em ~7 dias contra ~17 da fome, e e' o que da' utilidade a's bebidas do
+# mercado. Com agua a R$ 5 repondo 25%, sao ~R$ 20/semana.
+const THIRST_DECAY_PER_DAY := 14.0
+
+# Espelha os thirst_restore de market.gd["Bebidas"]. Serve para migrar saves
+# gravados antes da sede existir, onde a bebida entrou como "food" e sem valor
+# de sede. Fonte da verdade continua sendo o mercado; se as bebidas virarem
+# dados externos, ler a lista de lá em vez de repetir aqui.
+# ponytail: duplicacao aceita porque a alternativa e' o Global depender de uma
+# cena de UI. Um teste em tests/test_mechanics.gd compara as duas listas.
+const DRINK_THIRST := {
+	"water": 25, "tea": 30, "juice": 35, "soda": 20, "hot_chocolate": 25,
+	"milkshake": 30, "coffee": 15, "energy_drink": 20, "beer": 10, "wine": 8
+}
 
 # =============================================================
 # PROGRESSAO DE LIBERACAO DOS LUGARES
@@ -48,6 +63,11 @@ var data_model = {
 	# Semanas cujo aviso semanal do tutorial já foi mostrado, para um reload
 	# não repetir o que o jogador já leu. Ver TutorialManager.weekly_messages.
 	"tutorial_weeks_shown": [],
+	# O bloco do tutorial que explica a casa dispara na primeira visita, que
+	# pode ser em qualquer semana. Persistido pelo mesmo motivo de
+	# tutorial_weeks_shown: `skipped` nao e' salvo, e recarregar traria o
+	# bloco de volta. Ver TutorialManager.on_player_entered_home().
+	"tutorial_home_shown": false,
 	"investments": {},
 	"enterprises": {},
 	"expense_history": [],
@@ -56,6 +76,7 @@ var data_model = {
 	"no_spend_days_count": 0,
 	"positive_days_count": 0,
 	"hunger": 100.0,
+	"thirst": 100.0,
 	"stamina": 100.0,
 	"home_inventory": {},
 	"home_actions_log": [],
@@ -73,6 +94,7 @@ var data_model = {
 	},
 	"last_week_status": {
 		"hunger": 100.0,
+		"thirst": 100.0,
 		"stamina": 100.0
 	}
 }
@@ -140,7 +162,7 @@ func _new_player_data() -> Dictionary:
 func ensure_player_state() -> void:
 	if player == null:
 		player = _new_player_data()
-	for key in ["money", "saldo", "week", "salary", "school_level", "day", "hour", "tutorial_step", "hunger", "stamina", "spend_today", "had_no_spend_day", "no_spend_days_count", "positive_days_count"]:
+	for key in ["money", "saldo", "week", "salary", "school_level", "day", "hour", "tutorial_step", "hunger", "thirst", "stamina", "spend_today", "had_no_spend_day", "no_spend_days_count", "positive_days_count", "tutorial_home_shown"]:
 		if not player.has(key):
 			player[key] = data_model.get(key, 0)
 	# Save anterior a' progressao de lugares: nao tem "unlock_stage". Trancar a
@@ -179,10 +201,11 @@ func ensure_player_state() -> void:
 	if not player.has("tutorial_weeks_shown") or typeof(player["tutorial_weeks_shown"]) != TYPE_ARRAY:
 		player["tutorial_weeks_shown"] = []
 	if not player.has("last_week_status"):
-		player["last_week_status"] = {"hunger": 100.0, "stamina": 100.0}
+		player["last_week_status"] = {"hunger": 100.0, "thirst": 100.0, "stamina": 100.0}
 	player["money"] = float(player.get("money", 0.0))
 	player["saldo"] = float(player.get("saldo", 0.0))
 	player["hunger"] = clampf(float(player.get("hunger", 100.0)), 0.0, 100.0)
+	player["thirst"] = clampf(float(player.get("thirst", 100.0)), 0.0, 100.0)
 	player["stamina"] = clampf(float(player.get("stamina", 100.0)), 0.0, 100.0)
 	normalize_home_inventory()
 
@@ -198,11 +221,29 @@ func normalize_home_inventory() -> void:
 		if item_name == "":
 			item_name = str(key)
 		var normalized_key = item_name.to_lower()
+		var category = str(item.get("category", "food"))
+		var thirst = float(item.get("thirst", 0.0))
+		# Migracao de saves anteriores a' sede: as bebidas eram gravadas como
+		# "food" e sem valor de sede, entao ficavam presas como comida ruim e o
+		# botao BEBER nao acharia nada. Remapeadas por nome uma vez aqui.
+		# O item e' gravado com name.capitalize(), que troca "_" por espaco
+		# ("hot_chocolate" -> "Hot Chocolate"), entao a chave volta a ter "_"
+		# para casar com DRINK_THIRST, que espelha market.gd.
+		var drink_key = normalized_key.replace(" ", "_")
+		if DRINK_THIRST.has(drink_key):
+			category = "drink"
+			if thirst <= 0.0:
+				thirst = float(DRINK_THIRST[drink_key])
 		normalized[normalized_key] = {
 			"name": item_name,
 			"quantity": int(max(0, item.get("quantity", 0))),
-			"category": str(item.get("category", "food")),
+			"category": category,
+			# ATENCAO: esta funcao reconstroi cada item do zero, e roda em
+			# add_home_inventory_item(), get_home_inventory_items() e
+			# ensure_player_state(). Todo campo novo do item precisa ser
+			# repetido aqui, senao e' apagado silenciosamente.
 			"energy": float(item.get("energy", 0.0)),
+			"thirst": thirst,
 			"happiness": float(item.get("happiness", 0.0))
 		}
 	player["home_inventory"] = normalized
@@ -230,6 +271,7 @@ func new_game(name: String, money: float) -> void:
 	player["no_spend_days_count"] = 0
 	player["positive_days_count"] = 0
 	player["hunger"] = 100.0
+	player["thirst"] = 100.0
 	player["stamina"] = 100.0
 	player["home_inventory"] = {}
 	player["home_actions_log"] = []
@@ -237,7 +279,8 @@ func new_game(name: String, money: float) -> void:
 	player["house_bill_history"] = []
 	player["pending_events"] = []
 	player["minigame_progress"] = MinigameManager.default_progress()
-	player["last_week_status"] = {"hunger": 100.0, "stamina": 100.0}
+	player["tutorial_home_shown"] = false
+	player["last_week_status"] = {"hunger": 100.0, "thirst": 100.0, "stamina": 100.0}
 
 	# Reset FIIManager state to ensure new game doesn't inherit old portfolio
 	FIIManager.reset()
@@ -305,7 +348,7 @@ func _food_happiness_for(item_name: String, base_price: float) -> float:
 		return 10.0 * price_factor
 	return 12.0 * price_factor
 
-func add_home_inventory_item(item_name: String, quantity: int = 1, category: String = "food", hunger_restore: int = 0) -> void:
+func add_home_inventory_item(item_name: String, quantity: int = 1, category: String = "food", hunger_restore: int = 0, thirst_restore: int = 0) -> void:
 	if player == null:
 		return
 	var safe_name = str(item_name).strip_edges()
@@ -319,12 +362,17 @@ func add_home_inventory_item(item_name: String, quantity: int = 1, category: Str
 			"quantity": 0,
 			"category": category,
 			"energy": 0.0,
+			"thirst": 0.0,
 			"happiness": 0.0
 		}
 	var item = entry[key]
 	var base_price = 10.0
-	if category == "food":
+	# Comida e bebida guardam os dois restauros: e' o item que carrega quanto
+	# repoe de cada necessidade, e consume_item() aplica os dois.
+	if category == "food" or category == "drink":
 		base_price = max(5.0, float(item.get("price", 10.0)))
+		if thirst_restore > 0:
+			item["thirst"] = float(thirst_restore)
 		if hunger_restore > 0:
 			# Use provided hunger_restore value
 			item["energy"] = float(hunger_restore)
@@ -352,45 +400,87 @@ func get_home_inventory_items() -> Array:
 	items.sort_custom(func(a, b): return str(a.get("name", "")).nocasecmp_to(str(b.get("name", ""))) < 0)
 	return items
 
-func consume_food() -> Dictionary:
+# Consumo de um item do estoque da casa. Uma funcao para comer e beber: o que
+# muda entre as duas e' a categoria filtrada e a necessidade que decide qual
+# item e' o "melhor". Os ganhos aplicados sao sempre os DOIS do item, porque
+# leite mata um pouco de sede e milkshake mata um pouco de fome; quem escolhe
+# a categoria e' o botao da casa.
+#
+# need_key: "hunger" (campo "energy" do item) ou "thirst" (campo "thirst").
+const _NEED_FIELD := {"hunger": "energy", "thirst": "thirst"}
+
+func consume_item(category: String, need_key: String, action: Dictionary) -> Dictionary:
 	if player == null:
 		return {"success": false, "message": "Estado do jogador não inicializado."}
-	if player["hunger"] == 100.00:
-		return {"success": false, "message": "Você não está com fome."}
+	# >= e nao ==: depois de um restauro parcial o valor fica em 99.999997 e a
+	# comparacao exata de float nunca casaria.
+	if float(player.get(need_key, 100.0)) >= 100.0:
+		return {"success": false, "message": str(action["already_full"])}
+
+	var rank_field = str(_NEED_FIELD[need_key])
 	var inventory = player.get("home_inventory", {})
 	var chosen_name = ""
 	var chosen_item = null
 	for key in inventory.keys():
 		var item = inventory[key]
-		if item.get("quantity", 0) <= 0:
+		if int(item.get("quantity", 0)) <= 0:
 			continue
-		if item.get("category", "food") != "food":
+		if str(item.get("category", "food")) != category:
 			continue
-		if chosen_item == null or float(item.get("energy", 0.0)) > float(chosen_item.get("energy", 0.0)):
+		if chosen_item == null or float(item.get(rank_field, 0.0)) > float(chosen_item.get(rank_field, 0.0)):
 			chosen_name = key
 			chosen_item = item
 	if chosen_item == null:
-		return {"success": false, "message": "Sem comida no estoque."}
+		return {"success": false, "message": str(action["empty_stock"])}
+
 	inventory[chosen_name]["quantity"] = int(inventory[chosen_name].get("quantity", 0)) - 1
 	if inventory[chosen_name]["quantity"] <= 0:
 		inventory.erase(chosen_name)
 	player["home_inventory"] = inventory
-	# "energy" guarda o % de fome que o item repoe (ver market.gd). A stamina
-	# ganha um quarto disso: comer ajuda, mas quem recupera stamina e' dormir.
-	var energy_gain = float(chosen_item.get("energy", 15.0))
-	player["hunger"] = clampf(float(player.get("hunger", 100.0)) + energy_gain, 0.0, 100.0)
-	player["stamina"] = clampf(float(player.get("stamina", 100.0)) + energy_gain * STAMINA_PER_FOOD_ENERGY, 0.0, 100.0)
+
+	# "energy" guarda o % de fome que o item repoe e "thirst" o % de sede (ver
+	# market.gd). A stamina ganha um quarto da fome: comer ajuda, mas quem
+	# recupera stamina e' dormir.
+	var hunger_gain = float(chosen_item.get("energy", 0.0))
+	var thirst_gain = float(chosen_item.get("thirst", 0.0))
+	player["hunger"] = clampf(float(player.get("hunger", 100.0)) + hunger_gain, 0.0, 100.0)
+	player["thirst"] = clampf(float(player.get("thirst", 100.0)) + thirst_gain, 0.0, 100.0)
+	player["stamina"] = clampf(float(player.get("stamina", 100.0)) + hunger_gain * STAMINA_PER_FOOD_ENERGY, 0.0, 100.0)
+
+	var item_label = str(chosen_item.get("name", chosen_name))
 	player["home_actions_log"] = player.get("home_actions_log", [])
 	player["home_actions_log"].append({
-		"type": "eat",
-		"item": chosen_item.get("name", chosen_name),
+		"type": str(action["log_type"]),
+		"item": item_label,
 		"day": player.get("day", 1),
 		"week": player.get("week", 1),
 		"hunger": player["hunger"],
+		"thirst": player["thirst"],
 		"stamina": player["stamina"]
 	})
-	TimeManager.spend_hours(0.5)
-	return {"success": true, "message": "Você comeu %s." % chosen_item.get("name", chosen_name), "item": chosen_item.get("name", chosen_name)}
+	TimeManager.spend_hours(float(action["time_cost"]))
+	return {"success": true, "message": str(action["done"]) % item_label, "item": item_label}
+
+# Fachadas. consume_food() e' mantida porque home.gd e tests/test_mechanics.gd
+# ja' a chamam.
+func consume_food() -> Dictionary:
+	return consume_item("food", "hunger", {
+		"already_full": "Você não está com fome.",
+		"empty_stock": "Sem comida no estoque.",
+		"done": "Você comeu %s.",
+		"log_type": "eat",
+		"time_cost": 0.5
+	})
+
+func consume_drink() -> Dictionary:
+	return consume_item("drink", "thirst", {
+		"already_full": "Você não está com sede.",
+		"empty_stock": "Sem bebida no estoque.",
+		"done": "Você bebeu %s.",
+		"log_type": "drink",
+		# Beber custa metade do tempo de comer.
+		"time_cost": 0.25
+	})
 
 func apply_home_action(action_name: String, hunger_delta: float, stamina_delta: float, time_cost: float = 0.0) -> Dictionary:
 	if player == null:
@@ -411,15 +501,21 @@ func apply_home_action(action_name: String, hunger_delta: float, stamina_delta: 
 	return {"success": true, "message": "%s" % action_name}
 
 # Fechamento do dia. A stamina e' tratada minuto a minuto pelo TimeManager;
-# aqui so' cai a fome. Devolve false se o jogador morreu de fome.
+# aqui caem fome e sede. Devolve false se o jogador morreu.
 func decay_need_state() -> bool:
 	if player == null:
 		return true
 	player["hunger"] = clampf(float(player.get("hunger", 100.0)) - HUNGER_DECAY_PER_DAY, 0.0, 100.0)
-	if player["hunger"] > 0.0:
-		return true
-	trigger_game_over("Você morreu de fome!")
-	return false
+	player["thirst"] = clampf(float(player.get("thirst", 100.0)) - THIRST_DECAY_PER_DAY, 0.0, 100.0)
+	if player["hunger"] <= 0.0:
+		trigger_game_over("Você morreu de fome!")
+		return false
+	# A ordem entre os dois nao importa: trigger_game_over() tem a trava
+	# _game_over, entao so' o primeiro alerta abre.
+	if player["thirst"] <= 0.0:
+		trigger_game_over("Você morreu de desidratação!")
+		return false
+	return true
 
 # Ponto unico de game-over. O alerta so' e' aberto uma vez: sem a trava, um
 # chamador em _process reabriria a caixa a cada quadro e o botao OK nunca
@@ -435,13 +531,15 @@ func evaluate_week_status() -> Dictionary:
 	if player == null:
 		return {"penalty": 0.0, "message": "Sem avaliação"}
 	var hunger = float(player.get("hunger", 100.0))
+	var thirst = float(player.get("thirst", 100.0))
 	var stamina = float(player.get("stamina", 100.0))
-	player["last_week_status"] = {"hunger": hunger, "stamina": stamina}
+	player["last_week_status"] = {"hunger": hunger, "thirst": thirst, "stamina": stamina}
 	var penalty = 0.0
-	if hunger < 35.0 or stamina < 35.0:
+	if hunger < 35.0 or thirst < 35.0 or stamina < 35.0:
 		penalty = 25.0
 		player["money"] = float(player.get("money", 0.0)) - penalty
 		player["hunger"] = clampf(hunger + 10.0, 0.0, 100.0)
+		player["thirst"] = clampf(thirst + 10.0, 0.0, 100.0)
 		player["stamina"] = clampf(stamina + 10.0, 0.0, 100.0)
 	return {"penalty": penalty, "message": "Status da semana avaliado."}
 

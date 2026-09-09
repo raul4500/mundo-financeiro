@@ -2,6 +2,7 @@ extends Control
 
 @onready var money_label = $Label
 @onready var hunger_bar: ProgressBar = $"Hunger/VBoxContainer/Hunger-bar"
+@onready var thirst_bar: ProgressBar = $"Thirst/VBoxContainer/Thirst-bar"
 @onready var stamina_bar: ProgressBar = $Stamina/VBoxContainer/ProgressBar
 
 # Called when the node enters the scene tree for the first time.
@@ -12,10 +13,9 @@ func _ready() -> void:
 	_update_needs_ui()
 
 func _update_needs_ui() -> void:
-	var hunger = clampf(float(Global.player.get("hunger", 100.0)), 0.0, 100.0)
-	var stamina = clampf(float(Global.player.get("stamina", 100.0)), 0.0, 100.0)
-	hunger_bar.value = hunger
-	stamina_bar.value = stamina
+	hunger_bar.value = clampf(float(Global.player.get("hunger", 100.0)), 0.0, 100.0)
+	thirst_bar.value = clampf(float(Global.player.get("thirst", 100.0)), 0.0, 100.0)
+	stamina_bar.value = clampf(float(Global.player.get("stamina", 100.0)), 0.0, 100.0)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

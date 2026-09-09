@@ -136,6 +136,67 @@ func test_comida_do_mercado_repoe_fome() -> void:
 	_check(abs(float(Global.player["stamina"]) - expected_stamina) < 0.01,
 		"stamina = %.3f apos o bonus e a meia hora gasta (obtido %.3f)" % [expected_stamina, float(Global.player["stamina"])])
 
+func test_beber_escolhe_bebida_e_repoe_sede() -> void:
+	print("sede: BEBER pega bebida, COMER pega comida, e o item aplica os dois restauros")
+	_fresh_player()
+	Global.player["thirst"] = 40.0
+	Global.player["hunger"] = 50.0
+	Global.player["home_inventory"] = {}
+	Global.add_home_inventory_item("Water", 2, "drink", 3, 25)
+	Global.add_home_inventory_item("Bread", 1, "food", 10, 0)
+
+	var result: Dictionary = Global.consume_drink()
+	_check(bool(result["success"]), "bebeu")
+	_check(str(result.get("item", "")) == "Water", "escolheu a agua, e nao o pao")
+	_check(abs(float(Global.player["thirst"]) - 65.0) < 0.01,
+		"sede 40 + 25%% = 65 (obtido %.2f)" % float(Global.player["thirst"]))
+	# A agua tambem tem 3% de fome: o item aplica os dois restauros.
+	_check(abs(float(Global.player["hunger"]) - 53.0) < 0.01,
+		"fome 50 + 3%% da agua = 53 (obtido %.2f)" % float(Global.player["hunger"]))
+	_check(Global.player["home_inventory"].has("bread"), "o pao continua no estoque")
+	_check(int(Global.player["home_inventory"]["water"]["quantity"]) == 1, "sobrou 1 agua")
+
+	_check(bool(Global.consume_food().get("success", false)), "COMER ainda acha a comida")
+	_check(not Global.player["home_inventory"].has("bread"), "o pao foi consumido")
+
+func test_sede_zerada_e_game_over() -> void:
+	print("sede: chegar a zero no fechamento do dia e' game over")
+	_fresh_player()
+	Global._game_over = false
+	Global.player["hunger"] = 100.0
+	Global.player["thirst"] = Global.THIRST_DECAY_PER_DAY
+	_check(not Global.decay_need_state(), "o decaimento que zera a sede devolve false")
+	_check(abs(float(Global.player["thirst"])) < 0.01, "sede ficou em 0")
+	Global._game_over = false
+
+func test_bebida_de_save_antigo_e_migrada() -> void:
+	print("sede: bebida gravada como comida em save antigo vira 'drink' com valor de sede")
+	_fresh_player()
+	# Formato anterior a' sede: category "food" e sem campo "thirst".
+	Global.player["home_inventory"] = {
+		"wine": {"name": "Wine", "quantity": 1, "category": "food", "energy": 8.0, "happiness": 1.0}
+	}
+	Global.normalize_home_inventory()
+	var wine: Dictionary = Global.player["home_inventory"]["wine"]
+	_check(str(wine["category"]) == "drink", "vinho migrado para 'drink'")
+	_check(abs(float(wine["thirst"]) - 8.0) < 0.01, "vinho recebeu os 8%% de sede da tabela")
+
+func test_mercado_e_migracao_nao_divergem() -> void:
+	print("sede: Global.DRINK_THIRST espelha market.gd['Bebidas']")
+	var market = load("res://scripts/world/market/market.gd").new()
+	var drinks: Dictionary = market.items["Bebidas"]
+	var diff: Array = []
+	for key in drinks.keys():
+		if not Global.DRINK_THIRST.has(key):
+			diff.append("falta em DRINK_THIRST: %s" % key)
+		elif int(Global.DRINK_THIRST[key]) != int(drinks[key]["thirst_restore"]):
+			diff.append("valor divergente: %s" % key)
+	for key in Global.DRINK_THIRST.keys():
+		if not drinks.has(key):
+			diff.append("sobra em DRINK_THIRST: %s" % key)
+	market.free()
+	_check(diff.is_empty(), "as duas tabelas batem (%s)" % str(diff))
+
 # =============================================================
 # TUTORIAL E LIBERACAO SEQUENCIAL DOS LUGARES
 # =============================================================
@@ -259,6 +320,10 @@ func _ready() -> void:
 	test_fome_zerada_e_game_over()
 	test_imposto_sobre_prejuizo_em_fii()
 	test_comida_do_mercado_repoe_fome()
+	test_beber_escolhe_bebida_e_repoe_sede()
+	test_sede_zerada_e_game_over()
+	test_bebida_de_save_antigo_e_migrada()
+	test_mercado_e_migracao_nao_divergem()
 	test_novo_jogo_so_libera_a_escola()
 	test_pular_tutorial_libera_tudo_e_nao_volta()
 	test_ordem_escritorio_depois_o_resto()

@@ -163,13 +163,29 @@ var messages = [
 
 	"Se você virar a noite acordado, à meia-noite volta para casa à força, paga R$ 30 de café para aguentar o dia seguinte e acorda com apenas metade da stamina. Planejar a volta para casa faz parte do orçamento.",
 
-	"No mercado, cada item mostra quanto de fome ele repõe. Comida barata repõe pouco e comida cara repõe muito: o pão custa R$ 20 e devolve 10% de fome, a carne custa R$ 150 e devolve 100%. Compare o preço por porcentagem antes de encher o carrinho.",
+	"No mercado, cada item mostra quanto ele repõe de fome e de sede. Comida barata repõe pouco e comida cara repõe muito: o pão custa R$ 20 e devolve 10% de fome, a carne custa R$ 150 e devolve 100%. As bebidas ficam na aba ao lado e cuidam da sede. Compare o preço por porcentagem antes de encher o carrinho.",
 
 	"E cuidado com a fome: ela cai um pouco a cada dia que passa e só volta comendo. Se a fome chegar a zero, é game over. Manter comida no estoque de casa não é luxo, é sobrevivência.",
 
 	# Passo 8. Fecha a apresentação do escritório, que é o único lugar liberado
 	# nesse momento (ver Global.PLACE_UNLOCK_STAGE).
-	"Por enquanto o escritório é o único lugar aberto para você. Vá até lá, veja o que a consultoria tem a dizer, e quando sair o resto da cidade estará liberado."
+	"Por enquanto o escritório é o único lugar aberto para você. Vá até lá, veja o que a consultoria tem a dizer, e quando sair o resto da cidade estará liberado.",
+
+	# Índices 22-27: a casa. O 22 entra no tour do mundo; os outros disparam na
+	# primeira visita, em on_player_entered_home(). Como todo o resto deste
+	# array, são append-only: os índices 0-21 são citados um a um em
+	# _next_step(), _resume_step() e nas duas funções de fila.
+	"Aquela é a sua casa. É o único lugar onde você recupera o que o dia gasta — comer, beber e descansar acontecem lá dentro — e o único lugar onde o dia termina, porque é onde fica a sua cama.",
+
+	"Uma coisa importante sobre o mercado: comida e bebida que você compra NÃO são consumidas na hora da compra. Elas vão para o estoque da sua casa e ficam lá até você usar. O painel de estoque mostra quanto cada item repõe de fome e de sede.",
+
+	"Os botões COMER e BEBER escolhem sozinhos o item mais eficiente que você tem guardado, e ele sai do estoque. Comer custa 30 minutos do seu dia e beber custa 15. Comer também devolve um pouco de stamina, mas pouco: quem recupera stamina de verdade é o sono.",
+
+	"DESCANSAR e ASSISTIR TV devolvem stamina e custam 1 hora cada, mas gastam fome no processo. Servem para esticar um dia que está acabando, não para substituir o sono — e se você usá-los sem ter comida no estoque, só está trocando um problema por outro.",
+
+	"DORMIR é o que encerra o dia: a stamina volta a 100 e o relógio pula para as 08:00 do dia seguinte. Antes das 18h o botão não deixa você dormir. E se você virar a noite acordado, à meia-noite volta para casa à força, paga R$ 30 de café e começa o dia seguinte com metade da stamina.",
+
+	"Por último, a sede. Ela cai mais rápido que a fome — cerca de 14 pontos por dia contra 6 — e chegar a zero é game over, igual à fome. O que vale olhar no mercado é quanto você paga por ponto reposto: a água resolve 25% de sede por R$ 5, ou seja R$ 0,20 por ponto, enquanto a cerveja pede R$ 50 para repor 10% — R$ 5,00 por ponto, vinte e cinco vezes mais caro. É o \"necessidade x desejo\" do escritório, agora com um medidor."
 ]
 
 # =============================
@@ -247,6 +263,9 @@ func skip_tutorial() -> void:
 		if not _week_already_shown(int(week), shown):
 			shown.append(week)
 	Global.player["tutorial_weeks_shown"] = shown
+	# Mesma coisa para o bloco da casa: sem isto, quem pulou o tutorial tomaria
+	# as cinco mensagens na cara ao entrar em casa pela primeira vez.
+	Global.player["tutorial_home_shown"] = true
 	# Marca o tutorial como concluído e abre a cidade inteira: quem pulou não
 	# vai receber a apresentação do escritório que destravaria o resto.
 	_finish_tutorial()
@@ -317,8 +336,12 @@ func _queue_office_intro() -> void:
 func _queue_world_tour() -> void:
 	queue_messages([
 		messages[10],
+		# A casa antes do mercado: a ordem lógica é "você mora aqui, e compra
+		# ali". O detalhe das ações da casa fica para a primeira visita, em
+		# on_player_entered_home() — aqui só o que a casa é.
+		messages[22],
 		messages[11],
-		messages[19],  # o que cada item do mercado repõe de fome
+		messages[19],  # o que cada item do mercado repõe de fome e de sede
 		messages[20],  # fome zerada é game over
 		messages[12],
 		messages[16],  # a barra de stamina
@@ -462,6 +485,26 @@ func on_week_changed(week: int) -> void:
 
 # int() em cada item: depois de salvar e carregar, o JSON devolve os números
 # como float, e comparar 2 com 2.0 direto no Array.has() é frágil.
+# Chamado por home.gd ao entrar na casa. O bloco da casa nao e' um passo do
+# onboarding: a primeira visita pode ser na semana 1 ou na 4, dependendo de
+# quando o jogador entra. Por isso a trava e' uma flag persistida em
+# Global.player, no mesmo espirito de tutorial_weeks_shown — `skipped` nao e'
+# salvo, e recarregar o jogo faria o bloco voltar.
+func on_player_entered_home() -> void:
+	if bool(Global.player.get("tutorial_home_shown", false)):
+		return
+	# Nao atropela uma fila em andamento (ex.: o aviso semanal ainda na tela).
+	if not pending_messages.is_empty():
+		return
+	Global.player["tutorial_home_shown"] = true
+	queue_messages([
+		messages[23],  # o estoque: o que se compra no mercado fica guardado aqui
+		messages[24],  # COMER e BEBER
+		messages[25],  # DESCANSAR e ASSISTIR TV
+		messages[26],  # DORMIR encerra o dia
+		messages[27]   # sede
+	])
+
 func _week_already_shown(week: int, shown: Array) -> bool:
 	for shown_week in shown:
 		if int(shown_week) == week:

@@ -33,6 +33,7 @@ const CHARACTER_Y_OFFSET = {
 @onready var time_label: Label = $"Time-label"
 @onready var actions_box: VBoxContainer = $"HBoxContainer/Actions/VBoxContainer"
 @onready var hunger_bar: ProgressBar = $"HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Hunger-container/ProgressBar"
+@onready var thirst_bar: ProgressBar = $"HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Thirst-container/ProgressBar"
 @onready var stamina_bar: ProgressBar = $"HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Stamina-container/ProgressBar"
 @onready var status_label: Label = $"HBoxContainer/Main-panel/VBoxContainer/status-message"
 @onready var inventory_scroll: ScrollContainer = $"HBoxContainer/VBoxContainer/Inventory-panel/Inventory-scroll"
@@ -54,6 +55,10 @@ func _ready() -> void:
 	TimeManager.day_changed.connect(_on_day_changed)
 	_build_ui()
 	_update_ui()
+	# Explicação das mecânicas da casa, uma vez por partida. Depois do
+	# _build_ui() de propósito: as mensagens citam os botões, que precisam já
+	# estar na tela atrás do alerta.
+	TutorialManager.on_player_entered_home()
 
 func _exit_tree() -> void:
 	if TimeManager.time_changed.is_connected(_on_time_changed):
@@ -81,6 +86,7 @@ func _build_ui() -> void:
 	inventory_list = _get_or_create_list(inventory_scroll)
 	history_list = _get_or_create_list(history_scroll)
 	_setup_bar(hunger_bar)
+	_setup_bar(thirst_bar)
 	_setup_bar(stamina_bar)
 
 	status_label.autowrap_mode = TextServer.AUTOWRAP_WORD
@@ -107,6 +113,7 @@ func _build_action_buttons() -> void:
 	actions_box.add_child(title)
 
 	actions_box.add_child(_make_button("COMER", _on_eat_pressed))
+	actions_box.add_child(_make_button("BEBER", _on_drink_pressed))
 	actions_box.add_child(_make_button("DESCANSAR", _on_rest_pressed))
 	actions_box.add_child(_make_button("ASSISTIR TV", _on_tv_pressed))
 	actions_box.add_child(_make_button("DORMIR", _on_sleep_pressed))
@@ -188,6 +195,7 @@ func _update_ui() -> void:
 	_update_time_label()
 
 	hunger_bar.value = clampf(float(Global.player.get("hunger", 100.0)), 0.0, 100.0)
+	thirst_bar.value = clampf(float(Global.player.get("thirst", 100.0)), 0.0, 100.0)
 	stamina_bar.value = clampf(float(Global.player.get("stamina", 100.0)), 0.0, 100.0)
 
 	_render_inventory()
@@ -213,9 +221,16 @@ func _render_inventory() -> void:
 		label.text = "%s x%s" % [item.get("name", "Item"), str(item.get("quantity", 0))]
 		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
+		# Mesmo formato do card do mercado: mostra so' o que o item repoe.
+		var restores: Array = []
+		if float(item.get("energy", 0.0)) > 0.0:
+			restores.append("Fome +%.0f%%" % float(item.get("energy", 0.0)))
+		if float(item.get("thirst", 0.0)) > 0.0:
+			restores.append("Sede +%.0f%%" % float(item.get("thirst", 0.0)))
+
 		var meta = Label.new()
 		meta.theme = UI_THEME
-		meta.text = "Fome +%.0f%%" % float(item.get("energy", 0.0))
+		meta.text = " / ".join(restores) if not restores.is_empty() else "—"
 
 		row.add_child(label)
 		row.add_child(meta)
@@ -254,6 +269,11 @@ func _make_info_label(text: String) -> Label:
 func _on_eat_pressed() -> void:
 	var result = Global.consume_food()
 	status_label.text = result.get("message", "VOCÊ COMEU.")
+	_update_ui()
+
+func _on_drink_pressed() -> void:
+	var result = Global.consume_drink()
+	status_label.text = result.get("message", "VOCÊ BEBEU.")
 	_update_ui()
 
 func _on_rest_pressed() -> void:

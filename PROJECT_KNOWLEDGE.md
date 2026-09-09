@@ -121,6 +121,10 @@ As semanas escolhidas acompanham o que o resto do jogo já libera: `EventsManage
 
 `skip_tutorial()` marca **todas** as semanas de `weekly_messages` como vistas: o botão diz "Pular tutorial", então pula o tutorial inteiro, não só o onboarding. Isso vai para `Global.player` de propósito — a variável `skipped` não é salva, então checá-la faria os avisos semanais voltarem após um reload.
 
+*Estágio 3 — blocos de primeira visita.* Algumas mecânicas não pertencem a uma semana nem a um passo do onboarding: dependem de o jogador **entrar num lugar**, o que pode acontecer na semana 1 ou na 4. O único caso hoje é a casa: `TutorialManager.on_player_entered_home()`, chamado por `home.gd._ready()` depois do `_build_ui()` (as mensagens citam os botões, que precisam já estar na tela atrás do alerta). A trava é `Global.player["tutorial_home_shown"]`, persistida pelo mesmo motivo de `tutorial_weeks_shown`, e `skip_tutorial()` também a marca. O tour do passo 10 dá só uma linha sobre a casa (`messages[22]`); o detalhe das ações fica para a visita.
+
+**O array `messages` é append-only.** Os índices 0–21 são citados um a um em `_next_step()`, `_resume_step()`, `_queue_office_intro()` e `_queue_world_tour()`; inserir no meio renumera tudo e quebra as quatro. Conteúdo novo entra no fim — hoje 22 (a casa, no tour) e 23–27 (estoque, comer/beber, descansar/TV, dormir, sede).
+
 **Os números das mensagens dos empreendimentos são copiados dos arquivos em `scripts/enterprise/data/`** — ao mexer em `purchase_price`, `water_bill`, `electricity_bill`, `starting_capacity`, `employee_salary` ou `upgrade_costs`, atualize o texto do tutorial junto, senão ele passa a ensinar valores errados.
 
 ### 3.4 Layout na cena, conteúdo no script
@@ -500,8 +504,8 @@ Ele escreve em arquivo em `logs/game_runtime.log`, criando pastas quando necess�
 Capturados com `@onready`, todos definidos no editor:
 
 - `Money-label` e `Time-label` — dinheiro e dia/semana no topo;
-- `HBoxContainer/Actions/VBoxContainer` — container **vazio** na cena, preenchido em runtime com os botões Comer, Descansar e Assistir TV;
-- `.../Hunger-container/ProgressBar` e `.../Happiness-container/ProgressBar` — as barras usam `show_percentage`, então não existem labels separados de porcentagem;
+- `HBoxContainer/Actions/VBoxContainer` — container **vazio** na cena, preenchido em runtime com os botões Comer, Beber, Descansar, Assistir TV e Dormir;
+- `.../Hunger-container/ProgressBar`, `.../Thirst-container/ProgressBar` e `.../Stamina-container/ProgressBar` — as barras usam `show_percentage`, então não existem labels separados de porcentagem;
 - `.../status-message` — mensagem de retorno das ações;
 - `Inventory-scroll` e `History-scroll` — recebem um `VBoxContainer` criado em runtime para as linhas;
 - `Exit` — botão fixo da cena, conectado por código (a cena não tem seção `[connection]`);
@@ -562,6 +566,64 @@ O jogador começa com:
 - felicidade: 100
 
 Durante o tempo, ambos descem. Se o jogador não comer ou não investir em descanso/atividades, sua saúde e humor caem, influenciando a semana.
+
+## 10.1 Necessidades: fome, sede e stamina
+
+Três medidores, todos 0–100, todos em `Global.player`. Dois deles matam:
+
+| Medidor | Decai | Zerar | Repõe |
+|---|---|---|---|
+| `hunger` | `HUNGER_DECAY_PER_DAY = 6` por dia dormido | game over | comer (item do estoque) |
+| `thirst` | `THIRST_DECAY_PER_DAY = 14` por dia dormido | game over | beber (item do estoque) |
+| `stamina` | `STAMINA_DECAY_PER_MINUTE = 100/960`, minuto a minuto | só impede jogar | dormir (volta a 100) |
+
+Fome e sede caem juntas em `Global.decay_need_state()`, o ponto único do
+fechamento do dia. A ordem entre as duas não importa porque
+`trigger_game_over()` tem a trava `_game_over`: só o primeiro alerta abre.
+
+A sede cai **mais rápido** que a fome de propósito — zera em ~7 dias contra ~17.
+É o que dá utilidade às bebidas: antes delas existir a sede, `market.gd` mandava
+`"Comidas"` e `"Bebidas"` para a mesma categoria `"food"`, e bebida era apenas
+comida ruim (cerveja a R$ 50 repondo 5% de fome).
+
+### Consumo: uma função, dois botões
+
+`Global.consume_item(category, need_key, action)` é o ponto único. `consume_food()`
+e `consume_drink()` são fachadas de uma linha que passam a categoria filtrada
+(`"food"` / `"drink"`), a necessidade que ordena a escolha do "melhor" item, e um
+dicionário com os textos e o custo de tempo (0,5 h comer / 0,25 h beber).
+
+**O item aplica sempre os dois restauros.** Leite mata um pouco de sede,
+milkshake mata um pouco de fome; quem decide a categoria é o botão, não o efeito.
+No item do inventário, `energy` guarda o % de fome e `thirst` o % de sede.
+Comer ainda devolve `STAMINA_PER_FOOD_ENERGY` (um quarto) da fome em stamina.
+
+### ⚠️ `normalize_home_inventory()` reconstrói cada item do zero
+
+A função monta cada item a partir de uma **lista fixa de chaves**, e roda em
+`add_home_inventory_item()`, `get_home_inventory_items()` e `ensure_player_state()`.
+Qualquer campo novo do item precisa ser repetido lá dentro, senão é **apagado
+silenciosamente** na próxima chamada. Foi por isso que `thirst` teve de entrar
+no dicionário literal — é a armadilha mais fácil de não perceber nesta área.
+
+O mesmo lugar faz a **migração de saves antigos**: bebida gravada como `"food"`
+e sem valor de sede é remapeada por nome via `Global.DRINK_THIRST`, que espelha
+os `thirst_restore` de `market.gd["Bebidas"]`. As duas tabelas são comparadas
+por `tests/test_mechanics.gd`, então divergir quebra o teste. Atenção ao nome:
+o item é gravado com `name.capitalize()`, que troca `_` por espaço
+(`hot_chocolate` → `Hot Chocolate`), então a busca reverte o espaço para `_`.
+
+### A lição financeira está no R$ por ponto
+
+Cada item do mercado mostra o que repõe (`_restore_label()` omite o que é zero).
+A coluna que ensina é preço dividido por ponto reposto:
+
+- água — R$ 5 por 25% de sede = **R$ 0,20/ponto**
+- cerveja — R$ 50 por 10% = **R$ 5,00/ponto** (25x mais caro)
+- vinho — R$ 120 por 8% = **R$ 15,00/ponto** (75x mais caro)
+
+O item barato e sem graça é o certo. É o "necessidade x desejo" do nível 1 do
+escritório, agora com um medidor para provar.
 
 ## 11. Sistema de mercado
 

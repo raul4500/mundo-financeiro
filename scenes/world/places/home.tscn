@@ -118,6 +118,23 @@ theme_override_font_sizes/font_size = 24
 theme_override_styles/background = SubResource("StyleBoxFlat_1kn83")
 theme_override_styles/fill = SubResource("StyleBoxFlat_w05is")
 
+[node name="Thirst-container" type="HBoxContainer" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer" unique_id=1700400001]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Thirst-container" unique_id=1700400002]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.5
+text = "Sede"
+
+[node name="ProgressBar" type="ProgressBar" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Thirst-container" unique_id=1700400003]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme_override_font_sizes/font_size = 24
+theme_override_styles/background = SubResource("StyleBoxFlat_1kn83")
+theme_override_styles/fill = SubResource("StyleBoxFlat_w05is")
+
 [node name="Stamina-container" type="HBoxContainer" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer" unique_id=1661655551]
 layout_mode = 2
 
