@@ -4,7 +4,23 @@ signal show_message(text)
 signal tutorial_finished
 signal focus(point)
 
-const FINAL_STEP := 8
+# Roteiro do onboarding:
+#   1-4  boas-vindas
+#   5    espera o jogador entrar na escola
+#   6    explicacao dentro do minigame
+#   7    espera o minigame terminar
+#   8    apresenta o escritorio e o libera
+#   9    espera o jogador entrar e sair do escritorio
+#   10   apresenta o resto da cidade e libera tudo
+const FINAL_STEP := 10
+const OFFICE_WAIT_STEP := 9
+
+# Acima de FINAL_STEP o tutorial acabou — por conclusao ou por ter sido pulado.
+# Precisa ser um valor proprio: enquanto "concluido" era o mesmo 8 do ultimo
+# passo, main_game._ready() chamava resume_tutorial(8) e repetia o tour inteiro
+# toda vez que o jogador voltava ao mundo. Global.LEGACY_TUTORIAL_DONE espelha
+# este valor para migrar saves antigos.
+const TUTORIAL_DONE := 11
 
 var step := 0
 var pending_messages: Array = []
@@ -137,7 +153,23 @@ var messages = [
 
 	"Lembre-se: gastar com consciência, economizar e investir são as chaves para o sucesso. Pequenas decisões bem tomadas ao longo do tempo fazem uma grande diferença no futuro.",
 
-	"Agora é com você. Explore o mundo, cumpra suas missões, tome decisões inteligentes e construa uma vida financeira forte, estável e bem planejada!"
+	"Agora é com você. Explore o mundo, cumpra suas missões, tome decisões inteligentes e construa uma vida financeira forte, estável e bem planejada!",
+
+	# Mecânicas das fases 6-7. Ficam no fim do array de propósito: os índices
+	# 0-15 são referenciados um a um em _next_step() e renumerar quebraria tudo.
+	"Repare na barra de STAMINA. Ela começa cheia às 08:00 e se esgota ao longo do dia, chegando ao fim por volta da meia-noite. Stamina é o seu limite de energia diário: quando ela acaba, você ainda anda, mas o dia já cobrou o seu preço.",
+
+	"O dia não termina sozinho. Às 18:00 você recebe um aviso de cansaço, mas quem encerra o dia é você: volte a pé até a sua casa e clique em DORMIR. Dormir devolve 100% da stamina e faz o próximo dia começar às 08:00.",
+
+	"Se você virar a noite acordado, à meia-noite volta para casa à força, paga R$ 30 de café para aguentar o dia seguinte e acorda com apenas metade da stamina. Planejar a volta para casa faz parte do orçamento.",
+
+	"No mercado, cada item mostra quanto de fome ele repõe. Comida barata repõe pouco e comida cara repõe muito: o pão custa R$ 20 e devolve 10% de fome, a carne custa R$ 150 e devolve 100%. Compare o preço por porcentagem antes de encher o carrinho.",
+
+	"E cuidado com a fome: ela cai um pouco a cada dia que passa e só volta comendo. Se a fome chegar a zero, é game over. Manter comida no estoque de casa não é luxo, é sobrevivência.",
+
+	# Passo 8. Fecha a apresentação do escritório, que é o único lugar liberado
+	# nesse momento (ver Global.PLACE_UNLOCK_STAGE).
+	"Por enquanto o escritório é o único lugar aberto para você. Vá até lá, veja o que a consultoria tem a dizer, e quando sair o resto da cidade estará liberado."
 ]
 
 # =============================
@@ -162,7 +194,9 @@ var weekly_messages = {
 		"No banco você encontra os fundos imobiliários para investir. Leia o conteúdo do escritório antes de aplicar: investir sem entender o que se está comprando é como assinar um contrato sem ler."
 	],
 	4: [
-		"Semana 4. O nível 4 do escritório destravou e fala sobre mercado financeiro. É o conteúdo que ajuda a entender por que o valor dos seus investimentos sobe e desce, e por que ninguém deve colocar tudo em um lugar só."
+		"Semana 4. O nível 4 do escritório destravou e fala sobre mercado financeiro. É o conteúdo que ajuda a entender por que o valor dos seus investimentos sobe e desce, e por que ninguém deve colocar tudo em um lugar só.",
+
+		"Uma regra prática dos fundos imobiliários: vender na baixa custa caro. Se você vender uma cota por menos do que pagou por ela, ainda paga 10% de imposto sobre o prejuízo. Diversificar entre os três fundos e esperar a recuperação quase sempre sai mais barato do que vender no susto."
 	],
 	5: [
 		"ATENÇÃO: existe uma parte avançada do jogo, os empreendimentos. São três prédios que você pode comprar para virar dono do próprio negócio. Não tenha pressa: essa é a etapa mais difícil e mais arriscada do Mundo Financeiro, porque exige investir um valor alto e assumir despesas fixas que chegam toda semana, com ou sem lucro.",
@@ -204,8 +238,6 @@ func skip_tutorial() -> void:
 		return
 	skipped = true
 	pending_messages.clear()
-	step = FINAL_STEP
-	Global.player["tutorial_step"] = FINAL_STEP
 	# "Pular tutorial" pula o tutorial inteiro, não só o onboarding: marca
 	# todas as semanas como já vistas. Vai para Global.player de propósito —
 	# a variável `skipped` não é salva, então recarregar o jogo faria os
@@ -215,7 +247,9 @@ func skip_tutorial() -> void:
 		if not _week_already_shown(int(week), shown):
 			shown.append(week)
 	Global.player["tutorial_weeks_shown"] = shown
-	emit_signal("tutorial_finished")
+	# Marca o tutorial como concluído e abre a cidade inteira: quem pulou não
+	# vai receber a apresentação do escritório que destravaria o resto.
+	_finish_tutorial()
 	# Em casos onde locks possam ter sido deixados por erro, garantir liberação
 	# para que o jogador não fique travado permanentemente após pular.
 	if has_node("/root/Global"):
@@ -255,18 +289,60 @@ func _resume_step(resume_step: int) -> void:
 			# Passo 7 é "esperar minigame terminar". Não há mensagens.
 			pass
 		8:
-			# Passo 8 é o fechamento. Se recarregou aqui, mostra as mensagens
-			# finais do onboarding (que já foi feito uma vez).
-			queue_messages([
-				messages[9],
-				messages[10],
-				messages[11],
-				messages[12],
-				messages[13],
-				messages[14],
-				messages[15]
-			])
-			emit_signal("tutorial_finished")
+			# Recarregou logo depois do minigame, antes de ver a apresentação
+			# do escritório. Repete o passo 8 inteiro.
+			Global.set_unlock_stage(Global.UNLOCK_OFFICE)
+			_queue_office_intro()
+		9:
+			# Esperando a visita ao escritório. Nada a mostrar: o escritório
+			# já está destravado e a mensagem já foi lida.
+			pass
+		10:
+			# O jogador acabou de sair do escritório (ou recarregou aqui).
+			# É neste ponto que o tour do resto da cidade acontece.
+			_queue_world_tour()
+
+# Passo 8. messages[13] tem foco "Office" em message_focus_map, então a câmera
+# vai até o escritório antes desta mensagem aparecer.
+func _queue_office_intro() -> void:
+	queue_messages([
+		messages[9],   # parabéns pelo primeiro salário
+		messages[13],  # o que é o escritório de consultoria
+		messages[21]   # é o único lugar aberto; vá até lá
+	])
+
+# Passo 10. Fecha o onboarding da semana 1 apresentando o resto do mapa. O
+# bloco dos empreendimentos saiu daqui: virou o aviso da semana 5, quando o
+# nível 5 do escritório destrava e o jogador tem chance de ter capital.
+func _queue_world_tour() -> void:
+	queue_messages([
+		messages[10],
+		messages[11],
+		messages[19],  # o que cada item do mercado repõe de fome
+		messages[20],  # fome zerada é game over
+		messages[12],
+		messages[16],  # a barra de stamina
+		messages[17],  # o dia acaba quando você vai dormir em casa
+		messages[18],  # a penalidade da meia-noite
+		messages[14],
+		messages[15]
+	])
+
+# Passo 9. A apresentação do escritório terminou com a câmera parada lá
+# (CameraManager.goto não volta sozinho). Traz a câmera de volta e devolve o
+# controle: daqui o tutorial só continua quando o jogador sair do escritório.
+func _return_camera_and_wait() -> void:
+	await CameraManager.return_to_player()
+	if has_node("/root/Global"):
+		Global.force_release_all_gameplay_locks()
+
+# Ponto único de encerramento: conclusão normal e "pular tutorial" passam aqui.
+# É o que garante que main_game._ready() não vai repetir nada.
+func _finish_tutorial() -> void:
+	step = TUTORIAL_DONE
+	Global.player["tutorial_step"] = TUTORIAL_DONE
+	Global.set_unlock_stage(Global.UNLOCK_ALL)
+	emit_signal("tutorial_finished")
 
 func _message_index(text: String) -> int:
 	for i in range(messages.size()):
@@ -316,6 +392,7 @@ func continue_tutorial_after_alert() -> void:
 		_show_next_queued_message()
 		return
 	if step >= FINAL_STEP:
+		_finish_tutorial()
 		await CameraManager.return_to_player()
 		if has_node("/root/Global"):
 			Global.force_release_all_gameplay_locks()
@@ -324,7 +401,7 @@ func continue_tutorial_after_alert() -> void:
 
 func _next_step():
 	step += 1
-	Global.player["tutorial_step"] += 1
+	Global.player["tutorial_step"] = step
 
 	match step:
 		1:
@@ -348,25 +425,18 @@ func _next_step():
 		7:
 			pass
 
-		# pós minigame
+		# pós minigame: apresenta o escritório e o destrava
 		8:
-			# Fecha o onboarding da semana 1 apresentando os locais do mapa.
-			# O bloco dos empreendimentos saiu daqui: agora é o aviso da
-			# semana 5, quando o nível 5 do escritório destrava e o jogador
-			# tem alguma chance de ter capital para pensar nisso.
-			queue_messages([
-				messages[9],
-				messages[10],
-				messages[11],
-				messages[12],
-				messages[13],
-				messages[14],
-				messages[15]
-			])
-			emit_signal("tutorial_finished")
-			# Garantir liberação de locks ao finalizar o tutorial
-			if has_node("/root/Global"):
-				Global.force_release_all_gameplay_locks()
+			Global.set_unlock_stage(Global.UNLOCK_OFFICE)
+			_queue_office_intro()
+
+		# espera o jogador entrar e sair do escritório
+		9:
+			_return_camera_and_wait()
+
+		# O passo 10 (tour do resto da cidade) não passa por aqui: o tour usa
+		# foco de câmera, que só existe em main_game, e o jogador está na cena
+		# do escritório quando ele é destravado. Ver on_player_left_office().
 
 
 # =============================
@@ -407,3 +477,14 @@ func on_player_entered_school():
 func on_minigame_finished():
 	if step == 7:
 		_next_step()
+
+
+# Chamado por office.gd ao sair do escritório. Só avança o contador: o tour do
+# passo 10 usa foco de câmera, que só existe em main_game, e neste momento o
+# jogador ainda está na cena do escritório. Quando o mundo carregar,
+# main_game._ready() chama resume_tutorial(10) e o tour roda lá.
+func on_player_left_office() -> void:
+	if step != OFFICE_WAIT_STEP:
+		return
+	step = FINAL_STEP
+	Global.player["tutorial_step"] = FINAL_STEP

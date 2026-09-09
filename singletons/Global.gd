@@ -2,6 +2,32 @@ extends Node
 
 var player: Dictionary
 
+# Fome perdida por dia dormido. Comer no mercado/casa e' o que repoe.
+const HUNGER_DECAY_PER_DAY := 6.0
+
+# =============================================================
+# PROGRESSAO DE LIBERACAO DOS LUGARES
+# O jogo comeca com so' a escola aberta. O escritorio abre depois do minigame
+# e o resto da cidade depois da primeira visita ao escritorio. Pular o
+# tutorial vai direto para UNLOCK_ALL (ver TutorialManager.skip_tutorial).
+# =============================================================
+const UNLOCK_SCHOOL_ONLY := 0
+const UNLOCK_OFFICE := 1
+const UNLOCK_ALL := 2
+
+# Estagio minimo que libera cada lugar. O que nao esta aqui exige UNLOCK_ALL,
+# entao um lugar novo ja' nasce trancado ate' o fim do tutorial.
+const PLACE_UNLOCK_STAGE := {
+	"school": UNLOCK_SCHOOL_ONLY,
+	"office": UNLOCK_OFFICE
+}
+
+# Espelha TutorialManager.TUTORIAL_DONE. Duplicado porque ensure_player_state()
+# roda durante Global._ready(), antes de TutorialManager entrar na arvore.
+const LEGACY_TUTORIAL_DONE := 11
+# Fracao do % de fome de um alimento que tambem vira stamina.
+const STAMINA_PER_FOOD_ENERGY := 0.25
+
 var data_model = {
 	"name": "",
 	"money": 0.0,
@@ -17,6 +43,8 @@ var data_model = {
 	"hour": 8,
 	"return_home_next_day": false,
 	"tutorial_step": 1,
+	# Ver UNLOCK_* acima. Novo jogo comeca com so' a escola liberada.
+	"unlock_stage": UNLOCK_SCHOOL_ONLY,
 	# Semanas cujo aviso semanal do tutorial já foi mostrado, para um reload
 	# não repetir o que o jogador já leu. Ver TutorialManager.weekly_messages.
 	"tutorial_weeks_shown": [],
@@ -52,6 +80,12 @@ var data_model = {
 var play_time := false
 var gameplay_locked := false
 var _gameplay_lock_count := 0
+# Ligada quando a fome zera. Impede que o resto do fluxo do fim de dia continue
+# por cima da tela de game-over. Zerada ao comecar/carregar uma partida.
+var _game_over := false
+
+func is_game_over() -> bool:
+	return _game_over
 
 func lock_gameplay() -> void:
 	_gameplay_lock_count += 1
@@ -73,6 +107,30 @@ func force_release_all_gameplay_locks() -> void:
 	play_time = true
 	print("Global: force released all gameplay locks")
 
+func unlock_stage() -> int:
+	if player == null:
+		return UNLOCK_SCHOOL_ONLY
+	return int(player.get("unlock_stage", UNLOCK_SCHOOL_ONLY))
+
+# So' avanca. Um evento fora de ordem nao pode retrancar o que ja' abriu.
+func set_unlock_stage(stage: int) -> void:
+	if player == null:
+		return
+	player["unlock_stage"] = max(unlock_stage(), stage)
+
+func is_place_unlocked(place_id: String) -> bool:
+	return unlock_stage() >= int(PLACE_UNLOCK_STAGE.get(place_id, UNLOCK_ALL))
+
+# Texto mostrado no painel da porta e no alerta de porta trancada.
+func place_lock_reason(place_id: String) -> String:
+	if is_place_unlocked(place_id):
+		return ""
+	if int(PLACE_UNLOCK_STAGE.get(place_id, UNLOCK_ALL)) == UNLOCK_OFFICE:
+		return "Ainda não. Termine sua formação na escola primeiro."
+	if unlock_stage() == UNLOCK_SCHOOL_ONLY:
+		return "Ainda não. Comece pela escola."
+	return "Ainda não. Visite o escritório de consultoria primeiro."
+
 func _new_player_data() -> Dictionary:
 	var new_player = data_model.duplicate(true)
 	new_player["position"] = data_model["position"].duplicate(true)
@@ -85,6 +143,18 @@ func ensure_player_state() -> void:
 	for key in ["money", "saldo", "week", "salary", "school_level", "day", "hour", "tutorial_step", "hunger", "stamina", "spend_today", "had_no_spend_day", "no_spend_days_count", "positive_days_count"]:
 		if not player.has(key):
 			player[key] = data_model.get(key, 0)
+	# Save anterior a' progressao de lugares: nao tem "unlock_stage". Trancar a
+	# cidade de quem ja' estava jogando pareceria um bug, entao esses saves
+	# entram com tudo aberto e o tutorial dado por encerrado.
+	if not player.has("unlock_stage"):
+		player["unlock_stage"] = UNLOCK_ALL
+		# 8 era o FINAL_STEP de quando o tutorial acabava no tour do mundo, e
+		# esse valor ficava salvo. Hoje 8 e' a apresentacao do escritorio, entao
+		# sem isto um save antigo repetiria o tutorial. Numero literal de
+		# proposito: TutorialManager e' autoload posterior a Global e ainda nao
+		# existe quando esta funcao roda.
+		if int(player.get("tutorial_step", 1)) >= 8:
+			player["tutorial_step"] = LEGACY_TUTORIAL_DONE
 	if not player.has("position") or typeof(player["position"]) != TYPE_DICTIONARY:
 		player["position"] = {"x": 180.0, "y": 210.0}
 	if not player.has("investments"):
@@ -109,7 +179,7 @@ func ensure_player_state() -> void:
 	if not player.has("tutorial_weeks_shown") or typeof(player["tutorial_weeks_shown"]) != TYPE_ARRAY:
 		player["tutorial_weeks_shown"] = []
 	if not player.has("last_week_status"):
-		player["last_week_status"] = {"hunger": 100.0, "happiness": 100.0}
+		player["last_week_status"] = {"hunger": 100.0, "stamina": 100.0}
 	player["money"] = float(player.get("money", 0.0))
 	player["saldo"] = float(player.get("saldo", 0.0))
 	player["hunger"] = clampf(float(player.get("hunger", 100.0)), 0.0, 100.0)
@@ -139,6 +209,7 @@ func normalize_home_inventory() -> void:
 
 func new_game(name: String, money: float) -> void:
 	SaveManager.delete_save()
+	_game_over = false
 	player = _new_player_data()
 	player["name"] = name
 	player["money"] = float(money)
@@ -152,6 +223,7 @@ func new_game(name: String, money: float) -> void:
 	player["hour"] = 8
 	player["tutorial_step"] = 1
 	player["tutorial_weeks_shown"] = []
+	player["unlock_stage"] = UNLOCK_SCHOOL_ONLY
 	player["investments"] = {}
 	player["expense_history"] = []
 	player["spend_today"] = 0.0
@@ -175,6 +247,7 @@ func new_game(name: String, money: float) -> void:
 		get_tree().change_scene_to_file("res://scenes/world/main_game.tscn")
 
 func load_data() -> void:
+	_game_over = false
 	var saved_data = SaveManager.load_game()
 	if saved_data is Dictionary and not saved_data.is_empty():
 		player = saved_data
@@ -302,10 +375,11 @@ func consume_food() -> Dictionary:
 	if inventory[chosen_name]["quantity"] <= 0:
 		inventory.erase(chosen_name)
 	player["home_inventory"] = inventory
+	# "energy" guarda o % de fome que o item repoe (ver market.gd). A stamina
+	# ganha um quarto disso: comer ajuda, mas quem recupera stamina e' dormir.
 	var energy_gain = float(chosen_item.get("energy", 15.0))
-	var happiness_gain = float(chosen_item.get("happiness", 5.0))
 	player["hunger"] = clampf(float(player.get("hunger", 100.0)) + energy_gain, 0.0, 100.0)
-	player["stamina"] = clampf(float(player.get("stamina", 100.0)) + happiness_gain * 0.35, 0.0, 100.0)
+	player["stamina"] = clampf(float(player.get("stamina", 100.0)) + energy_gain * STAMINA_PER_FOOD_ENERGY, 0.0, 100.0)
 	player["home_actions_log"] = player.get("home_actions_log", [])
 	player["home_actions_log"].append({
 		"type": "eat",
@@ -318,11 +392,11 @@ func consume_food() -> Dictionary:
 	TimeManager.spend_hours(0.5)
 	return {"success": true, "message": "Você comeu %s." % chosen_item.get("name", chosen_name), "item": chosen_item.get("name", chosen_name)}
 
-func apply_home_action(action_name: String, hunger_delta: float, happiness_delta: float, time_cost: float = 0.0) -> Dictionary:
+func apply_home_action(action_name: String, hunger_delta: float, stamina_delta: float, time_cost: float = 0.0) -> Dictionary:
 	if player == null:
 		return {"success": false, "message": "Estado do jogador não inicializado."}
 	player["hunger"] = clampf(float(player.get("hunger", 100.0)) + float(hunger_delta), 0.0, 100.0)
-	player["stamina"] = clampf(float(player.get("stamina", 100.0)) + float(happiness_delta), 0.0, 100.0)
+	player["stamina"] = clampf(float(player.get("stamina", 100.0)) + float(stamina_delta), 0.0, 100.0)
 	var log = player.get("home_actions_log", [])
 	log.append({
 		"type": action_name,
@@ -336,15 +410,26 @@ func apply_home_action(action_name: String, hunger_delta: float, happiness_delta
 	TimeManager.spend_hours(time_cost)
 	return {"success": true, "message": "%s" % action_name}
 
-func decay_need_state() -> void:
-	# Called at end of day. Stamina is now handled continuously by TimeManager.
-	# This only handles hunger-specific end-of-day adjustments.
+# Fechamento do dia. A stamina e' tratada minuto a minuto pelo TimeManager;
+# aqui so' cai a fome. Devolve false se o jogador morreu de fome.
+func decay_need_state() -> bool:
 	if player == null:
+		return true
+	player["hunger"] = clampf(float(player.get("hunger", 100.0)) - HUNGER_DECAY_PER_DAY, 0.0, 100.0)
+	if player["hunger"] > 0.0:
+		return true
+	trigger_game_over("Você morreu de fome!")
+	return false
+
+# Ponto unico de game-over. O alerta so' e' aberto uma vez: sem a trava, um
+# chamador em _process reabriria a caixa a cada quadro e o botao OK nunca
+# pareceria funcionar (era o bug 8.1).
+func trigger_game_over(message: String) -> void:
+	if _game_over:
 		return
-	player["hunger"] = clampf(float(player.get("hunger", 100.0)) - 6.0, 0.0, 100.0)
-	if player["hunger"] <= 0.0:
-		# Game over - player starved
-		AlertManager.alert("Você morreu de fome!", false, Callable(self, "_game_over"))
+	_game_over = true
+	play_time = false
+	AlertManager.alert(message, false, Callable(self, "_return_to_main_menu"))
 
 func evaluate_week_status() -> Dictionary:
 	if player == null:
@@ -360,8 +445,8 @@ func evaluate_week_status() -> Dictionary:
 		player["stamina"] = clampf(stamina + 10.0, 0.0, 100.0)
 	return {"penalty": penalty, "message": "Status da semana avaliado."}
 
-func _game_over() -> void:
-	# Callback for game-over alert - return to main menu
+func _return_to_main_menu() -> void:
+	SaveManager.delete_save()
 	if get_tree() != null:
 		TransitionManager.change_scene("res://scenes/menus/main_menu.tscn")
 
@@ -369,8 +454,3 @@ func _ready() -> void:
 	ensure_player_state()
 	load_data()
 	FIIManager.load_data()
-	print(player)
-
-func _process(delta: float) -> void:
-	if player["hunger"] == 0.0:
-		AlertManager.alert("Você morreu de fome")

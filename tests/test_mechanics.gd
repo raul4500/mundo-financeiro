@@ -1,0 +1,270 @@
+extends Node
+
+# Auto-teste das mecanicas das fases 6-10. Roda sozinho, sem framework:
+#   Godot_v4.7.2-stable_win64_console.exe --headless --path . res://tests/test_mechanics.tscn
+# Sai com codigo 0 se tudo passar, 1 se algum assert falhar.
+#
+# Cobre so' o que e' calculo puro (curva de stamina, fechamento do dia, imposto
+# sobre prejuizo em FII). O que depende de cena — andar ate a casa, clicar em
+# DORMIR, o minigame — continua sendo teste manual.
+
+var failures: Array = []
+
+func _check(condition: bool, description: String) -> void:
+	if condition:
+		print("  ok   %s" % description)
+	else:
+		print("  FALHA %s" % description)
+		failures.append(description)
+
+func _fresh_player() -> void:
+	Global.player = Global._new_player_data()
+	Global.player["name"] = "Raul"
+	Global.player["money"] = 1000.0
+	Global.player["hunger"] = 100.0
+	Global.player["stamina"] = 100.0
+	Global.player["day"] = 1
+	Global.player["hour"] = 8
+	TimeManager.current_day = 1
+	TimeManager.current_hour = 8
+	TimeManager.current_minute = 0
+	TimeManager.day_end_pending = false
+	TimeManager._exhaustion_alert_shown = false
+	TimeManager._no_stamina_alert_shown = false
+
+# Avanca minutos de jogo parando antes da meia-noite, para o teste nao disparar
+# a transicao de cena de _handle_midnight().
+func _run_until(hour: int, minute: int) -> void:
+	while TimeManager.current_hour < hour or (TimeManager.current_hour == hour and TimeManager.current_minute < minute):
+		if TimeManager.current_hour >= 23 and TimeManager.current_minute >= 59:
+			return
+		TimeManager._add_minute()
+
+# =============================================================
+func test_stamina_dura_o_dia_inteiro() -> void:
+	print("stamina: 100 -> 0 entre 08h e 24h (fase 6.2)")
+	_fresh_player()
+	_run_until(18, 0)
+	var at_18 := float(Global.player["stamina"])
+	# 10 horas a 100/960 por minuto = 62.5 gastos.
+	_check(abs(at_18 - 37.5) < 0.5, "as 18h sobra ~37.5 de stamina (obtido %.2f)" % at_18)
+	_check(TimeManager._exhaustion_alert_shown, "o aviso das 18h foi disparado")
+	_check(not TimeManager.day_end_pending, "o dia NAO acabou sozinho as 18h (fase 7.1)")
+
+	_run_until(19, 0)
+	var at_19 := float(Global.player["stamina"])
+	_check(abs(at_19 - 31.25) < 0.5, "as 19h sobra ~31.25 (taxa ainda base, obtido %.2f)" % at_19)
+
+	# 19h em diante: 2x, +10% por hora. A stamina zera por volta das 21h20.
+	_run_until(21, 0)
+	_check(float(Global.player["stamina"]) > 0.0, "as 21h ainda ha' stamina")
+	_run_until(21, 40)
+	_check(float(Global.player["stamina"]) == 0.0, "as 21h40 a stamina zerou")
+	_check(TimeManager._no_stamina_alert_shown, "o aviso de stamina zerada foi disparado")
+	_check(not Global.is_game_over(), "stamina zerada NAO e' game-over (fase 7.3)")
+
+func test_dormir_fecha_o_dia() -> void:
+	print("dormir: stamina cheia, fome -6, dia trancado ate' o alerta fechar (fase 7.1)")
+	_fresh_player()
+	_run_until(20, 0)
+	var hunger_before := float(Global.player["hunger"])
+	var result: Dictionary = TimeManager.sleep()
+	_check(bool(result["success"]), "sleep() aceitou")
+	_check(float(Global.player["stamina"]) == 100.0, "stamina voltou a 100")
+	_check(abs(float(Global.player["hunger"]) - (hunger_before - Global.HUNGER_DECAY_PER_DAY)) < 0.01,
+		"a fome caiu %.0f no fechamento" % Global.HUNGER_DECAY_PER_DAY)
+	_check(TimeManager.day_end_pending, "o dia ficou trancado esperando o alerta")
+	_check(not bool(TimeManager.sleep()["success"]), "dormir duas vezes no mesmo dia nao vale")
+
+func test_fome_zerada_e_game_over() -> void:
+	print("fome: zerar no fechamento e' game-over, e o alerta abre UMA vez (fase 8.1)")
+	_fresh_player()
+	Global.player["hunger"] = 3.0
+	var alive: bool = Global.decay_need_state()
+	_check(not alive, "decay_need_state devolveu false")
+	_check(Global.is_game_over(), "a trava de game-over ligou")
+	# A trava e' o que consertou o bug 8.1: antes, Global._process() reabria o
+	# alerta a cada quadro e o botao OK nunca conseguia fechar a caixa.
+	var lock_before := Global._gameplay_lock_count
+	Global.trigger_game_over("Você morreu de fome!")
+	Global.trigger_game_over("Você morreu de fome!")
+	_check(Global._gameplay_lock_count == lock_before, "chamar de novo nao empilha novos locks")
+
+func test_imposto_sobre_prejuizo_em_fii() -> void:
+	print("FII: vender abaixo do preco medio paga 10%% sobre o prejuizo (fase 10.1)")
+	_fresh_player()
+	Global.player["money"] = 5000.0
+	FIIManager.reset()
+	FIIManager.funds["FII_SHOPPING"]["price"] = 100.0
+	_check(FIIManager.buy_fund("FII_SHOPPING", 10), "comprou 10 cotas a R$100")
+	_check(abs(float(FIIManager.avg_price["FII_SHOPPING"]) - 100.0) < 0.01, "preco medio = 100")
+
+	# Segunda compra mais barata puxa o preco medio para baixo.
+	FIIManager.funds["FII_SHOPPING"]["price"] = 50.0
+	FIIManager.buy_fund("FII_SHOPPING", 10)
+	_check(abs(float(FIIManager.avg_price["FII_SHOPPING"]) - 75.0) < 0.01,
+		"preco medio ponderado = 75 (obtido %.2f)" % float(FIIManager.avg_price["FII_SHOPPING"]))
+
+	# Vender as 20 cotas a 50 com media 75: prejuizo 500, imposto 50.
+	var money_before := float(Global.player["money"])
+	FIIManager.sell_fund("FII_SHOPPING", 20)
+	var received := float(Global.player["money"]) - money_before
+	_check(abs(received - 950.0) < 0.01, "recebeu 1000 - 50 de imposto = 950 (obtido %.2f)" % received)
+	_check(not FIIManager.avg_price.has("FII_SHOPPING"), "zerou a posicao e o preco medio junto")
+
+	# Vender no lucro nao paga imposto nenhum.
+	FIIManager.funds["FII_LOGISTICA"]["price"] = 100.0
+	FIIManager.buy_fund("FII_LOGISTICA", 5)
+	FIIManager.funds["FII_LOGISTICA"]["price"] = 130.0
+	money_before = float(Global.player["money"])
+	FIIManager.sell_fund("FII_LOGISTICA", 5)
+	_check(abs((float(Global.player["money"]) - money_before) - 650.0) < 0.01, "venda no lucro sai limpa")
+
+func test_comida_do_mercado_repoe_fome() -> void:
+	print("mercado: o item repoe exatamente o %% de fome anunciado (fase 6.3)")
+	_fresh_player()
+	Global.player["hunger"] = 20.0
+	Global.player["stamina"] = 20.0
+	Global.add_home_inventory_item("Bread", 1, "food", 10)
+	var result: Dictionary = Global.consume_food()
+	_check(bool(result["success"]), "comeu o pao")
+	_check(abs(float(Global.player["hunger"]) - 30.0) < 0.01,
+		"fome 20 + 10%% = 30 (obtido %.2f)" % float(Global.player["hunger"]))
+	# consume_food() gasta 30 minutos de jogo, que ja' descontam stamina:
+	# 20 + (10 * 0.25) - (30 * 100/960) = 19.375.
+	var expected_stamina := 20.0 + 10.0 * Global.STAMINA_PER_FOOD_ENERGY - 30.0 * TimeManager.STAMINA_DECAY_PER_MINUTE
+	_check(abs(float(Global.player["stamina"]) - expected_stamina) < 0.01,
+		"stamina = %.3f apos o bonus e a meia hora gasta (obtido %.3f)" % [expected_stamina, float(Global.player["stamina"])])
+
+# =============================================================
+# TUTORIAL E LIBERACAO SEQUENCIAL DOS LUGARES
+# =============================================================
+
+# Reproduz o que main_game._ready() faz ao carregar a cena do mundo.
+func _enter_world() -> void:
+	var tutorial_step := int(Global.player.get("tutorial_step", 1))
+	if tutorial_step == 1:
+		TutorialManager.start_tutorial()
+	elif tutorial_step <= TutorialManager.FINAL_STEP:
+		TutorialManager.resume_tutorial(tutorial_step)
+
+func test_novo_jogo_so_libera_a_escola() -> void:
+	print("liberacao: novo jogo abre so' a escola")
+	_fresh_player()
+	_check(Global.unlock_stage() == Global.UNLOCK_SCHOOL_ONLY, "estagio inicial = so' a escola")
+	_check(Global.is_place_unlocked("school"), "escola aberta")
+	for place in ["office", "bank", "market", "home", "restaurant_small", "arcade_medium", "shopping_large"]:
+		_check(not Global.is_place_unlocked(place), "%s trancado" % place)
+		_check(Global.place_lock_reason(place) != "", "%s tem motivo de trava" % place)
+
+func test_pular_tutorial_libera_tudo_e_nao_volta() -> void:
+	print("pular tutorial: libera tudo e nao reaparece (item 1)")
+	_fresh_player()
+	Global.player["tutorial_step"] = 1
+	TutorialManager.start_tutorial()
+	_check(TutorialManager.can_skip(), "o botao de pular aparece no passo 1")
+	TutorialManager.skip_tutorial()
+
+	_check(Global.unlock_stage() == Global.UNLOCK_ALL, "pulou: cidade inteira liberada")
+	for place in ["school", "office", "bank", "market", "home", "shopping_large"]:
+		_check(Global.is_place_unlocked(place), "%s aberto depois de pular" % place)
+
+	_check(int(Global.player["tutorial_step"]) == TutorialManager.TUTORIAL_DONE,
+		"tutorial_step = concluido, nao o ultimo passo")
+
+	# Era exatamente isto que falhava: voltar do minigame recarregava main_game,
+	# que chamava resume_tutorial() e mostrava o tour de novo.
+	TutorialManager.pending_messages.clear()
+	_enter_world()
+	_check(TutorialManager.pending_messages.is_empty(), "voltar ao mundo nao reabre o tutorial")
+
+	# Nenhum aviso semanal deve escapar.
+	for week in TutorialManager.weekly_messages.keys():
+		TutorialManager.pending_messages.clear()
+		TutorialManager.on_week_changed(int(week))
+		_check(TutorialManager.pending_messages.is_empty(),
+			"aviso da semana %d nao aparece depois de pular" % int(week))
+
+func test_ordem_escritorio_depois_o_resto() -> void:
+	print("liberacao sequencial: minigame -> escritorio -> resto (itens 2 e 3)")
+	_fresh_player()
+	Global.player["tutorial_step"] = 7
+	TutorialManager.step = 7
+	TutorialManager.skipped = false
+	TutorialManager.pending_messages.clear()
+
+	# Fim do minigame: o passo 8 apresenta o escritorio e so' ele abre.
+	TutorialManager.on_minigame_finished()
+	_check(TutorialManager.step == 8, "avancou para o passo 8")
+	_check(Global.unlock_stage() == Global.UNLOCK_OFFICE, "escritorio liberado")
+	_check(Global.is_place_unlocked("office"), "porta do escritorio aberta")
+	_check(not Global.is_place_unlocked("bank"), "banco continua trancado")
+	_check(not Global.is_place_unlocked("market"), "mercado continua trancado")
+	_check(TutorialManager.pending_messages.size() > 0, "mensagens do escritorio na fila")
+
+	# A camera precisa parar no escritorio antes da mensagem que o apresenta.
+	var has_office_focus := false
+	for entry in TutorialManager.pending_messages:
+		if str(entry.get("focus", "")) == "Office":
+			has_office_focus = true
+	_check(has_office_focus, "a camera foca o escritorio nessa fila")
+
+	# Sair do escritorio antes da hora nao pode adiantar nada.
+	TutorialManager.on_player_left_office()
+	_check(TutorialManager.step == 8, "sair do escritorio no passo 8 nao avanca")
+
+	# Passo 9: esperando a visita. Recarregar aqui nao repete mensagem.
+	TutorialManager.step = TutorialManager.OFFICE_WAIT_STEP
+	Global.player["tutorial_step"] = TutorialManager.OFFICE_WAIT_STEP
+	TutorialManager.pending_messages.clear()
+	_enter_world()
+	_check(TutorialManager.pending_messages.is_empty(), "recarregar esperando a visita nao repete nada")
+	_check(not Global.is_place_unlocked("bank"), "banco ainda trancado enquanto espera")
+
+	# Saiu do escritorio: o tour do resto da cidade roda ao voltar ao mundo.
+	TutorialManager.on_player_left_office()
+	_check(TutorialManager.step == TutorialManager.FINAL_STEP, "avancou para o tour final")
+	_enter_world()
+	_check(TutorialManager.pending_messages.size() > 0, "o tour do mundo entrou na fila")
+
+	# O tour termina quando a fila esvazia.
+	var guard := 0
+	while not TutorialManager.pending_messages.is_empty() and guard < 50:
+		TutorialManager.pending_messages.pop_front()
+		guard += 1
+	# CameraManager vai reclamar de "nenhum jogador registrado": e' esperado,
+	# nao ha' cena de mundo aqui. O que importa e' o estado depois da chamada.
+	TutorialManager.continue_tutorial_after_alert()
+	_check(int(Global.player["tutorial_step"]) == TutorialManager.TUTORIAL_DONE, "tutorial concluido")
+	_check(Global.unlock_stage() == Global.UNLOCK_ALL, "cidade inteira liberada no fim")
+
+	TutorialManager.pending_messages.clear()
+	_enter_world()
+	_check(TutorialManager.pending_messages.is_empty(), "tutorial concluido nao se repete")
+
+func test_save_antigo_nao_retranca_a_cidade() -> void:
+	print("save antigo: sem unlock_stage entra com tudo aberto")
+	Global.player = Global._new_player_data()
+	Global.player.erase("unlock_stage")
+	Global.player["tutorial_step"] = 8  # era o "concluido" do formato anterior
+	Global.ensure_player_state()
+	_check(Global.unlock_stage() == Global.UNLOCK_ALL, "save antigo entra com tudo liberado")
+	_check(int(Global.player["tutorial_step"]) == TutorialManager.TUTORIAL_DONE,
+		"o 8 antigo vira concluido, e nao a apresentacao do escritorio")
+
+func _ready() -> void:
+	print("=== auto-teste das mecanicas ===")
+	test_stamina_dura_o_dia_inteiro()
+	test_dormir_fecha_o_dia()
+	test_fome_zerada_e_game_over()
+	test_imposto_sobre_prejuizo_em_fii()
+	test_comida_do_mercado_repoe_fome()
+	test_novo_jogo_so_libera_a_escola()
+	test_pular_tutorial_libera_tudo_e_nao_volta()
+	test_ordem_escritorio_depois_o_resto()
+	test_save_antigo_nao_retranca_a_cidade()
+
+	print("=== %d falha(s) ===" % failures.size())
+	for f in failures:
+		print("  - %s" % f)
+	get_tree().quit(1 if failures.size() > 0 else 0)

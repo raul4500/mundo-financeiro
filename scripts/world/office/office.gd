@@ -231,4 +231,6 @@ func _show_default_detail_message() -> void:
 
 
 func _on_exit_pressed() -> void:
+	# Sair do escritório é o que destrava o resto da cidade no tutorial.
+	TutorialManager.on_player_left_office()
 	TransitionManager.change_scene("res://scenes/world/main_game.tscn")

@@ -44,8 +44,16 @@ var funds = {
 }
 
 var portfolio = {}
+# Preco medio pago por cota, por fundo. Separado de `portfolio` (que continua
+# sendo so' {fund_id: quantidade}) para nao quebrar quem le' a carteira:
+# portfolio.gd e fii_shop.gd.
+var avg_price = {}
 var total_invested: float = 0.0
 var total_dividends_received: float = 0.0
+
+# Imposto sobre o prejuizo ao vender uma cota abaixo do preco medio pago.
+# Vender no vermelho custa dinheiro; segurar e esperar, nao (BUGFIX_PLAN 10.1).
+const LOSS_TAX_RATE := 0.10
 
 func update_prices():
 	for key in funds.keys():
@@ -60,6 +68,7 @@ func reset() -> void:
 	# Chamado por Global.new_game() para garantir que um novo jogo não herda
 	# a carteira do jogo anterior.
 	portfolio = {}
+	avg_price = {}
 	total_invested = 0.0
 	total_dividends_received = 0.0
 	funds = {
@@ -101,7 +110,11 @@ func buy_fund(fund_id: String, amount: int):
 	Global.player["money"] = float(Global.player["money"]) - total_cost
 	if not portfolio.has(fund_id):
 		portfolio[fund_id] = 0
-	portfolio[fund_id] += amount
+	# Preco medio ponderado, calculado antes de somar as cotas novas.
+	var held := int(portfolio[fund_id])
+	var previous_cost := float(avg_price.get(fund_id, price)) * float(held)
+	portfolio[fund_id] = held + amount
+	avg_price[fund_id] = (previous_cost + total_cost) / float(portfolio[fund_id])
 	total_invested += total_cost
 	print("Comprou %d cotas de %s" % [amount, fund_id])
 	emit_signal("portfolio_updated")
@@ -120,12 +133,35 @@ func sell_fund(fund_id: String, amount: int):
 		return false
 	var price = float(funds[fund_id]["price"])
 	var total_gain = price * float(amount)
+	var cost_basis = float(avg_price.get(fund_id, price)) * float(amount)
+	# Vender abaixo do preco medio pago paga imposto sobre o prejuizo.
+	var loss_tax = 0.0
+	if total_gain < cost_basis:
+		loss_tax = (cost_basis - total_gain) * LOSS_TAX_RATE
 	portfolio[fund_id] -= amount
 	if portfolio[fund_id] <= 0:
 		portfolio.erase(fund_id)
-	Global.player["money"] = float(Global.player["money"]) + total_gain
-	total_invested -= total_gain
+		avg_price.erase(fund_id)
+	Global.player["money"] = float(Global.player["money"]) + total_gain - loss_tax
+	total_invested -= cost_basis
 	print("Vendeu %d cotas de %s" % [amount, fund_id])
+	if loss_tax > 0.0:
+		Global.register_expense(
+			"Imposto sobre prejuízo - %s" % str(funds[fund_id]["name"]),
+			"fii_loss_tax",
+			loss_tax,
+			int(Global.player.get("day", 1)),
+			int(Global.player.get("week", 1))
+		)
+		AlertManager.alert(
+			"Você vendeu %s no prejuízo.\n\nPreço médio pago: R$ %.2f por cota\nPreço de venda: R$ %.2f por cota\n\nImposto sobre o prejuízo (%d%%): - R$ %.2f\n\nVender na baixa custa caro. Diversificar e esperar a recuperação costuma sair mais barato." % [
+				str(funds[fund_id]["name"]),
+				cost_basis / float(amount),
+				price,
+				int(LOSS_TAX_RATE * 100.0),
+				loss_tax
+			]
+		)
 	emit_signal("portfolio_updated")
 	emit_signal("funds_updated")
 	return true
@@ -158,6 +194,7 @@ func save_data():
 	Global.player["investments"] = {
 		"fiis": {
 			"portfolio": portfolio,
+			"avg_price": avg_price,
 			"funds_data": funds,
 			"total_invested": total_invested,
 			"total_dividends_received": total_dividends_received
@@ -170,7 +207,14 @@ func load_data():
 	var data = Global.player.get("investments", {}).get("fiis", {})
 	if data.has("portfolio"):
 		portfolio = data["portfolio"]
+	if data.has("avg_price"):
+		avg_price = data["avg_price"]
 	if data.has("funds_data"):
 		funds = data["funds_data"]
+	# Save antigo, sem preco medio: adota o preco atual como base de custo, para
+	# uma carteira herdada nao ser taxada por um prejuizo que nunca existiu.
+	for fund_id in portfolio.keys():
+		if not avg_price.has(fund_id) and funds.has(fund_id):
+			avg_price[fund_id] = float(funds[fund_id]["price"])
 	total_invested = float(data.get("total_invested", 0.0))
 	total_dividends_received = float(data.get("total_dividends_received", 0.0))

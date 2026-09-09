@@ -3,6 +3,10 @@ extends Control
 @onready var continue_button = $GridContainer/start
 
 func _ready() -> void:
+	# O relogio nao para sozinho ao sair do mundo: todas as cenas de gameplay
+	# ligam Global.play_time no _ready() e nenhuma o desliga ao sair. Sem esta
+	# linha o tempo continuava correndo com o jogo no menu (bug 9.1).
+	Global.play_time = false
 	if Global.player["name"] != "":
 		continue_button.visible = true
 

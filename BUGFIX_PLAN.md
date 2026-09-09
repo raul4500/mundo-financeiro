@@ -4,6 +4,60 @@ Após resolução das 10 correções críticas (fases 0-3 anteriores), este docu
 descreve as próximas melhorias e fixes em desenvolvimento, ordenadas por
 prioridade e dependência.
 
+> **Status (09/09/2026): fases 6 a 10 implementadas.** O que foi feito, por que
+> divergiu do plano onde divergiu, e o que ainda precisa de teste manual está em
+> [IMPLEMENTATION_LOG.md](IMPLEMENTATION_LOG.md).
+
+---
+
+## Errata — inconsistências encontradas ao executar este plano
+
+Registradas aqui porque o texto original abaixo foi mantido como estava.
+
+**Números que se contradizem**
+
+1. **6.2** dá três valores para a mesma coisa: "16 horas de jogo", "(64 minutos
+   de jogo)" e "confirmar que stamina zera aos 16 minutos de game-time". O certo
+   é 960 minutos de jogo = 16 horas de jogo, que com `time_scale = 7.0` dão
+   ~2min17s de tempo real. Implementado como 960 minutos de jogo.
+2. **6.3** manda `R$ / (% restaurado)` ficar em "~0.3 em média", mas a própria
+   tabela do item dá pão 20/10 = 2.0, arroz 90/70 = 1.29, frango 150/100 = 1.5.
+   A média real da tabela é ~1.4. Valeram os exemplos, não o 0.3.
+3. **7.2** diz "19h-23h: a taxa **dobra** (0.208/min)" e logo abaixo tabela
+   "18h → base (1x), 19h → 2x". As duas leituras diferem em uma hora inteira.
+   Valeu a tabela: 18h ainda é 1x.
+
+**Dependências fora de ordem**
+
+4. **6.2 não é implementável antes da 7.1/7.2.** Um orçamento de stamina de 16
+   horas não cabe num dia de 08h → 18h, que tem 10. Fazer 6.2 primeiro, como o
+   plano manda, deixa a stamina terminando o dia em ~37 e nunca em 0. As duas
+   fases são um único bloco.
+5. **7.2 condiciona a penalidade da meia-noite a "stamina > 0"**, mas a própria
+   aceleração da 7.2 zera a stamina por volta das 21h20. Com essa condição a
+   penalidade nunca dispararia.
+6. **7.1 e 7.3 discordam sobre o que fazer com stamina = 0**: "o jogador deve ir
+   até a casa fisicamente" (7.1) contra "força o retorno" (7.3). Se forçar
+   significa teletransportar, não há caminhada.
+7. **7.1 diz que dormir "reseta a fome"**, o que tornaria a 7.3 (game-over por
+   fome) e a 8.1 impossíveis de acontecer. Implementado como o decaimento normal
+   de fim de dia.
+8. **7.1 não prevê trava de horário para dormir.** Sem ela, dormir às 08h01
+   sete vezes vira a semana com salário e dividendos pagando só a fome de sete
+   dias.
+
+**Diagnósticos errados**
+
+9. **8.1** aponta `scripts/hud/event_ui.gd` e o `AlertManager`. Nenhum dos dois
+   tem relação com o bug. A causa era `Global._process()` reabrindo o alerta a
+   cada quadro.
+10. **8.2** manda investigar estado do `MinigameManager` e chamadas de `reset()`
+    faltando. O `MinigameManager` está correto. A causa era o teleporte de 300px
+    para trás no início do minigame, em `minigame.gd`.
+11. **9.1** sugere comparar `get_tree().current_scene.name` com `main_game.tscn`
+    dentro de `_process()`. Isso pararia o relógio dentro de casa, mercado,
+    banco, escritório e minigame, que são cenas de gameplay legítimas.
+
 ---
 
 ## Fase 6 — Mecânica de Stamina e Descanso
@@ -265,13 +319,17 @@ Fase 10 é enriquecimento educacional.
 
 ## Checklist de Verificação Final
 
-- [ ] "Felicidade" renomeada para "Stamina" em 100% das UIs
-- [ ] Stamina zera em 2/3 do dia (16 horas de game-time)
-- [ ] Itens do mercado têm fome restaurada vinculada ao preço
-- [ ] Fim de dia força retorno físico à casa + dormir
-- [ ] Stamina decai mais rápido após 18h
-- [ ] Meia-noite: teletransporte + penalidade R$ 30
-- [ ] Fome = 0 → Game-over com OK funcional
-- [ ] Minigame semana 2 inicia sem falhas
-- [ ] Sair para menu principal pausa o tempo
-- [ ] Vendas com perda cobram penalidade em FII
+Marcado = implementado e coberto por `tests/test_mechanics.gd` ou verificado no
+código. A validação em partida real está pendente e listada no
+[IMPLEMENTATION_LOG.md](IMPLEMENTATION_LOG.md).
+
+- [x] "Felicidade" renomeada para "Stamina" em 100% das UIs
+- [x] Stamina zera em 2/3 do dia (16 horas de game-time)
+- [x] Itens do mercado têm fome restaurada vinculada ao preço
+- [x] Fim de dia força retorno físico à casa + dormir
+- [x] Stamina decai mais rápido após 18h
+- [x] Meia-noite: teletransporte + penalidade R$ 30
+- [x] Fome = 0 → Game-over com OK funcional
+- [x] Minigame semana 2 inicia sem falhas
+- [x] Sair para menu principal pausa o tempo
+- [x] Vendas com perda cobram penalidade em FII

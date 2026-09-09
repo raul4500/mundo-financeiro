@@ -27,12 +27,15 @@ func _ready():
 		pole.offset = Vector2(0, -17)
 		pole.global_position.y += 17
 	
-	match Global.player["tutorial_step"]:
-		1: 
-			TutorialManager.start_tutorial()
-		2, 3, 4, 5, 6, 7, 8:
-			# Tutorial já começou mas não terminou. Retoma do passo salvo.
-			TutorialManager.resume_tutorial(int(Global.player["tutorial_step"]))
+	# Faixa em vez de lista de passos: acima de FINAL_STEP o tutorial acabou (ou
+	# foi pulado) e nada deve ser repetido. Enquanto isto era um match com o
+	# último passo dentro da lista, o tour do mundo voltava toda vez que o
+	# jogador entrava aqui — vindo do mercado, do banco ou do minigame.
+	var tutorial_step := int(Global.player.get("tutorial_step", 1))
+	if tutorial_step == 1:
+		TutorialManager.start_tutorial()
+	elif tutorial_step <= TutorialManager.FINAL_STEP:
+		TutorialManager.resume_tutorial(tutorial_step)
 
 func _on_tree_exited() -> void:
 	Global.player["position"]["x"] = character.global_position.x

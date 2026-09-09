@@ -37,13 +37,16 @@ var countdown_left := 0.0
 var counting := false
 var started := false
 
-# Run-in state: quando o jogador parte de fora da câmera correndo até o
-# ponto onde a câmera começa a segui-lo. Enquanto run_in_active a câmera fica
-# parada; ao chegar, 'started' é ativado e a câmera passa a acompanhar o X do
-# jogador.
-var run_in_active := false
-var run_in_target_x := 0.0
-var run_in_padding := 300.0 # distância em px que o jogador nasce antes do ponto de acompanhamento
+# O jogador comeca parado no marcador do seu nivel e sai correndo dali.
+#
+# Havia aqui uma "entrada correndo": ao apertar Começar, o jogador era
+# teletransportado 300px PARA TRAS do marcador e corria em auto-run ate ele.
+# Os marcadores ficam logo depois do checkpoint anterior (Marker_3 x=1926,
+# Level2 x=1899), entao recuar 300px jogava o jogador atras do checkpoint que
+# ele ja' tinha conquistado e, no nivel 3+, em cima de obstaculos
+# (obstacle8 x=1779). Como begin_session() era chamado antes do auto-run, o
+# primeiro obstaculo no caminho encerrava a corrida no mesmo instante: era o
+# "minigame da semana 2 trava / game-over imediato" (bug 8.2).
 
 func notify_tutorial_minigame_finished() -> void:
 	TutorialManager.on_minigame_finished()
@@ -140,26 +143,13 @@ func _make_label(text: String, font_size: int) -> Label:
 	return label
 
 func _on_start_pressed() -> void:
-	# Inicia a sequência de run-in: a câmera fica parada enquanto o jogador
-	# surge fora da tela e corre até o ponto em que a câmera deverá começar a
-	# seguir. Não usamos o contador de 3s — o jogador corre imediatamente.
-	if counting or started or run_in_active:
+	if counting or started:
 		return
-	# Esconde a UI de início
 	start_layer.visible = false
 	start_button.visible = false
-	# Inicia a sessão do minigame e libera controle do jogador
+	started = true
 	MinigameManager.begin_session()
 	Global.unlock_gameplay()
-	# Calcula a posição do jogador onde a câmera começará a segui-lo. A fórmula
-	# é consistente com a implementação de follow (camera.x = player.x + OFFSET.x)
-	var follow_player_x = camera.global_position.x - CAMERA_OFFSET.x
-	# Posiciona o jogador 300px antes desse ponto e inicia auto-run
-	player.global_position.x = follow_player_x - run_in_padding
-	player.global_position.y = player.global_position.y
-	player.call_deferred("start_auto_run", follow_player_x, 140.0)
-	run_in_target_x = follow_player_x
-	run_in_active = true
 
 func _process_start_screen(delta: float) -> void:
 	# Enquanto houver mensagem de tutorial na tela ou na fila, o botão fica
@@ -167,41 +157,9 @@ func _process_start_screen(delta: float) -> void:
 	var tutorial_busy = AlertManager.panel.visible or not TutorialManager.pending_messages.is_empty()
 	start_button.visible = not tutorial_busy
 
-func _begin_game() -> void:
-	# Mantido para compatibilidade, mas a nova lógica usa run_in_active. Caso
-	# seja chamado, garante que o minigame iniciará imediatamente.
-	if started:
-		return
-	started = true
-	start_layer.visible = false
-	MinigameManager.begin_session()
-	Global.unlock_gameplay()
-
-func _process_run_in(delta: float) -> void:
-	# Enquanto o run-in estiver ativo, a câmera não se move (fica na posição
-	# definida em _place_player). Aguardamos o jogador chegar ao ponto onde a
-	# câmera deve começar a segui-lo.
-	if not run_in_active:
-		return
-	# verifica chegada no ponto alvo
-	if abs(player.global_position.x - run_in_target_x) <= 4.0:
-		# finaliza run-in e ativa o loop principal
-		run_in_active = false
-		# garante que o jogador pare o auto-run (caso ainda esteja ativo)
-		player.call_deferred("stop_auto_run")
-		started = true
-		# sinal opcional: caso exista lógica de início de tentativa em MinigameManager
-		if MinigameManager.has_method("on_run_in_finished"):
-			MinigameManager.on_run_in_finished()
-
 func _process(delta: float) -> void:
 	if not started:
-		# Se estiver na sequência de run-in, processa-a; caso contrário mostra a
-		# tela de início.
-		if run_in_active:
-			_process_run_in(delta)
-		else:
-			_process_start_screen(delta)
+		_process_start_screen(delta)
 		return
 
 	if Global.gameplay_locked:

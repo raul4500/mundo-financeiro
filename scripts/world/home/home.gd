@@ -109,6 +109,7 @@ func _build_action_buttons() -> void:
 	actions_box.add_child(_make_button("COMER", _on_eat_pressed))
 	actions_box.add_child(_make_button("DESCANSAR", _on_rest_pressed))
 	actions_box.add_child(_make_button("ASSISTIR TV", _on_tv_pressed))
+	actions_box.add_child(_make_button("DORMIR", _on_sleep_pressed))
 
 func _make_button(text: String, callback: Callable) -> Button:
 	var button = Button.new()
@@ -214,10 +215,7 @@ func _render_inventory() -> void:
 
 		var meta = Label.new()
 		meta.theme = UI_THEME
-		meta.text = "Energia %.0f / Felicidade %.0f" % [
-			float(item.get("energy", 0.0)),
-			float(item.get("happiness", 0.0))
-		]
+		meta.text = "Fome +%.0f%%" % float(item.get("energy", 0.0))
 
 		row.add_child(label)
 		row.add_child(meta)
@@ -266,6 +264,14 @@ func _on_rest_pressed() -> void:
 func _on_tv_pressed() -> void:
 	var result = Global.apply_home_action("VOCÊ ASSISTIU TV.", -6.0, 14.0, 1.0)
 	status_label.text = result.get("message", "Você assistiu TV.")
+	_update_ui()
+
+# Unica forma de encerrar o dia por vontade propria. O dia nao acaba mais
+# sozinho as 18h: quem nao dormir leva a penalidade da meia-noite
+# (ver TimeManager._handle_midnight).
+func _on_sleep_pressed() -> void:
+	var result = TimeManager.sleep()
+	status_label.text = result.get("message", "VOCÊ DORMIU.")
 	_update_ui()
 
 func _on_exit_pressed() -> void:

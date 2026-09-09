@@ -5,6 +5,9 @@ extends Area2D
 
 var player_inside := false
 var dialog_locked := false
+# Sem esta trava o alerta de porta trancada reabriria a cada quadro, porque
+# _process usa is_key_pressed.
+var locked_alert_shown := false
 var purchase_layer: CanvasLayer
 var purchase_panel: Panel
 var purchase_label: Label
@@ -31,6 +34,13 @@ func _process(_delta: float) -> void:
 		_open_or_enter()
 
 func _open_or_enter() -> void:
+	# Os empreendimentos não estão em Global.PLACE_UNLOCK_STAGE, então só abrem
+	# no estágio final: depois do tutorial, ou de pulá-lo.
+	if not Global.is_place_unlocked(enterprise_id):
+		if not locked_alert_shown:
+			locked_alert_shown = true
+			AlertManager.alert(Global.place_lock_reason(enterprise_id))
+		return
 	if EnterpriseManager.is_owned(enterprise_id):
 		TransitionManager.change_scene(destination_scene)
 		return
@@ -54,7 +64,9 @@ func _update_info_hint() -> void:
 		return
 	# A tecla é sempre ENTER, mas o resultado muda: quem já é dono entra no
 	# negócio, quem não é vê primeiro a proposta de compra.
-	if EnterpriseManager.is_owned(enterprise_id):
+	if not Global.is_place_unlocked(enterprise_id):
+		info_hint.text = Global.place_lock_reason(enterprise_id)
+	elif EnterpriseManager.is_owned(enterprise_id):
 		info_hint.text = "Pressione ENTER para entrar"
 	else:
 		info_hint.text = "Pressione ENTER para ver a proposta"
@@ -177,6 +189,7 @@ func _on_body_shape_entered(_body_rid: RID, body: Node2D, _body_shape_index: int
 func _on_body_shape_exited(_body_rid: RID, body: Node2D, _body_shape_index: int, _local_shape_index: int) -> void:
 	if body is CharacterBody2D:
 		player_inside = false
+		locked_alert_shown = false
 		_hide_info_panel()
 		if purchase_panel != null and purchase_panel.visible:
 			_close_purchase_dialog()
