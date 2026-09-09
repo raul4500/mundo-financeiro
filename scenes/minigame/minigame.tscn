@@ -248,7 +248,7 @@ shape = SubResource("CapsuleShape2D_02b5t")
 script = ExtResource("7_al4os")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Map/obstacles/obstacle8" unique_id=1700300013]
-position = Vector2(1779, -38)
+position = Vector2(1695, -40)
 shape = SubResource("CapsuleShape2D_02b5t")
 
 [node name="obstacle10" type="Area2D" parent="Map/obstacles" unique_id=1700300019]
