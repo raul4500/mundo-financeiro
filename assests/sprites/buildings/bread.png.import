@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bhbxnkew1axft"
-path="res://.godot/imported/notebook.png-1f4c6ef74fef3178310000da2486537e.ctex"
+uid="uid://b7eoaip67rmjy"
+path="res://.godot/imported/bread.png-826b66701e95a71969cb0cda2b94da9a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assests/sprites/minigame/obstacles/notebook.png"
-dest_files=["res://.godot/imported/notebook.png-1f4c6ef74fef3178310000da2486537e.ctex"]
+source_file="res://assests/sprites/buildings/bread.png"
+dest_files=["res://.godot/imported/bread.png-826b66701e95a71969cb0cda2b94da9a.ctex"]
 
 [params]
 

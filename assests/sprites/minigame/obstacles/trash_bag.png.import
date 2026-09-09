@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bbxwvf17wbqil"
-path="res://.godot/imported/school_objects_2.png-65135a76e6d8eb6157a4050d9d9630a2.ctex"
+uid="uid://bjjnaigv58gf2"
+path="res://.godot/imported/trash_bag.png-f362b2149ea1925b4b3dc9df9733bc55.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assests/sprites/minigame/obstacles/school_objects_2.png"
-dest_files=["res://.godot/imported/school_objects_2.png-65135a76e6d8eb6157a4050d9d9630a2.ctex"]
+source_file="res://assests/sprites/minigame/obstacles/trash_bag.png"
+dest_files=["res://.godot/imported/trash_bag.png-f362b2149ea1925b4b3dc9df9733bc55.ctex"]
 
 [params]
 

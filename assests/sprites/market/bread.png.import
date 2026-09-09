@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dsqtcqofmcgip"
-path="res://.godot/imported/school_objects.png-2913364f08cd8253555ea2dcd09fadc0.ctex"
+uid="uid://bcq41myynlb48"
+path="res://.godot/imported/bread.png-c2c333d65f31f9515b1b06c1371ad5ea.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assests/sprites/minigame/obstacles/school_objects.png"
-dest_files=["res://.godot/imported/school_objects.png-2913364f08cd8253555ea2dcd09fadc0.ctex"]
+source_file="res://assests/sprites/market/bread.png"
+dest_files=["res://.godot/imported/bread.png-c2c333d65f31f9515b1b06c1371ad5ea.ctex"]
 
 [params]
 

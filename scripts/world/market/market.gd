@@ -1,28 +1,5 @@
 extends Control
 
-# ============================================================
-# ESTRUTURA DE CENA ESPERADA (ajuste os caminhos conforme sua cena):
-#
-# Control (este script)
-# ├── Label_Money
-# └── HBoxContainer
-#     ├── CategoryPanel (Panel ou PanelContainer)
-#     │   └── CategoryList (VBoxContainer)  -> botões de categoria
-#     └── MainPanel (Panel ou PanelContainer)
-#         └── ScrollContainer
-#             └── ItemList (GridContainer, columns = 3)  -> botões de produtos
-#
-# Se sua árvore de nós tiver nomes diferentes, ajuste os caminhos
-# nos @onready abaixo.
-# ============================================================
-
-# Cada item repoe fome e/ou sede. A coluna que ensina e' R$ por ponto reposto:
-# agua sai a 0,20 e vinho a 15,00 — 75x mais caro pelo mesmo efeito. O item
-# barato e sem graca e' o certo, que e' o "necessidade x desejo" do nivel 1 do
-# escritorio com um medidor.
-#
-# Os thirst_restore das Bebidas sao espelhados em Global.DRINK_THIRST, que
-# migra saves antigos. tests/test_mechanics.gd compara as duas listas.
 var items: Dictionary = {
 	"Comidas": {
 		"bread": {"price": 20, "hunger_restore": 10, "thirst_restore": 0},
@@ -30,7 +7,6 @@ var items: Dictionary = {
 		"hamburger": {"price": 60, "hunger_restore": 50, "thirst_restore": 0},
 		"apple": {"price": 15, "hunger_restore": 15, "thirst_restore": 8},
 		"banana": {"price": 12, "hunger_restore": 12, "thirst_restore": 3},
-		"milk": {"price": 25, "hunger_restore": 20, "thirst_restore": 15},
 		"cheese": {"price": 35, "hunger_restore": 25, "thirst_restore": 0},
 		"meat": {"price": 150, "hunger_restore": 100, "thirst_restore": 0},
 		"egg": {"price": 18, "hunger_restore": 18, "thirst_restore": 0},
@@ -40,13 +16,10 @@ var items: Dictionary = {
 		"water": {"price": 5, "hunger_restore": 3, "thirst_restore": 25},
 		"juice": {"price": 20, "hunger_restore": 15, "thirst_restore": 35},
 		"coffee": {"price": 30, "hunger_restore": 10, "thirst_restore": 15},
+		"milk": {"price": 25, "hunger_restore": 20, "thirst_restore": 15},
 		"soda": {"price": 25, "hunger_restore": 12, "thirst_restore": 20},
 		"tea": {"price": 15, "hunger_restore": 8, "thirst_restore": 30},
 		"energy_drink": {"price": 45, "hunger_restore": 30, "thirst_restore": 20},
-		"beer": {"price": 50, "hunger_restore": 5, "thirst_restore": 10},
-		"wine": {"price": 120, "hunger_restore": 8, "thirst_restore": 8},
-		"milkshake": {"price": 55, "hunger_restore": 40, "thirst_restore": 30},
-		"hot_chocolate": {"price": 40, "hunger_restore": 25, "thirst_restore": 25}
 	},
 }
 

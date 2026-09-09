@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://cq12h13ej6w8n" path="res://scripts/minigame/minigame.gd" id="1_ms23d"]
 [ext_resource type="Texture2D" uid="uid://buy5xeypn4vys" path="res://assests/sprites/minigame/1.png" id="2_qprf6"]
 [ext_resource type="Texture2D" uid="uid://s2xvpyn4pjg4" path="res://assests/sprites/minigame/2.png" id="3_0k17t"]
-[ext_resource type="Texture2D" uid="uid://bug2x04ffhbb4" path="res://assests/sprites/road.png" id="3_8k6tk"]
 [ext_resource type="Texture2D" uid="uid://urc4udjcfs1w" path="res://assests/sprites/minigame/5.png" id="4_ggla5"]
 [ext_resource type="Texture2D" uid="uid://wua4i4yruovx" path="res://assests/sprites/minigame/6.png" id="5_axv1m"]
 [ext_resource type="Texture2D" uid="uid://r4cib3p368mm" path="res://assests/sprites/minigame/3.png" id="6_al4os"]
@@ -12,11 +11,17 @@
 [ext_resource type="Script" uid="uid://bkx5wsf3otk68" path="res://scripts/minigame/level.gd" id="9_b7ekc"]
 [ext_resource type="PackedScene" uid="uid://c2neatiggtmug" path="res://scenes/players/player-minigame.tscn" id="10_7monl"]
 [ext_resource type="PackedScene" uid="uid://cha446b7n3r5r" path="res://scenes/menus/pause_menu.tscn" id="11_6f0bu"]
+[ext_resource type="Texture2D" uid="uid://bi4vyvdl12pt" path="res://assests/sprites/minigame/obstacles/box.png" id="11_ggla5"]
 [ext_resource type="Theme" uid="uid://b2pfdp8p48jam" path="res://themes/font_theme.tres" id="12_0k17t"]
 [ext_resource type="FontFile" uid="uid://bf1r20swxoymi" path="res://assests/fonts/QuinqueFive.otf" id="12_8as1d"]
+[ext_resource type="Texture2D" uid="uid://bjjnaigv58gf2" path="res://assests/sprites/minigame/obstacles/trash_bag.png" id="12_axv1m"]
+[ext_resource type="Texture2D" uid="uid://7pboc8buylwu" path="res://assests/sprites/minigame/obstacles/chair.png" id="14_qprf6"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_0k17t"]
+load_path = "res://.godot/imported/road.png-417a48d0f1867f43708c8f0a1904c42f.ctex"
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_r3185"]
-texture = ExtResource("3_8k6tk")
+texture = SubResource("CompressedTexture2D_0k17t")
 62:0/0 = 0
 63:0/0 = 0
 1:1/0 = 0
@@ -133,7 +138,8 @@ physics_layer_0/collision_layer = 1
 sources/4 = SubResource("TileSetAtlasSource_r3185")
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_02b5t"]
-height = 20.0
+radius = 7.0
+height = 18.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8e78p"]
 size = Vector2(7.5, 165)
@@ -367,6 +373,64 @@ shape = SubResource("RectangleShape2D_8e78p")
 
 [node name="Marker_5" type="Marker2D" parent="Map/levels" unique_id=1394132031]
 position = Vector2(4554, -43)
+
+[node name="obstacles-sprites" type="Node2D" parent="Map" unique_id=496401888]
+
+[node name="Chair" type="Sprite2D" parent="Map/obstacles-sprites" unique_id=1395374554]
+position = Vector2(587, -39)
+texture = ExtResource("14_qprf6")
+
+[node name="Chair2" type="Sprite2D" parent="Map/obstacles-sprites" unique_id=443507142]
+position = Vector2(821, -39)
+texture = ExtResource("14_qprf6")
+
+[node name="Box" type="Sprite2D" parent="Map/obstacles-sprites" unique_id=1121346139]
+position = Vector2(743, -39)
+texture = ExtResource("11_ggla5")
+
+[node name="TrashBag" type="Sprite2D" parent="Map/obstacles-sprites" unique_id=1339062012]
+position = Vector2(1591, -39)
+texture = ExtResource("12_axv1m")
+
+[node name="Chair3" type="Sprite2D" parent="Map/obstacles-sprites" unique_id=335551169]
+position = Vector2(1695, -39)
+texture = ExtResource("14_qprf6")
+
+[node name="Box2" type="Sprite2D" parent="Map/obstacles-sprites" unique_id=1107808001]
+position = Vector2(2126, -39)
+texture = ExtResource("11_ggla5")
+
+[node name="Chair4" type="Sprite2D" parent="Map/obstacles-sprites" unique_id=566295036]
+position = Vector2(2647, -39)
+texture = ExtResource("14_qprf6")
+
+[node name="Chair5" type="Sprite2D" parent="Map/obstacles-sprites" unique_id=1502957371]
+position = Vector2(3409, -38)
+texture = ExtResource("14_qprf6")
+
+[node name="Box3" type="Sprite2D" parent="Map/obstacles-sprites" unique_id=1676653919]
+position = Vector2(3564, -38)
+texture = ExtResource("11_ggla5")
+
+[node name="TrashBag2" type="Sprite2D" parent="Map/obstacles-sprites" unique_id=1850034215]
+position = Vector2(3785, -38)
+texture = ExtResource("12_axv1m")
+
+[node name="TrashBag3" type="Sprite2D" parent="Map/obstacles-sprites" unique_id=1356102312]
+position = Vector2(4012, -38)
+texture = ExtResource("12_axv1m")
+
+[node name="Chair6" type="Sprite2D" parent="Map/obstacles-sprites" unique_id=1156942560]
+position = Vector2(4911, -38)
+texture = ExtResource("14_qprf6")
+
+[node name="TrashBag4" type="Sprite2D" parent="Map/obstacles-sprites" unique_id=445542571]
+position = Vector2(5359, -39)
+texture = ExtResource("12_axv1m")
+
+[node name="Chair7" type="Sprite2D" parent="Map/obstacles-sprites" unique_id=996732033]
+position = Vector2(5807, -38)
+texture = ExtResource("14_qprf6")
 
 [node name="Player-minigame" parent="." unique_id=1701924158 instance=ExtResource("10_7monl")]
 position = Vector2(6, -73)

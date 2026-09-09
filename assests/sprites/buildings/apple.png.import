@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://blh7m7rjxrxpj"
-path="res://.godot/imported/book.png-f87d4403ce87fe5623548e178e216143.ctex"
+uid="uid://ck48s4ci8fccp"
+path="res://.godot/imported/apple.png-08b26ccae32ec5537cd7529fcc12570a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assests/sprites/minigame/obstacles/book.png"
-dest_files=["res://.godot/imported/book.png-f87d4403ce87fe5623548e178e216143.ctex"]
+source_file="res://assests/sprites/buildings/apple.png"
+dest_files=["res://.godot/imported/apple.png-08b26ccae32ec5537cd7529fcc12570a.ctex"]
 
 [params]
 

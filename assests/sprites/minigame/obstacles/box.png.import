@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://1r0wv23d2o32"
-path="res://.godot/imported/main-menu-backgound.png-75eea0aa8f9e1b1b3a648725ff52cab8.ctex"
+uid="uid://bi4vyvdl12pt"
+path="res://.godot/imported/box.png-6d53b24a03e065de4e453ce2b2661069.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://scripts/world/doors/main-menu-backgound.png"
-dest_files=["res://.godot/imported/main-menu-backgound.png-75eea0aa8f9e1b1b3a648725ff52cab8.ctex"]
+source_file="res://assests/sprites/minigame/obstacles/box.png"
+dest_files=["res://.godot/imported/box.png-6d53b24a03e065de4e453ce2b2661069.ctex"]
 
 [params]
 
