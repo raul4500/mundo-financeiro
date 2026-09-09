@@ -1,14 +1,14 @@
 [gd_scene format=4 uid="uid://dun3niuvduqbh"]
 
 [ext_resource type="Script" uid="uid://cq12h13ej6w8n" path="res://scripts/minigame/minigame.gd" id="1_ms23d"]
-[ext_resource type="Texture2D" uid="uid://buy5xeypn4vys" path="res://assests/sprites/minigame/1.png" id="2_wph28"]
+[ext_resource type="Texture2D" uid="uid://buy5xeypn4vys" path="res://assests/sprites/minigame/1.png" id="2_qprf6"]
+[ext_resource type="Texture2D" uid="uid://s2xvpyn4pjg4" path="res://assests/sprites/minigame/2.png" id="3_0k17t"]
 [ext_resource type="Texture2D" uid="uid://bug2x04ffhbb4" path="res://assests/sprites/road.png" id="3_8k6tk"]
-[ext_resource type="Texture2D" uid="uid://s2xvpyn4pjg4" path="res://assests/sprites/minigame/2.png" id="3_ms23d"]
-[ext_resource type="Texture2D" uid="uid://urc4udjcfs1w" path="res://assests/sprites/minigame/5.png" id="4_14fvx"]
-[ext_resource type="Texture2D" uid="uid://wua4i4yruovx" path="res://assests/sprites/minigame/6.png" id="5_qprf6"]
-[ext_resource type="Texture2D" uid="uid://r4cib3p368mm" path="res://assests/sprites/minigame/3.png" id="6_qprf6"]
-[ext_resource type="Texture2D" uid="uid://dyfx11qy4qyao" path="res://assests/sprites/minigame/4.png" id="7_0k17t"]
+[ext_resource type="Texture2D" uid="uid://urc4udjcfs1w" path="res://assests/sprites/minigame/5.png" id="4_ggla5"]
+[ext_resource type="Texture2D" uid="uid://wua4i4yruovx" path="res://assests/sprites/minigame/6.png" id="5_axv1m"]
+[ext_resource type="Texture2D" uid="uid://r4cib3p368mm" path="res://assests/sprites/minigame/3.png" id="6_al4os"]
 [ext_resource type="Script" uid="uid://b5hbj4bopj53y" path="res://scripts/minigame/obstacle.gd" id="7_al4os"]
+[ext_resource type="Texture2D" uid="uid://dyfx11qy4qyao" path="res://assests/sprites/minigame/4.png" id="7_j6hl7"]
 [ext_resource type="Script" uid="uid://bkx5wsf3otk68" path="res://scripts/minigame/level.gd" id="9_b7ekc"]
 [ext_resource type="PackedScene" uid="uid://c2neatiggtmug" path="res://scenes/players/player-minigame.tscn" id="10_7monl"]
 [ext_resource type="PackedScene" uid="uid://cha446b7n3r5r" path="res://scenes/menus/pause_menu.tscn" id="11_6f0bu"]
@@ -148,234 +148,234 @@ script = ExtResource("1_ms23d")
 
 [node name="1" type="Sprite2D" parent="Background" unique_id=2076307378]
 position = Vector2(384, -152)
-texture = ExtResource("2_wph28")
+texture = ExtResource("2_qprf6")
 
 [node name="2" type="Sprite2D" parent="Background" unique_id=1220232028]
 position = Vector2(1927, -153)
-texture = ExtResource("3_ms23d")
+texture = ExtResource("3_0k17t")
 
 [node name="5" type="Sprite2D" parent="Background" unique_id=986644077]
 position = Vector2(1001, -153)
-texture = ExtResource("4_14fvx")
+texture = ExtResource("4_ggla5")
 
 [node name="6" type="Sprite2D" parent="Background" unique_id=1537371448]
 position = Vector2(1277, -153)
-texture = ExtResource("4_14fvx")
+texture = ExtResource("4_ggla5")
 
 [node name="7" type="Sprite2D" parent="Background" unique_id=1172377398]
 position = Vector2(2698, -153)
-texture = ExtResource("5_qprf6")
+texture = ExtResource("5_axv1m")
 
 [node name="3" type="Sprite2D" parent="Background" unique_id=1816393679]
 position = Vector2(3470, -152)
-texture = ExtResource("6_qprf6")
+texture = ExtResource("6_al4os")
 
 [node name="4" type="Sprite2D" parent="Background" unique_id=211660921]
 position = Vector2(4206, -152)
-texture = ExtResource("7_0k17t")
+texture = ExtResource("7_j6hl7")
 
 [node name="10" type="Sprite2D" parent="Background" unique_id=491931480]
 position = Vector2(5551.5, -152)
-texture = ExtResource("7_0k17t")
+texture = ExtResource("7_j6hl7")
 
 [node name="11" type="Sprite2D" parent="Background" unique_id=1262543460]
 position = Vector2(6000.5, -152)
-texture = ExtResource("7_0k17t")
+texture = ExtResource("7_j6hl7")
 
 [node name="12" type="Sprite2D" parent="Background" unique_id=1186792199]
 position = Vector2(6449.5, -152)
-texture = ExtResource("7_0k17t")
+texture = ExtResource("7_j6hl7")
 
 [node name="8" type="Sprite2D" parent="Background" unique_id=768010682]
 position = Vector2(4655, -152)
-texture = ExtResource("7_0k17t")
+texture = ExtResource("7_j6hl7")
 
 [node name="9" type="Sprite2D" parent="Background" unique_id=1201587664]
 position = Vector2(5104, -152)
-texture = ExtResource("7_0k17t")
+texture = ExtResource("7_j6hl7")
 
-[node name="map" type="Node2D" parent="." unique_id=495728607]
+[node name="Map" type="Node2D" parent="." unique_id=495728607]
 
-[node name="TileMapLayer" type="TileMapLayer" parent="map" unique_id=1660796562]
+[node name="TileMapLayer" type="TileMapLayer" parent="Map" unique_id=1660796562]
 tile_map_data = PackedByteArray("AAAGAP7/BAACABAAAAAHAP7/BAADABAAAAAIAP7/BAABABAAAAAJAP7/BAACABAAAAAKAP7/BAADABAAAAALAP7/BAADABAAAAAMAP7/BAABABAAAAANAP7/BAACABAAAAAOAP7/BAADABAAAAAPAP7/BAABABAAAAAQAP7/BAACABAAAAARAP7/BAADABAAAAASAP7/BAABABAAAAATAP7/BAACABAAAAAUAP7/BAADABAAAAAVAP7/BAABABAAAAAWAP7/BAACABAAAAAXAP7/BAADABAAAAAYAP7/BAABABAAAAAZAP7/BAABABAAAAAaAP7/BAACABAAAAAbAP7/BAADABAAAAAcAP7/BAABABAAAAAdAP7/BAACABAAAAAfAP7/BAAEABAAAAAgAP7/BAAFABAAAAAhAP7/BAAGABAAAAAiAP7/BAAEABAAAAAjAP7/BAAFABAAAAAkAP7/BAAGABAAAAAlAP7/BAAEABAAAAAmAP7/BAAFABAAAAAnAP7/BAAGABAAAAAoAP7/BAAEABAAAAApAP7/BAAFABAAAAAqAP7/BAAGABAAAAArAP7/BAAEABAAAAAsAP7/BAAFABAAAAAtAP7/BAAGABAAAAAuAP7/BAAEABAAAAAvAP7/BAAFABAAAAAwAP7/BAAGABAAAAAxAP7/BAAEABAAAAAyAP7/BAAFABAAAAAzAP7/BAAGABAAAAA0AP7/BAAEABAAAAA1AP7/BAAFABAAAAA2AP7/BAAGABAAAAA3AP7/BAAEABAAAAA4AP7/BAAFABAAAAA5AP7/BAAGABAAAAA6AP7/BAAEABAAAAA7AP7/BAAFABAAAAA8AP7/BAAGABAAAAA9AP7/BAAEABAAAAA+AP7/BAAFABAAAAA/AP7/BAAGABAAAABAAP7/BAAEABAAAABBAP7/BAAFABAAAABCAP7/BAAGABAAAABDAP7/BAAEABAAAABEAP7/BAAFABAAAABFAP7/BAAGABAAAABGAP7/BAAEABAAAABHAP7/BAAFABAAAABJAP7/BAAEABAAAABKAP7/BAAFABAAAABLAP7/BAAGABAAAABMAP7/BAAEABAAAABNAP7/BAAFABAAAABOAP7/BAAGABAAAABPAP7/BAAEABAAAABQAP7/BAAFABAAAABRAP7/BAAGABAAAABSAP7/BAAEABAAAABTAP7/BAAFABAAAABUAP7/BAAGABAAAABVAP7/BAAEABAAAABWAP7/BAAFABAAAABXAP7/BAAGABAAAABYAP7/BAAEABAAAABZAP7/BAAFABAAAABaAP7/BAAGABAAAABbAP7/BAAEABAAAABcAP7/BAAFABAAAABdAP7/BAAGABAAAABeAP7/BAAEABAAAABfAP7/BAAFABAAAABgAP7/BAAGABAAAABhAP7/BAAEABAAAABiAP7/BAAFABAAAABjAP7/BAAGABAAAABkAP7/BAAEABAAAABlAP7/BAAFABAAAABmAP7/BAAGABAAAABnAP7/BAAEABAAAABoAP7/BAAFABAAAABpAP7/BAAGABAAAABqAP7/BAAEABAAAABrAP7/BAAFABAAAABsAP7/BAAGABAAAABtAP7/BAAEABAAAABuAP7/BAAFABAAAABvAP7/BAAGABAAAABwAP7/BAAEABAAAABxAP7/BAAFABAAAAByAP7/BAAGABAAAABzAP7/BAAEABAAAAB0AP7/BAAFABAAAAB1AP7/BAAGABAAAAB2AP7/BAAEABAAAAB3AP7/BAAFABAAAAB4AP7/BAAGABAAAAB5AP7/BAAEABAAAAB6AP7/BAAFABAAAAB7AP7/BAAGABAAAAB8AP7/BAAEABAAAAB9AP7/BAAFABAAAAB+AP7/BAAGABAAAAB/AP7/BAAEABAAAACAAP7/BAAFABAAAACBAP7/BAAGABAAAACCAP7/BAAEABAAAACDAP7/BAAFABAAAACEAP7/BAAGABAAAACFAP7/BAAEABAAAACGAP7/BAAFABAAAACHAP7/BAAGABAAAACIAP7/BAAEABAAAACJAP7/BAAFABAAAACKAP7/BAAGABAAAACLAP7/BAAEABAAAACMAP7/BAAFABAAAACNAP7/BAAGABAAAACOAP7/BAAEABAAAACPAP7/BAAFABAAAACQAP7/BAAGABAAAACRAP7/BAAEABAAAACSAP7/BAAFABAAAACTAP7/BAAGABAAAACUAP7/BAAEABAAAACVAP7/BAAFABAAAACWAP7/BAAGABAAAACXAP7/BAAEABAAAACYAP7/BAAFABAAAACZAP7/BAAGABAAAACaAP7/BAAEABAAAACbAP7/BAAFABAAAACcAP7/BAAGABAAAACdAP7/BAAEABAAAACeAP7/BAAFABAAAACfAP7/BAAGABAAAACgAP7/BAAEABAAAAChAP7/BAAFABAAAACiAP7/BAAGABAAAACjAP7/BAAEABAAAACkAP7/BAAFABAAAAClAP7/BAAGABAAAACmAP7/BAAEABAAAACnAP7/BAAFABAAAACoAP7/BAAGABAAAACpAP7/BAAEABAAAACqAP7/BAAFABAAAACrAP7/BAAGABAAAACsAP7/BAAEABAAAACtAP7/BAAFABAAAACuAP7/BAAGABAAAACvAP7/BAAEABAAAACwAP7/BAAFABAAAACxAP7/BAAGABAAAACyAP7/BAAEABAAAACzAP7/BAAFABAAAAC0AP7/BAAGABAAAAC1AP7/BAAEABAAAAC2AP7/BAAFABAAAAC3AP7/BAAGABAAAAC4AP7/BAAEABAAAAC5AP7/BAAFABAAAAC6AP7/BAAGABAAAAC7AP7/BAAEABAAAAC8AP7/BAAFABAAAAC9AP7/BAAGABAAAAC+AP7/BAAEABAAAABIAP7/BAAGABAAAAAeAP7/BAADABAAAAABAP7/BAADABAAAAACAP7/BAABABAAAAADAP7/BAACABAAAAAEAP7/BAADABAAAAAFAP7/BAABABAAAAD3//7/BAADABAAAAD4//7/BAABABAAAAD5//7/BAACABAAAAD6//7/BAADABAAAAD7//7/BAABABAAAAD8//7/BAACABAAAAD9//7/BAADABAAAAD+//7/BAABABAAAAD///7/BAACABAAAAAAAP7/BAADABAAAADt//7/BAADABAAAADu//7/BAABABAAAADv//7/BAACABAAAADw//7/BAADABAAAADx//7/BAABABAAAADy//7/BAACABAAAADz//7/BAADABAAAAD0//7/BAABABAAAAD1//7/BAACABAAAAD2//7/BAADABAAAADj//7/BAADABAAAADk//7/BAABABAAAADl//7/BAACABAAAADm//7/BAADABAAAADn//7/BAABABAAAADo//7/BAACABAAAADp//7/BAADABAAAADq//7/BAABABAAAADr//7/BAACABAAAADs//7/BAADABAAAAC/AP7/BAAGABAAAADAAP7/BAAEABAAAADBAP7/BAAGABAAAADCAP7/BAAEABAAAADDAP7/BAAGABAAAADEAP7/BAAEABAAAADFAP7/BAAGABAAAADGAP7/BAAEABAAAADHAP7/BAAGABAAAADIAP7/BAAEABAAAADJAP7/BAAGABAAAADKAP7/BAAEABAAAADLAP7/BAAGABAAAADMAP7/BAAEABAAAADNAP7/BAAGABAAAADOAP7/BAAEABAAAADPAP7/BAAGABAAAADQAP7/BAAEABAAAADRAP7/BAAGABAAAADSAP7/BAAEABAAAADTAP7/BAAGABAAAADUAP7/BAAEABAAAADVAP7/BAAGABAAAADWAP7/BAAEABAAAADXAP7/BAAGABAAAADYAP7/BAAEABAAAADZAP7/BAAGABAAAADaAP7/BAAEABAAAADbAP7/BAAGABAAAADcAP7/BAAEABAAAADdAP7/BAAGABAAAADeAP7/BAAEABAAAADfAP7/BAAGABAAAADgAP7/BAAEABAAAADhAP7/BAAGABAAAADiAP7/BAAEABAAAADjAP7/BAAGABAAAADkAP7/BAAEABAAAADlAP7/BAAGABAAAADmAP7/BAAEABAAAADnAP7/BAAGABAAAADoAP7/BAAEABAAAADpAP7/BAAGABAAAADqAP7/BAAEABAAAADrAP7/BAAGABAAAADsAP7/BAAEABAAAADtAP7/BAAGABAAAADuAP7/BAAEABAAAADvAP7/BAAGABAAAADwAP7/BAAEABAAAADxAP7/BAAGABAAAADyAP7/BAAEABAAAADzAP7/BAAGABAAAAD0AP7/BAAEABAAAAD1AP7/BAAGABAAAAD2AP7/BAAEABAAAAD3AP7/BAAGABAAAAD4AP7/BAAEABAAAAD5AP7/BAAGABAAAAD6AP7/BAAGABAAAAD7AP7/BAAEABAAAAD8AP7/BAAGABAAAAD9AP7/BAAEABAAAAD+AP7/BAAGABAAAAD/AP7/BAAEABAAAAAAAf7/BAAGABAAAAABAf7/BAAEABAAAAACAf7/BAAGABAAAAADAf7/BAAEABAAAAAEAf7/BAAGABAAAAAFAf7/BAAEABAAAAAGAf7/BAAGABAAAAAHAf7/BAAEABAAAAAIAf7/BAAGABAAAAAJAf7/BAAEABAAAAAKAf7/BAAGABAAAAALAf7/BAAEABAAAAAMAf7/BAAGABAAAAANAf7/BAAEABAAAAAOAf7/BAAGABAAAAAPAf7/BAAEABAAAAAQAf7/BAAGABAAAAARAf7/BAAEABAAAAASAf7/BAAGABAAAAATAf7/BAAGABAAAAAUAf7/BAAEABAAAAAVAf7/BAAGABAAAAAWAf7/BAAEABAAAAAXAf7/BAAGABAAAAAYAf7/BAAEABAAAAAZAf7/BAAGABAAAAAaAf7/BAAEABAAAAAbAf7/BAAGABAAAAAcAf7/BAAEABAAAAAlAf7/BAAGABAAAAAmAf7/BAAEABAAAAAnAf7/BAAGABAAAAAoAf7/BAAEABAAAAAdAf7/BAAGABAAAAAeAf7/BAAEABAAAAAfAf7/BAAGABAAAAAgAf7/BAAEABAAAAAhAf7/BAAGABAAAAAiAf7/BAAEABAAAAAjAf7/BAAGABAAAAAkAf7/BAAEABAAAAApAf7/BAAGABAAAAAqAf7/BAAEABAAAAArAf7/BAAGABAAAAAsAf7/BAAEABAAAAAtAf7/BAAGABAAAAAuAf7/BAAEABAAAAAvAf7/BAAGABAAAAAwAf7/BAAEABAAAAAxAf7/BAAGABAAAAAyAf7/BAAEABAAAAAzAf7/BAAGABAAAAA0Af7/BAAEABAAAAA1Af7/BAAGABAAAAA2Af7/BAAEABAAAAA3Af7/BAAGABAAAAA4Af7/BAAEABAAAAA5Af7/BAAGABAAAAA6Af7/BAAEABAAAAA7Af7/BAAGABAAAAA8Af7/BAAEABAAAAA9Af7/BAAGABAAAAA+Af7/BAAEABAAAAA/Af7/BAAGABAAAABAAf7/BAAEABAAAABBAf7/BAAGABAAAABCAf7/BAAEABAAAABDAf7/BAAGABAAAABEAf7/BAAEABAAAABFAf7/BAAGABAAAABGAf7/BAAEABAAAABHAf7/BAAGABAAAABIAf7/BAAEABAAAABJAf7/BAAGABAAAABKAf7/BAAEABAAAABLAf7/BAAGABAAAABMAf7/BAAEABAAAABNAf7/BAAGABAAAABOAf7/BAAEABAAAABPAf7/BAAGABAAAABQAf7/BAAEABAAAABRAf7/BAAGABAAAABSAf7/BAAEABAAAABTAf7/BAAGABAAAABUAf7/BAAEABAAAABVAf7/BAAGABAAAABWAf7/BAAEABAAAABXAf7/BAAGABAAAABYAf7/BAAEABAAAABZAf7/BAAGABAAAABaAf7/BAAEABAAAABbAf7/BAAGABAAAABcAf7/BAAEABAAAABdAf7/BAAGABAAAABeAf7/BAAEABAAAABfAf7/BAAGABAAAABgAf7/BAAEABAAAABhAf7/BAAGABAAAABiAf7/BAAEABAAAABjAf7/BAAGABAAAABkAf7/BAAEABAAAABlAf7/BAAGABAAAABmAf7/BAAEABAAAABnAf7/BAAGABAAAABoAf7/BAAEABAAAABpAf7/BAAGABAAAABqAf7/BAAEABAAAABrAf7/BAAGABAAAABsAf7/BAAEABAAAABtAf7/BAAGABAAAABuAf7/BAAEABAAAABvAf7/BAAGABAAAABwAf7/BAAEABAAAABxAf7/BAAGABAAAAByAf7/BAAEABAAAABzAf7/BAAGABAAAAB0Af7/BAAEABAAAAB1Af7/BAAGABAAAAB2Af7/BAAEABAAAAB3Af7/BAAGABAAAAB4Af7/BAAEABAAAAB5Af7/BAAGABAAAAB6Af7/BAAGABAAAAB7Af7/BAAEABAAAAB8Af7/BAAGABAAAAB9Af7/BAAEABAAAAB+Af7/BAAGABAAAAB/Af7/BAAEABAAAACAAf7/BAAGABAAAACBAf7/BAAEABAAAACCAf7/BAAGABAAAACDAf7/BAAEABAAAACEAf7/BAAGABAAAACFAf7/BAAEABAAAACGAf7/BAAGABAAAACHAf7/BAAEABAAAACIAf7/BAAGABAAAACJAf7/BAAEABAAAACKAf7/BAAGABAAAACLAf7/BAAEABAAAACMAf7/BAAGABAAAACNAf7/BAAEABAAAACOAf7/BAAGABAAAACPAf7/BAAEABAAAACQAf7/BAAGABAAAACRAf7/BAAEABAAAACSAf7/BAAGABAAAACTAf7/BAAEABAAAACUAf7/BAAGABAAAACVAf7/BAAEABAAAACWAf7/BAAGABAAAACXAf7/BAAEABAAAACYAf7/BAAGABAAAACZAf7/BAAEABAAAACaAf7/BAAGABAAAACbAf7/BAAEABAAAACcAf7/BAAGABAAAACdAf7/BAAEABAAAACeAf7/BAAGABAAAACfAf7/BAAEABAAAACgAf7/BAAGABAAAAChAf7/BAAEABAAAAA=")
 tile_set = SubResource("TileSet_22ed1")
 
-[node name="obstacles" type="Node2D" parent="map" unique_id=404002876]
+[node name="obstacles" type="Node2D" parent="Map" unique_id=404002876]
 
-[node name="obstacle2" type="Area2D" parent="map/obstacles" unique_id=167930002]
+[node name="obstacle2" type="Area2D" parent="Map/obstacles" unique_id=167930002]
 script = ExtResource("7_al4os")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="map/obstacles/obstacle2" unique_id=401399571]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Map/obstacles/obstacle2" unique_id=401399571]
 position = Vector2(587, -39)
 shape = SubResource("CapsuleShape2D_02b5t")
 
-[node name="obstacle3" type="Area2D" parent="map/obstacles" unique_id=1310385333]
+[node name="obstacle3" type="Area2D" parent="Map/obstacles" unique_id=1310385333]
 script = ExtResource("7_al4os")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="map/obstacles/obstacle3" unique_id=463152555]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Map/obstacles/obstacle3" unique_id=463152555]
 position = Vector2(743, -39)
 shape = SubResource("CapsuleShape2D_02b5t")
 
-[node name="obstacle4" type="Area2D" parent="map/obstacles" unique_id=1700300001]
+[node name="obstacle4" type="Area2D" parent="Map/obstacles" unique_id=1700300001]
 script = ExtResource("7_al4os")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="map/obstacles/obstacle4" unique_id=1700300002]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Map/obstacles/obstacle4" unique_id=1700300002]
 position = Vector2(821, -37)
 shape = SubResource("CapsuleShape2D_02b5t")
 
-[node name="obstacle5" type="Area2D" parent="map/obstacles" unique_id=1700300003]
+[node name="obstacle5" type="Area2D" parent="Map/obstacles" unique_id=1700300003]
 script = ExtResource("7_al4os")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="map/obstacles/obstacle5" unique_id=1700300004]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Map/obstacles/obstacle5" unique_id=1700300004]
 position = Vector2(1038, -39)
 shape = SubResource("CapsuleShape2D_02b5t")
 
-[node name="obstacle6" type="Area2D" parent="map/obstacles" unique_id=1700300008]
+[node name="obstacle6" type="Area2D" parent="Map/obstacles" unique_id=1700300008]
 script = ExtResource("7_al4os")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="map/obstacles/obstacle6" unique_id=1700300009]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Map/obstacles/obstacle6" unique_id=1700300009]
 position = Vector2(1314, -38)
 shape = SubResource("CapsuleShape2D_02b5t")
 
-[node name="obstacle7" type="Area2D" parent="map/obstacles" unique_id=1700300010]
+[node name="obstacle7" type="Area2D" parent="Map/obstacles" unique_id=1700300010]
 script = ExtResource("7_al4os")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="map/obstacles/obstacle7" unique_id=1700300011]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Map/obstacles/obstacle7" unique_id=1700300011]
 position = Vector2(1591, -39)
 shape = SubResource("CapsuleShape2D_02b5t")
 
-[node name="obstacle8" type="Area2D" parent="map/obstacles" unique_id=1700300012]
+[node name="obstacle8" type="Area2D" parent="Map/obstacles" unique_id=1700300012]
 script = ExtResource("7_al4os")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="map/obstacles/obstacle8" unique_id=1700300013]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Map/obstacles/obstacle8" unique_id=1700300013]
 position = Vector2(1779, -38)
 shape = SubResource("CapsuleShape2D_02b5t")
 
-[node name="obstacle10" type="Area2D" parent="map/obstacles" unique_id=1700300019]
+[node name="obstacle10" type="Area2D" parent="Map/obstacles" unique_id=1700300019]
 script = ExtResource("7_al4os")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="map/obstacles/obstacle10" unique_id=1700300020]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Map/obstacles/obstacle10" unique_id=1700300020]
 position = Vector2(2126, -38)
 shape = SubResource("CapsuleShape2D_02b5t")
 
-[node name="obstacle11" type="Area2D" parent="map/obstacles" unique_id=1700300021]
+[node name="obstacle11" type="Area2D" parent="Map/obstacles" unique_id=1700300021]
 script = ExtResource("7_al4os")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="map/obstacles/obstacle11" unique_id=1700300022]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Map/obstacles/obstacle11" unique_id=1700300022]
 position = Vector2(2647, -40)
 shape = SubResource("CapsuleShape2D_02b5t")
 
-[node name="obstacle12" type="Area2D" parent="map/obstacles" unique_id=1700300023]
+[node name="obstacle12" type="Area2D" parent="Map/obstacles" unique_id=1700300023]
 script = ExtResource("7_al4os")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="map/obstacles/obstacle12" unique_id=1700300024]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Map/obstacles/obstacle12" unique_id=1700300024]
 position = Vector2(3564, -37)
 shape = SubResource("CapsuleShape2D_02b5t")
 
-[node name="obstacle13" type="Area2D" parent="map/obstacles" unique_id=1700300025]
+[node name="obstacle13" type="Area2D" parent="Map/obstacles" unique_id=1700300025]
 script = ExtResource("7_al4os")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="map/obstacles/obstacle13" unique_id=1700300026]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Map/obstacles/obstacle13" unique_id=1700300026]
 position = Vector2(3409, -36)
 shape = SubResource("CapsuleShape2D_02b5t")
 
-[node name="CollisionShape2D2" type="CollisionShape2D" parent="map/obstacles/obstacle13" unique_id=619824693]
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Map/obstacles/obstacle13" unique_id=619824693]
 position = Vector2(3785, -37)
 shape = SubResource("CapsuleShape2D_02b5t")
 
-[node name="CollisionShape2D7" type="CollisionShape2D" parent="map/obstacles/obstacle13" unique_id=1948713149]
+[node name="CollisionShape2D7" type="CollisionShape2D" parent="Map/obstacles/obstacle13" unique_id=1948713149]
 position = Vector2(5131, -36)
 shape = SubResource("CapsuleShape2D_02b5t")
 
-[node name="CollisionShape2D8" type="CollisionShape2D" parent="map/obstacles/obstacle13" unique_id=1686857769]
+[node name="CollisionShape2D8" type="CollisionShape2D" parent="Map/obstacles/obstacle13" unique_id=1686857769]
 position = Vector2(5359, -39)
 shape = SubResource("CapsuleShape2D_02b5t")
 
-[node name="CollisionShape2D9" type="CollisionShape2D" parent="map/obstacles/obstacle13" unique_id=2053356074]
+[node name="CollisionShape2D9" type="CollisionShape2D" parent="Map/obstacles/obstacle13" unique_id=2053356074]
 position = Vector2(5578, -37)
 shape = SubResource("CapsuleShape2D_02b5t")
 
-[node name="CollisionShape2D10" type="CollisionShape2D" parent="map/obstacles/obstacle13" unique_id=702299634]
+[node name="CollisionShape2D10" type="CollisionShape2D" parent="Map/obstacles/obstacle13" unique_id=702299634]
 position = Vector2(5807, -38)
 shape = SubResource("CapsuleShape2D_02b5t")
 
-[node name="CollisionShape2D11" type="CollisionShape2D" parent="map/obstacles/obstacle13" unique_id=883985699]
+[node name="CollisionShape2D11" type="CollisionShape2D" parent="Map/obstacles/obstacle13" unique_id=883985699]
 position = Vector2(6026, -36)
 shape = SubResource("CapsuleShape2D_02b5t")
 
-[node name="CollisionShape2D12" type="CollisionShape2D" parent="map/obstacles/obstacle13" unique_id=1377863114]
+[node name="CollisionShape2D12" type="CollisionShape2D" parent="Map/obstacles/obstacle13" unique_id=1377863114]
 position = Vector2(6257, -38)
 shape = SubResource("CapsuleShape2D_02b5t")
 
-[node name="CollisionShape2D3" type="CollisionShape2D" parent="map/obstacles/obstacle13" unique_id=1426854309]
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="Map/obstacles/obstacle13" unique_id=1426854309]
 position = Vector2(4012, -40)
 shape = SubResource("CapsuleShape2D_02b5t")
 
-[node name="CollisionShape2D4" type="CollisionShape2D" parent="map/obstacles/obstacle13" unique_id=1558959829]
+[node name="CollisionShape2D4" type="CollisionShape2D" parent="Map/obstacles/obstacle13" unique_id=1558959829]
 position = Vector2(4233, -37)
 shape = SubResource("CapsuleShape2D_02b5t")
 
-[node name="CollisionShape2D5" type="CollisionShape2D" parent="map/obstacles/obstacle13" unique_id=307473828]
+[node name="CollisionShape2D5" type="CollisionShape2D" parent="Map/obstacles/obstacle13" unique_id=307473828]
 position = Vector2(4682, -38)
 shape = SubResource("CapsuleShape2D_02b5t")
 
-[node name="CollisionShape2D6" type="CollisionShape2D" parent="map/obstacles/obstacle13" unique_id=2040206899]
+[node name="CollisionShape2D6" type="CollisionShape2D" parent="Map/obstacles/obstacle13" unique_id=2040206899]
 position = Vector2(4911, -39)
 shape = SubResource("CapsuleShape2D_02b5t")
 
-[node name="levels" type="Node2D" parent="map" unique_id=209655008]
+[node name="levels" type="Node2D" parent="Map" unique_id=209655008]
 
-[node name="Marker_1" type="Marker2D" parent="map/levels" unique_id=483170233]
+[node name="Marker_1" type="Marker2D" parent="Map/levels" unique_id=483170233]
 position = Vector2(5, -43)
 
-[node name="Level1" type="Area2D" parent="map/levels" unique_id=2087778247]
+[node name="Level1" type="Area2D" parent="Map/levels" unique_id=2087778247]
 script = ExtResource("9_b7ekc")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="map/levels/Level1" unique_id=1179910536]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Map/levels/Level1" unique_id=1179910536]
 position = Vector2(449, -115)
 shape = SubResource("RectangleShape2D_8e78p")
 
-[node name="Marker_2" type="Marker2D" parent="map/levels" unique_id=1233382831]
+[node name="Marker_2" type="Marker2D" parent="Map/levels" unique_id=1233382831]
 position = Vector2(465, -43)
 
-[node name="Level2" type="Area2D" parent="map/levels" unique_id=1700300005]
+[node name="Level2" type="Area2D" parent="Map/levels" unique_id=1700300005]
 script = ExtResource("9_b7ekc")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="map/levels/Level2" unique_id=1700300006]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Map/levels/Level2" unique_id=1700300006]
 position = Vector2(1899, -104)
 shape = SubResource("RectangleShape2D_8e78p")
 
-[node name="Marker_3" type="Marker2D" parent="map/levels" unique_id=1700300007]
+[node name="Marker_3" type="Marker2D" parent="Map/levels" unique_id=1700300007]
 position = Vector2(1926, -43)
 
-[node name="Level3" type="Area2D" parent="map/levels" unique_id=1700300016]
+[node name="Level3" type="Area2D" parent="Map/levels" unique_id=1700300016]
 script = ExtResource("9_b7ekc")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="map/levels/Level3" unique_id=1700300017]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Map/levels/Level3" unique_id=1700300017]
 position = Vector2(3227, -107)
 shape = SubResource("RectangleShape2D_8e78p")
 
-[node name="Marker_4" type="Marker2D" parent="map/levels" unique_id=1700300018]
+[node name="Marker_4" type="Marker2D" parent="Map/levels" unique_id=1700300018]
 position = Vector2(3250, -40)
 
-[node name="Level4" type="Area2D" parent="map/levels" unique_id=1700300027]
+[node name="Level4" type="Area2D" parent="Map/levels" unique_id=1700300027]
 script = ExtResource("9_b7ekc")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="map/levels/Level4" unique_id=1700300028]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Map/levels/Level4" unique_id=1700300028]
 position = Vector2(4533, -106)
 shape = SubResource("RectangleShape2D_8e78p")
 
-[node name="Marker_5" type="Marker2D" parent="map/levels" unique_id=1394132031]
+[node name="Marker_5" type="Marker2D" parent="Map/levels" unique_id=1394132031]
 position = Vector2(4554, -43)
 
-[node name="raul-minigame" parent="." unique_id=1701924158 instance=ExtResource("10_7monl")]
-position = Vector2(5, -43)
+[node name="Player-minigame" parent="." unique_id=1701924158 instance=ExtResource("10_7monl")]
+position = Vector2(6, -73)
 scale = Vector2(1.5, 1.5)
 
-[node name="CanvasLayer2" type="CanvasLayer" parent="raul-minigame" unique_id=954201236]
+[node name="CanvasLayer2" type="CanvasLayer" parent="Player-minigame" unique_id=954201236]
 process_mode = 3
 
-[node name="pause_menu" parent="raul-minigame/CanvasLayer2" unique_id=2075846777 instance=ExtResource("11_6f0bu")]
+[node name="pause_menu" parent="Player-minigame/CanvasLayer2" unique_id=2075846777 instance=ExtResource("11_6f0bu")]
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=299133252]
 position = Vector2(26, -90)
@@ -408,24 +408,18 @@ theme_override_font_sizes/font_size = 8
 text = "Level 0"
 horizontal_alignment = 1
 
-[node name="cam_marker" type="Marker2D" parent="." unique_id=1844223834]
-position = Vector2(26, -92)
-
-[node name="cam_marker2" type="Marker2D" parent="." unique_id=174245579]
-position = Vector2(504, -76)
-
-[connection signal="body_shape_entered" from="map/obstacles/obstacle2" to="map/obstacles/obstacle2" method="_on_body_shape_entered"]
-[connection signal="body_shape_entered" from="map/obstacles/obstacle3" to="map/obstacles/obstacle3" method="_on_body_shape_entered"]
-[connection signal="body_shape_entered" from="map/obstacles/obstacle4" to="map/obstacles/obstacle4" method="_on_body_shape_entered"]
-[connection signal="body_shape_entered" from="map/obstacles/obstacle5" to="map/obstacles/obstacle5" method="_on_body_shape_entered"]
-[connection signal="body_shape_entered" from="map/obstacles/obstacle6" to="map/obstacles/obstacle6" method="_on_body_shape_entered"]
-[connection signal="body_shape_entered" from="map/obstacles/obstacle7" to="map/obstacles/obstacle7" method="_on_body_shape_entered"]
-[connection signal="body_shape_entered" from="map/obstacles/obstacle8" to="map/obstacles/obstacle8" method="_on_body_shape_entered"]
-[connection signal="body_shape_entered" from="map/obstacles/obstacle10" to="map/obstacles/obstacle10" method="_on_body_shape_entered"]
-[connection signal="body_shape_entered" from="map/obstacles/obstacle11" to="map/obstacles/obstacle11" method="_on_body_shape_entered"]
-[connection signal="body_shape_entered" from="map/obstacles/obstacle12" to="map/obstacles/obstacle12" method="_on_body_shape_entered"]
-[connection signal="body_shape_entered" from="map/obstacles/obstacle13" to="map/obstacles/obstacle13" method="_on_body_shape_entered"]
-[connection signal="body_shape_entered" from="map/levels/Level1" to="map/levels/Level1" method="_on_body_shape_entered"]
-[connection signal="body_shape_entered" from="map/levels/Level2" to="map/levels/Level2" method="_on_body_shape_entered"]
-[connection signal="body_shape_entered" from="map/levels/Level3" to="map/levels/Level3" method="_on_body_shape_entered"]
-[connection signal="body_shape_entered" from="map/levels/Level4" to="map/levels/Level4" method="_on_body_shape_entered"]
+[connection signal="body_shape_entered" from="Map/obstacles/obstacle2" to="Map/obstacles/obstacle2" method="_on_body_shape_entered"]
+[connection signal="body_shape_entered" from="Map/obstacles/obstacle3" to="Map/obstacles/obstacle3" method="_on_body_shape_entered"]
+[connection signal="body_shape_entered" from="Map/obstacles/obstacle4" to="Map/obstacles/obstacle4" method="_on_body_shape_entered"]
+[connection signal="body_shape_entered" from="Map/obstacles/obstacle5" to="Map/obstacles/obstacle5" method="_on_body_shape_entered"]
+[connection signal="body_shape_entered" from="Map/obstacles/obstacle6" to="Map/obstacles/obstacle6" method="_on_body_shape_entered"]
+[connection signal="body_shape_entered" from="Map/obstacles/obstacle7" to="Map/obstacles/obstacle7" method="_on_body_shape_entered"]
+[connection signal="body_shape_entered" from="Map/obstacles/obstacle8" to="Map/obstacles/obstacle8" method="_on_body_shape_entered"]
+[connection signal="body_shape_entered" from="Map/obstacles/obstacle10" to="Map/obstacles/obstacle10" method="_on_body_shape_entered"]
+[connection signal="body_shape_entered" from="Map/obstacles/obstacle11" to="Map/obstacles/obstacle11" method="_on_body_shape_entered"]
+[connection signal="body_shape_entered" from="Map/obstacles/obstacle12" to="Map/obstacles/obstacle12" method="_on_body_shape_entered"]
+[connection signal="body_shape_entered" from="Map/obstacles/obstacle13" to="Map/obstacles/obstacle13" method="_on_body_shape_entered"]
+[connection signal="body_shape_entered" from="Map/levels/Level1" to="Map/levels/Level1" method="_on_body_shape_entered"]
+[connection signal="body_shape_entered" from="Map/levels/Level2" to="Map/levels/Level2" method="_on_body_shape_entered"]
+[connection signal="body_shape_entered" from="Map/levels/Level3" to="Map/levels/Level3" method="_on_body_shape_entered"]
+[connection signal="body_shape_entered" from="Map/levels/Level4" to="Map/levels/Level4" method="_on_body_shape_entered"]

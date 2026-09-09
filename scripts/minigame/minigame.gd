@@ -1,6 +1,5 @@
 extends Node2D
 
-const COUNTDOWN_SECONDS := 3.0
 const UI_THEME = preload("res://themes/font_theme.tres")
 const LABEL_THEME = preload("res://themes/label.tres")
 
@@ -17,8 +16,13 @@ const SPAWN_MARKERS := [
 # A câmera nasce um pouco à frente do jogador, como nos marcadores originais
 # (jogador 170 / câmera 212 no nível 1).
 const CAMERA_OFFSET := Vector2(42, -32)
+# Distância que o jogador recua para fazer a entrada correndo. Com zoom 4 a
+# meia-tela é 144px, então 300px atrás do marcador o deixa fora do campo de
+# visão; a 100px/s (raul_minigame.SPEED) são ~3s até chegar, o que substitui a
+# contagem regressiva.
+const RUN_IN_PADDING := 300.0
 
-@onready var player = $"raul-minigame"
+@onready var player = $"Player-minigame"
 @onready var camera = $Camera2D
 @onready var level_label = $Camera2D/Level
 
@@ -31,22 +35,24 @@ var curr_level = Global.player["school_level"]
 # Tela de início: o jogo fica travado até o jogador apertar "Começar" e a
 # contagem de 3 segundos terminar.
 var start_layer: CanvasLayer
-var start_countdown_label: Label
 var start_button: Button
-var countdown_left := 0.0
-var counting := false
 var started := false
 
-# O jogador comeca parado no marcador do seu nivel e sai correndo dali.
+# Entrada correndo: o jogador nasce atras do marcador, fora da tela, e corre
+# ate ele. A camera fica parada ate a chegada, entao ele "entra em cena".
 #
-# Havia aqui uma "entrada correndo": ao apertar Começar, o jogador era
-# teletransportado 300px PARA TRAS do marcador e corria em auto-run ate ele.
-# Os marcadores ficam logo depois do checkpoint anterior (Marker_3 x=1926,
-# Level2 x=1899), entao recuar 300px jogava o jogador atras do checkpoint que
-# ele ja' tinha conquistado e, no nivel 3+, em cima de obstaculos
-# (obstacle8 x=1779). Como begin_session() era chamado antes do auto-run, o
-# primeiro obstaculo no caminho encerrava a corrida no mesmo instante: era o
-# "minigame da semana 2 trava / game-over imediato" (bug 8.2).
+# A corrida so passa a valer quando ele chega (begin_session no fim do run-in,
+# nunca antes). E isso que torna o recuo seguro: recuar 300px passa por cima do
+# checkpoint anterior (Marker_3 x=1926 / Level2 x=1899) e, no nivel 3, do
+# obstacle8 em x=1779 -- mas com a sessao inativa o MinigameManager ignora as
+# duas areas. Chamar begin_session antes do run-in era o bug 8.2: o obstaculo
+# no caminho encerrava a corrida no mesmo instante.
+var run_in_active := false
+var run_in_target_x := 0.0
+
+# A cena pega um lock em _ready() e o devolve ao comecar a correr. Sem esta
+# flag, sair no meio do run-in devolveria o mesmo lock duas vezes.
+var lock_released := false
 
 func notify_tutorial_minigame_finished() -> void:
 	TutorialManager.on_minigame_finished()
@@ -66,8 +72,8 @@ func _exit_tree() -> void:
 	# Se a cena for abandonada antes de começar (o menu de pausa permite voltar
 	# ao menu principal), o lock precisa ser devolvido, senão o contador fica
 	# preso e o jogo inteiro continua travado.
-	if not started:
-		started = true
+	if not lock_released:
+		lock_released = true
 		Global.unlock_gameplay()
 
 # Posiciona jogador e câmera no trecho do mapa correspondente à escolaridade.
@@ -118,10 +124,6 @@ func _create_start_screen() -> void:
 	info.custom_minimum_size = Vector2(460, 0)
 	box.add_child(info)
 
-	start_countdown_label = _make_label("", 40)
-	start_countdown_label.custom_minimum_size = Vector2(0, 52)
-	box.add_child(start_countdown_label)
-
 	start_button = Button.new()
 	start_button.theme = UI_THEME
 	start_button.text = "Começar"
@@ -143,13 +145,31 @@ func _make_label(text: String, font_size: int) -> Label:
 	return label
 
 func _on_start_pressed() -> void:
-	if counting or started:
+	if started or run_in_active:
 		return
 	start_layer.visible = false
 	start_button.visible = false
+
+	# O ponto onde a câmera volta a seguir o jogador. Mesma fórmula do follow
+	# em _process, para a troca de câmera parada -> câmera seguindo não dar salto.
+	run_in_target_x = camera.global_position.x - CAMERA_OFFSET.x
+	player.global_position.x = run_in_target_x - RUN_IN_PADDING
+	run_in_active = true
+
+	# raul_minigame.gd já aplica velocity.x = SPEED todo frame; destravar o
+	# gameplay é o que basta para ele sair correndo.
+	lock_released = true
+	Global.unlock_gameplay()
+
+# A corrida só passa a valer quando o jogador chega ao marcador. Ver o comentário
+# de run_in_active: é isto que impede o obstáculo do caminho de encerrar a
+# tentativa antes de o jogador ter controle.
+func _process_run_in() -> void:
+	if player.global_position.x < run_in_target_x:
+		return
+	run_in_active = false
 	started = true
 	MinigameManager.begin_session()
-	Global.unlock_gameplay()
 
 func _process_start_screen(delta: float) -> void:
 	# Enquanto houver mensagem de tutorial na tela ou na fila, o botão fica
@@ -159,7 +179,12 @@ func _process_start_screen(delta: float) -> void:
 
 func _process(delta: float) -> void:
 	if not started:
-		_process_start_screen(delta)
+		# Durante o run-in a câmera fica parada onde _place_player() a deixou:
+		# é o que faz o jogador aparecer vindo de fora da tela.
+		if run_in_active:
+			_process_run_in()
+		else:
+			_process_start_screen(delta)
 		return
 
 	if Global.gameplay_locked:

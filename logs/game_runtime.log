@@ -1,8 +1,7 @@
-[2026-09-09T15:27:45] === Sessão iniciada ===
-[2026-09-09T15:27:45] [INFO] Logger inicializado
-[2026-09-09T15:27:45] [INFO] save loaded
-[2026-09-09T15:27:45] [INFO] TimeManager inicializado
-[2026-09-09T15:27:53] [INFO] Arquivo deletado com sucesso: user://savegame.json
-[2026-09-09T15:28:05] [INFO] Arquivo deletado com sucesso: user://savegame.json
-[2026-09-09T15:28:36] [INFO] Minigame: checkpoint alcançado. Nível 2.
-[2026-09-09T15:28:37] [INFO] Minigame: sessão encerrada. Liberado na semana 2.
+[2026-09-09T16:00:04] === Sessão iniciada ===
+[2026-09-09T16:00:04] [INFO] Logger inicializado
+[2026-09-09T16:00:04] [INFO] save loaded
+[2026-09-09T16:00:04] [INFO] TimeManager inicializado
+[2026-09-09T16:00:08] [INFO] Arquivo deletado com sucesso: user://savegame.json
+[2026-09-09T16:00:35] [INFO] Minigame: checkpoint alcançado. Nível 2.
+[2026-09-09T16:00:37] [INFO] Minigame: sessão encerrada. Liberado na semana 2.
