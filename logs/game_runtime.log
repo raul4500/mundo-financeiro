@@ -1,5 +1,4 @@
-[2026-09-09T20:37:54] === Sessão iniciada ===
-[2026-09-09T20:37:54] [INFO] Logger inicializado
-[2026-09-09T20:37:54] [INFO] save loaded
-[2026-09-09T20:37:54] [INFO] TimeManager inicializado
-[2026-09-09T20:37:57] [INFO] Arquivo deletado com sucesso: user://savegame.json
+[2026-09-09T20:50:48] === Sessão iniciada ===
+[2026-09-09T20:50:48] [INFO] Logger inicializado
+[2026-09-09T20:50:48] [INFO] TimeManager inicializado
+[2026-09-09T20:50:50] [WARN] O arquivo de save não existe: user://savegame.json

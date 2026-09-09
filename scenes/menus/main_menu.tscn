@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://b84dtjt10qpnb"]
 
 [ext_resource type="Script" uid="uid://cqdxt6jav7hbq" path="res://scripts/menus/main_menu.gd" id="1_ovrgc"]
-[ext_resource type="Texture2D" uid="uid://hujjlj0sjurt" path="res://assests/sprites/backgrounds/main-menu-backgound.png" id="2_2o76q"]
+[ext_resource type="Texture2D" uid="uid://dlm0klfh7v3v" path="res://assests/sprites/backgrounds/main-menu-background.png" id="2_6bivr"]
 [ext_resource type="Theme" uid="uid://b2pfdp8p48jam" path="res://themes/font_theme.tres" id="3_2o76q"]
 [ext_resource type="Texture2D" uid="uid://djy8cm3nw40fr" path="res://assests/sprites/pixil-frame-0.png" id="4_6bivr"]
 
@@ -19,7 +19,7 @@ script = ExtResource("1_ovrgc")
 layout_mode = 0
 offset_right = 1152.0
 offset_bottom = 647.0
-texture = ExtResource("2_2o76q")
+texture = ExtResource("2_6bivr")
 
 [node name="GridContainer" type="GridContainer" parent="." unique_id=1809211919]
 layout_mode = 1
