@@ -177,8 +177,8 @@ func _handle_event_result(result: Dictionary) -> void:
 		AlertManager.alert(str(result.get("message", "Não foi possível concluir a operação.")))
 
 func update_labels():
-	label_money.text = "Dinheiro: $" + str(Global.player["money"])
-	label_saldo.text = "Banco: $" + str(Global.player["saldo"])
+	label_money.text = "Dinheiro: $" + "%.2f" % Global.player["money"]
+	label_saldo.text = "Banco: $" + "%.2f" % Global.player["saldo"]
 	if history_panel != null:
 		render_history()
 	render_events()

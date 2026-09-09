@@ -118,14 +118,14 @@ theme_override_font_sizes/font_size = 24
 theme_override_styles/background = SubResource("StyleBoxFlat_1kn83")
 theme_override_styles/fill = SubResource("StyleBoxFlat_w05is")
 
-[node name="Happiness-container" type="HBoxContainer" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer" unique_id=1661655551]
+[node name="Stamina-container" type="HBoxContainer" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer" unique_id=1661655551]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Happiness-container" unique_id=954268840]
+[node name="Label" type="Label" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Stamina-container" unique_id=954268840]
 layout_mode = 2
-text = "Felicidade"
+text = "STAMINA"
 
-[node name="ProgressBar" type="ProgressBar" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Happiness-container" unique_id=618480214]
+[node name="ProgressBar" type="ProgressBar" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Stamina-container" unique_id=618480214]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1

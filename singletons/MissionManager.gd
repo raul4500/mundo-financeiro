@@ -128,7 +128,7 @@ func verify_missions(week: int) -> bool:
 		# Alerta de sucesso
 		var msg = "Parabéns! Você completou todas as missões desta semana.\n\nVocê será levado para a próxima semana."
 		if has_node("/root/AlertManager"):
-			AlertManager.alert(msg, true)
+			AlertManager.alert(msg)
 		return true
 	else:
 		# Montar mensagem listando missões não concluídas
@@ -138,7 +138,7 @@ func verify_missions(week: int) -> bool:
 		text += "\nVocê precisará repetir a semana até completar todas as missões para avançar. Boa sorte!"
 		_log_warning("Missões falharam: %s" % text)
 		if has_node("/root/AlertManager"):
-			AlertManager.alert(text, true)
+			AlertManager.alert(text)
 		return false
 
 
@@ -150,7 +150,7 @@ func _check_mission(mission: Dictionary) -> bool:
 		"money_min":
 			return float(player.get("money", 0.0)) >= float(mission.get("value", 0.0))
 		"no_spend_day":
-			return int(player.get("no_spend_days_count", 0)) >= 1
+			return bool(player.get("had_no_spend_day", false))
 		"log_expense":
 			return player.get("expense_history", []).size() > 0
 		"no_impulse":

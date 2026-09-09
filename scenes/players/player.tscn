@@ -70,26 +70,26 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="Happiness" type="Panel" parent="Hud/HudControl" unique_id=1825175620]
+[node name="Stamina" type="Panel" parent="Hud/HudControl" unique_id=1825175620]
 layout_mode = 0
 offset_left = 960.0
 offset_top = 533.0
 offset_right = 1144.0
 offset_bottom = 635.0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Hud/HudControl/Happiness" unique_id=1315963458]
+[node name="VBoxContainer" type="VBoxContainer" parent="Hud/HudControl/Stamina" unique_id=1315963458]
 layout_mode = 0
 offset_left = 6.0
 offset_top = 9.0
 offset_right = 126.0
 offset_bottom = 92.0
 
-[node name="Title" type="Label" parent="Hud/HudControl/Happiness/VBoxContainer" unique_id=1161587202]
+[node name="Title" type="Label" parent="Hud/HudControl/Stamina/VBoxContainer" unique_id=1161587202]
 layout_mode = 2
 size_flags_horizontal = 2
-text = "Felicidade"
+text = "STAMINA"
 
-[node name="ProgressBar" type="ProgressBar" parent="Hud/HudControl/Happiness/VBoxContainer" unique_id=1439248072]
+[node name="ProgressBar" type="ProgressBar" parent="Hud/HudControl/Stamina/VBoxContainer" unique_id=1439248072]
 custom_minimum_size = Vector2(0, 16)
 layout_mode = 2
 size_flags_horizontal = 3

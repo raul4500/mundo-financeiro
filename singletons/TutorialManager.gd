@@ -221,6 +221,53 @@ func skip_tutorial() -> void:
 	if has_node("/root/Global"):
 		Global.force_release_all_gameplay_locks()
 
+func resume_tutorial(saved_step: int) -> void:
+	# Retoma o tutorial do passo que foi salvo. Chama quando o jogo carrega
+	# e o tutorial ainda não foi completado (saved_step < FINAL_STEP).
+	step = saved_step
+	skipped = false
+	pending_messages.clear()
+	_resume_step(step)
+
+func _resume_step(resume_step: int) -> void:
+	# Continua o tutorial a partir do passo restaurado. Alguns passos são
+	# "wait" states (ex.: esperar ir à escola), então pulamos para eles
+	# sem fazer nada; outros mostram mensagens/foco logo.
+	Global.player["tutorial_step"] = resume_step
+	match resume_step:
+		1:
+			emit_signal("show_message", messages[0], true)
+		2:
+			emit_signal("show_message", messages[1], true)
+		3:
+			emit_signal("show_message", messages[2], true)
+		4:
+			emit_signal("show_message", messages[3], true)
+		5:
+			# Passo 5 é só "foco na escola". Se o jogador recarregar aqui,
+			# não repete o foco — apenas está no mapa esperando entrar na escola.
+			pass
+		6:
+			# Passo 6 é dentro do minigame. Se o jogador salvou lá e recarregou,
+			# o minigame restaura e as mensagens já foram mostradas. Não repita.
+			pass
+		7:
+			# Passo 7 é "esperar minigame terminar". Não há mensagens.
+			pass
+		8:
+			# Passo 8 é o fechamento. Se recarregou aqui, mostra as mensagens
+			# finais do onboarding (que já foi feito uma vez).
+			queue_messages([
+				messages[9],
+				messages[10],
+				messages[11],
+				messages[12],
+				messages[13],
+				messages[14],
+				messages[15]
+			])
+			emit_signal("tutorial_finished")
+
 func _message_index(text: String) -> int:
 	for i in range(messages.size()):
 		if messages[i] == text:

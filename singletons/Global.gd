@@ -24,10 +24,11 @@ var data_model = {
 	"enterprises": {},
 	"expense_history": [],
 	"spend_today": 0.0,
+	"had_no_spend_day": false,
 	"no_spend_days_count": 0,
 	"positive_days_count": 0,
 	"hunger": 100.0,
-	"happiness": 100.0,
+	"stamina": 100.0,
 	"home_inventory": {},
 	"home_actions_log": [],
 	"pending_house_bills": [],
@@ -44,7 +45,7 @@ var data_model = {
 	},
 	"last_week_status": {
 		"hunger": 100.0,
-		"happiness": 100.0
+		"stamina": 100.0
 	}
 }
 
@@ -81,7 +82,7 @@ func _new_player_data() -> Dictionary:
 func ensure_player_state() -> void:
 	if player == null:
 		player = _new_player_data()
-	for key in ["money", "saldo", "week", "salary", "school_level", "day", "hour", "tutorial_step", "hunger", "happiness", "spend_today", "no_spend_days_count", "positive_days_count"]:
+	for key in ["money", "saldo", "week", "salary", "school_level", "day", "hour", "tutorial_step", "hunger", "stamina", "spend_today", "had_no_spend_day", "no_spend_days_count", "positive_days_count"]:
 		if not player.has(key):
 			player[key] = data_model.get(key, 0)
 	if not player.has("position") or typeof(player["position"]) != TYPE_DICTIONARY:
@@ -112,7 +113,7 @@ func ensure_player_state() -> void:
 	player["money"] = float(player.get("money", 0.0))
 	player["saldo"] = float(player.get("saldo", 0.0))
 	player["hunger"] = clampf(float(player.get("hunger", 100.0)), 0.0, 100.0)
-	player["happiness"] = clampf(float(player.get("happiness", 100.0)), 0.0, 100.0)
+	player["stamina"] = clampf(float(player.get("stamina", 100.0)), 0.0, 100.0)
 	normalize_home_inventory()
 
 func normalize_home_inventory() -> void:
@@ -157,15 +158,18 @@ func new_game(name: String, money: float) -> void:
 	player["no_spend_days_count"] = 0
 	player["positive_days_count"] = 0
 	player["hunger"] = 100.0
-	player["happiness"] = 100.0
+	player["stamina"] = 100.0
 	player["home_inventory"] = {}
 	player["home_actions_log"] = []
 	player["pending_house_bills"] = []
 	player["house_bill_history"] = []
 	player["pending_events"] = []
 	player["minigame_progress"] = MinigameManager.default_progress()
-	player["last_week_status"] = {"hunger": 100.0, "happiness": 100.0}
+	player["last_week_status"] = {"hunger": 100.0, "stamina": 100.0}
 
+	# Reset FIIManager state to ensure new game doesn't inherit old portfolio
+	FIIManager.reset()
+	
 	TimeManager.update_time()
 	if get_tree() != null:
 		get_tree().change_scene_to_file("res://scenes/world/main_game.tscn")
@@ -228,7 +232,7 @@ func _food_happiness_for(item_name: String, base_price: float) -> float:
 		return 10.0 * price_factor
 	return 12.0 * price_factor
 
-func add_home_inventory_item(item_name: String, quantity: int = 1, category: String = "food") -> void:
+func add_home_inventory_item(item_name: String, quantity: int = 1, category: String = "food", hunger_restore: int = 0) -> void:
 	if player == null:
 		return
 	var safe_name = str(item_name).strip_edges()
@@ -248,8 +252,14 @@ func add_home_inventory_item(item_name: String, quantity: int = 1, category: Str
 	var base_price = 10.0
 	if category == "food":
 		base_price = max(5.0, float(item.get("price", 10.0)))
-		item["energy"] = _food_energy_for(safe_name, base_price)
-		item["happiness"] = _food_happiness_for(safe_name, base_price)
+		if hunger_restore > 0:
+			# Use provided hunger_restore value
+			item["energy"] = float(hunger_restore)
+			item["happiness"] = float(hunger_restore) * 0.1  # Small mood bonus based on food quality
+		else:
+			# Calculate from name and price (backwards compatibility)
+			item["energy"] = _food_energy_for(safe_name, base_price)
+			item["happiness"] = _food_happiness_for(safe_name, base_price)
 	item["name"] = safe_name
 	item["category"] = category
 	item["quantity"] = int(item.get("quantity", 0)) + int(quantity)
@@ -295,7 +305,7 @@ func consume_food() -> Dictionary:
 	var energy_gain = float(chosen_item.get("energy", 15.0))
 	var happiness_gain = float(chosen_item.get("happiness", 5.0))
 	player["hunger"] = clampf(float(player.get("hunger", 100.0)) + energy_gain, 0.0, 100.0)
-	player["happiness"] = clampf(float(player.get("happiness", 100.0)) + happiness_gain * 0.35, 0.0, 100.0)
+	player["stamina"] = clampf(float(player.get("stamina", 100.0)) + happiness_gain * 0.35, 0.0, 100.0)
 	player["home_actions_log"] = player.get("home_actions_log", [])
 	player["home_actions_log"].append({
 		"type": "eat",
@@ -303,7 +313,7 @@ func consume_food() -> Dictionary:
 		"day": player.get("day", 1),
 		"week": player.get("week", 1),
 		"hunger": player["hunger"],
-		"happiness": player["happiness"]
+		"stamina": player["stamina"]
 	})
 	TimeManager.spend_hours(0.5)
 	return {"success": true, "message": "Você comeu %s." % chosen_item.get("name", chosen_name), "item": chosen_item.get("name", chosen_name)}
@@ -312,14 +322,14 @@ func apply_home_action(action_name: String, hunger_delta: float, happiness_delta
 	if player == null:
 		return {"success": false, "message": "Estado do jogador não inicializado."}
 	player["hunger"] = clampf(float(player.get("hunger", 100.0)) + float(hunger_delta), 0.0, 100.0)
-	player["happiness"] = clampf(float(player.get("happiness", 100.0)) + float(happiness_delta), 0.0, 100.0)
+	player["stamina"] = clampf(float(player.get("stamina", 100.0)) + float(happiness_delta), 0.0, 100.0)
 	var log = player.get("home_actions_log", [])
 	log.append({
 		"type": action_name,
 		"day": player.get("day", 1),
 		"week": player.get("week", 1),
 		"hunger": player["hunger"],
-		"happiness": player["happiness"],
+		"stamina": player["stamina"],
 		"time_cost": float(time_cost)
 	})
 	player["home_actions_log"] = log
@@ -327,28 +337,33 @@ func apply_home_action(action_name: String, hunger_delta: float, happiness_delta
 	return {"success": true, "message": "%s" % action_name}
 
 func decay_need_state() -> void:
+	# Called at end of day. Stamina is now handled continuously by TimeManager.
+	# This only handles hunger-specific end-of-day adjustments.
 	if player == null:
 		return
 	player["hunger"] = clampf(float(player.get("hunger", 100.0)) - 6.0, 0.0, 100.0)
-	player["happiness"] = clampf(float(player.get("happiness", 100.0)) - 4.0, 0.0, 100.0)
-	if player["hunger"] <= 25.0:
-		player["happiness"] = clampf(float(player.get("happiness", 100.0)) - 6.0, 0.0, 100.0)
-	if player["happiness"] <= 20.0:
-		player["hunger"] = clampf(float(player.get("hunger", 100.0)) - 4.0, 0.0, 100.0)
+	if player["hunger"] <= 0.0:
+		# Game over - player starved
+		AlertManager.alert("Você morreu de fome!", false, Callable(self, "_game_over"))
 
 func evaluate_week_status() -> Dictionary:
 	if player == null:
 		return {"penalty": 0.0, "message": "Sem avaliação"}
 	var hunger = float(player.get("hunger", 100.0))
-	var happiness = float(player.get("happiness", 100.0))
-	player["last_week_status"] = {"hunger": hunger, "happiness": happiness}
+	var stamina = float(player.get("stamina", 100.0))
+	player["last_week_status"] = {"hunger": hunger, "stamina": stamina}
 	var penalty = 0.0
-	if hunger < 35.0 or happiness < 35.0:
+	if hunger < 35.0 or stamina < 35.0:
 		penalty = 25.0
 		player["money"] = float(player.get("money", 0.0)) - penalty
 		player["hunger"] = clampf(hunger + 10.0, 0.0, 100.0)
-		player["happiness"] = clampf(happiness + 10.0, 0.0, 100.0)
+		player["stamina"] = clampf(stamina + 10.0, 0.0, 100.0)
 	return {"penalty": penalty, "message": "Status da semana avaliado."}
+
+func _game_over() -> void:
+	# Callback for game-over alert - return to main menu
+	if get_tree() != null:
+		TransitionManager.change_scene("res://scenes/menus/main_menu.tscn")
 
 func _ready() -> void:
 	ensure_player_state()

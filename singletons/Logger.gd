@@ -42,10 +42,14 @@ func _append_line(message: String) -> void:
 	if target_path.is_empty():
 		target_path = PROJECT_LOG_PATH
 
-	var file = FileAccess.open(target_path, FileAccess.WRITE)
+	var file = FileAccess.open(target_path, FileAccess.READ_WRITE)
+	if file == null:
+		file = FileAccess.open(target_path, FileAccess.WRITE)
 	if file == null:
 		if target_path != USER_LOG_PATH:
-			file = FileAccess.open(USER_LOG_PATH, FileAccess.WRITE)
+			file = FileAccess.open(USER_LOG_PATH, FileAccess.READ_WRITE)
+			if file == null:
+				file = FileAccess.open(USER_LOG_PATH, FileAccess.WRITE)
 		if file == null:
 			print("[Logger] Não foi possível abrir o arquivo de log: %s" % target_path)
 			return

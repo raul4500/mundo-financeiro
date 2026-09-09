@@ -18,28 +18,28 @@ extends Control
 
 var items: Dictionary = {
 	"Comidas": {
-		"bread": {"price": 5},
-		"rice": {"price": 20},
-		"hamburger": {"price": 30},
-		"apple": {"price": 4},
-		"banana": {"price": 3},
-		"milk": {"price": 8},
-		"cheese": {"price": 12},
-		"meat": {"price": 25},
-		"egg": {"price": 6},
-		"fish": {"price": 22}
+		"bread": {"price": 20, "hunger_restore": 10},
+		"rice": {"price": 90, "hunger_restore": 70},
+		"hamburger": {"price": 60, "hunger_restore": 50},
+		"apple": {"price": 15, "hunger_restore": 15},
+		"banana": {"price": 12, "hunger_restore": 12},
+		"milk": {"price": 25, "hunger_restore": 20},
+		"cheese": {"price": 35, "hunger_restore": 25},
+		"meat": {"price": 150, "hunger_restore": 100},
+		"egg": {"price": 18, "hunger_restore": 18},
+		"fish": {"price": 80, "hunger_restore": 65}
 	},
 	"Bebidas": {
-		"water": {"price": 2},
-		"juice": {"price": 6},
-		"coffee": {"price": 10},
-		"soda": {"price": 8},
-		"tea": {"price": 5},
-		"energy_drink": {"price": 15},
-		"beer": {"price": 12},
-		"wine": {"price": 35},
-		"milkshake": {"price": 18},
-		"hot_chocolate": {"price": 14}
+		"water": {"price": 5, "hunger_restore": 3},
+		"juice": {"price": 20, "hunger_restore": 15},
+		"coffee": {"price": 30, "hunger_restore": 10},
+		"soda": {"price": 25, "hunger_restore": 12},
+		"tea": {"price": 15, "hunger_restore": 8},
+		"energy_drink": {"price": 45, "hunger_restore": 30},
+		"beer": {"price": 50, "hunger_restore": 5},
+		"wine": {"price": 120, "hunger_restore": 8},
+		"milkshake": {"price": 55, "hunger_restore": 40},
+		"hot_chocolate": {"price": 40, "hunger_restore": 25}
 	},
 }
 
@@ -95,6 +95,7 @@ func _populate_items(group_name: String) -> void:
 	var item_dict: Dictionary = items[group_name]
 	for item_name in item_dict.keys():
 		var price = item_dict[item_name]["price"]
+		var hunger_restore = item_dict[item_name].get("hunger_restore", 10)
 
 		var product = Panel.new()
 		var container = VBoxContainer.new()
@@ -102,7 +103,7 @@ func _populate_items(group_name: String) -> void:
 		var button = Button.new()
 	
 	# Texto
-		product_name.text = "%s \n $%d" % [item_name.capitalize(), price]
+		product_name.text = "%s\nR$ %d – %d%% fome" % [item_name.capitalize(), price, hunger_restore]
 		button.text = "Adicionar"
 	
 	# Tamanho do painel
@@ -156,6 +157,7 @@ func _on_exit_pressed() -> void:
 
 func _on_buy_item(group_name: String, item_name: String) -> void:
 	var price = float(items[group_name][item_name]["price"])
+	var hunger_restore = items[group_name][item_name].get("hunger_restore", 10)
 
 	var container = HBoxContainer.new()
 	var product_name = Label.new()
@@ -173,7 +175,7 @@ func _on_buy_item(group_name: String, item_name: String) -> void:
 	container.alignment = BoxContainer.ALIGNMENT_CENTER
 	container.add_theme_constant_override("separation", 5)
 
-	product_name.text = "%s - $%d" % [item_name.capitalize(), int(price)]
+	product_name.text = "%s - R$%d (%d%%)" % [item_name.capitalize(), int(price), hunger_restore]
 	product_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 
 	container.add_child(product_name)
@@ -184,6 +186,7 @@ func _on_buy_item(group_name: String, item_name: String) -> void:
 		"group_name": group_name,
 		"item_name": item_name,
 		"price": price,
+		"hunger_restore": hunger_restore,
 		"row": container
 	}
 	cart.append(cart_entry)
@@ -225,9 +228,10 @@ func _on_finish_pressed() -> void:
 		var price = float(cart_entry["price"])
 		var group_name = cart_entry["group_name"]
 		var item_name = cart_entry["item_name"]
+		var hunger_restore = int(cart_entry.get("hunger_restore", 10))
 		Global.player["money"] = float(Global.player["money"]) - price
 		Global.register_expense(item_name.capitalize(), group_name, price, int(Global.player.get("day", 1)), int(Global.player.get("week", 1)))
-		Global.add_home_inventory_item(item_name.capitalize(), 1, "food" if group_name in ["Comidas", "Bebidas"] else "item")
+		Global.add_home_inventory_item(item_name.capitalize(), 1, "food" if group_name in ["Comidas", "Bebidas"] else "item", hunger_restore)
 
 	cart.clear()
 	for child in kart_list.get_children():

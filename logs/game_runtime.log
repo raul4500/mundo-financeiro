@@ -1,1 +1,5 @@
-[2026-09-02T21:20:42] [INFO] TimeManager inicializado
+[2026-09-08T16:13:47] === Sessão iniciada ===
+[2026-09-08T16:13:47] [INFO] Logger inicializado
+[2026-09-08T16:13:47] [INFO] save loaded
+[2026-09-08T16:13:47] [INFO] TimeManager inicializado
+[2026-09-08T16:13:49] [INFO] Arquivo deletado com sucesso: user://savegame.json

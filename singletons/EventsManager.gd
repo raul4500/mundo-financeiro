@@ -71,9 +71,26 @@ func maybe_spawn_events(current_week: int) -> Dictionary:
 # 🎲 SORTEAR EVENTO
 # =============================
 func sortear_evento() -> Dictionary:
+	# Implementa loteria ponderada: calcula probabilidades cumulativas
+	# e seleciona evento proporcionalmente aos seus pesos.
+	
+	# Primeira passagem: calcula a soma total de probabilidades
+	var total_prob = 0.0
 	for evento in eventos:
-		if randf() < float(evento.get("probabilidade", 0.1)):
+		total_prob += float(evento.get("probabilidade", 0.1))
+	
+	if total_prob <= 0.0:
+		return {}
+	
+	# Segunda passagem: seleciona evento usando probabilidades cumulativas
+	var random_value = randf() * total_prob
+	var cumulative_prob = 0.0
+	
+	for evento in eventos:
+		cumulative_prob += float(evento.get("probabilidade", 0.1))
+		if random_value <= cumulative_prob:
 			return evento
+	
 	return {}
 
 # =============================

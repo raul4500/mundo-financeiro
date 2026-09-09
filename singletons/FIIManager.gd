@@ -55,6 +55,36 @@ func update_prices():
 		fund["price"] = max(fund["price"], 1.0)
 	emit_signal("funds_updated")
 
+func reset() -> void:
+	# Reseta o estado do FIIManager para os valores iniciais.
+	# Chamado por Global.new_game() para garantir que um novo jogo não herda
+	# a carteira do jogo anterior.
+	portfolio = {}
+	total_invested = 0.0
+	total_dividends_received = 0.0
+	funds = {
+		"FII_SHOPPING": {
+			"name": "FII Shopping",
+			"price": 100.0,
+			"dividend_yield": 0.01,
+			"volatility": 0.02
+		},
+		"FII_LAJES": {
+			"name": "FII Lajes Corporativas",
+			"price": 120.0,
+			"dividend_yield": 0.008,
+			"volatility": 0.015
+		},
+		"FII_LOGISTICA": {
+			"name": "FII Logística",
+			"price": 90.0,
+			"dividend_yield": 0.012,
+			"volatility": 0.025
+		}
+	}
+	emit_signal("portfolio_updated")
+	emit_signal("funds_updated")
+
 func buy_fund(fund_id: String, amount: int):
 	if not funds.has(fund_id):
 		return false

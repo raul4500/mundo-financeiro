@@ -30,8 +30,9 @@ func _ready():
 	match Global.player["tutorial_step"]:
 		1: 
 			TutorialManager.start_tutorial()
-		2:
-			pass
+		2, 3, 4, 5, 6, 7, 8:
+			# Tutorial já começou mas não terminou. Retoma do passo salvo.
+			TutorialManager.resume_tutorial(int(Global.player["tutorial_step"]))
 
 func _on_tree_exited() -> void:
 	Global.player["position"]["x"] = character.global_position.x
@@ -41,12 +42,7 @@ func _on_tree_entered() -> void:
 	Global.play_time = true
 	
 func _process(delta: float) -> void:
-	if Input.is_action_just_pressed("ui_page_down"):
-		TransitionManager.change_scene("res://scenes/world/places/restaurant.tscn")
-	if Input.is_action_just_pressed("ui_page_up"):
-		TransitionManager.change_scene("res://scenes/world/places/market.tscn")
-	if Input.is_action_just_pressed("ui_end"):
-		Global.player["money"] += 10000
+	pass
 		
 func _focus(point: String) -> void:
 	# Busca o nó de foco sob Camera-focusPoints; se não existir, faz return.

@@ -33,7 +33,7 @@ const CHARACTER_Y_OFFSET = {
 @onready var time_label: Label = $"Time-label"
 @onready var actions_box: VBoxContainer = $"HBoxContainer/Actions/VBoxContainer"
 @onready var hunger_bar: ProgressBar = $"HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Hunger-container/ProgressBar"
-@onready var happiness_bar: ProgressBar = $"HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Happiness-container/ProgressBar"
+@onready var stamina_bar: ProgressBar = $"HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Stamina-container/ProgressBar"
 @onready var status_label: Label = $"HBoxContainer/Main-panel/VBoxContainer/status-message"
 @onready var inventory_scroll: ScrollContainer = $"HBoxContainer/VBoxContainer/Inventory-panel/Inventory-scroll"
 @onready var history_scroll: ScrollContainer = $"HBoxContainer/VBoxContainer/History-panel/History-scroll"
@@ -81,7 +81,7 @@ func _build_ui() -> void:
 	inventory_list = _get_or_create_list(inventory_scroll)
 	history_list = _get_or_create_list(history_scroll)
 	_setup_bar(hunger_bar)
-	_setup_bar(happiness_bar)
+	_setup_bar(stamina_bar)
 
 	status_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 	status_label.text = "TUDO EM ORDEM."
@@ -187,7 +187,7 @@ func _update_ui() -> void:
 	_update_time_label()
 
 	hunger_bar.value = clampf(float(Global.player.get("hunger", 100.0)), 0.0, 100.0)
-	happiness_bar.value = clampf(float(Global.player.get("happiness", 100.0)), 0.0, 100.0)
+	stamina_bar.value = clampf(float(Global.player.get("stamina", 100.0)), 0.0, 100.0)
 
 	_render_inventory()
 	_render_history()
