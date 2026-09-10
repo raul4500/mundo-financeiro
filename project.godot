@@ -32,6 +32,7 @@ TransitionManager="*res://singletons/TransitionManager.gd"
 AlertManager="*uid://dv1iu0gs8mcid"
 CameraManager="*uid://bdu5ee4jnl6k"
 TutorialManager="*uid://7bk6pyllg58q"
+DebugCommands="*res://singletons/DebugCommands.gd"
 
 [display]
 

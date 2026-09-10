@@ -1,4 +1,21 @@
-[2026-09-09T22:19:11] === Sessão iniciada ===
-[2026-09-09T22:19:11] [INFO] Logger inicializado
-[2026-09-09T22:19:11] [INFO] TimeManager inicializado
-[2026-09-09T22:19:13] [WARN] O arquivo de save não existe: user://savegame.json
+[2026-09-10T14:08:21] === Sessão iniciada ===
+[2026-09-10T14:08:21] [INFO] Logger inicializado
+[2026-09-10T14:08:21] [INFO] save loaded
+[2026-09-10T14:08:21] [INFO] TimeManager inicializado
+[2026-09-10T14:09:03] [INFO] Arquivo deletado com sucesso: user://savegame.json
+[2026-09-10T14:09:11] [INFO] Missões da semana concluídas com sucesso
+[2026-09-10T14:09:11] [INFO] Evento sorteado: Trabalho extra
+[2026-09-10T14:09:11] [INFO] Pendência criada: Trabalho extra (bônus de R$ 400.00)
+[2026-09-10T14:09:16] [INFO] Missões da semana concluídas com sucesso
+[2026-09-10T14:09:16] [INFO] Evento sorteado: Trabalho extra
+[2026-09-10T14:09:16] [INFO] Pendência criada: Trabalho extra (bônus de R$ 400.00)
+[2026-09-10T14:09:53] [INFO] Evento sorteado: Trabalho extra
+[2026-09-10T14:09:53] [INFO] Pendência criada: Trabalho extra (bônus de R$ 400.00)
+[2026-09-10T14:09:57] [INFO] Evento sorteado: Problema no carro
+[2026-09-10T14:09:57] [INFO] Pendência criada: Problema no carro (conta de R$ 500.00)
+[2026-09-10T14:10:01] [INFO] Evento sorteado: Despesa médica
+[2026-09-10T14:10:02] [INFO] Pendência criada: Despesa médica (conta de R$ 300.00)
+[2026-09-10T14:10:14] [INFO] Evento sorteado: Trabalho extra
+[2026-09-10T14:10:14] [INFO] Evento 'freelance' descartado: já existe pendência do mesmo tipo.
+[2026-09-10T14:10:37] [INFO] Missões da semana concluídas com sucesso
+[2026-09-10T14:10:37] [INFO] Evento sorteado: Promoção imperdível
