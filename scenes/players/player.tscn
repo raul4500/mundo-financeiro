@@ -5,8 +5,11 @@
 [ext_resource type="Theme" uid="uid://b2pfdp8p48jam" path="res://themes/font_theme.tres" id="3_olb2f"]
 [ext_resource type="Script" uid="uid://dcbgk5qjcltii" path="res://scripts/hud/hud_control.gd" id="3_phaeh"]
 [ext_resource type="PackedScene" uid="uid://cha446b7n3r5r" path="res://scenes/menus/pause_menu.tscn" id="5_es4m5"]
+[ext_resource type="Texture2D" uid="uid://bxqlroa6yctq2" path="res://assests/sprites/status-bars/yellow_thunder.png" id="5_fsrjl"]
 [ext_resource type="Script" uid="uid://b8pmiwonxqp53" path="res://scripts/hud/missions_ui.gd" id="5_olb2f"]
+[ext_resource type="Texture2D" uid="uid://cbssfvxhbc8nt" path="res://assests/sprites/status-bars/chicken.png" id="6_mh0hk"]
 [ext_resource type="Theme" uid="uid://8cd7r8xa15ac" path="res://themes/label.tres" id="6_sguum"]
+[ext_resource type="Texture2D" uid="uid://ysaexo743f2a" path="res://assests/sprites/status-bars/water_drop.png" id="7_18rgo"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tys1d"]
 size = Vector2(9, 5)
@@ -46,10 +49,10 @@ offset_bottom = 54.0
 
 [node name="Hunger" type="Panel" parent="Hud/HudControl" unique_id=2079737224]
 layout_mode = 0
-offset_left = 6.0
-offset_top = 540.0
-offset_right = 140.0
-offset_bottom = 642.0
+offset_left = 682.0
+offset_top = 530.0
+offset_right = 816.0
+offset_bottom = 632.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Hud/HudControl/Hunger" unique_id=2085554030]
 layout_mode = 0
@@ -72,10 +75,10 @@ mouse_filter = 2
 
 [node name="Thirst" type="Panel" parent="Hud/HudControl" unique_id=1700400011]
 layout_mode = 0
-offset_left = 146.0
-offset_top = 540.0
-offset_right = 280.0
-offset_bottom = 642.0
+offset_left = 822.0
+offset_top = 530.0
+offset_right = 956.0
+offset_bottom = 632.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Hud/HudControl/Thirst" unique_id=1700400012]
 layout_mode = 0
@@ -121,6 +124,176 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Hud/HudControl" unique_id=66961676]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 27.0
+offset_top = -83.0
+offset_right = 242.0
+offset_bottom = -12.0
+grow_vertical = 0
+
+[node name="Stamina-bar" type="HBoxContainer" parent="Hud/HudControl/VBoxContainer" unique_id=767413842]
+custom_minimum_size = Vector2(0, 5)
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Stamina-bar" unique_id=660772066]
+layout_mode = 2
+texture = ExtResource("5_fsrjl")
+
+[node name="TextureRect2" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Stamina-bar" unique_id=1259200308]
+visible = false
+layout_mode = 2
+texture = ExtResource("5_fsrjl")
+
+[node name="TextureRect3" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Stamina-bar" unique_id=328360131]
+visible = false
+layout_mode = 2
+texture = ExtResource("5_fsrjl")
+
+[node name="TextureRect10" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Stamina-bar" unique_id=1309785999]
+visible = false
+layout_mode = 2
+texture = ExtResource("5_fsrjl")
+
+[node name="TextureRect4" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Stamina-bar" unique_id=1042047500]
+visible = false
+layout_mode = 2
+texture = ExtResource("5_fsrjl")
+
+[node name="TextureRect9" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Stamina-bar" unique_id=2027160503]
+visible = false
+layout_mode = 2
+texture = ExtResource("5_fsrjl")
+
+[node name="TextureRect5" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Stamina-bar" unique_id=1328443303]
+visible = false
+layout_mode = 2
+texture = ExtResource("5_fsrjl")
+
+[node name="TextureRect8" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Stamina-bar" unique_id=1469264482]
+visible = false
+layout_mode = 2
+texture = ExtResource("5_fsrjl")
+
+[node name="TextureRect6" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Stamina-bar" unique_id=609915031]
+visible = false
+layout_mode = 2
+texture = ExtResource("5_fsrjl")
+
+[node name="TextureRect7" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Stamina-bar" unique_id=634943478]
+visible = false
+layout_mode = 2
+texture = ExtResource("5_fsrjl")
+
+[node name="Hungry-bar" type="HBoxContainer" parent="Hud/HudControl/VBoxContainer" unique_id=1579094168]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Hungry-bar" unique_id=1084147565]
+visible = false
+layout_mode = 2
+texture = ExtResource("6_mh0hk")
+
+[node name="TextureRect2" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Hungry-bar" unique_id=1857344367]
+visible = false
+layout_mode = 2
+texture = ExtResource("6_mh0hk")
+
+[node name="TextureRect3" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Hungry-bar" unique_id=137667657]
+visible = false
+layout_mode = 2
+texture = ExtResource("6_mh0hk")
+
+[node name="TextureRect4" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Hungry-bar" unique_id=680510099]
+visible = false
+layout_mode = 2
+texture = ExtResource("6_mh0hk")
+
+[node name="TextureRect5" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Hungry-bar" unique_id=1038067466]
+visible = false
+layout_mode = 2
+texture = ExtResource("6_mh0hk")
+
+[node name="TextureRect6" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Hungry-bar" unique_id=491647024]
+visible = false
+layout_mode = 2
+texture = ExtResource("6_mh0hk")
+
+[node name="TextureRect7" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Hungry-bar" unique_id=1436801815]
+visible = false
+layout_mode = 2
+texture = ExtResource("6_mh0hk")
+
+[node name="TextureRect8" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Hungry-bar" unique_id=946365760]
+visible = false
+layout_mode = 2
+texture = ExtResource("6_mh0hk")
+
+[node name="TextureRect9" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Hungry-bar" unique_id=693224535]
+visible = false
+layout_mode = 2
+texture = ExtResource("6_mh0hk")
+
+[node name="TextureRect10" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Hungry-bar" unique_id=1618114887]
+visible = false
+layout_mode = 2
+texture = ExtResource("6_mh0hk")
+
+[node name="Thirsty-bar" type="HBoxContainer" parent="Hud/HudControl/VBoxContainer" unique_id=53927749]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Thirsty-bar" unique_id=194130481]
+visible = false
+layout_mode = 2
+texture = ExtResource("7_18rgo")
+
+[node name="TextureRect2" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Thirsty-bar" unique_id=1593339626]
+visible = false
+layout_mode = 2
+texture = ExtResource("7_18rgo")
+
+[node name="TextureRect3" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Thirsty-bar" unique_id=1122732533]
+visible = false
+layout_mode = 2
+texture = ExtResource("7_18rgo")
+
+[node name="TextureRect4" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Thirsty-bar" unique_id=1669042653]
+visible = false
+layout_mode = 2
+texture = ExtResource("7_18rgo")
+
+[node name="TextureRect5" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Thirsty-bar" unique_id=1580111689]
+visible = false
+layout_mode = 2
+texture = ExtResource("7_18rgo")
+
+[node name="TextureRect6" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Thirsty-bar" unique_id=1623958464]
+visible = false
+layout_mode = 2
+texture = ExtResource("7_18rgo")
+
+[node name="TextureRect7" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Thirsty-bar" unique_id=1772205415]
+visible = false
+layout_mode = 2
+texture = ExtResource("7_18rgo")
+
+[node name="TextureRect8" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Thirsty-bar" unique_id=1257132704]
+visible = false
+layout_mode = 2
+texture = ExtResource("7_18rgo")
+
+[node name="TextureRect9" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Thirsty-bar" unique_id=1553670859]
+visible = false
+layout_mode = 2
+texture = ExtResource("7_18rgo")
+
+[node name="TextureRect10" type="TextureRect" parent="Hud/HudControl/VBoxContainer/Thirsty-bar" unique_id=684974267]
+visible = false
+layout_mode = 2
+texture = ExtResource("7_18rgo")
 
 [node name="Pause" type="CanvasLayer" parent="." unique_id=926795539]
 process_mode = 3

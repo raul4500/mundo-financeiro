@@ -1,6 +1,5 @@
 [gd_resource type="Theme" format=3 uid="uid://b2pfdp8p48jam"]
 
-[ext_resource type="Texture2D" uid="uid://bu3rjqrk6dol" path="res://assests/sprites/ui_assets/button.png" id="1_1y3r0"]
 [ext_resource type="FontFile" uid="uid://dxl8bhtdrfj1s" path="res://assests/fonts/PixeloidSansBold-1jpBg.ttf" id="1_xe4a7"]
 [ext_resource type="Texture2D" uid="uid://be4eaqcs2hxq2" path="res://assests/sprites/ui_assets/button_pressed.png" id="2_n5xnf"]
 [ext_resource type="Texture2D" uid="uid://dbsgqysmkaiey" path="res://assests/sprites/ui_assets/label_round.png" id="4_p86dj"]
@@ -16,14 +15,14 @@ texture_margin_right = 8.0
 texture_margin_bottom = 8.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_erpjw"]
-texture = ExtResource("1_1y3r0")
+texture = ExtResource("7_47whx")
 texture_margin_left = 8.0
 texture_margin_top = 8.0
 texture_margin_right = 8.0
 texture_margin_bottom = 8.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_mwa8i"]
-texture = ExtResource("1_1y3r0")
+texture = ExtResource("7_47whx")
 texture_margin_left = 8.0
 texture_margin_top = 16.0
 texture_margin_right = 8.0
