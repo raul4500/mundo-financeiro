@@ -43,6 +43,7 @@
 [ext_resource type="Texture2D" uid="uid://cdmrairsampti" path="res://assests/sprites/buildings/Assets/Circular table.png" id="32_l88cl"]
 [ext_resource type="Texture2D" uid="uid://87x2bbb20fly" path="res://assests/sprites/buildings/Assets/Front chair.png" id="33_lf7ue"]
 [ext_resource type="Texture2D" uid="uid://b8ajuklcad458" path="res://assests/sprites/trees/forest.png" id="40_l0vhb"]
+[ext_resource type="Script" uid="uid://cbh3ltf2wcq5j" path="res://scripts/park/park_minigame_trigger.gd" id="41_pktrg"]
 [ext_resource type="Texture2D" uid="uid://cvg7de5fvj2op" path="res://assests/sprites/trees/small-forest-1.png" id="42_jwcxe"]
 [ext_resource type="Theme" uid="uid://b2pfdp8p48jam" path="res://themes/font_theme.tres" id="60_dinfo"]
 [ext_resource type="Theme" uid="uid://8cd7r8xa15ac" path="res://themes/label.tres" id="61_dlabl"]
@@ -1369,6 +1370,62 @@ theme_override_font_sizes/font_size = 13
 text = "Pressione ENTER para entrar"
 autowrap_mode = 2
 
+[node name="Park_trigger" type="Area2D" parent="Doors" unique_id=1800000001]
+script = ExtResource("41_pktrg")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Doors/Park_trigger" unique_id=1800000002]
+position = Vector2(950, 300)
+shape = SubResource("CircleShape2D_snp3k")
+
+[node name="Info-panel" type="Panel" parent="Doors/Park_trigger" unique_id=1800000003]
+visible = false
+z_index = 100
+offset_left = 952.0
+offset_top = 244.0
+offset_right = 1372.0
+offset_bottom = 376.0
+scale = Vector2(0.333333, 0.333333)
+theme = ExtResource("60_dinfo")
+
+[node name="Margin" type="MarginContainer" parent="Doors/Park_trigger/Info-panel" unique_id=1800000004]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Doors/Park_trigger/Info-panel/Margin" unique_id=1800000005]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Doors/Park_trigger/Info-panel/Margin/VBoxContainer" unique_id=1800000006]
+layout_mode = 2
+theme = ExtResource("61_dlabl")
+theme_override_font_sizes/font_size = 20
+text = "Parque"
+autowrap_mode = 2
+
+[node name="Description" type="Label" parent="Doors/Park_trigger/Info-panel/Margin/VBoxContainer" unique_id=1800000007]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("61_dlabl")
+theme_override_font_sizes/font_size = 14
+text = "Corra atrás de moedas antes do tempo acabar. A cada 5 moedas, responda um quiz e ganhe desconto no mercado."
+autowrap_mode = 2
+
+[node name="Hint" type="Label" parent="Doors/Park_trigger/Info-panel/Margin/VBoxContainer" unique_id=1800000008]
+layout_mode = 2
+theme = ExtResource("61_dlabl")
+theme_override_colors/font_color = Color(0.16, 0.2, 0.45, 1)
+theme_override_font_sizes/font_size = 13
+text = "Pressione ENTER para caçar moedas"
+autowrap_mode = 2
+
 [node name="Light-poles" type="Node2D" parent="." unique_id=608088435]
 y_sort_enabled = true
 
@@ -1471,187 +1528,6 @@ texture = ExtResource("20_n6ekm")
 [node name="LightPole27" type="Sprite2D" parent="Light-poles" unique_id=904453847]
 position = Vector2(914, 303)
 texture = ExtResource("20_n6ekm")
-
-[node name="Park-trees" type="Node2D" parent="." unique_id=425411193]
-y_sort_enabled = true
-script = ExtResource("25_n6ekm")
-
-[node name="Pine3" type="Sprite2D" parent="Park-trees" unique_id=1565492234]
-position = Vector2(1001, 269)
-texture = ExtResource("16_3vt4i")
-
-[node name="Oak5" type="Sprite2D" parent="Park-trees" unique_id=1752219863]
-position = Vector2(1011, 320)
-texture = ExtResource("20_uqkuf")
-
-[node name="Oak6" type="Sprite2D" parent="Park-trees" unique_id=1026262864]
-position = Vector2(1083, 267)
-texture = ExtResource("19_hcvlt")
-
-[node name="Oak7" type="Sprite2D" parent="Park-trees" unique_id=781073621]
-position = Vector2(1042, 284)
-texture = ExtResource("20_uqkuf")
-
-[node name="Pine4" type="Sprite2D" parent="Park-trees" unique_id=126371340]
-position = Vector2(1044, 326)
-texture = ExtResource("16_3vt4i")
-
-[node name="Pine2" type="Sprite2D" parent="Park-trees" unique_id=187969445]
-position = Vector2(1105, 238)
-texture = ExtResource("15_sckqp")
-
-[node name="Oak8" type="Sprite2D" parent="Park-trees" unique_id=1811677989]
-position = Vector2(1106, 311)
-texture = ExtResource("18_6qq6b")
-
-[node name="Oak9" type="Sprite2D" parent="Park-trees" unique_id=1199701765]
-position = Vector2(1066, 350)
-texture = ExtResource("19_hcvlt")
-
-[node name="Pine5" type="Sprite2D" parent="Park-trees" unique_id=1697480392]
-position = Vector2(1105, 353)
-texture = ExtResource("15_sckqp")
-
-[node name="Oak10" type="Sprite2D" parent="Park-trees" unique_id=1786944771]
-position = Vector2(1140, 246)
-texture = ExtResource("20_uqkuf")
-
-[node name="Oak11" type="Sprite2D" parent="Park-trees" unique_id=299729961]
-position = Vector2(1147, 288)
-texture = ExtResource("19_hcvlt")
-
-[node name="Oak12" type="Sprite2D" parent="Park-trees" unique_id=1860783902]
-position = Vector2(1144, 344)
-texture = ExtResource("20_uqkuf")
-
-[node name="Oak13" type="Sprite2D" parent="Park-trees" unique_id=90989145]
-position = Vector2(1069, 384)
-texture = ExtResource("19_hcvlt")
-
-[node name="Pine1" type="Sprite2D" parent="Park-trees" unique_id=1664112625]
-position = Vector2(1023, 363)
-texture = ExtResource("3_pkjhv")
-
-[node name="Oak15" type="Sprite2D" parent="Park-trees" unique_id=1187057812]
-position = Vector2(1118, 391)
-texture = ExtResource("20_uqkuf")
-
-[node name="Pine6" type="Sprite2D" parent="Park-trees" unique_id=2027588542]
-position = Vector2(1068, 432)
-texture = ExtResource("16_3vt4i")
-
-[node name="Oak16" type="Sprite2D" parent="Park-trees" unique_id=2052559053]
-position = Vector2(1175, 418)
-scale = Vector2(0.9166667, 1)
-texture = ExtResource("20_uqkuf")
-
-[node name="Pine7" type="Sprite2D" parent="Park-trees" unique_id=1684159827]
-position = Vector2(1105, 434)
-texture = ExtResource("3_pkjhv")
-
-[node name="Oak17" type="Sprite2D" parent="Park-trees" unique_id=323424609]
-position = Vector2(1031, 388)
-texture = ExtResource("19_hcvlt")
-
-[node name="Pine8" type="Sprite2D" parent="Park-trees" unique_id=784665368]
-position = Vector2(1133, 470)
-texture = ExtResource("3_pkjhv")
-
-[node name="Pine9" type="Sprite2D" parent="Park-trees" unique_id=890821622]
-position = Vector2(1071, 475)
-texture = ExtResource("15_sckqp")
-
-[node name="Oak18" type="Sprite2D" parent="Park-trees" unique_id=1423178398]
-position = Vector2(1100, 486)
-texture = ExtResource("20_uqkuf")
-
-[node name="Oak19" type="Sprite2D" parent="Park-trees" unique_id=1997388598]
-position = Vector2(1103, 525)
-texture = ExtResource("18_6qq6b")
-
-[node name="Pine10" type="Sprite2D" parent="Park-trees" unique_id=2144403984]
-position = Vector2(1154, 495)
-texture = ExtResource("3_pkjhv")
-
-[node name="Oak20" type="Sprite2D" parent="Park-trees" unique_id=586326053]
-position = Vector2(1157, 525)
-texture = ExtResource("20_uqkuf")
-
-[node name="Pine11" type="Sprite2D" parent="Park-trees" unique_id=1734081343]
-position = Vector2(1179, 249)
-texture = ExtResource("3_pkjhv")
-
-[node name="Pine12" type="Sprite2D" parent="Park-trees" unique_id=307875678]
-position = Vector2(1186, 299)
-texture = ExtResource("16_3vt4i")
-
-[node name="Pine13" type="Sprite2D" parent="Park-trees" unique_id=770448369]
-position = Vector2(1179, 352)
-texture = ExtResource("17_oefjf")
-
-[node name="Pine14" type="Sprite2D" parent="Park-trees" unique_id=727319775]
-position = Vector2(1153, 421)
-texture = ExtResource("16_3vt4i")
-
-[node name="Pine15" type="Sprite2D" parent="Park-trees" unique_id=961945887]
-position = Vector2(1189, 478)
-texture = ExtResource("17_oefjf")
-
-[node name="Bush1" type="Sprite2D" parent="Park-trees" unique_id=410314826]
-position = Vector2(887, 353)
-texture = ExtResource("21_xmodc")
-
-[node name="Bush2" type="Sprite2D" parent="Park-trees" unique_id=581145511]
-position = Vector2(989, 365)
-texture = ExtResource("22_p5roh")
-
-[node name="Tree1" type="Sprite2D" parent="Park-trees" unique_id=563294408]
-position = Vector2(479, 192)
-texture = ExtResource("23_eu6j1")
-
-[node name="Tree3" type="Sprite2D" parent="Park-trees" unique_id=1761071521]
-position = Vector2(461, 204)
-texture = ExtResource("24_i7pj5")
-
-[node name="Bush3" type="Sprite2D" parent="Park-trees" unique_id=107081065]
-position = Vector2(357, 73)
-texture = ExtResource("21_xmodc")
-
-[node name="Bush4" type="Sprite2D" parent="Park-trees" unique_id=1034266624]
-position = Vector2(373, 82)
-texture = ExtResource("22_p5roh")
-
-[node name="Bush5" type="Sprite2D" parent="Park-trees" unique_id=1755036618]
-position = Vector2(356, 92)
-texture = ExtResource("22_p5roh")
-
-[node name="Bush6" type="Sprite2D" parent="Park-trees" unique_id=1166871279]
-position = Vector2(229, 86)
-texture = ExtResource("21_xmodc")
-
-[node name="Bush7" type="Sprite2D" parent="Park-trees" unique_id=1222793894]
-position = Vector2(903, 234)
-texture = ExtResource("21_xmodc")
-
-[node name="Bush8" type="Sprite2D" parent="Park-trees" unique_id=988331208]
-position = Vector2(1023, 217)
-texture = ExtResource("22_p5roh")
-
-[node name="Bush9" type="Sprite2D" parent="Park-trees" unique_id=539208912]
-position = Vector2(1054, 217)
-texture = ExtResource("22_p5roh")
-
-[node name="Bush10" type="Sprite2D" parent="Park-trees" unique_id=309459859]
-position = Vector2(1045, 523)
-texture = ExtResource("21_xmodc")
-
-[node name="Bush11" type="Sprite2D" parent="Park-trees" unique_id=1634114281]
-position = Vector2(789, 464)
-texture = ExtResource("22_p5roh")
-
-[node name="Bush12" type="Sprite2D" parent="Park-trees" unique_id=1906243561]
-position = Vector2(780, 351)
-texture = ExtResource("22_p5roh")
 
 [node name="Scenario" type="Node2D" parent="." unique_id=1486210795]
 y_sort_enabled = true
@@ -2066,6 +1942,194 @@ position = Vector2(-2.657959, 0)
 scale = Vector2(1.0035827, 1)
 polygon = PackedVector2Array(946, -68, 790, -67, 789, -154, 946, -154)
 
+[node name="Park" type="Node2D" parent="." unique_id=1375759058]
+
+[node name="Trees" type="Node2D" parent="Park" unique_id=425411193]
+y_sort_enabled = true
+script = ExtResource("25_n6ekm")
+
+[node name="Pine3" type="Sprite2D" parent="Park/Trees" unique_id=1565492234]
+position = Vector2(1001, 269)
+texture = ExtResource("16_3vt4i")
+
+[node name="Oak5" type="Sprite2D" parent="Park/Trees" unique_id=1752219863]
+position = Vector2(1011, 320)
+texture = ExtResource("20_uqkuf")
+
+[node name="Oak6" type="Sprite2D" parent="Park/Trees" unique_id=1026262864]
+position = Vector2(1083, 267)
+texture = ExtResource("19_hcvlt")
+
+[node name="Oak7" type="Sprite2D" parent="Park/Trees" unique_id=781073621]
+position = Vector2(1042, 284)
+texture = ExtResource("20_uqkuf")
+
+[node name="Pine4" type="Sprite2D" parent="Park/Trees" unique_id=126371340]
+position = Vector2(1044, 326)
+texture = ExtResource("16_3vt4i")
+
+[node name="Pine2" type="Sprite2D" parent="Park/Trees" unique_id=187969445]
+position = Vector2(1105, 238)
+texture = ExtResource("15_sckqp")
+
+[node name="Oak8" type="Sprite2D" parent="Park/Trees" unique_id=1811677989]
+position = Vector2(1106, 311)
+texture = ExtResource("18_6qq6b")
+
+[node name="Oak9" type="Sprite2D" parent="Park/Trees" unique_id=1199701765]
+position = Vector2(1066, 350)
+texture = ExtResource("19_hcvlt")
+
+[node name="Pine5" type="Sprite2D" parent="Park/Trees" unique_id=1697480392]
+position = Vector2(1105, 353)
+texture = ExtResource("15_sckqp")
+
+[node name="Oak10" type="Sprite2D" parent="Park/Trees" unique_id=1786944771]
+position = Vector2(1140, 246)
+texture = ExtResource("20_uqkuf")
+
+[node name="Oak11" type="Sprite2D" parent="Park/Trees" unique_id=299729961]
+position = Vector2(1147, 288)
+texture = ExtResource("19_hcvlt")
+
+[node name="Oak12" type="Sprite2D" parent="Park/Trees" unique_id=1860783902]
+position = Vector2(1144, 344)
+texture = ExtResource("20_uqkuf")
+
+[node name="Oak13" type="Sprite2D" parent="Park/Trees" unique_id=90989145]
+position = Vector2(1069, 384)
+texture = ExtResource("19_hcvlt")
+
+[node name="Pine1" type="Sprite2D" parent="Park/Trees" unique_id=1664112625]
+position = Vector2(1023, 363)
+texture = ExtResource("3_pkjhv")
+
+[node name="Oak15" type="Sprite2D" parent="Park/Trees" unique_id=1187057812]
+position = Vector2(1118, 391)
+texture = ExtResource("20_uqkuf")
+
+[node name="Pine6" type="Sprite2D" parent="Park/Trees" unique_id=2027588542]
+position = Vector2(1068, 432)
+texture = ExtResource("16_3vt4i")
+
+[node name="Oak16" type="Sprite2D" parent="Park/Trees" unique_id=2052559053]
+position = Vector2(1175, 418)
+scale = Vector2(0.9166667, 1)
+texture = ExtResource("20_uqkuf")
+
+[node name="Pine7" type="Sprite2D" parent="Park/Trees" unique_id=1684159827]
+position = Vector2(1105, 434)
+texture = ExtResource("3_pkjhv")
+
+[node name="Oak17" type="Sprite2D" parent="Park/Trees" unique_id=323424609]
+position = Vector2(1031, 388)
+texture = ExtResource("19_hcvlt")
+
+[node name="Pine8" type="Sprite2D" parent="Park/Trees" unique_id=784665368]
+position = Vector2(1133, 470)
+texture = ExtResource("3_pkjhv")
+
+[node name="Pine9" type="Sprite2D" parent="Park/Trees" unique_id=890821622]
+position = Vector2(1071, 475)
+texture = ExtResource("15_sckqp")
+
+[node name="Oak18" type="Sprite2D" parent="Park/Trees" unique_id=1423178398]
+position = Vector2(1100, 486)
+texture = ExtResource("20_uqkuf")
+
+[node name="Oak19" type="Sprite2D" parent="Park/Trees" unique_id=1997388598]
+position = Vector2(1103, 525)
+texture = ExtResource("18_6qq6b")
+
+[node name="Pine10" type="Sprite2D" parent="Park/Trees" unique_id=2144403984]
+position = Vector2(1154, 495)
+texture = ExtResource("3_pkjhv")
+
+[node name="Oak20" type="Sprite2D" parent="Park/Trees" unique_id=586326053]
+position = Vector2(1157, 525)
+texture = ExtResource("20_uqkuf")
+
+[node name="Pine11" type="Sprite2D" parent="Park/Trees" unique_id=1734081343]
+position = Vector2(1179, 249)
+texture = ExtResource("3_pkjhv")
+
+[node name="Pine12" type="Sprite2D" parent="Park/Trees" unique_id=307875678]
+position = Vector2(1186, 299)
+texture = ExtResource("16_3vt4i")
+
+[node name="Pine13" type="Sprite2D" parent="Park/Trees" unique_id=770448369]
+position = Vector2(1179, 352)
+texture = ExtResource("17_oefjf")
+
+[node name="Pine14" type="Sprite2D" parent="Park/Trees" unique_id=727319775]
+position = Vector2(1153, 421)
+texture = ExtResource("16_3vt4i")
+
+[node name="Pine15" type="Sprite2D" parent="Park/Trees" unique_id=961945887]
+position = Vector2(1189, 478)
+texture = ExtResource("17_oefjf")
+
+[node name="Bush1" type="Sprite2D" parent="Park/Trees" unique_id=410314826]
+position = Vector2(887, 353)
+texture = ExtResource("21_xmodc")
+
+[node name="Bush2" type="Sprite2D" parent="Park/Trees" unique_id=581145511]
+position = Vector2(989, 365)
+texture = ExtResource("22_p5roh")
+
+[node name="Tree1" type="Sprite2D" parent="Park/Trees" unique_id=563294408]
+position = Vector2(479, 192)
+texture = ExtResource("23_eu6j1")
+
+[node name="Tree3" type="Sprite2D" parent="Park/Trees" unique_id=1761071521]
+position = Vector2(461, 204)
+texture = ExtResource("24_i7pj5")
+
+[node name="Bush3" type="Sprite2D" parent="Park/Trees" unique_id=107081065]
+position = Vector2(357, 73)
+texture = ExtResource("21_xmodc")
+
+[node name="Bush4" type="Sprite2D" parent="Park/Trees" unique_id=1034266624]
+position = Vector2(373, 82)
+texture = ExtResource("22_p5roh")
+
+[node name="Bush5" type="Sprite2D" parent="Park/Trees" unique_id=1755036618]
+position = Vector2(356, 92)
+texture = ExtResource("22_p5roh")
+
+[node name="Bush6" type="Sprite2D" parent="Park/Trees" unique_id=1166871279]
+position = Vector2(229, 86)
+texture = ExtResource("21_xmodc")
+
+[node name="Bush7" type="Sprite2D" parent="Park/Trees" unique_id=1222793894]
+position = Vector2(903, 234)
+texture = ExtResource("21_xmodc")
+
+[node name="Bush8" type="Sprite2D" parent="Park/Trees" unique_id=988331208]
+position = Vector2(1023, 217)
+texture = ExtResource("22_p5roh")
+
+[node name="Bush9" type="Sprite2D" parent="Park/Trees" unique_id=539208912]
+position = Vector2(1054, 217)
+texture = ExtResource("22_p5roh")
+
+[node name="Bush10" type="Sprite2D" parent="Park/Trees" unique_id=309459859]
+position = Vector2(1045, 523)
+texture = ExtResource("21_xmodc")
+
+[node name="Bush11" type="Sprite2D" parent="Park/Trees" unique_id=1634114281]
+position = Vector2(789, 464)
+texture = ExtResource("22_p5roh")
+
+[node name="Bush12" type="Sprite2D" parent="Park/Trees" unique_id=1906243561]
+position = Vector2(780, 351)
+texture = ExtResource("22_p5roh")
+
+[node name="Park-zone" type="Area2D" parent="Park" unique_id=1012451930]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Park/Park-zone" unique_id=762143145]
+polygon = PackedVector2Array(749, 787, 1205, 787, 1205, 567, 1192, 521, 1171.8855, 564.339, 1093, 558, 1058, 507, 1043, 425, 1022, 419, 990, 347, 987, 233, 885, 230, 881, 361, 756, 359)
+
 [connection signal="tree_entered" from="." to="." method="_on_tree_entered"]
 [connection signal="tree_exited" from="." to="." method="_on_tree_exited"]
 [connection signal="body_shape_entered" from="Doors/Minigame_door" to="Doors/Minigame_door" method="_on_body_shape_entered"]
@@ -2084,3 +2148,5 @@ polygon = PackedVector2Array(946, -68, 790, -67, 789, -154, 946, -154)
 [connection signal="body_shape_exited" from="Doors/Arcade_door" to="Doors/Arcade_door" method="_on_body_shape_exited"]
 [connection signal="body_shape_entered" from="Doors/Shopping_door" to="Doors/Shopping_door" method="_on_body_shape_entered"]
 [connection signal="body_shape_exited" from="Doors/Shopping_door" to="Doors/Shopping_door" method="_on_body_shape_exited"]
+[connection signal="body_shape_entered" from="Doors/Park_trigger" to="Doors/Park_trigger" method="_on_body_shape_entered"]
+[connection signal="body_shape_exited" from="Doors/Park_trigger" to="Doors/Park_trigger" method="_on_body_shape_exited"]

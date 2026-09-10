@@ -30,6 +30,10 @@ func load_missions(phase: int):
 		mission_list.add_child(label)
 
 func _process(delta: float) -> void:
+	if Global.player_hud_hidden:
+		panel.visible = false
+		mission_button.visible = false
+		return
 	if Input.is_key_pressed(KEY_F):
 		panel.visible = true
 		mission_button.visible = false

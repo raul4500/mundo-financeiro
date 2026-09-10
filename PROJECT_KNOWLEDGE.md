@@ -177,11 +177,11 @@ Estrutura, igual nas 8 portas:
 <Nome>_door (Area2D)
 ├── CollisionShape2D
 └── Info-panel (Panel, visible = false, z_index = 100, scale = 0.333333)
-    └── Margin (MarginContainer 22/16/22/16, full rect)
-        └── VBoxContainer (separation 6)
-            ├── Title       (font_size 20)
-            ├── Description (font_size 14, expand vertical)
-            └── Hint        (font_size 13, cor azulada)
+	└── Margin (MarginContainer 22/16/22/16, full rect)
+		└── VBoxContainer (separation 6)
+			├── Title       (font_size 20)
+			├── Description (font_size 14, expand vertical)
+			└── Hint        (font_size 13, cor azulada)
 ```
 
 O painel é centralizado na `CollisionShape2D` da porta: `offset_left = shape.position.x - 70` e `offset_top = shape.position.y - 22`, com tamanho local 420×132.
@@ -334,11 +334,11 @@ A lógica de casa usa um inventário em dicionário:
 ```gdscript
 player["home_inventory"] = {
   "hamburger": {
-    "name": "hamburger",
-    "quantity": 2,
-    "category": "food",
-    "energy": 26.0,
-    "happiness": 12.0
+	"name": "hamburger",
+	"quantity": 2,
+	"category": "food",
+	"energy": 26.0,
+	"happiness": 12.0
   }
 }
 ```
@@ -699,15 +699,15 @@ Forma de uma pendência em `Global.player["pending_events"]`:
 
 ```gdscript
 {
-    "id": "quebra_carro_1755792000_3",  # source_id + unix time + índice
-    "title": "Problema no carro",
-    "description": "...",
-    "week_generated": 3,
-    "amount": 500.0,                    # SEMPRE positivo
-    "is_bonus": false,                  # o sinal vive aqui
-    "status": "pending",                # pending | paid | collected
-    "location": "bank",
-    "source_id": "quebra_carro"
+	"id": "quebra_carro_1755792000_3",  # source_id + unix time + índice
+	"title": "Problema no carro",
+	"description": "...",
+	"week_generated": 3,
+	"amount": 500.0,                    # SEMPRE positivo
+	"is_bonus": false,                  # o sinal vive aqui
+	"status": "pending",                # pending | paid | collected
+	"location": "bank",
+	"source_id": "quebra_carro"
 }
 ```
 
@@ -956,22 +956,22 @@ O layout fica em `scenes/world/ui/enterprise-view.tscn`. As cenas `restaurant.ts
 ```text
 EnterpriseView (Control)
 └── Margin (MarginContainer 32/24/32/24)
-    └── VBoxContainer (separation 12)
-        ├── Business-panel (PanelContainer, font_theme, expand vertical, stretch_ratio 0.6)
-        │   └── VBoxContainer (separation 8)
-        │       ├── Title-label   (font_size 28)
-        │       ├── Status-label  (font_size 18, cor por situação)
-        │       ├── Stats-grid (GridContainer, columns = 3, h_sep 24, v_sep 6)
-        │       │   ├── Money-label     ├── Revenue-label  ├── Expenses-label
-        │       │   ├── Profit-label    ├── Capacity-label ├── Ceiling-label
-        │       │   └── Bills-label     └── Payroll-label  └── Total-profit-label
-        │       └── Message-label (resultado da última operação)
-        ├── Sections (TabContainer, font_theme, expand vertical)
-        │   ├── Negócio      (ScrollContainer) → Business-list
-        │   ├── Estoque      (ScrollContainer) → Stock-list
-        │   ├── Contas       (ScrollContainer) → Bills-list
-        │   └── Equipamentos (ScrollContainer) → Equipment-list
-        └── Exit-button (font_theme)
+	└── VBoxContainer (separation 12)
+		├── Business-panel (PanelContainer, font_theme, expand vertical, stretch_ratio 0.6)
+		│   └── VBoxContainer (separation 8)
+		│       ├── Title-label   (font_size 28)
+		│       ├── Status-label  (font_size 18, cor por situação)
+		│       ├── Stats-grid (GridContainer, columns = 3, h_sep 24, v_sep 6)
+		│       │   ├── Money-label     ├── Revenue-label  ├── Expenses-label
+		│       │   ├── Profit-label    ├── Capacity-label ├── Ceiling-label
+		│       │   └── Bills-label     └── Payroll-label  └── Total-profit-label
+		│       └── Message-label (resultado da última operação)
+		├── Sections (TabContainer, font_theme, expand vertical)
+		│   ├── Negócio      (ScrollContainer) → Business-list
+		│   ├── Estoque      (ScrollContainer) → Stock-list
+		│   ├── Contas       (ScrollContainer) → Bills-list
+		│   └── Equipamentos (ScrollContainer) → Equipment-list
+		└── Exit-button (font_theme)
 ```
 
 **As seções são abas, não cards.** Antes eram quatro `PanelContainer` em um grid 2×2, todos visíveis. Agora é um `TabContainer` e só uma seção aparece por vez. Três consequências:

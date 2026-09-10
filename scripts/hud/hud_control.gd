@@ -33,5 +33,8 @@ func _update_needs_ui() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+	visible = not Global.player_hud_hidden
+	if not visible:
+		return
 	money_label.text = "R$ %.2f" % Global.player["money"]
 	_update_needs_ui()

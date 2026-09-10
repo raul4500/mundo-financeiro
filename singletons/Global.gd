@@ -92,6 +92,15 @@ var data_model = {
 		"unlock_day": 0,
 		"sessions_played": 0
 	},
+	# Trava do minigame de moedas do parque (2x/dia). Espelha
+	# ParkMinigameManager.default_progress().
+	"park_minigame": {
+		"day": 0,
+		"plays_used": 0
+	},
+	# Cupom de desconto (0.0 a 1.0) ganho ao acertar o quiz do minigame do
+	# parque. Consumido de uma vez na próxima compra do mercado.
+	"market_discount": 0.0,
 	"last_week_status": {
 		"hunger": 100.0,
 		"thirst": 100.0,
@@ -102,6 +111,10 @@ var data_model = {
 var play_time := false
 var gameplay_locked := false
 var _gameplay_lock_count := 0
+# Liga durante o minigame do parque: os HUDs (dinheiro/necessidades, relogio,
+# missoes) se escondem enquanto isto for true, sobrando so' o timer da sessao.
+# Nao e' salvo, igual gameplay_locked: e' estado de execucao, nao de save.
+var player_hud_hidden := false
 # Ligada quando a fome zera. Impede que o resto do fluxo do fim de dia continue
 # por cima da tela de game-over. Zerada ao comecar/carregar uma partida.
 var _game_over := false
@@ -162,7 +175,7 @@ func _new_player_data() -> Dictionary:
 func ensure_player_state() -> void:
 	if player == null:
 		player = _new_player_data()
-	for key in ["money", "saldo", "week", "salary", "school_level", "day", "hour", "tutorial_step", "hunger", "thirst", "stamina", "spend_today", "had_no_spend_day", "no_spend_days_count", "positive_days_count", "tutorial_home_shown"]:
+	for key in ["money", "saldo", "week", "salary", "school_level", "day", "hour", "tutorial_step", "hunger", "thirst", "stamina", "spend_today", "had_no_spend_day", "no_spend_days_count", "positive_days_count", "tutorial_home_shown", "market_discount"]:
 		if not player.has(key):
 			player[key] = data_model.get(key, 0)
 	# Save anterior a' progressao de lugares: nao tem "unlock_stage". Trancar a
@@ -198,6 +211,8 @@ func ensure_player_state() -> void:
 		player["pending_events"] = []
 	if not player.has("minigame_progress") or typeof(player["minigame_progress"]) != TYPE_DICTIONARY:
 		player["minigame_progress"] = MinigameManager.default_progress()
+	if not player.has("park_minigame") or typeof(player["park_minigame"]) != TYPE_DICTIONARY:
+		player["park_minigame"] = ParkMinigameManager.default_progress()
 	if not player.has("tutorial_weeks_shown") or typeof(player["tutorial_weeks_shown"]) != TYPE_ARRAY:
 		player["tutorial_weeks_shown"] = []
 	if not player.has("last_week_status"):
@@ -279,6 +294,8 @@ func new_game(name: String, money: float) -> void:
 	player["house_bill_history"] = []
 	player["pending_events"] = []
 	player["minigame_progress"] = MinigameManager.default_progress()
+	player["park_minigame"] = ParkMinigameManager.default_progress()
+	player["market_discount"] = 0.0
 	player["tutorial_home_shown"] = false
 	player["last_week_status"] = {"hunger": 100.0, "thirst": 100.0, "stamina": 100.0}
 

@@ -52,11 +52,11 @@ Registradas aqui porque o texto original abaixo foi mantido como estava.
    tem relação com o bug. A causa era `Global._process()` reabrindo o alerta a
    cada quadro.
 10. **8.2** manda investigar estado do `MinigameManager` e chamadas de `reset()`
-    faltando. O `MinigameManager` está correto. A causa era o teleporte de 300px
-    para trás no início do minigame, em `minigame.gd`.
+	faltando. O `MinigameManager` está correto. A causa era o teleporte de 300px
+	para trás no início do minigame, em `minigame.gd`.
 11. **9.1** sugere comparar `get_tree().current_scene.name` com `main_game.tscn`
-    dentro de `_process()`. Isso pararia o relógio dentro de casa, mercado,
-    banco, escritório e minigame, que são cenas de gameplay legítimas.
+	dentro de `_process()`. Isso pararia o relógio dentro de casa, mercado,
+	banco, escritório e minigame, que são cenas de gameplay legítimas.
 
 ---
 
@@ -93,7 +93,7 @@ Redesenho do sistema de "Felicidade" e seu impacto no gameplay.
   - Decai linearmente até estar zerada às 16 horas de jogo (64 minutos de jogo)
   - Taxa de decay = 100 / 960 minutos = ~0.104 por minuto
   - Quando stamina chegar a 0 **antes** das 18h, o jogo **não** faz game-over
-    imediatamente; apenas avisa o jogador que precisa descansar
+	imediatamente; apenas avisa o jogador que precisa descansar
   - Comportamento exato: ver item 7
 
 - **Verificar:** jogar normalmente sem voltar para casa, confirmar que stamina
@@ -137,8 +137,8 @@ por ficar acordado até meia-noite.
 
 - **Novo comportamento:**
   1. Quando fome OU stamina chegam a zero, ou em horário fixo (18h de jogo):
-     - Mostrar alerta: "Você está exausto! Volte para casa para descansar."
-     - **Não avançar o dia automaticamente**
+	 - Mostrar alerta: "Você está exausto! Volte para casa para descansar."
+	 - **Não avançar o dia automaticamente**
   2. Jogador deve ir até a casa **fisicamente** (andar pelo mundo)
   3. Dentro da casa, há uma cama/opção "Dormir"
   4. Ao dormir: stamina volta a 100%, fome reseta, dia avança normalmente
@@ -157,20 +157,20 @@ por ficar acordado até meia-noite.
   - 18h: stamina continua decaindo normalmente (0.104/min)
   - 19h-23h: taxa de decay **dobra** (0.208/min)
   - A cada hora após as 18h, a taxa aumenta 10% adicional
-    - 18h → base (1x)
-    - 19h → 2x
-    - 20h → 2.2x
-    - 21h → 2.4x
-    - etc.
+	- 18h → base (1x)
+	- 19h → 2x
+	- 20h → 2.2x
+	- 21h → 2.4x
+	- etc.
 
 - **Meia-noite (00h):**
   - Se jogador ainda estiver acordado (stamina > 0 mas não dormiu):
-    - Teletransportar automaticamente para casa
-    - Mostrar alerta: "Você passou a noite acordado e teve que comprar muito
+	- Teletransportar automaticamente para casa
+	- Mostrar alerta: "Você passou a noite acordado e teve que comprar muito
       café para aguentar o dia! - R$ 30"
-    - Cobrar R$ 30 (ou valor configurável)
-    - Stamina fica em 50% (não totalmente recuperado)
-    - Forçar novo dia sem ter dormido "direito"
+	- Cobrar R$ 30 (ou valor configurável)
+	- Stamina fica em 50% (não totalmente recuperado)
+	- Forçar novo dia sem ter dormido "direito"
 
 - **Verificar:** ficar acordado após as 18h, sentir stamina cair mais rápido,
   chegar às 00h e receber penalidade.
@@ -185,10 +185,10 @@ por ficar acordado até meia-noite.
 - **Novo comportamento:**
   - **Fome = 0:** Alerta: "Você morreu de fome!" → Tela de Game-Over
   - **Stamina = 0 (durante o dia, antes das 18h):** Alerta: "Você está muito
-    cansado! Volte para casa para descansar." → Não é game-over, apenas força
-    o retorno
+	cansado! Volte para casa para descansar." → Não é game-over, apenas força
+	o retorno
   - **Stamina = 0 (após 18h):** Taxa de decay acelerada (ver 7.2), preparando
-    para meia-noite
+	para meia-noite
 
 - **Verificar:** morrer de fome leva ao game-over; apenas ficar sem stamina
   durante o dia não mata.
@@ -247,11 +247,11 @@ Sistema de pausa que persiste através de transições de cena.
 
 - **Correção:**
   - Rastrear qual cena está ativa (usar `get_tree().current_scene.name` ou
-    similar)
+	similar)
   - `TimeManager._process()` deve fazer `return` se não estiver em
-    `main_game.tscn`
+	`main_game.tscn`
   - Alternativa: usar sinal `tree_exited` do main_game para avisar TimeManager
-    de pausar, e sinais de `tree_entered` para resumir
+	de pausar, e sinais de `tree_entered` para resumir
 
 - **Verificar:** entrar no jogo, sair para o menu, voltar alguns segundos depois
   — confirmar que o tempo não pulou.
@@ -277,18 +277,18 @@ Sistema de risco e recompensa para FII.
   ```
   lucro_sobre_venda = preco_venda - preco_compra_medio
   if lucro_sobre_venda < 0:
-      penalidade = abs(lucro_sobre_venda) * 0.1  # 10% de imposto
-      Global.player["money"] -= penalidade
+	  penalidade = abs(lucro_sobre_venda) * 0.1  # 10% de imposto
+	  Global.player["money"] -= penalidade
   ```
 
   **B) Penalidade por falta de diversificação:**
   - Se > 70% da carteira está em um único fundo:
-    - Reduzir dividendos em 20%
-    - Ou cobrar taxa administrativa
+	- Reduzir dividendos em 20%
+	- Ou cobrar taxa administrativa
 
   **C) Penalidade aleatória de "volatilidade":**
   - A cada semana, se há grande oscilação de preço:
-    - Cobrar R$ 50-100 de "taxa de consultoria" ou "corretagem"
+	- Cobrar R$ 50-100 de "taxa de consultoria" ou "corretagem"
 
 - **Recomendação:** Implementar **A** primeiro (mais claro), depois **B** para
   ensinar diversificação.

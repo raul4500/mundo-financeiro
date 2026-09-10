@@ -22,5 +22,8 @@ func _update_clock(hour):
 func _on_day_changed(day):
 	_update_day()
 
+func _process(_delta: float) -> void:
+	visible = not Global.player_hud_hidden
+
 func _update_day():
 	week_label.text = "Semana %d" %Global.player["week"]

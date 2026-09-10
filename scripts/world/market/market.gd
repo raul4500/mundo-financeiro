@@ -142,7 +142,11 @@ func _populate_items(group_name: String) -> void:
 
 func update_labels() -> void:
 	label_money.text = "Dinheiro: $" + str(Global.player["money"])
-	label_total.text = "Total: R$" + str(total)
+	var discount = float(Global.player.get("market_discount", 0.0))
+	if discount > 0.0:
+		label_total.text = "Total: R$%.2f  |  Cupom -%d%%: R$%.2f" % [total, int(discount * 100), total * (1.0 - discount)]
+	else:
+		label_total.text = "Total: R$" + str(total)
 
 
 func _on_exit_pressed() -> void:
@@ -217,12 +221,14 @@ func _on_finish_pressed() -> void:
 		print("Carrinho vazio")
 		return
 
-	if float(Global.player["money"]) < total:
+	var discount = float(Global.player.get("market_discount", 0.0))
+	var final_total = total * (1.0 - discount)
+	if float(Global.player["money"]) < final_total:
 		print("Dinheiro insuficiente para finalizar a compra.")
 		return
 
 	for cart_entry in cart:
-		var price = float(cart_entry["price"])
+		var price = float(cart_entry["price"]) * (1.0 - discount)
 		var group_name = cart_entry["group_name"]
 		var item_name = cart_entry["item_name"]
 		var hunger_restore = int(cart_entry.get("hunger_restore", 0))
@@ -237,6 +243,11 @@ func _on_finish_pressed() -> void:
 		Global.player["money"] = float(Global.player["money"]) - price
 		Global.register_expense(item_name.capitalize(), group_name, price, int(Global.player.get("day", 1)), int(Global.player.get("week", 1)))
 		Global.add_home_inventory_item(item_name.capitalize(), 1, category, hunger_restore, thirst_restore)
+
+	# Cupom e' de uso unico: some assim que aplicado numa compra, mesmo que o
+	# jogador so' tenha levado um item.
+	if discount > 0.0:
+		Global.player["market_discount"] = 0.0
 
 	cart.clear()
 	for child in kart_list.get_children():
