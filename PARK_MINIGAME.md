@@ -22,7 +22,7 @@ Dar ao jogador algo ativo para fazer durante o dia (feedback de playtest: "não 
 5. A sessão constrói sua própria UI em código (timer + placar no topo da tela) e spawna a primeira moeda.
 6. Jogador anda pelo mapa (movimento normal, sem trocar de cena) coletando moedas antes de cada uma expirar.
 7. A cada 5 moedas coletadas (até 2 vezes por sessão), o jogo pausa para um quiz.
-8. Quando o tempo geral (120s) acaba, a sessão encerra: mostra quantas moedas foram coletadas, restaura o HUD (`player_hud_hidden = false`) e libera a trava de sessão ativa.
+8. A sessão termina de dois jeitos: o tempo geral (120s) acaba (`_end_session()`), ou o jogador aperta **BACKSPACE** e sai por vontade própria (`_quit_session()`) — ver §5.1. Em ambos os casos: mostra quantas moedas foram coletadas, restaura o HUD (`player_hud_hidden = false`) e libera a trava de sessão ativa.
 
 ## 4. Moedas
 
@@ -38,6 +38,13 @@ Dar ao jogador algo ativo para fazer durante o dia (feedback de playtest: "não 
   - Motivo de ser 120s e não 60s: com moeda de 10s, 60s dificilmente permite juntar as 10 moedas necessárias para dois quizzes; 120s deixa isso alcançável.
 - UI construída em código dentro de [scripts/park/park_minigame_session.gd](scripts/park/park_minigame_session.gd) (mesmo espírito do `AlertManager`), mostrando "⏱ Xs" e "Moedas: N" no topo da tela.
 - O timer **pausa** automaticamente durante o quiz (`Global.gameplay_locked` true) e retoma ao fechar o quiz/feedback.
+
+## 5.1 Saída antecipada
+
+- Um hint fixo na UI ("Pressione BACKSPACE para sair") lembra o jogador que a sessão pode ser abandonada a qualquer momento.
+- **BACKSPACE** foi escolhido de propósito, não ESC: `ui_cancel`/ESC já está tomado pelo menu de pausa global (`scripts/menus/pause_menu.gd`), que abriria por cima do minigame se eu reusasse a mesma tecla.
+- A saída só é aceita **fora de um quiz** (`_process` ignora BACKSPACE enquanto `_quiz_layer.visible` ou `Global.gameplay_locked`) — assim uma pergunta iniciada sempre é respondida antes do jogador poder ir embora, e nunca sobra um quiz "pela metade" para a próxima sessão herdar.
+- `ParkMinigameSession._quit_session()` faz a mesma limpeza de estado que o fim por tempo (`_end_session()`): libera a moeda em tela, restaura o HUD, libera a trava de sessão ativa. **Não** desfaz nada já concedido — cupom de desconto e a tentativa do dia consumida em `begin_session()` continuam valendo, porque esse estado já está em `Global.player`, fora do `ParkMinigameSession` (que é descartado com `queue_free()`).
 
 ## 6. HUD durante o minigame
 

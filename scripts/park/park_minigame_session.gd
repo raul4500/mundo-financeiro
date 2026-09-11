@@ -5,8 +5,10 @@ extends CanvasLayer
 # mostra o timer geral e o placar no topo da tela — com o resto do HUD
 # escondido (Global.player_hud_hidden) — e a cada ParkMinigameManager.
 # COINS_PER_QUIZ moedas pausa para um quiz (até MAX_QUIZZES_PER_SESSION por
-# sessão). Construída toda em código (mesmo padrão do AlertManager) para não
-# depender de uma .tscn nova.
+# sessão). BACKSPACE sai da sessão a qualquer momento fora de um quiz, sem
+# perder cupom/recompensa já ganhos (esses já estão em Global.player).
+# Construída toda em código (mesmo padrão do AlertManager) para não depender
+# de uma .tscn nova.
 
 const ParkCoinScript = preload("res://scripts/park/park_coin.gd")
 
@@ -70,6 +72,12 @@ func _build_ui() -> void:
 	_score_label.add_theme_font_size_override("font_size", 18)
 	vbox.add_child(_score_label)
 
+	var exit_hint := Label.new()
+	exit_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	exit_hint.add_theme_font_size_override("font_size", 13)
+	exit_hint.text = "Pressione BACKSPACE para sair"
+	vbox.add_child(exit_hint)
+
 	_update_labels()
 	_build_quiz_ui()
 
@@ -80,7 +88,13 @@ func _update_labels() -> void:
 func _process(delta: float) -> void:
 	if not _active:
 		return
+	# Sair só é permitido fora do quiz: assim uma pergunta iniciada é sempre
+	# respondida antes do jogador poder ir embora, e nenhuma sessão futura
+	# herda um quiz "pela metade".
 	if Global.gameplay_locked or _quiz_layer.visible:
+		return
+	if Input.is_key_pressed(KEY_BACKSPACE):
+		_quit_session()
 		return
 	_time_left -= delta
 	_update_labels()
@@ -234,4 +248,17 @@ func _end_session() -> void:
 	Global.player_hud_hidden = false
 	ParkMinigameManager.end_session()
 	AlertManager.alert("Tempo esgotado! Você coletou %d moeda(s)." % _coins_collected)
+	queue_free()
+
+# Saída antecipada pelo próprio jogador (BACKSPACE). Só chamada fora do quiz
+# (ver _process), então nunca corta uma pergunta pela metade. Cupom/desconto
+# já concedidos ficam em Global.player — essa função só limpa o estado local
+# da sessão (moeda em tela, HUD, trava de sessão ativa), igual _end_session().
+func _quit_session() -> void:
+	_active = false
+	if is_instance_valid(_current_coin):
+		_current_coin.queue_free()
+	Global.player_hud_hidden = false
+	ParkMinigameManager.end_session()
+	AlertManager.alert("Você saiu do parque. Moedas coletadas: %d." % _coins_collected)
 	queue_free()
