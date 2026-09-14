@@ -262,3 +262,15 @@ func _quit_session() -> void:
 	ParkMinigameManager.end_session()
 	AlertManager.alert("Você saiu do parque. Moedas coletadas: %d." % _coins_collected)
 	queue_free()
+
+# Cobre a saída pelo menu de pausa (Sair troca de cena direto, sem passar por
+# _end_session()/_quit_session()): sem isto a sessão ficava presa como "ativa"
+# para sempre em ParkMinigameManager, e um quiz aberto na hora vazava o
+# contador de Global.gameplay_locked, travando o jogo inteiro daí em diante.
+func _exit_tree() -> void:
+	if _active:
+		_active = false
+		ParkMinigameManager.end_session()
+	Global.player_hud_hidden = false
+	if is_instance_valid(_quiz_layer) and _quiz_layer.visible:
+		Global.unlock_gameplay()

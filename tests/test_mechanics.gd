@@ -313,6 +313,78 @@ func test_save_antigo_nao_retranca_a_cidade() -> void:
 	_check(int(Global.player["tutorial_step"]) == TutorialManager.TUTORIAL_DONE,
 		"o 8 antigo vira concluido, e nao a apresentacao do escritorio")
 
+# =============================================================
+# Testes da auditoria: cada um cobre um bug que travava o jogo permanentemente
+# ou deixava dinheiro/estado incoerente sem nenhum aviso.
+# =============================================================
+
+func test_reset_de_time_manager_destrava_partida_nova() -> void:
+	print("auditoria: TimeManager.reset() limpa day_end_pending preso por uma morte anterior")
+	_fresh_player()
+	# Simula o estado que uma morte de fome/sede deixava para tras: _close_day()
+	# trava day_end_pending ANTES de checar se o jogador sobreviveu, e o
+	# caminho de morte nunca chamava _advance_to_next_day() (o unico lugar que
+	# destravava). Sem TimeManager.reset(), isso sobrevivia para a partida nova.
+	TimeManager.day_end_pending = true
+	TimeManager.reset()
+	_check(not TimeManager.day_end_pending, "day_end_pending volta a false")
+	TimeManager._add_minute()
+	_check(Global.player["hunger"] >= 0.0 and TimeManager.current_minute == 1,
+		"o relogio volta a andar depois do reset (nao fica mais preso em no-op)")
+
+func test_semana_repetida_reprocessa_empreendimento() -> void:
+	print("auditoria: semana repetida (missao falhada) reseta o guard de operacao diaria do empreendimento")
+	_fresh_player()
+	Global.player["money"] = 5000.0
+	EnterpriseManager._ensure_states()
+	var eid := "restaurant_small"
+	var bought: Dictionary = EnterpriseManager.buy_enterprise(eid)
+	_check(bool(bought.get("success", false)), "compra do restaurante ok para o teste")
+	Global.player["day"] = 3
+	Global.player["week"] = 2
+	var first: Dictionary = EnterpriseManager.process_daily_operation(eid)
+	_check(bool(first.get("success", false)), "primeira operacao do dia processa")
+	var repeat: Dictionary = EnterpriseManager.process_daily_operation(eid)
+	_check(str(repeat.get("reason", "")) == "already_processed",
+		"reprocessar o mesmo dia+semana e' bloqueado (comportamento normal)")
+	# Semana falhou e repete: TimeManager.week nao muda, os dias 1-7 rodam de
+	# novo com os MESMOS numeros. Sem reset_operation_guards(), o guard acima
+	# bloquearia a receita/despesa da semana inteira em silencio.
+	EnterpriseManager.reset_operation_guards()
+	var after_reset: Dictionary = EnterpriseManager.process_daily_operation(eid)
+	_check(bool(after_reset.get("success", false)),
+		"depois do reset, o mesmo dia+semana processa de novo na semana repetida")
+
+func test_penalidades_tem_piso_em_zero() -> void:
+	print("auditoria: penalidades da meia-noite e da semana ruim nao deixam o saldo negativo")
+	_fresh_player()
+	Global.player["money"] = 10.0
+	TimeManager._handle_midnight()
+	_check(float(Global.player["money"]) == 0.0, "penalidade da meia-noite para em zero, nao vai a -20")
+
+	_fresh_player()
+	Global.player["money"] = 10.0
+	Global.player["hunger"] = 20.0  # abaixo de 35 -> penalidade de semana ruim
+	Global.evaluate_week_status()
+	_check(float(Global.player["money"]) == 0.0, "penalidade de semana ruim para em zero, nao vai a -15")
+
+func test_descansar_com_fome_zerando_e_game_over_na_hora() -> void:
+	print("auditoria: Descansar/TV que zera a fome dispara game-over na hora, nao so' no proximo fechamento de dia")
+	_fresh_player()
+	Global._game_over = false
+	Global.player["hunger"] = 10.0
+	var result: Dictionary = Global.apply_home_action("VOCÊ DESCANSOU.", -12.0, 18.0, 1.0)
+	_check(float(Global.player["hunger"]) == 0.0, "a fome zerou (clamp)")
+	_check(Global.is_game_over(), "game-over disparou no instante da acao, sem esperar dormir/meia-noite")
+	_check(not bool(result.get("success", true)), "apply_home_action reporta falha quando a acao mata de fome")
+
+func test_ensure_player_state_recupera_o_nome() -> void:
+	print("auditoria: ensure_player_state() recupera a chave 'name' ausente")
+	Global.player = Global._new_player_data()
+	Global.player.erase("name")
+	Global.ensure_player_state()
+	_check(Global.player.has("name"), "'name' volta a existir depois de ensure_player_state()")
+
 func _ready() -> void:
 	print("=== auto-teste das mecanicas ===")
 	test_stamina_dura_o_dia_inteiro()
@@ -328,6 +400,11 @@ func _ready() -> void:
 	test_pular_tutorial_libera_tudo_e_nao_volta()
 	test_ordem_escritorio_depois_o_resto()
 	test_save_antigo_nao_retranca_a_cidade()
+	test_reset_de_time_manager_destrava_partida_nova()
+	test_semana_repetida_reprocessa_empreendimento()
+	test_penalidades_tem_piso_em_zero()
+	test_descansar_com_fome_zerando_e_game_over_na_hora()
+	test_ensure_player_state_recupera_o_nome()
 
 	print("=== %d falha(s) ===" % failures.size())
 	for f in failures:

@@ -16,8 +16,8 @@ const THIRST_DECAY_PER_DAY := 14.0
 # ponytail: duplicacao aceita porque a alternativa e' o Global depender de uma
 # cena de UI. Um teste em tests/test_mechanics.gd compara as duas listas.
 const DRINK_THIRST := {
-	"water": 25, "tea": 30, "juice": 35, "soda": 20, "hot_chocolate": 25,
-	"milkshake": 30, "coffee": 15, "energy_drink": 20, "beer": 10, "wine": 8
+	"water": 25, "juice": 35, "coffee": 15, "milk": 15, "soda": 20,
+	"tea": 30, "energy_drink": 20
 }
 
 # =============================================================
@@ -175,7 +175,7 @@ func _new_player_data() -> Dictionary:
 func ensure_player_state() -> void:
 	if player == null:
 		player = _new_player_data()
-	for key in ["money", "saldo", "week", "salary", "school_level", "day", "hour", "tutorial_step", "hunger", "thirst", "stamina", "spend_today", "had_no_spend_day", "no_spend_days_count", "positive_days_count", "tutorial_home_shown", "market_discount"]:
+	for key in ["name", "money", "saldo", "week", "salary", "school_level", "day", "hour", "tutorial_step", "hunger", "thirst", "stamina", "spend_today", "had_no_spend_day", "no_spend_days_count", "positive_days_count", "tutorial_home_shown", "market_discount"]:
 		if not player.has(key):
 			player[key] = data_model.get(key, 0)
 	# Save anterior a' progressao de lugares: nao tem "unlock_stage". Trancar a
@@ -302,7 +302,11 @@ func new_game(name: String, money: float) -> void:
 	# Reset FIIManager state to ensure new game doesn't inherit old portfolio
 	FIIManager.reset()
 	MissionManager.reset_progress()
-	
+	# TimeManager é autoload e sobrevive a um game over: sem isto, day_end_pending
+	# preso em true (deixado por uma morte de fome/sede) travava o relógio da
+	# partida nova inteira.
+	TimeManager.reset()
+
 	TimeManager.update_time()
 	if get_tree() != null:
 		get_tree().change_scene_to_file("res://scenes/world/main_game.tscn")
@@ -516,6 +520,12 @@ func apply_home_action(action_name: String, hunger_delta: float, stamina_delta: 
 	})
 	player["home_actions_log"] = log
 	TimeManager.spend_hours(time_cost)
+	# Descansar/TV gastam fome para devolver stamina: sem este check, a fome
+	# podia zerar aqui e o jogador seguir andando livre até o próximo dormir
+	# ou meia-noite fechar o dia — e só então "descobrir" que já tinha morrido.
+	if player["hunger"] <= 0.0:
+		trigger_game_over("Você morreu de fome!")
+		return {"success": false, "message": "Você morreu de fome!"}
 	return {"success": true, "message": "%s" % action_name}
 
 # Fechamento do dia. A stamina e' tratada minuto a minuto pelo TimeManager;
@@ -555,7 +565,9 @@ func evaluate_week_status() -> Dictionary:
 	var penalty = 0.0
 	if hunger < 35.0 or thirst < 35.0 or stamina < 35.0:
 		penalty = 25.0
-		player["money"] = float(player.get("money", 0.0)) - penalty
+		# Piso em zero: sem isto a penalidade empurrava o saldo cada vez mais
+		# fundo no negativo, sem nenhum caminho de recuperação além do salário.
+		player["money"] = max(0.0, float(player.get("money", 0.0)) - penalty)
 		player["hunger"] = clampf(hunger + 10.0, 0.0, 100.0)
 		player["thirst"] = clampf(thirst + 10.0, 0.0, 100.0)
 		player["stamina"] = clampf(stamina + 10.0, 0.0, 100.0)

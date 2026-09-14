@@ -10,7 +10,6 @@ const DONE_COLOR := Color(0.1, 0.5, 0.15)
 
 # [{ "id": String, "description": String, "label": Label }]
 var _entries: Array = []
-var _panel_was_visible := false
 
 
 func _ready():
@@ -64,13 +63,13 @@ func _process(_delta: float) -> void:
 	if Global.player_hud_hidden:
 		panel.visible = false
 		mission_button.visible = false
-		_panel_was_visible = false
 		return
 	var open := Input.is_key_pressed(KEY_F)
 	panel.visible = open
 	mission_button.visible = not open
-	# Uma missão pode ter deixado de estar cumprida desde a última marcação
-	# (gastar o dinheiro que a satisfazia), e isso não emite sinal nenhum.
-	if open and not _panel_was_visible:
+	# Uma missão pode deixar de estar cumprida a qualquer momento (gastar o
+	# dinheiro que a satisfazia, uma penalidade da meia-noite), e isso não
+	# emite sinal nenhum — por isso reavalia sempre que o painel está aberto,
+	# não só no instante em que F é pressionado.
+	if open:
 		_refresh_marks()
-	_panel_was_visible = open

@@ -421,6 +421,17 @@ func process_all_daily_operations() -> void:
 		if is_owned(enterprise_id):
 			process_daily_operation(enterprise_id)
 
+# Chamado quando uma semana é repetida (missões falharam): TimeManager volta
+# os dias 1-7 a rodar de novo com os mesmos números, e sem isto o guard de
+# "já processado" de process_daily_operation() (que compara dia+semana, e a
+# semana NÃO muda numa repetição) barrava a receita/despesa da semana inteira.
+func reset_operation_guards() -> void:
+	_ensure_states()
+	for enterprise_id in enterprises.keys():
+		var state = Global.player["enterprises"][enterprise_id]
+		state["last_operation_day"] = 0
+		state["last_operation_week"] = 0
+
 func generate_all_weekly_bills() -> void:
 	_ensure_states()
 	for enterprise_id in enterprises.keys():

@@ -109,7 +109,7 @@ Os botões usam `focus_mode = FOCUS_NONE` de propósito. Um botão com foco é a
 
 **O tutorial tem dois estágios.**
 
-*Estágio 1 — onboarding linear.* `messages` (15 entradas) e a máquina de 8 passos de `_next_step()`, que roda uma vez só, da abertura do jogo até o fim da semana 1. Os passos 1–4 são as boas-vindas, o 5 foca a câmera na escola, o 6 explica o minigame (`messages[4]` a `messages[7]`, incluindo as regras de trava da escola), o 7 espera o minigame terminar e o 8 fecha apresentando mercado, banco e escritório (`messages[8]` a `messages[14]`).
+*Estágio 1 — onboarding linear.* `messages` (15 entradas) e a máquina de 8 passos de `_next_step()`, que roda uma vez só, da abertura do jogo até o fim da semana 1. Os passos 1–4 são as boas-vindas, o 5 foca a câmera na escola, o 6 explica o minigame (`messages[4]` a `messages[8]`, incluindo as regras de trava da escola), o 7 espera o minigame terminar e o 8 fecha apresentando mercado, banco e escritório (`messages[8]` a `messages[14]`).
 
 *Estágio 2 — avisos semanais.* `weekly_messages` é um dicionário `semana → Array[String]`, disparado por `TutorialManager.on_week_changed(week)`, que o `TimeManager` chama na virada de semana logo após `week_changed`. Cada semana ensina só o que acabou de destravar:
 
@@ -444,7 +444,7 @@ No projeto atual, o tempo e a progressão estão semiconscientes e dependem do `
 
 - pega a lista de missões da semana
 - verifica cada uma com `_check_mission`
-- se falhar, chama `_game_over()`
+- se falhar, mostra o alerta de reprovação e devolve `false` sem avançar a semana — quem chama (`TimeManager._process_week_rollover()`) repete a mesma semana. `MissionManager._game_over()` existe no arquivo mas não tem nenhum chamador; falhar uma missão nunca é game over
 - se todas forem concluídas, avança semana
 
 ### Regras reais implementadas
@@ -1103,7 +1103,7 @@ Algumas áreas exigem atenção:
 - a lógica de tempo e missões precisa ser validada em runtime real do Godot
 - muitas cenas podem ter dependências semânticas em nomes de nó específicos
 - em alguns pontos a arquitetura ainda mistura cena e lógica global
-- `spend_today` é zerado a cada hora de jogo em `TimeManager._add_minute()`, não a cada dia — isso afeta as missões `no_spend_day` e `no_impulse`. O `emit_signal("day_changed")` está no mesmo bloco horário, com o mesmo problema
+- ~~`spend_today` é zerado a cada hora~~ — desatualizado: hoje `spend_today` só zera uma vez por dia, em `_advance_to_next_day()` (`TimeManager.gd`). Não afeta mais `no_spend_day`/`no_impulse`
 - o processamento financeiro e o balanceamento dos preços ainda precisam ser validados em runtime real do Godot
 - `EnterpriseManager.process_all_daily_operations()` é chamado **antes** de `Global.player["day"]` ser atualizado no `TimeManager`, então o dia gravado no histórico e nas despesas fica defasado em 1. A operação não duplica (o guard `last_operation_day` funciona), mas as datas registradas estão erradas
 - `restaurant.tscn`, `arcade.tscn` e `shopping.tscn` foram escritas à mão como cenas herdadas (`[node name="X" instance=ExtResource(...)]` na raiz). **Validado em runtime**: carregam e renderizam corretamente. O mesmo padrão pode ser reusado para outras telas
@@ -1112,6 +1112,21 @@ Algumas áreas exigem atenção:
 - **a tela do banco ainda tem o `history_panel` criado por script** em `(710,25)`-`(1100,615)`, sobreposto à área do `TabContainer` `Investimentos`. Os demais painéis (FIIs, carteira, eventos) já viraram abas e não se empilham mais
 - `scripts/world/main_game.gd` tem três teclas de debug no `_process`: **Page Down** entra no restaurante, **Page Up** entra no mercado e **End** dá R$ 10.000 ao jogador. Precisam sair antes de qualquer build de entrega
 - `AlertManager._close_alert()` sempre devolve `Global.play_time = true` quando destrava. Como as cenas de interior (banco, casa, empreendimentos, mercado) rodam com `play_time = false`, qualquer alerta aberto lá dentro faz o tempo voltar a correr ao fechar. Afeta `enterprise_management.gd` e agora também `banco.gd`. É a mesma pendência do `play_time` sem contador, citada em 3.2
+
+### 16.1 Bugs críticos corrigidos numa auditoria (trace estático, sem Godot disponível)
+
+Achados por simulação manual de ponta a ponta do jogo. Documentados aqui para ninguém reintroduzir a mesma classe de erro:
+
+- **Morrer de fome/sede travava o relógio de qualquer partida nova, para sempre.** `TimeManager.day_end_pending` só era zerado em `_advance_to_next_day()`, que nunca roda no caminho de morte (`_close_day()` retorna cedo). Como `TimeManager` é autoload e sobrevive ao game over, a flag ficava presa em `true` e `sleep()`/`_add_minute()` paravam de funcionar até reiniciar o app. Corrigido com `TimeManager.reset()`, chamado por `Global.new_game()`.
+- **Sair do minigame do parque pelo menu de pausa podia travar o jogo inteiro.** `park_minigame_session.gd` não tinha `_exit_tree()`; `pause_menu.gd`'s "Sair" troca de cena direto, sem rodar `ParkMinigameManager.end_session()` nem devolver o lock de um quiz aberto. Corrigido com um `_exit_tree()` espelhando o padrão já usado em `scripts/minigame/minigame.gd`.
+- **Repetir uma semana por missão falhada zerava a receita/despesa dos empreendimentos a semana inteira, em silêncio.** O guard de `process_daily_operation()` (`EnterpriseManager.gd`) compara dia+semana; como a semana não muda numa repetição, os dias 1-7 da tentativa nova colidem com os carimbos da tentativa fracassada. Corrigido com `EnterpriseManager.reset_operation_guards()`, chamado no ramo de falha de `TimeManager._process_week_rollover()`.
+- **`FIIManager.update_prices()` nunca tinha um chamador.** Os preços dos FIIs nunca se moviam — a "volatilidade" documentada não existia em runtime. Agora é chamado uma vez por dia, em `TimeManager._close_day()`, junto de `EnterpriseManager.process_all_daily_operations()`.
+- **`Global.DRINK_THIRST` (migração de saves antigos) estava fora de sincronia com `market.gd["Bebidas"]`**: faltava `milk` e sobravam `hot_chocolate`/`milkshake`/`beer`/`wine`, que não existem mais no mercado. Corrigido para espelhar exatamente as 7 bebidas atuais — `tests/test_mechanics.gd` cobre isso.
+- **Evento com escolha sorteado de novo enquanto uma pendência anterior do mesmo tipo ainda está aberta**: o jogador clicava numa opção e `create_pending_event()` descartava a pendência em silêncio (`has_pending_from_source()`), sem feedback nenhum. Agora `EventsManager.trigger_evento()` checa o mesmo guard **antes** de mostrar o diálogo de escolha, igual ao caminho sem escolha já fazia.
+- **`ensure_player_state()` nunca recuperava a chave `"name"`.** Um save sem ela fazia `main_menu.gd` (único lugar com acesso direto por colchete, `!= ""` contra `null`) tratar um save inválido como válido. `"name"` entrou na lista de chaves normalizadas.
+- **`apply_home_action()` (Descansar/Assistir TV) podia zerar a fome sem checar game over na hora** — o alerta de morte só aparecia depois, no próximo dormir/meia-noite. Agora chama `trigger_game_over()` imediatamente se a fome zerar.
+- **Dinheiro não tinha piso.** As penalidades da meia-noite (-R$30) e de semana ruim (-R$25) podiam empurrar o saldo indefinidamente negativo, sem consequência nem recuperação. Ambas agora usam `max(0.0, ...)`.
+- Baixa severidade, também corrigidos: o check do painel de missões só reavaliava no instante em que F era pressionado, não enquanto ficava segurado; `had_no_spend_day`/`no_spend_days_count` não resetavam numa semana repetida.
 
 ## 17. Como continuar sem quebrar a base
 

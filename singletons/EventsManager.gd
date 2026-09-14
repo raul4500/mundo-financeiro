@@ -105,6 +105,13 @@ func trigger_evento() -> Dictionary:
 	# Eventos com escolha não geram pendência agora: quem decide é o jogador,
 	# no alerta, e só a opção escolhida vira conta ou bônus.
 	if evento.has("escolhas"):
+		# Mesmo guard do caminho sem escolha: se já existe uma pendência aberta
+		# deste evento, não mostra o diálogo. Sem isto, o jogador podia escolher
+		# "Comprar" e create_pending_event() descartar a pendência em silêncio,
+		# sem nenhum feedback do que aconteceu com a escolha.
+		if has_pending_from_source(str(evento.get("id", "evento"))):
+			_log_info("Evento com escolha '%s' descartado: já existe pendência do mesmo tipo." % str(evento.get("id", "evento")))
+			return evento
 		_show_choice_alert(evento)
 		return evento
 

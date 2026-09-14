@@ -40,6 +40,17 @@ func update_time():
 	emit_signal("time_changed", current_hour)
 	emit_signal("day_changed", current_day)
 
+# Chamado por Global.new_game(). TimeManager é autoload e sobrevive a um game
+# over (o processo continua rodando, só a cena troca para o menu principal):
+# sem isto, um jogador que morresse de fome/sede carregava day_end_pending
+# preso em true para a partida nova inteira, porque só _advance_to_next_day()
+# zera essa flag e ela nunca roda no caminho de morte (ver _close_day()).
+func reset() -> void:
+	day_end_pending = false
+	timer = 0.0
+	_exhaustion_alert_shown = false
+	_no_stamina_alert_shown = false
+
 func _logger() -> Node:
 	if get_tree() == null or get_tree().root == null:
 		return null
@@ -139,6 +150,9 @@ func sleep() -> Dictionary:
 		return {"success": false, "message": "O dia já terminou."}
 	# Sem esta trava o jogador dormiria as 08h01 sete vezes seguidas e viraria
 	# a semana — com salario e dividendos — pagando so' a fome de sete dias.
+	# ponytail: "stamina <= 0 libera dormir cedo" e' inatingivel hoje (a queda
+	# passiva tira no maximo ~62 de 100 ate' as 18h) — se uma acao futura
+	# drenar stamina mais rapido, reabrir esse caminho como exploit.
 	if current_hour < EXHAUSTION_HOUR and float(Global.player.get("stamina", 100.0)) > 0.0:
 		return {
 			"success": false,
@@ -161,7 +175,9 @@ func sleep() -> Dictionary:
 func _handle_midnight() -> void:
 	# Nao precisa mexer na posicao: _advance_to_next_day() liga
 	# return_home_next_day e main_game._ready() poe o jogador na porta de casa.
-	Global.player["money"] = float(Global.player.get("money", 0.0)) - MIDNIGHT_PENALTY
+	# Piso em zero: sem isto a penalidade empurrava o saldo cada vez mais fundo
+	# no negativo em noites seguidas, sem caminho de recuperação.
+	Global.player["money"] = max(0.0, float(Global.player.get("money", 0.0)) - MIDNIGHT_PENALTY)
 	if not _close_day(MIDNIGHT_STAMINA):
 		return
 	AlertManager.alert(
@@ -179,6 +195,10 @@ func _close_day(restored_stamina: float) -> bool:
 		Global.player["had_no_spend_day"] = true
 		Global.player["no_spend_days_count"] = int(Global.player.get("no_spend_days_count", 0)) + 1
 	EnterpriseManager.process_all_daily_operations()
+	# Preço de FII muda por dia, no mesmo fechamento que já processa os
+	# empreendimentos — sem isto update_prices() nunca era chamado por ninguém
+	# e a "volatilidade" dos fundos ficava só no papel.
+	FIIManager.update_prices()
 	Global.player["stamina"] = clampf(restored_stamina, 0.0, 100.0)
 	Global.player["positive_days_count"] = int(Global.player.get("positive_days_count", 0)) + 1
 	day_end_pending = true
@@ -230,3 +250,12 @@ func _process_week_rollover() -> void:
 		emit_signal("week_changed", Global.player["week"])
 		TutorialManager.on_week_changed(int(Global.player["week"]))
 		EventsManager.maybe_spawn_events(int(Global.player["week"]))
+	else:
+		# Semana repetida: os dias 1-7 vão rodar de novo com o mesmo número de
+		# semana. Sem isto, o guard de "já processado" dos empreendimentos
+		# barrava a operação diária pela semana inteira (ver
+		# EnterpriseManager.reset_operation_guards()), e o "sem gastar" da
+		# tentativa fracassada sobrava de graça na repetição.
+		EnterpriseManager.reset_operation_guards()
+		Global.player["no_spend_days_count"] = 0
+		Global.player["had_no_spend_day"] = false
