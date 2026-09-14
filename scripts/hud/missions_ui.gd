@@ -4,15 +4,25 @@ extends CanvasLayer
 @onready var panel = $Panel
 @onready var mission_button = $Open
 
+# Override de cor, e não modulate: o label.tres do painel pinta a fonte de
+# preto, e modulate multiplica — preto vezes verde continua preto.
+const DONE_COLOR := Color(0.1, 0.5, 0.15)
+
+# [{ "id": String, "description": String, "label": Label }]
+var _entries: Array = []
+var _panel_was_visible := false
+
 
 func _ready():
 	load_missions(Global.player["week"])
 	TimeManager.connect("week_changed", Callable(self, "load_missions"))
+	MissionManager.mission_completed.connect(_on_mission_completed)
 
 func load_missions(phase: int):
 	# limpa lista
 	for child in mission_list.get_children():
 		child.queue_free()
+	_entries.clear()
 
 	var missions = MissionManager.get_missions(phase)
 
@@ -25,18 +35,42 @@ func load_missions(phase: int):
 
 	for m in missions:
 		var label = Label.new()
-		label.text = "- " + m["description"]
 		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		mission_list.add_child(label)
+		_entries.append({
+			"id": str(m.get("id", "")),
+			"description": str(m.get("description", "")),
+			"label": label
+		})
 
-func _process(delta: float) -> void:
+	_refresh_marks()
+
+func _refresh_marks() -> void:
+	for entry in _entries:
+		var label = entry["label"]
+		if not is_instance_valid(label):
+			continue
+		var done: bool = MissionManager.is_completed(entry["id"])
+		label.text = ("✓ " if done else "- ") + entry["description"]
+		if done:
+			label.add_theme_color_override("font_color", DONE_COLOR)
+		else:
+			label.remove_theme_color_override("font_color")
+
+func _on_mission_completed(_mission: Dictionary) -> void:
+	_refresh_marks()
+
+func _process(_delta: float) -> void:
 	if Global.player_hud_hidden:
 		panel.visible = false
 		mission_button.visible = false
+		_panel_was_visible = false
 		return
-	if Input.is_key_pressed(KEY_F):
-		panel.visible = true
-		mission_button.visible = false
-	else:
-		panel.visible = false
-		mission_button.visible = true
+	var open := Input.is_key_pressed(KEY_F)
+	panel.visible = open
+	mission_button.visible = not open
+	# Uma missão pode ter deixado de estar cumprida desde a última marcação
+	# (gastar o dinheiro que a satisfazia), e isso não emite sinal nenhum.
+	if open and not _panel_was_visible:
+		_refresh_marks()
+	_panel_was_visible = open

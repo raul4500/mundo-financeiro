@@ -65,6 +65,7 @@ Em `project.godot`, vários nodes ficam automaticamente disponíveis globalmente
 - `EventsManager` — sorteia eventos inesperados e mantém as pendências (contas/bônus) que o jogador resolve no banco; dados vêm de `UnexpectedEvents`, que serve só como fonte de dados. Ver seção 12.1
 - `TutorialManager` — onboarding da semana 1 e avisos semanais do tutorial (ver 3.3)
 - `AlertManager` — `CanvasLayer` de alerta modal, compartilhado por todo o jogo
+- `NotificationManager` — `CanvasLayer` de toasts no canto superior direito (ver 3.10)
 - `CameraManager` — cutscenes de câmera
 - `DoorManager` — utilitário de portas
 
@@ -97,6 +98,10 @@ Estrutura do alerta, montada em `_create_alert_ui()`:
 **Por que `PanelContainer` e não `Panel`.** O `dialog` era um `Panel` com `custom_minimum_size = Vector2(560, 160)`. `Panel` não é container: ele não lê o tamanho mínimo dos filhos, então o `CenterContainer` o mantinha travado em 560×160 enquanto o texto do tutorial (até 380 caracteres, ~6 linhas no corpo 23) crescia para fora da caixa. O comentário no código dizia "a altura acompanha o tamanho do texto", o que nunca foi verdade nessa estrutura. `PanelContainer` se dimensiona pelo conteúdo.
 
 O tamanho da caixa é **fixo** de propósito: quem define a área de texto é o `custom_minimum_size` do `text_scroll`, não a mensagem. Assim a caixa não muda de tamanho a cada alerta. Textos maiores que a área rolam — e `alert()` zera `scroll_vertical`, senão a mensagem seguinte abriria já rolada. O `alert_label` fica com `MOUSE_FILTER_IGNORE` para a roda do mouse chegar ao `ScrollContainer`.
+
+**`alert()` enfileira, não sobrescreve.** A virada de semana dispara três alertas em sequência (`verify_missions()`, a mensagem semanal do tutorial e o evento inesperado). Sem fila, o último apagava o texto dos anteriores e — pior — o contador de `gameplay_locked` ficava preso: eram N `lock_gameplay()` (uma por chamada) para um único `unlock_gameplay()` (o clique). Agora `alert()` só empilha em `_queue`, e `_show_next()` exibe um por vez, travando **uma vez por alerta exibido**. `_close_alert()` puxa o próximo **depois** de rodar o callback, porque o callback pode enfileirar outro alerta — é assim que o tutorial encadeia as mensagens.
+
+**`alert_choice(text, choices)`** é a variante com N botões, usada pelos eventos inesperados com `escolhas`. Cada escolha é `{"text": String, "callback": Callable}`. Nela o botão OK some, o "Pular tutorial" some e **a barra de espaço não fecha** — fechar pelo teclado descartaria a decisão sem criar conta nem bônus. Os botões vivem em `choice_box` e são limpos com `remove_child()` antes do `queue_free()`, pelo mesmo motivo do `_clear_list()` dos empreendimentos.
 
 Os botões usam `focus_mode = FOCUS_NONE` de propósito. Um botão com foco é acionado pela ação `ui_accept`, que inclui **Enter** por padrão — e o atalho de confirmação do alerta deve ser somente a barra de espaço, tratada manualmente em `_input()` com `set_input_as_handled()`.
 
@@ -230,6 +235,43 @@ Quatro detalhes que sustentam isso:
 - **`layer = 200`**, acima do `AlertManager` (100) e do diálogo de compra das portas (90), para o fade cobrir tudo. E `unlock_gameplay()` roda mesmo quando `change_scene_to_file` retorna erro, senão o contador de `gameplay_locked` ficaria preso.
 
 **Exceção deliberada:** `Global.new_game()` continua trocando de cena direto. É a passagem da escolha de personagem para o mundo, e `Global` é a base de que todos dependem — fazê-lo consumir um singleton de UI inverteria a direção das dependências do projeto. Para ter fade também ali, o caminho limpo é `choose_character.gd` chamar a transição e `new_game()` deixar de trocar de cena.
+
+### 3.10 Notificações (toasts)
+
+`NotificationManager` é o par não-modal do `AlertManager`. Uso:
+
+```gdscript
+NotificationManager.notify("Missão concluída: Economize R$100")
+NotificationManager.notify("Conta paga", 5.0)   # duração opcional
+```
+
+**A regra de escolha entre os dois:** alerta trava o jogo e exige confirmação; notificação não trava nada e some sozinha em 3 s. Se a mensagem puder ser perdida sem prejuízo, é notificação.
+
+Detalhes que sustentam isso:
+
+- **`layer = 90`** — abaixo do `AlertManager` (100) e do `TransitionManager` (200), acima dos HUDs. Um alerta modal cobre os toasts de propósito;
+- **`process_mode = PROCESS_MODE_ALWAYS`** — um `Tween` segue o `process_mode` do nó dono. Sem isso, um toast aberto quando o jogador abre o menu de pausa congelaria na tela para sempre;
+- **o tween nasce no toast (`toast.create_tween()`), não no autoload.** Assim ele morre junto se o toast for removido antes da hora pelo limite de `MAX_VISIBLE` (4). Um tween criado no autoload continuaria mexendo em um nó liberado;
+- **`MOUSE_FILTER_IGNORE`** no stack e no toast: é decoração, não pode roubar clique de botão nenhum embaixo;
+- o `VBoxContainer` do stack precisa de **altura real** (`STACK_HEIGHT`): um `Container` distribui os filhos dentro do próprio retângulo, e com altura zero os toasts nasceriam invisíveis;
+- `TOP_MARGIN = 80` começa a pilha **abaixo** do botão "MISSÕES (F)", que ocupa o topo direito até `y = 65`.
+
+Convenção de tema seguida (ver 3.8): o `PanelContainer` do toast usa `font_theme.tres`, o `Label` usa `label.tres`.
+
+### 3.11 Progresso de missão em tempo real
+
+`MissionManager` reavalia as missões da semana a cada `CHECK_INTERVAL` (0,5 s) no `_process`. É polling de propósito: as missões são derivadas de **estado** (dinheiro, carteira, estoque, contas), não de eventos — instrumentar cada sistema que pode cumprir uma missão seria muito mais código e deixaria caminhos de fora.
+
+- `is_completed(id)` alimenta o check do painel (`scripts/hud/missions_ui.gd`);
+- `mission_completed(mission)` é emitido na transição, e `_announce()` dispara o toast;
+- **o check espelha `_check_mission()` ao vivo, então pode sumir** (gastar o dinheiro que cumpria `money_min`). É intencional: o painel tem de contar a mesma verdade que `verify_missions()` no fim da semana, senão o jogador veria ✓ e reprovaria mesmo assim;
+- **a semeadura é silenciosa.** `refresh_progress(notify)` força `notify = false` quando a semana muda (inclui a primeira varredura, com `_tracked_week = -1`), senão uma missão que já nasce cumprida — o dinheiro que sobrou da semana anterior — anunciaria uma conquista que o jogador não acabou de fazer;
+- **a semeadura acontece no primeiro `_process`, não no `_ready()`.** `MissionManager` é registrado **antes** de `FIIManager` e `EnterpriseManager` em `project.godot`, e `_check_mission()` chama os dois: no `_ready()` eles ainda não existem;
+- `Global.new_game()` chama `reset_progress()` junto de `FIIManager.reset()`, para a partida nova não herdar o que já foi anunciado.
+
+O `✓` usado no painel existe na `PixeloidSansBold` (U+2713 está no cmap da fonte); `✔` (U+2714) e `☑` (U+2611) **não** existem e sairiam como caixa vazia.
+
+Teste: `tests/test_mission_notifications.tscn`.
 
 ## 4. Modelo do jogador (Global.player)
 
@@ -692,7 +734,7 @@ Fluxo:
 1. `EventsManager.maybe_spawn_events(week)` é o único ponto de entrada da geração. Ele barra qualquer semana abaixo de `FIRST_EVENT_WEEK = 2`.
 2. Dois gatilhos chamam essa função: o timer de `SPAWN_INTERVAL = 100.0` segundos em `_process` (frequência original preservada) e o avanço de semana em `TimeManager`, logo após `week_changed`.
 3. `sortear_evento()` percorre `UnexpectedEvents` e devolve o primeiro evento cuja `probabilidade` passar no `randf()`.
-4. Sem `escolhas`, `create_pending_event()` grava a pendência. Com `escolhas`, nada é gravado até o jogador clicar numa opção em `event_ui.gd` — e então só a opção escolhida vira pendência.
+4. Sem `escolhas`, `create_pending_event()` grava a pendência. Com `escolhas`, nada é gravado até o jogador clicar numa opção no alerta — e então só a opção escolhida vira pendência.
 5. No banco, `Pagar`/`Resgatar` chamam `pay_event()`/`collect_event()`, que devolvem `{"success": bool, "message": String}` como o `EnterpriseManager`.
 
 Forma de uma pendência em `Global.player["pending_events"]`:
@@ -725,6 +767,8 @@ Persistência sai de graça: `SaveManager.save_game()` serializa `Global.player`
 
 - não existe expiração nem multa automática. O plano pedia para documentar antes de aplicar penalidades, e uma conta vencida que se cobra sozinha reintroduziria exatamente o débito automático que a mudança removeu. `due_week` não é usado;
 - a UI fica só no banco, não em casa. `location` existe no modelo e `get_pending_events(location)` já filtra, então acrescentar um painel em casa é só passar `"home"`;
+- **o aviso do evento é um alerta modal, não uma notificação.** `event_ui.gd` e `event_message.tscn` foram removidos: a apresentação vive em `EventsManager._show_pending_alert()` e `_show_choice_alert()`, sobre o `AlertManager`. O evento mexe no dinheiro e, no caso com `escolhas`, exige uma decisão — um aviso que some sozinho descartaria a escolha em silêncio. O painel antigo também não pausava o jogo, só aparecia;
+- **o alerta só aparece se a pendência foi mesmo criada.** Antes o painel abria mesmo quando `has_pending_from_source()` descartava o sorteio, anunciando uma conta que não existia;
 - o nível 2 do escritório ganhou o tópico "Eventos inesperados no jogo", que explica a mecânica e diz onde resolver. O nível 2 destrava na semana 2, a mesma em que os eventos começam.
 
 ## 12.2 Minigame: travas, cooldown e tela de início
@@ -1149,7 +1193,6 @@ Esse conjunto permite que um novo agente entenda o comportamento do projeto e co
 - `singletons/TutorialManager.gd`
 - `singletons/EventsManager.gd`
 - `singletons/UnexpectedEvents.gd`
-- `scripts/hud/event_ui.gd`
 - `scenes/world/places/bank.tscn`
 - `scenes/world/main_game.tscn`
 - `scripts/world/doors/enterprise_door.gd`

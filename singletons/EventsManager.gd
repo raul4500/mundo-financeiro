@@ -27,8 +27,6 @@ var spawn_timer := 0.0
 
 func _ready() -> void:
 	eventos = UnexpectedEvents.unexpected_events["eventos"]
-	var event_ui_scene = load("res://scenes/ui/event_message.tscn")
-	add_child(event_ui_scene.instantiate())
 
 # =============================
 # 🪵 LOG
@@ -105,12 +103,71 @@ func trigger_evento() -> Dictionary:
 	emit_signal("evento_ocorreu", evento)
 
 	# Eventos com escolha não geram pendência agora: quem decide é o jogador,
-	# em event_ui.gd, e só a opção escolhida vira conta ou bônus.
+	# no alerta, e só a opção escolhida vira conta ou bônus.
 	if evento.has("escolhas"):
+		_show_choice_alert(evento)
 		return evento
 
-	create_pending_event(evento, evento.get("impacto", {}))
+	var pendencia = create_pending_event(evento, evento.get("impacto", {}))
+	# Sem pendência não há o que avisar: ou o impacto era zero, ou já existe uma
+	# conta aberta do mesmo tipo e o sorteio foi descartado. Antes o painel
+	# aparecia mesmo assim, anunciando uma conta que não foi criada.
+	if not pendencia.is_empty():
+		_show_pending_alert(evento, pendencia)
 	return evento
+
+# =============================
+# 🚨 APRESENTAÇÃO (AlertManager)
+# =============================
+# Evento é alerta modal, não notificação: ele muda o dinheiro do jogador e, no
+# caso com escolhas, exige uma decisão. Um aviso que some sozinho descartaria
+# a decisão em silêncio.
+
+func _money_text(value: float) -> String:
+	return "R$ %.2f" % abs(value)
+
+func _show_pending_alert(evento: Dictionary, pendencia: Dictionary) -> void:
+	var is_bonus = bool(pendencia.get("is_bonus", false))
+	var text = "%s\n\n%s\n\n%s de %s — %s no banco." % [
+		str(evento.get("titulo", "Evento")),
+		str(evento.get("descricao", "")),
+		"Bônus" if is_bonus else "Conta",
+		_money_text(float(pendencia.get("amount", 0.0))),
+		"resgate" if is_bonus else "pague"
+	]
+	AlertManager.alert(text)
+
+func _show_choice_alert(evento: Dictionary) -> void:
+	var choices: Array = []
+	for escolha in evento.get("escolhas", []):
+		choices.append({
+			"text": _choice_label(escolha),
+			"callback": Callable(self, "_on_choice_taken").bind(evento, escolha)
+		})
+	var text = "%s\n\n%s" % [
+		str(evento.get("titulo", "Evento")),
+		str(evento.get("descricao", ""))
+	]
+	AlertManager.alert_choice(text, choices)
+
+# O valor vai no botão: a lição do evento de decisão é o preço da escolha.
+func _choice_label(escolha: Dictionary) -> String:
+	var descricao = str(escolha.get("descricao", "Escolher"))
+	var value = float(escolha.get("impacto", {}).get("dinheiro", 0.0))
+	if is_zero_approx(value):
+		return descricao
+	return "%s (%s%s)" % [descricao, "+" if value > 0.0 else "-", _money_text(value)]
+
+func _on_choice_taken(evento: Dictionary, escolha: Dictionary) -> void:
+	var escolhido = evento.duplicate(true)
+	escolhido["titulo"] = "%s — %s" % [
+		str(evento.get("titulo", "Evento")),
+		str(escolha.get("descricao", ""))
+	]
+	var pendencia = create_pending_event(escolhido, escolha.get("impacto", {}))
+	# "Não comprar" tem impacto zero e não gera nada: não há o que confirmar.
+	if not pendencia.is_empty():
+		_show_pending_alert(escolhido, pendencia)
 
 # =============================
 # 🗂 PENDÊNCIAS (contas e bônus)

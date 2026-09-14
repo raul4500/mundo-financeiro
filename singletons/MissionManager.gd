@@ -1,5 +1,23 @@
 extends Node
 
+signal mission_completed(mission)
+
+# As missões são derivadas do estado do jogador (dinheiro, carteira, estoque),
+# e não de eventos. Em vez de instrumentar cada sistema que pode cumprir uma,
+# reavaliamos as três missões da semana neste intervalo — o custo é desprezível
+# e nenhuma forma de cumprir a missão passa despercebida.
+const CHECK_INTERVAL := 0.5
+
+var _check_timer := 0.0
+# mission_id -> bool. Espelha o resultado de _check_mission(), então uma missão
+# pode voltar a ficar em aberto (gastar o dinheiro que a cumpria). É de
+# propósito: o check do painel tem de contar a mesma verdade que a validação
+# do fim de semana, senão o jogador vê ✓ e reprova mesmo assim.
+var _completed: Dictionary = {}
+# -1 força a primeira varredura a semear em silêncio, já no primeiro frame —
+# e não no _ready(), quando FIIManager e EnterpriseManager ainda não existem.
+var _tracked_week := -1
+
 func _logger() -> Node:
 	if get_tree() == null or get_tree().root == null:
 		return null
@@ -114,6 +132,48 @@ var missions_data: Dictionary = {
 
 func get_missions(week: int) -> Array:
 	return missions_data.get(week, [])
+
+func _process(delta: float) -> void:
+	_check_timer += delta
+	if _check_timer < CHECK_INTERVAL:
+		return
+	_check_timer = 0.0
+	refresh_progress(true)
+
+func is_completed(mission_id: String) -> bool:
+	return bool(_completed.get(mission_id, false))
+
+# Zera o acompanhamento para a partida nova não herdar o que já foi anunciado.
+func reset_progress() -> void:
+	_completed.clear()
+	_tracked_week = -1
+
+# Reavalia as missões da semana atual. `notify` liga o aviso na tela; ele é
+# desligado sozinho quando a semana vira ou a partida acabou de ser carregada,
+# senão uma missão que já nasce cumprida (o dinheiro que sobrou da semana
+# anterior) anunciaria uma conquista que o jogador não acabou de fazer.
+func refresh_progress(notify: bool = false) -> void:
+	if Global.player.is_empty():
+		return
+	var week := int(Global.player.get("week", 1))
+	if week != _tracked_week:
+		_tracked_week = week
+		_completed.clear()
+		notify = false
+	for mission in get_missions(week):
+		var id := str(mission.get("id", ""))
+		var was_done := bool(_completed.get(id, false))
+		var done := _check_mission(mission)
+		_completed[id] = done
+		if done and not was_done and notify:
+			_announce(mission)
+
+func _announce(mission: Dictionary) -> void:
+	var text := "Missão concluída: %s" % str(mission.get("description", mission.get("id", "")))
+	_log_info(text)
+	if has_node("/root/NotificationManager"):
+		NotificationManager.notify(text)
+	emit_signal("mission_completed", mission)
 
 func verify_missions(week: int) -> bool:
 	var missions = get_missions(week)

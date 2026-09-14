@@ -301,6 +301,7 @@ func new_game(name: String, money: float) -> void:
 
 	# Reset FIIManager state to ensure new game doesn't inherit old portfolio
 	FIIManager.reset()
+	MissionManager.reset_progress()
 	
 	TimeManager.update_time()
 	if get_tree() != null:

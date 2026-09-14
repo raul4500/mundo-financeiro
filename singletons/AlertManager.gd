@@ -14,11 +14,18 @@ var dialog: PanelContainer  # caixa central com o texto e o botão
 var text_scroll: ScrollContainer
 var alert_label: Label
 var confirm_button: Button
+var choice_box: VBoxContainer  # botões de escolha, no lugar do OK
 var skip_button: Button
 var blocker: ColorRect
 
 var next_step: bool = false
 var on_confirm_callback: Callable
+
+# Fila de alertas. A virada de semana dispara missões, tutorial e evento
+# inesperado em sequência: sem fila, o último alerta apagava o texto dos
+# anteriores e — pior — o contador de `gameplay_locked` ficava preso, porque
+# eram N travas (uma por chamada) para um único destravamento (o clique).
+var _queue: Array = []
 
 func _ready():
 	# Autoloads entram na árvore antes da cena atual, então qualquer CanvasLayer
@@ -113,8 +120,17 @@ func _create_alert_ui():
 	confirm_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	confirm_button.pressed.connect(_on_confirm_pressed)
 
+	# =============================
+	# 🔀 ESCOLHAS (substituem o OK)
+	# =============================
+	choice_box = VBoxContainer.new()
+	choice_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	choice_box.add_theme_constant_override("separation", 8)
+	choice_box.visible = false
+
 	box.add_child(text_scroll)
 	box.add_child(confirm_button)
+	box.add_child(choice_box)
 
 	margin.add_child(box)
 	dialog.add_child(margin)
@@ -150,22 +166,88 @@ func _create_alert_ui():
 # 🚨 MOSTRAR ALERTA
 # =============================
 func alert(text: String, step: bool = false, callback: Callable = Callable()):
+	_queue.append({"text": text, "step": step, "callback": callback, "choices": []})
+	if not panel.visible:
+		_show_next()
+
+
+# =============================
+# 🔀 ALERTA COM ESCOLHAS
+# =============================
+# Cada escolha é {"text": String, "callback": Callable}. O jogador é obrigado a
+# clicar numa opção: o OK some e a barra de espaço não fecha, senão a decisão
+# sumiria da tela sem virar nada.
+func alert_choice(text: String, choices: Array):
+	if choices.is_empty():
+		alert(text)
+		return
+	_queue.append({"text": text, "step": false, "callback": Callable(), "choices": choices})
+	if not panel.visible:
+		_show_next()
+
+
+func _show_next() -> void:
+	if _queue.is_empty():
+		return
+	var entry = _queue.pop_front()
+	_clear_choices()
+
 	blocker.visible = true
 	panel.visible = true
 
-	alert_label.text = text
-	confirm_button.text = "Continuar" if callback.is_valid() else "OK"
+	alert_label.text = str(entry["text"])
+	next_step = bool(entry["step"])
+	on_confirm_callback = entry["callback"]
+	confirm_button.visible = true
+	confirm_button.text = "Continuar" if on_confirm_callback.is_valid() else "OK"
 	# Sem isto, uma mensagem longa deixa o scroll no meio e a próxima abre
 	# já rolada, escondendo o começo do texto.
 	text_scroll.scroll_vertical = 0
 	skip_button.visible = TutorialManager.can_skip()
 
-	# 🔒 trava jogo
+	var choices: Array = entry["choices"]
+	if not choices.is_empty():
+		confirm_button.visible = false
+		# Pular o tutorial no meio de uma decisão deixaria o evento sem resposta.
+		skip_button.visible = false
+		_build_choices(choices)
+
+	# 🔒 trava jogo. Uma trava por alerta EXIBIDO, não por chamada: é o que
+	# mantém o par com o único unlock_gameplay() de _close_alert().
 	Global.play_time = false
 	Global.lock_gameplay()
-	
-	next_step = step
+
+
+func _build_choices(choices: Array) -> void:
+	var panel_theme = load("res://themes/font_theme.tres")
+	for choice in choices:
+		var button = Button.new()
+		button.theme = panel_theme
+		button.z_index = 199
+		button.text = str(choice.get("text", "Escolher"))
+		button.focus_mode = Control.FOCUS_NONE
+		button.mouse_filter = Control.MOUSE_FILTER_STOP
+		button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		button.pressed.connect(_on_choice_pressed.bind(choice.get("callback", Callable())))
+		choice_box.add_child(button)
+	choice_box.visible = true
+
+
+func _clear_choices() -> void:
+	# remove_child antes do queue_free: queue_free só libera no fim do frame, e
+	# dois alertas no mesmo frame empilhariam os botões antigos com os novos.
+	for button in choice_box.get_children():
+		choice_box.remove_child(button)
+		button.queue_free()
+	choice_box.visible = false
+
+
+func _on_choice_pressed(callback: Callable) -> void:
+	# Reaproveita o caminho do callback de confirmação: _close_alert() já chama
+	# o callback e depois puxa o próximo da fila, na ordem certa.
 	on_confirm_callback = callback
+	next_step = false
+	_close_alert()
 
 
 # =============================
@@ -189,10 +271,15 @@ func _input(event):
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_SPACE:
 		# Consome o evento para o Espaço não vazar para o gameplay (pulo, etc.).
 		get_viewport().set_input_as_handled()
+		# Com escolhas na tela não há atalho: fechar pelo teclado descartaria a
+		# decisão sem criar conta nem bônus.
+		if choice_box.visible:
+			return
 		_close_alert()
 
 
 func _close_alert():
+	_clear_choices()
 	blocker.visible = false
 	panel.visible = false
 	skip_button.visible = false
@@ -202,11 +289,18 @@ func _close_alert():
 	Global.unlock_gameplay()
 	if not Global.gameplay_locked:
 		Global.play_time = true
-	
+
 	var callback = on_confirm_callback
+	var was_step = next_step
 	on_confirm_callback = Callable()
+	next_step = false
 	confirm_button.text = "OK"
 	if callback.is_valid():
 		callback.call()
-	elif next_step:
+	elif was_step:
 		TutorialManager.continue_tutorial_after_alert()
+
+	# Só depois do callback: ele pode enfileirar outro alerta (é assim que o
+	# tutorial encadeia as mensagens) e a fila tem de sair em ordem.
+	if not panel.visible:
+		_show_next()
