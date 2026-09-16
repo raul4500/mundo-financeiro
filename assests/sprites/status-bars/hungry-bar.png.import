@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://1wpnddogylsm"
-path="res://.godot/imported/general_2.png-77dfd9bbabebaf9a82151de68ab65912.ctex"
+uid="uid://c0g0bircahv3g"
+path="res://.godot/imported/hungry-bar.png-56b6825f5f04faf9b3b575cb38794789.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assests/sprites/market/general_2.png"
-dest_files=["res://.godot/imported/general_2.png-77dfd9bbabebaf9a82151de68ab65912.ctex"]
+source_file="res://assests/sprites/status-bars/hungry-bar.png"
+dest_files=["res://.godot/imported/hungry-bar.png-56b6825f5f04faf9b3b575cb38794789.ctex"]
 
 [params]
 

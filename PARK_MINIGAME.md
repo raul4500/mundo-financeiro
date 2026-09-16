@@ -26,7 +26,7 @@ Dar ao jogador algo ativo para fazer durante o dia (feedback de playtest: "não 
 
 ## 4. Moedas
 
-- Script: [scripts/park/park_coin.gd](scripts/park/park_coin.gd) — um `Area2D` construído inteiramente em código (sem asset novo: o círculo é desenhado via `_draw()`), com um `Label` de contagem regressiva acima dela.
+- Cena e Script: [scenes/park/park_coin.tscn](scenes/park/park_coin.tscn) e [scripts/park/park_coin.gd](scripts/park/park_coin.gd) — um `Area2D` com nó filho `AnimatedSprite2D` para animação visual editável no editor, `CollisionShape2D` e um `Label` (`TimerLabel`) de contagem regressiva acima dela. Caso o sprite não possua frames configurados, possui fallback automático que desenha o círculo procedural via `_draw()`.
 - Só existe **uma moeda por vez** em tela.
 - Vida útil: **10 segundos** (`ParkMinigameManager.COIN_LIFETIME`). Se o tempo acabar, ela some e a próxima nasce imediatamente.
 - Coleta: automática ao encostar (`Area2D.body_shape_entered`, igual ao padrão usado nos obstáculos do minigame da escola) — não precisa apertar nada.

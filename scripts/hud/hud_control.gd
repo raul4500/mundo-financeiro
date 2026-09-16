@@ -1,9 +1,9 @@
 extends Control
 
 @onready var money_label = $Label
-@onready var hunger_bar: HBoxContainer = $"VBoxContainer/Hungry-bar"
-@onready var thirst_bar: HBoxContainer = $"VBoxContainer/Thirsty-bar"
-@onready var stamina_bar: HBoxContainer = $"VBoxContainer/Stamina-bar"
+@onready var hunger_bar: HBoxContainer = $"VBoxContainer/Hunger/Hunger-bar"
+@onready var thirst_bar: HBoxContainer = $"VBoxContainer/Thirst/Thirst-bar"
+@onready var stamina_bar: HBoxContainer = $"VBoxContainer/Stamina/Stamina-bar"
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -14,17 +14,17 @@ func _ready() -> void:
 
 func _update_needs_ui() -> void:
 	var h_value = int(Global.player.get("hunger"))
-	for i in range(h_value/10):
+	for i in range(int(h_value/10)):
 		hunger_bar.get_child(i).visible = true
 		
 	var t_value = int(Global.player.get("thirst"))
-	for i in range(t_value/10):
+	for i in range(int(t_value/10)):
 		thirst_bar.get_child(i).visible = true
 		
 	var s_value = int(Global.player.get("stamina"))
-	for i in range(s_value/10):
+	for i in range(int(s_value/10)):
 		stamina_bar.get_child(i).visible = true
-	
+		
 	
 	#hunger_bar.value = clampf(float(Global.player.get("hunger", 100.0)), 0.0, 100.0)
 	#thirst_bar.value = clampf(float(Global.player.get("thirst", 100.0)), 0.0, 100.0)

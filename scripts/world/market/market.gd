@@ -23,6 +23,25 @@ var items: Dictionary = {
 	},
 }
 
+const ITEM_ICONS := {
+	"bread": "res://assests/sprites/market/bread.png",
+	"hamburger": "res://assests/sprites/market/hamburguer.png",
+	"apple": "res://assests/sprites/market/apple.png",
+	"banana": "res://assests/sprites/market/banana.png",
+	"cheese": "res://assests/sprites/market/cheese.png",
+	"meat": "res://assests/sprites/market/meat.png",
+	"egg": "res://assests/sprites/market/egg.png",
+	"fish": "res://assests/sprites/market/fish.png",
+	"rice": "res://assests/sprites/market/rice.png",
+	"water": "res://assests/sprites/market/water_bottle.png",
+	"juice": "res://assests/sprites/market/juice_box.png",
+	"coffee": "res://assests/sprites/market/coffee.png",
+	"milk": "res://assests/sprites/market/milk.png",
+	"soda": "res://assests/sprites/market/soda.png",
+	"tea": "res://assests/sprites/market/tea.png",
+	"energy_drink": "res://assests/sprites/market/energy_drink.png",
+}
+
 @onready var category_list: VBoxContainer = $HBoxContainer/CategoryPanel/CategoryList
 @onready var item_list: GridContainer = $HBoxContainer/MainPanel/ScrollContainer/ItemList
 @onready var kart_list: VBoxContainer = $HBoxContainer/KartContainer/KartPanel/ScrollContainer/KartList
@@ -35,10 +54,15 @@ var total: float = 0.00
 var cart: Array = []
 var time_display: Label
 
+var _tooltip_panel: PanelContainer
+var _tooltip_title: Label
+var _tooltip_desc: Label
+
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	Global.play_time = true
 	_create_time_display()
+	_create_tooltip_ui()
 	item_list.columns = 3
 	update_labels()
 	_build_category_buttons()
@@ -67,6 +91,65 @@ func _on_category_selected(group_name: String) -> void:
 	_populate_items(group_name)
 
 
+func _create_tooltip_ui() -> void:
+	_tooltip_panel = PanelContainer.new()
+	_tooltip_panel.theme = load("res://themes/font_theme.tres")
+	_tooltip_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_tooltip_panel.z_index = 50
+	_tooltip_panel.visible = false
+	add_child(_tooltip_panel)
+
+	var margin := MarginContainer.new()
+	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	margin.add_theme_constant_override("margin_left", 12)
+	margin.add_theme_constant_override("margin_right", 12)
+	margin.add_theme_constant_override("margin_top", 10)
+	margin.add_theme_constant_override("margin_bottom", 10)
+	_tooltip_panel.add_child(margin)
+
+	var vbox := VBoxContainer.new()
+	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_theme_constant_override("separation", 4)
+	margin.add_child(vbox)
+
+	_tooltip_title = Label.new()
+	_tooltip_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_tooltip_title.theme = load("res://themes/label.tres")
+	_tooltip_title.add_theme_font_size_override("font_size", 16)
+	_tooltip_title.add_theme_color_override("font_color", Color(1, 0.84, 0))
+	vbox.add_child(_tooltip_title)
+
+	_tooltip_desc = Label.new()
+	_tooltip_desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_tooltip_desc.theme = load("res://themes/label.tres")
+	_tooltip_desc.add_theme_font_size_override("font_size", 14)
+	_tooltip_desc.add_theme_color_override("font_color", Color.WHITE)
+	vbox.add_child(_tooltip_desc)
+
+func _show_tooltip(for_node: Control, item_name: String, item_data: Dictionary) -> void:
+	if not is_instance_valid(_tooltip_panel):
+		return
+	_tooltip_title.text = item_name.capitalize()
+	_tooltip_desc.text = "Recupera: %s" % _restore_label(item_data)
+	_tooltip_panel.visible = true
+	_tooltip_panel.reset_size()
+
+	# Posiciona dinamicamente ao lado do card
+	var card_rect := for_node.get_global_rect()
+	var tooltip_size := _tooltip_panel.size
+	var target_x = card_rect.position.x + card_rect.size.x + 8
+	var target_y = card_rect.position.y + 10
+
+	# Se transbordar para a direita da tela (viewport 1152), exibe à esquerda do card
+	if target_x + tooltip_size.x > 1140:
+		target_x = card_rect.position.x - tooltip_size.x - 8
+
+	_tooltip_panel.global_position = Vector2(target_x, target_y)
+
+func _hide_tooltip() -> void:
+	if is_instance_valid(_tooltip_panel):
+		_tooltip_panel.visible = false
+
 # "10% fome" / "25% sede" / "20% fome, 15% sede". Omite o que for zero para o
 # card nao ficar poluido com "0% sede" na carne.
 func _restore_label(item_data: Dictionary) -> String:
@@ -83,50 +166,79 @@ func _restore_label(item_data: Dictionary) -> String:
 
 
 func _populate_items(group_name: String) -> void:
+	_hide_tooltip()
 	# Limpa os itens antigos do painel central
 	for child in item_list.get_children():
 		child.queue_free()
 
 	var item_dict: Dictionary = items[group_name]
 	for item_name in item_dict.keys():
-		var price = item_dict[item_name]["price"]
+		var item_data: Dictionary = item_dict[item_name]
+		var price = item_data["price"]
 
 		var product = Panel.new()
-		var container = VBoxContainer.new()
-		var product_name = Label.new()
-		var button = Button.new()
-	
-	# Texto
-		product_name.text = "%s\nR$ %d – %s" % [item_name.capitalize(), price, _restore_label(item_dict[item_name])]
-		button.text = "Adicionar"
-	
-	# Tamanho do painel
-		product.custom_minimum_size = Vector2(170, 200)
+		product.custom_minimum_size = Vector2(170, 190)
 		product.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		
-		product_name.custom_minimum_size = Vector2(130, 50)
-	
-	# 🔥 Container ocupa todo o painel
-		container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		container.anchor_right = 1.0
-		container.anchor_bottom = 1.0
+		product.mouse_filter = Control.MOUSE_FILTER_PASS
+
+		var margin = MarginContainer.new()
+		margin.anchor_right = 1.0
+		margin.anchor_bottom = 1.0
+		margin.mouse_filter = Control.MOUSE_FILTER_PASS
+		margin.add_theme_constant_override("margin_left", 8)
+		margin.add_theme_constant_override("margin_right", 8)
+		margin.add_theme_constant_override("margin_top", 10)
+		margin.add_theme_constant_override("margin_bottom", 10)
+		product.add_child(margin)
+
+		var container = VBoxContainer.new()
 		container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		container.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	
-	# 🔥 Centralização
 		container.alignment = BoxContainer.ALIGNMENT_CENTER
-	
-	# 🔥 Alinhamento dos elementos
-		product_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		container.add_theme_constant_override("separation", 8)
+		container.mouse_filter = Control.MOUSE_FILTER_PASS
+		margin.add_child(container)
+
+		# Ícone do produto (16x16 exibido com escala nítida) ou fallback de texto
+		var icon_path: String = ITEM_ICONS.get(item_name, "")
+		if icon_path != "" and ResourceLoader.exists(icon_path):
+			var texture = load(icon_path)
+			var icon_rect = TextureRect.new()
+			icon_rect.texture = texture
+			icon_rect.custom_minimum_size = Vector2(48, 48)
+			icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			icon_rect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			icon_rect.mouse_filter = Control.MOUSE_FILTER_PASS
+			container.add_child(icon_rect)
+		else:
+			var fallback_label = Label.new()
+			fallback_label.text = item_name.capitalize()
+			fallback_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			fallback_label.custom_minimum_size = Vector2(48, 48)
+			fallback_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+			fallback_label.mouse_filter = Control.MOUSE_FILTER_PASS
+			container.add_child(fallback_label)
+
+		# Preço
+		var price_label = Label.new()
+		price_label.text = "R$ %d,00" % int(price)
+		price_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		price_label.add_theme_font_size_override("font_size", 16)
+		price_label.mouse_filter = Control.MOUSE_FILTER_PASS
+		container.add_child(price_label)
+
+		# Botão Adicionar
+		var button = Button.new()
+		button.text = "Adicionar"
 		button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	
-	# Conectar botão
 		button.pressed.connect(_on_buy_item.bind(group_name, item_name))
-	
-	# Hierarquia correta
-		container.add_child(product_name)
 		container.add_child(button)
-		product.add_child(container)
+
+		# Conecta sinais do hover para mostrar e esconder a tooltip
+		product.mouse_entered.connect(_show_tooltip.bind(product, item_name, item_data))
+		product.mouse_exited.connect(_hide_tooltip)
+
 		item_list.add_child(product)
 
 

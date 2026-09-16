@@ -10,6 +10,7 @@ extends CanvasLayer
 # Construída toda em código (mesmo padrão do AlertManager) para não depender
 # de uma .tscn nova.
 
+const ParkCoinScene = preload("res://scenes/park/park_coin.tscn")
 const ParkCoinScript = preload("res://scripts/park/park_coin.gd")
 
 var _world: Node2D
@@ -107,7 +108,11 @@ func _process(delta: float) -> void:
 func _spawn_next_coin() -> void:
 	if not _active:
 		return
-	var coin := ParkCoinScript.new()
+	var coin: Area2D = null
+	if ParkCoinScene != null:
+		coin = ParkCoinScene.instantiate() as Area2D
+	if coin == null:
+		coin = ParkCoinScript.new()
 	coin.position = _random_point_in_spawn_polygon()
 	coin.collected.connect(_on_coin_collected)
 	coin.expired.connect(_on_coin_expired)
