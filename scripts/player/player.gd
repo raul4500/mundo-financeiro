@@ -45,8 +45,7 @@ func _physics_process(delta: float) -> void:
 	# Corrida / velocidade base
 	var spd_name = "walk"
 	SPEED = 70.0
-
-	# Animação
+	
 	if direction.x < 0:
 		animated_player.flip_h = true
 		animated_player.play(spd_name)

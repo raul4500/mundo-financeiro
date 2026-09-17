@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://gyjo3qnr1gc4"
-path="res://.godot/imported/stamina-bar.png-2324ee4bb9903aaa98640b8ed930a465.ctex"
+uid="uid://d0klevbp42xhr"
+path="res://.godot/imported/1.png-a52a941c9c06344c4cd77c8866ed7620.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assests/sprites/status-bars/stamina-bar.png"
-dest_files=["res://.godot/imported/stamina-bar.png-2324ee4bb9903aaa98640b8ed930a465.ctex"]
+source_file="res://assests/sprites/status-bars/hunger/1.png"
+dest_files=["res://.godot/imported/1.png-a52a941c9c06344c4cd77c8866ed7620.ctex"]
 
 [params]
 

@@ -89,9 +89,6 @@ func _place_player() -> void:
 	# apenas no eixo X sem suavização e manter Y fixo mesmo durante pulos.
 	camera.position_smoothing_enabled = false
 
-# =============================
-# 🎬 TELA DE INÍCIO
-# =============================
 func _create_start_screen() -> void:
 	# layer 50: acima do display de tempo (5), abaixo do AlertManager (100),
 	# para as mensagens de tutorial continuarem por cima desta caixa.
@@ -172,8 +169,6 @@ func _process_run_in() -> void:
 	MinigameManager.begin_session()
 
 func _process_start_screen(delta: float) -> void:
-	# Enquanto houver mensagem de tutorial na tela ou na fila, o botão fica
-	# escondido: a caixa de início só aparece depois das explicações.
 	var tutorial_busy = AlertManager.panel.visible or not TutorialManager.pending_messages.is_empty()
 	start_button.visible = not tutorial_busy
 

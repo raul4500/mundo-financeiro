@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://c2neatiggtmug"]
 
-[ext_resource type="Script" uid="uid://vwerywahd2u4" path="res://scripts/player/raul_minigame.gd" id="1_ilftp"]
+[ext_resource type="Script" uid="uid://vwerywahd2u4" path="res://scripts/player/player-minigame.gd" id="1_ilftp"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ijm7n"]
 size = Vector2(11, 13)

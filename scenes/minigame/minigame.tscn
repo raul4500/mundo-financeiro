@@ -157,7 +157,7 @@ position = Vector2(384, -152)
 texture = ExtResource("2_qprf6")
 
 [node name="2" type="Sprite2D" parent="Background" unique_id=1220232028]
-position = Vector2(1927, -153)
+position = Vector2(1927, -152)
 texture = ExtResource("3_0k17t")
 
 [node name="5" type="Sprite2D" parent="Background" unique_id=986644077]

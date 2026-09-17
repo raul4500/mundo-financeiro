@@ -1,33 +1,77 @@
-﻿[gd_scene format=3 uid="uid://park_coin_scene_001"]
+[gd_scene format=3 uid="uid://du31c06mev3kf"]
 
-[ext_resource type="Script" path="res://scripts/park/park_coin.gd" id="1_coin"]
+[ext_resource type="Script" uid="uid://bm6fxivatwoe8" path="res://scripts/park/park_coin.gd" id="1_coin"]
+[ext_resource type="Texture2D" uid="uid://ckkjjmr78bfeu" path="res://assests/sprites/park/coin.png" id="2_yu8mb"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_coin"]
 radius = 14.0
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_v56nt"]
+atlas = ExtResource("2_yu8mb")
+region = Rect2(0, 0, 240, 240)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a0lw2"]
+atlas = ExtResource("2_yu8mb")
+region = Rect2(240, 0, 240, 240)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_34rx1"]
+atlas = ExtResource("2_yu8mb")
+region = Rect2(480, 0, 240, 240)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j2ekq"]
+atlas = ExtResource("2_yu8mb")
+region = Rect2(720, 0, 240, 240)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bdwk8"]
+atlas = ExtResource("2_yu8mb")
+region = Rect2(960, 0, 240, 240)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_i43s6"]
+atlas = ExtResource("2_yu8mb")
+region = Rect2(1200, 0, 240, 240)
+
 [sub_resource type="SpriteFrames" id="SpriteFrames_coin"]
 animations = [{
-"frames": [],
-"loop": true,
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v56nt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a0lw2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_34rx1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_j2ekq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bdwk8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_i43s6")
+}],
+"loop": 1,
 "name": &"default",
 "speed": 5.0
 }]
 
-[node name="ParkCoin" type="Area2D"]
+[node name="ParkCoin" type="Area2D" unique_id=1526086272]
 script = ExtResource("1_coin")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-sprite_frames = SubResource("SpriteFrames_coin")
-animation = &"default"
-autoplay = "default"
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1205662891]
 shape = SubResource("CircleShape2D_coin")
 
-[node name="TimerLabel" type="Label" parent="."]
+[node name="TimerLabel" type="Label" parent="." unique_id=800902554]
 offset_left = -16.0
 offset_top = -40.0
 offset_right = 16.0
 offset_bottom = -17.0
 theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=2093783074]
+scale = Vector2(0.1, 0.1)
+sprite_frames = SubResource("SpriteFrames_coin")
+autoplay = "default"
+frame_progress = 0.1483569
