@@ -1,4 +1,6 @@
-[2026-09-16T22:20:53] === Sessão iniciada ===
-[2026-09-16T22:20:53] [INFO] Logger inicializado
-[2026-09-16T22:20:53] [INFO] TimeManager inicializado
-[2026-09-16T22:20:54] [WARN] O arquivo de save não existe: user://savegame.json
+[2026-09-17T16:54:43] === Sessão iniciada ===
+[2026-09-17T16:54:43] [INFO] Logger inicializado
+[2026-09-17T16:54:43] [INFO] save loaded
+[2026-09-17T16:54:43] [INFO] TimeManager inicializado
+[2026-09-17T16:56:51] [INFO] Arquivo deletado com sucesso: user://savegame.json
+[2026-09-17T16:57:13] [INFO] Missão concluída: Não gaste dinheiro por 1 dia
