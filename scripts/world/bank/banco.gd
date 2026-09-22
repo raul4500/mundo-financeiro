@@ -5,16 +5,18 @@ const EVENT_LABEL_THEME = preload("res://themes/label.tres")
 @onready var label_money = $"Account-info/Label_Money"
 @onready var label_saldo = $"Account-info/Label-saldo"
 @onready var transaction_panel: Panel = $"Transaction-panel"
-@onready var input: LineEdit = $"Transaction-panel/Input"
-@onready var confirm_button: Button = $"Transaction-panel/Confirm"
-@onready var cancel_button: Button = $"Transaction-panel/Cancel"
+@onready var input: LineEdit = $"Transaction-panel/Panel/Input"
+@onready var confirm_button: Button = $"Transaction-panel/Panel/Confirm"
+@onready var cancel_button: Button = $"Transaction-panel/Panel/Cancel"
 @onready var btn_deposit = $Actions/Deposit
 @onready var btn_withdraw = $Actions/Withdraw
-# Painel de contas/bônus pendentes: layout fixo na cena, conteúdo no script.
 @onready var events_list: VBoxContainer = $"TabContainer/Eventos/Margin/VBoxContainer/Events-scroll/Events-list"
 @onready var house_bills_list: VBoxContainer = $"TabContainer/Contas da casa/Margin/VBoxContainer/House-bills-scroll/House-bills-list"
 @onready var history_panel: Panel = $"TabContainer/Histórico"
 @onready var history_list: VBoxContainer = $"TabContainer/Histórico/Margin/VBoxContainer/House-bills-scroll/History-list"
+@onready var tab_container: TabContainer = $"TabContainer"
+
+
 
 var time_display: Label
 var transaction_type: String = ""
@@ -36,6 +38,11 @@ func _ready():
 	confirm_button.pressed.connect(_confirm_transaction)
 	cancel_button.pressed.connect(_cancel_transaction)
 	input.text_changed.connect(_only_numbers.bind(input))
+
+func _process(delta: float) -> void:
+	var is_disabled = Global.player["week"] < 4
+	tab_container.set_tab_disabled(3, is_disabled)
+	tab_container.set_tab_disabled(4, is_disabled)
 
 func _create_time_display() -> void:
 	time_display = preload("res://scripts/ui/time_display.gd").new()

@@ -3,7 +3,7 @@ extends Control
 var levels_data: Array = [
 	{
 		"id": 1,
-		"title": "Nível 1 – Controle de gastos",
+		"title": "Controle de gastos",
 		"objective": "Ensinar o jogador a controlar despesas básicas.",
 		"topics": [
 			{
@@ -26,7 +26,7 @@ var levels_data: Array = [
 	},
 	{
 		"id": 2,
-		"title": "Nível 2 – Reserva de emergência",
+		"title": "Reserva de emergência",
 		"objective": "Mostrar a importância de guardar dinheiro para emergências.",
 		"topics": [
 			{
@@ -49,7 +49,7 @@ var levels_data: Array = [
 	},
 	{
 		"id": 3,
-		"title": "Nível 3 – Investimentos básicos",
+		"title": "Investimentos básicos",
 		"objective": "Apresentar as primeiras formas de fazer o dinheiro render.",
 		"topics": [
 			{
@@ -64,7 +64,7 @@ var levels_data: Array = [
 	},
 	{
 		"id": 4,
-		"title": "Nível 4 – Mercado financeiro",
+		"title": "Mercado financeiro",
 		"objective": "Introduzir conceitos de risco e retorno no mercado financeiro.",
 		"topics": [
 			{
@@ -79,7 +79,7 @@ var levels_data: Array = [
 	},
 	{
 		"id": 5,
-		"title": "Nível 5 – Empreendedorismo",
+		"title": "Empreendedorismo",
 		"objective": "Ensinar a administrar um negócio próprio usando as decisões reais disponíveis no jogo.",
 		"topics": [
 			{
@@ -181,9 +181,7 @@ func _build_level_section() -> void:
 		if not (level_button is Button):
 			continue
 		
-		if i >= player_level:
-			# Mantém o número visível: o jogador precisa saber o que vem depois.
-			level_button.text = "🔒 Nível %d" % (i + 1)
+		if i >= player_level:	
 			level_button.disabled = true
 		else:
 			level_button.pressed.connect(build_topics_section.bind(i))

@@ -9,36 +9,32 @@ const empty_textures = [preload("res://assests/sprites/status-bars/empty/1.png")
 
 const stamina_textures = [preload("res://assests/sprites/status-bars/stamina/1.png"), preload("res://assests/sprites/status-bars/stamina/2.png"), preload("res://assests/sprites/status-bars/stamina/3.png")]
 const hunger_textures = [preload("res://assests/sprites/status-bars/hunger/1.png"), preload("res://assests/sprites/status-bars/hunger/2.png"), preload("res://assests/sprites/status-bars/hunger/3.png")]
-const thirst_textures = [preload("res://assests/sprites/status-bars/thirst/1.png"), preload("res://assests/sprites/status-bars/thirst/2.png"), preload("res://assests/sprites/status-bars/stamina/3.png")]
+const thirst_textures = [preload("res://assests/sprites/status-bars/thirst/1.png"), preload("res://assests/sprites/status-bars/thirst/2.png"), preload("res://assests/sprites/status-bars/thirst/3.png")]
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	print(Global.player)
 	_update_needs_ui()
 
 func _update_needs_ui() -> void:
 	var bars = [stamina_bar, hunger_bar, thirst_bar]
-	for b in bars:
-		for node in b.get_children():
-			node.queue_free()
 	var textures = [stamina_textures, hunger_textures, thirst_textures]
-			
-	fill_bars(bars[0], int(Global.player["stamina"]/10), textures[0])
-	complete_empty_bars(bars[0], 10 - int(Global.player["stamina"]/10))
 	
-	fill_bars(bars[1], int(Global.player["hunger"]/10), textures[1])
-	complete_empty_bars(bars[1], 10 - int(Global.player["hunger"]/10))
-	
-	fill_bars(bars[2], int(Global.player["thirst"]/10), textures[2])
-	complete_empty_bars(bars[2], 10 - int(Global.player["thirst"]/10))
+	var stats = ["stamina", "hunger", "thirst"]
+	for i in stats.size():
+		fill_bars(bars[i], int(Global.player[stats[i]]/10), textures[i])
+		complete_empty_bars(bars[i], 10 - int(Global.player[stats[i]]/10))
 	
 func fill_bars(bar, qtd, texture):
+	for node in bar.get_children():
+			node.queue_free()
 	if qtd <= 0:
 		return
 	var left = TextureRect.new()
 	left.texture = texture[0]
 	bar.add_child(left)
-	for i in range(qtd-1):
+	for i in range(qtd-2):
 		var center = TextureRect.new()
 		center.texture = texture[1]
 		bar.add_child(center)

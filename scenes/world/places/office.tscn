@@ -35,31 +35,35 @@ size_flags_horizontal = 3
 
 [node name="Level1" type="Button" parent="HBoxContainer/LevelPanel/Levels" unique_id=1673700015]
 layout_mode = 2
-text = "Level 1"
+text = "Controle de
+gastos"
 
 [node name="Level2" type="Button" parent="HBoxContainer/LevelPanel/Levels" unique_id=1860881298]
 layout_mode = 2
-text = "Level 2"
+text = "Reserva de
+emergência"
 
 [node name="Level3" type="Button" parent="HBoxContainer/LevelPanel/Levels" unique_id=1776328953]
 layout_mode = 2
-text = "Level 3"
+text = "Investimentos
+básicos"
 
 [node name="Level4" type="Button" parent="HBoxContainer/LevelPanel/Levels" unique_id=2075631639]
 layout_mode = 2
-text = "Level 4"
+text = "Mercado 
+financeiro"
 
 [node name="Level5" type="Button" parent="HBoxContainer/LevelPanel/Levels" unique_id=918239373]
 layout_mode = 2
-text = "Level 5
+text = "Empreendorismo
 "
 
 [node name="Exit" type="Button" parent="HBoxContainer/LevelPanel" unique_id=552767366]
 layout_mode = 0
-offset_left = 7.0
-offset_top = 289.0
-offset_right = 213.0
-offset_bottom = 341.0
+offset_left = 8.0
+offset_top = 400.0
+offset_right = 214.0
+offset_bottom = 452.0
 text = "Sair"
 
 [node name="TopicPanel" type="Panel" parent="HBoxContainer" unique_id=1890076085]

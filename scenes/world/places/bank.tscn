@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bljey7557x32m"]
 
 [ext_resource type="Script" uid="uid://6ov1a0843iiq" path="res://scripts/world/bank/banco.gd" id="1_3bwp7"]
+[ext_resource type="Texture2D" uid="uid://byjydjxlnho87" path="res://assests/sprites/indoors-backgrounds/fundo-de-banco-pixilart.png" id="2_bga44"]
 [ext_resource type="Script" uid="uid://b2uh8vqd4nvos" path="res://scripts/world/bank/fii_shop.gd" id="3_80ajf"]
 [ext_resource type="Theme" uid="uid://b2pfdp8p48jam" path="res://themes/font_theme.tres" id="4_0nfyk"]
 [ext_resource type="Script" uid="uid://dlr7yp7ahwfch" path="res://scripts/world/bank/portfolio.gd" id="4_klp1j"]
@@ -17,38 +18,10 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_3bwp7")
 
-[node name="Transaction-panel" type="Panel" parent="." unique_id=1171014670]
-visible = false
-layout_mode = 0
-offset_left = 356.0
-offset_top = 257.0
-offset_right = 650.0
-offset_bottom = 390.0
-theme = ExtResource("4_0nfyk")
-
-[node name="Input" type="LineEdit" parent="Transaction-panel" unique_id=1268258305]
-layout_mode = 0
-offset_left = 18.0
-offset_top = 16.0
-offset_right = 276.0
-offset_bottom = 58.0
-placeholder_text = "Digite o valor"
-
-[node name="Confirm" type="Button" parent="Transaction-panel" unique_id=366724648]
-layout_mode = 0
-offset_left = 18.0
-offset_top = 72.0
-offset_right = 138.0
-offset_bottom = 112.0
-text = "Confirmar"
-
-[node name="Cancel" type="Button" parent="Transaction-panel" unique_id=1884853944]
-layout_mode = 0
-offset_left = 156.0
-offset_top = 72.0
-offset_right = 276.0
-offset_bottom = 112.0
-text = "Cancelar"
+[node name="FundoDeBancoPixilart" type="Sprite2D" parent="." unique_id=1157632405]
+position = Vector2(543, 324)
+scale = Vector2(4, 4)
+texture = ExtResource("2_bga44")
 
 [node name="Account-info" type="Panel" parent="." unique_id=391941315]
 layout_mode = 1
@@ -99,10 +72,10 @@ text = "Dinheiro: R$1000,00"
 [node name="Actions" type="Panel" parent="." unique_id=2093099561]
 layout_mode = 1
 anchors_preset = -1
-offset_left = 34.0
-offset_top = 259.0
-offset_right = 333.0
-offset_bottom = 488.0
+offset_left = 26.0
+offset_top = 198.0
+offset_right = 325.0
+offset_bottom = 427.0
 theme = ExtResource("4_0nfyk")
 
 [node name="Exit" type="Button" parent="Actions" unique_id=777277480]
@@ -146,56 +119,50 @@ offset_right = 1123.0
 offset_bottom = 624.0
 theme = ExtResource("4_0nfyk")
 theme_override_styles/panel = SubResource("StyleBoxEmpty_0k17t")
-current_tab = 0
+current_tab = 1
 
-[node name="FII-shop" type="Panel" parent="TabContainer" unique_id=830567245]
+[node name="Histórico" type="Panel" parent="TabContainer" unique_id=1254925116]
+visible = false
 layout_mode = 2
 theme = ExtResource("4_0nfyk")
-script = ExtResource("3_80ajf")
 metadata/_tab_index = 0
 
-[node name="ScrollContainer" type="ScrollContainer" parent="TabContainer/FII-shop" unique_id=1857044755]
+[node name="Margin" type="MarginContainer" parent="TabContainer/Histórico" unique_id=269645786]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = 10.0
-offset_right = -10.0
-offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/FII-shop/ScrollContainer" unique_id=960911175]
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Histórico/Margin" unique_id=1448531382]
 layout_mode = 2
+theme_override_constants/separation = 6
 
-[node name="Portfolio" type="Panel" parent="TabContainer" unique_id=1127985508]
-visible = false
+[node name="Title" type="Label" parent="TabContainer/Histórico/Margin/VBoxContainer" unique_id=391163516]
 layout_mode = 2
-theme = ExtResource("4_0nfyk")
-script = ExtResource("4_klp1j")
-metadata/_tab_index = 1
+theme = ExtResource("5_evlbl")
+theme_override_font_sizes/font_size = 18
+text = "Histórico de despesas"
 
-[node name="ScrollContainer" type="ScrollContainer" parent="TabContainer/Portfolio" unique_id=193056484]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = 10.0
-offset_right = -10.0
-offset_bottom = -10.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Portfolio/ScrollContainer" unique_id=632646492]
+[node name="House-bills-scroll" type="ScrollContainer" parent="TabContainer/Histórico/Margin/VBoxContainer" unique_id=1877559572]
 layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="History-list" type="VBoxContainer" parent="TabContainer/Histórico/Margin/VBoxContainer/House-bills-scroll" unique_id=1868025354]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
 
 [node name="Eventos" type="Panel" parent="TabContainer" unique_id=1700200001]
-visible = false
 layout_mode = 2
 theme = ExtResource("4_0nfyk")
-metadata/_tab_index = 2
+metadata/_tab_index = 1
 
 [node name="Margin" type="MarginContainer" parent="TabContainer/Eventos" unique_id=1700200002]
 layout_mode = 1
@@ -233,7 +200,7 @@ theme_override_constants/separation = 6
 visible = false
 layout_mode = 2
 theme = ExtResource("4_0nfyk")
-metadata/_tab_index = 3
+metadata/_tab_index = 2
 
 [node name="Margin" type="MarginContainer" parent="TabContainer/Contas da casa" unique_id=1700200008]
 layout_mode = 1
@@ -267,42 +234,92 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="Histórico" type="Panel" parent="TabContainer" unique_id=1254925116]
+[node name="FII-shop" type="Panel" parent="TabContainer" unique_id=830567245]
 visible = false
 layout_mode = 2
 theme = ExtResource("4_0nfyk")
-metadata/_tab_index = 4
+script = ExtResource("3_80ajf")
+metadata/_tab_index = 3
 
-[node name="Margin" type="MarginContainer" parent="TabContainer/Histórico" unique_id=269645786]
+[node name="ScrollContainer" type="ScrollContainer" parent="TabContainer/FII-shop" unique_id=1857044755]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 14
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 14
-theme_override_constants/margin_bottom = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Histórico/Margin" unique_id=1448531382]
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/FII-shop/ScrollContainer" unique_id=960911175]
 layout_mode = 2
-theme_override_constants/separation = 6
 
-[node name="Title" type="Label" parent="TabContainer/Histórico/Margin/VBoxContainer" unique_id=391163516]
+[node name="Portfolio" type="Panel" parent="TabContainer" unique_id=1127985508]
+visible = false
 layout_mode = 2
-theme = ExtResource("5_evlbl")
-theme_override_font_sizes/font_size = 18
-text = "Histórico de despesas"
+theme = ExtResource("4_0nfyk")
+script = ExtResource("4_klp1j")
+metadata/_tab_index = 4
 
-[node name="House-bills-scroll" type="ScrollContainer" parent="TabContainer/Histórico/Margin/VBoxContainer" unique_id=1877559572]
-layout_mode = 2
-size_flags_vertical = 3
-horizontal_scroll_mode = 0
+[node name="ScrollContainer" type="ScrollContainer" parent="TabContainer/Portfolio" unique_id=193056484]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="History-list" type="VBoxContainer" parent="TabContainer/Histórico/Margin/VBoxContainer/House-bills-scroll" unique_id=1868025354]
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Portfolio/ScrollContainer" unique_id=632646492]
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 6
+
+[node name="Transaction-panel" type="Panel" parent="." unique_id=1171014670]
+visible = false
+layout_mode = 0
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 1163.0
+offset_bottom = 660.0
+
+[node name="Panel" type="Panel" parent="Transaction-panel" unique_id=1179988477]
+custom_minimum_size = Vector2(300, 140)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("4_0nfyk")
+
+[node name="Input" type="LineEdit" parent="Transaction-panel/Panel" unique_id=1268258305]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 16.0
+offset_right = 276.0
+offset_bottom = 68.0
+placeholder_text = "Digite o valor"
+
+[node name="Confirm" type="Button" parent="Transaction-panel/Panel" unique_id=366724648]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 72.0
+offset_right = 138.0
+offset_bottom = 124.0
+text = "Confirmar"
+
+[node name="Cancel" type="Button" parent="Transaction-panel/Panel" unique_id=1884853944]
+layout_mode = 0
+offset_left = 156.0
+offset_top = 72.0
+offset_right = 276.0
+offset_bottom = 124.0
+text = "Cancelar"
 
 [connection signal="pressed" from="Actions/Exit" to="." method="_on_exit_pressed"]

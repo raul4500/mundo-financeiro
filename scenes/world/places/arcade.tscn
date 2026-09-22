@@ -1,8 +1,14 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://bofq1hdwjsj7n"]
 
-[ext_resource type="PackedScene" path="res://scenes/world/ui/enterprise-view.tscn" id="1"]
-[ext_resource type="Script" path="res://scripts/enterprise/enterprise_management.gd" id="2"]
+[ext_resource type="PackedScene" uid="uid://dte7f4y735fj0" path="res://scenes/world/ui/enterprise-view.tscn" id="1"]
+[ext_resource type="Script" uid="uid://db2my70eh1me" path="res://scripts/enterprise/enterprise_management.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://dod3kxkicmncb" path="res://assests/sprites/indoors-backgrounds/fundo-filiperama-pixilart.png" id="3_y61ht"]
 
-[node name="Arcade" instance=ExtResource("1")]
+[node name="Arcade" unique_id=2126788938 instance=ExtResource("1")]
 script = ExtResource("2")
 enterprise_id = "arcade_medium"
+
+[node name="FundoFiliperamaPixilart" type="Sprite2D" parent="." index="0" unique_id=255821354]
+position = Vector2(574, 312)
+scale = Vector2(4, 4)
+texture = ExtResource("3_y61ht")

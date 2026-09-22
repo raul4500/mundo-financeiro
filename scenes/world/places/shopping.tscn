@@ -1,8 +1,14 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://cb1j2w17cf0j3"]
 
-[ext_resource type="PackedScene" path="res://scenes/world/ui/enterprise-view.tscn" id="1"]
-[ext_resource type="Script" path="res://scripts/enterprise/enterprise_management.gd" id="2"]
+[ext_resource type="PackedScene" uid="uid://dte7f4y735fj0" path="res://scenes/world/ui/enterprise-view.tscn" id="1"]
+[ext_resource type="Script" uid="uid://db2my70eh1me" path="res://scripts/enterprise/enterprise_management.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://cdrhdr5hskidu" path="res://assests/sprites/indoors-backgrounds/pixilart-drawing.png" id="3_4hquv"]
 
-[node name="Shopping" instance=ExtResource("1")]
+[node name="Shopping" unique_id=1598108530 instance=ExtResource("1")]
 script = ExtResource("2")
 enterprise_id = "shopping_large"
+
+[node name="PixilartDrawing" type="Sprite2D" parent="." index="0" unique_id=680246406]
+position = Vector2(588, 246)
+scale = Vector2(4, 4)
+texture = ExtResource("3_4hquv")
