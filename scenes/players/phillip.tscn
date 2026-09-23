@@ -223,5 +223,6 @@ animations = [{
 
 [node name="Phillip" type="AnimatedSprite2D" unique_id=1520360165]
 sprite_frames = SubResource("SpriteFrames_epnyk")
-animation = &"walk"
+animation = &"down"
 autoplay = "default"
+offset = Vector2(0, 5)
