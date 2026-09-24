@@ -1,8 +1,9 @@
 extends CanvasLayer
 
-@onready var mission_list = $Panel/MissionList
-@onready var panel = $Panel
-@onready var mission_button = $Open
+@onready var mission_list = $Overlay/Panel/MissionList
+@onready var panel = $Overlay
+
+var opened = false
 
 # Override de cor, e não modulate: o label.tres do painel pinta a fonte de
 # preto, e modulate multiplica — preto vezes verde continua preto.
@@ -59,17 +60,11 @@ func _refresh_marks() -> void:
 func _on_mission_completed(_mission: Dictionary) -> void:
 	_refresh_marks()
 
-func _process(_delta: float) -> void:
+func _on_open_pressed() -> void:
 	if Global.player_hud_hidden:
-		panel.visible = false
-		mission_button.visible = false
-		return
-	var open := Input.is_key_pressed(KEY_F)
-	panel.visible = open
-	mission_button.visible = not open
-	# Uma missão pode deixar de estar cumprida a qualquer momento (gastar o
-	# dinheiro que a satisfazia, uma penalidade da meia-noite), e isso não
-	# emite sinal nenhum — por isso reavalia sempre que o painel está aberto,
-	# não só no instante em que F é pressionado.
-	if open:
-		_refresh_marks()
+		return	
+	panel.visible = true
+	_refresh_marks()
+
+func _on_close_pressed() -> void:
+	panel.visible = false

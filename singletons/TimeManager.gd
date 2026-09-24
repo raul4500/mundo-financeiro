@@ -88,11 +88,17 @@ func _add_minute():
 	if day_end_pending:
 		return
 	current_minute += 1
-	_decay_stamina()
+	var no_stamina = _decay_stamina()
 
 	if current_minute >= 60:
 		current_minute = 0
 		current_hour += 1
+		
+		if no_stamina:
+			var no_speed = Global.lose_speed()
+			if no_speed:
+				_faint()
+		
 		if current_hour >= MIDNIGHT_HOUR:
 			_handle_midnight()
 			return
@@ -107,7 +113,7 @@ func _warn_exhaustion() -> void:
 	if _exhaustion_alert_shown:
 		return
 	_exhaustion_alert_shown = true
-	AlertManager.alert("Você está exausto! Volte para casa para descansar.\n\nSe virar a noite acordado, vai pagar caro por isso.")
+	AlertManager.alert("Já está tarde! Volte para casa para dormir.\n\nSe virar a noite acordado, vai pagar caro por isso.")
 
 # =============================================================
 # QUEDA DE STAMINA
@@ -115,26 +121,28 @@ func _warn_exhaustion() -> void:
 # Ate as 18h a taxa e' a base. A partir das 19h ela dobra e ganha mais 10%
 # por hora: 19h = 2.0x, 20h = 2.2x, 21h = 2.4x, ...
 # =============================================================
-func _decay_stamina() -> void:
+func _decay_stamina() -> bool:
 	if Global.player == null:
-		return
+		return false
+		
 	var stamina := float(Global.player.get("stamina", 100.0))
-	if stamina <= 0.0:
-		return
 
 	var decay_rate := STAMINA_DECAY_PER_MINUTE
 	if current_hour >= ACCEL_START_HOUR:
 		decay_rate *= 2.0 * (1.0 + float(current_hour - ACCEL_START_HOUR) * 0.1)
 
 	stamina = clampf(stamina - decay_rate, 0.0, 100.0)
+	
+	if stamina <= 0.0:
+		stamina = 0.0
+		if not _no_stamina_alert_shown:
+			NotificationManager.notify("Você está exausto, volte para casa imediatamente!")
+			_no_stamina_alert_shown = true
+		return true
+		
 	Global.player["stamina"] = stamina
-
-	# Stamina zerada nao mata: so' avisa. Quem mata e' a fome (ver
-	# Global.decay_need_state). O peso de ficar sem stamina e' nao conseguir
-	# encerrar o dia sem o custo da meia-noite.
-	if stamina <= 0.0 and not _no_stamina_alert_shown:
-		_no_stamina_alert_shown = true
-		AlertManager.alert("Você está muito cansado! Volte para casa para descansar.")
+	return false
+	
 
 # =============================================================
 # FIM DO DIA
@@ -169,6 +177,16 @@ func sleep() -> Dictionary:
 		Callable(self, "_advance_to_next_day")
 	)
 	return {"success": true, "message": "VOCÊ DORMIU."}
+
+func _faint():
+	Global.player["money"] = max(0.0, float(Global.player.get("money", 0.0)) - MIDNIGHT_PENALTY)
+	if not _close_day(MIDNIGHT_STAMINA):
+		return
+	AlertManager.alert(
+		"Você desmaiou de exaustão e foi socorrido por uma ambulância! - R$ %d" % int(MIDNIGHT_PENALTY),
+		false,
+		Callable(self, "_advance_to_next_day")
+	)
 
 # Meia-noite sem ter dormido: volta para casa a força, paga o café e acorda
 # com metade da stamina.
@@ -211,6 +229,7 @@ func _close_day(restored_stamina: float) -> bool:
 func _advance_to_next_day() -> void:
 	# Morreu de fome no fechamento: o game-over ja' esta' na tela, nao ha'
 	# proximo dia para avancar.
+	Global.reestore_speed()
 	if Global.is_game_over():
 		return
 	var week_rollover := current_day >= 7

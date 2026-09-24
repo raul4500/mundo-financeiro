@@ -1,27 +1,32 @@
 extends Control
 
+var paused = false
+
 func _ready():
 	visible = false
 
 func toggle_pause():
-	var paused = get_tree().paused
-
-	get_tree().paused = !paused
-	visible = !visible
-
-	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	if paused:
+		Global.unlock_gameplay()
+		paused = false
+		visible = false
+	elif not paused and Global.gameplay_locked:
+		return
+	elif not paused and not Global.gameplay_locked:
+		Global.lock_gameplay()
+		paused = true
+		visible = true
+	return
 
 func _input(event: InputEvent) -> void:
 	if Input.is_action_just_pressed("ui_cancel"):
 		toggle_pause()
 
 func _on_sair_pressed() -> void:
-	get_tree().paused = false
 	visible = false
 	SaveManager.save_game()
 	TransitionManager.change_scene("res://scenes/menus/main_menu.tscn")
 
-
 func _on_continuar_pressed() -> void:
-	get_tree().paused = false
+	Global.unlock_gameplay()
 	visible = false

@@ -124,7 +124,7 @@ func _make_button(text: String, callback: Callable) -> Button:
 	button.text = text
 	button.custom_minimum_size = Vector2(0, 44)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	button.custom_maximum_size = Vector2(165, 52)
+	# button.custom_maximum_size = Vector2(165, 52)
 	button.pressed.connect(callback)
 	return button
 

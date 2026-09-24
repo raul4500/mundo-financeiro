@@ -8,7 +8,6 @@
 [ext_resource type="Texture2D" uid="uid://bxqlroa6yctq2" path="res://assests/sprites/status-bars/yellow_thunder.png" id="5_fsrjl"]
 [ext_resource type="Script" uid="uid://b8pmiwonxqp53" path="res://scripts/hud/missions_ui.gd" id="5_olb2f"]
 [ext_resource type="Texture2D" uid="uid://cbssfvxhbc8nt" path="res://assests/sprites/status-bars/chicken.png" id="6_mh0hk"]
-[ext_resource type="Theme" uid="uid://8cd7r8xa15ac" path="res://themes/label.tres" id="6_sguum"]
 [ext_resource type="Texture2D" uid="uid://ysaexo743f2a" path="res://assests/sprites/status-bars/water_drop.png" id="7_18rgo"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tys1d"]
@@ -102,16 +101,7 @@ theme_override_constants/separation = -1
 process_mode = 3
 
 [node name="pause_menu" parent="Pause" unique_id=2075846777 instance=ExtResource("5_es4m5")]
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 312.0
-offset_top = 118.0
-offset_right = 839.0
-offset_bottom = 481.0
-grow_horizontal = 1
-grow_vertical = 1
-theme = ExtResource("3_olb2f")
+visible = false
 
 [node name="MissionsUi" type="CanvasLayer" parent="." unique_id=786813186]
 script = ExtResource("5_olb2f")
@@ -122,20 +112,58 @@ offset_top = 13.0
 offset_right = 1143.0
 offset_bottom = 65.0
 theme = ExtResource("3_olb2f")
-text = "MISSÕES (F)"
+text = "MISSÕES "
 
-[node name="Panel" type="Panel" parent="MissionsUi" unique_id=590353208]
-show_behind_parent = true
-offset_left = 798.0
-offset_top = 6.0
-offset_right = 1142.0
-offset_bottom = 205.0
+[node name="Overlay" type="Panel" parent="MissionsUi" unique_id=1393587100]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="MissionsUi/Overlay" unique_id=590353208]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -247.0
+offset_top = -190.0
+offset_right = 258.5
+offset_bottom = 266.375
+grow_horizontal = 2
+grow_vertical = 2
 theme = ExtResource("3_olb2f")
 
-[node name="MissionList" type="VBoxContainer" parent="MissionsUi/Panel" unique_id=177698271]
-layout_mode = 0
-offset_left = 8.0
-offset_top = 9.0
-offset_right = 336.0
-offset_bottom = 9.0
-theme = ExtResource("6_sguum")
+[node name="MissionList" type="VBoxContainer" parent="MissionsUi/Overlay/Panel" unique_id=177698271]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.75
+offset_top = 11.375
+offset_right = -9.75
+offset_bottom = -76.375
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("3_olb2f")
+
+[node name="Close" type="Button" parent="MissionsUi/Overlay/Panel" unique_id=134515505]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -127.75
+offset_top = -52.375
+offset_right = -8.75
+offset_bottom = -10.375
+grow_horizontal = 0
+grow_vertical = 0
+text = "FECHAR"
+
+[connection signal="pressed" from="MissionsUi/Open" to="MissionsUi" method="_on_open_pressed"]
+[connection signal="pressed" from="MissionsUi/Overlay/Panel/Close" to="MissionsUi" method="_on_close_pressed"]

@@ -78,6 +78,7 @@ var data_model = {
 	"hunger": 100.0,
 	"thirst": 100.0,
 	"stamina": 100.0,
+	"speed": 70.0,
 	"home_inventory": {},
 	"home_actions_log": [],
 	"pending_house_bills": [],
@@ -288,6 +289,7 @@ func new_game(name: String, money: float) -> void:
 	player["hunger"] = 100.0
 	player["thirst"] = 100.0
 	player["stamina"] = 100.0
+	player["speed"] = 70.0
 	player["home_inventory"] = {}
 	player["home_actions_log"] = []
 	player["pending_house_bills"] = []
@@ -577,7 +579,19 @@ func _return_to_main_menu() -> void:
 	SaveManager.delete_save()
 	if get_tree() != null:
 		TransitionManager.change_scene("res://scenes/menus/main_menu.tscn")
+		
+func lose_speed() -> bool :
+	player["speed"] -= 20.0
+	if player["speed"] < 0:
+		player["speed"] = 0.0
+		return true
+	return false
+	
+	
 
+func reestore_speed() -> void:
+	player["speed"] = 70.0
+	
 func _ready() -> void:
 	ensure_player_state()
 	load_data()

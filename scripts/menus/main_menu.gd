@@ -11,10 +11,10 @@ func _ready() -> void:
 		continue_button.visible = true
 
 func start() -> void:
+	Global.unlock_gameplay()
 	TransitionManager.change_scene("res://scenes/world/main_game.tscn")
 
 func _on_start_pressed() -> void:
-	#AlertManager.alert("teste")
 	start()
 	
 func _on_novo_jogo_pressed() -> void:

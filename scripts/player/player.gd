@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-var SPEED = 70.0
+var speed = Global.player["speed"]
 
 var characters = {
 	"Raul": "res://scenes/players/raul.tscn",
@@ -44,7 +44,6 @@ func _physics_process(delta: float) -> void:
 
 	# Corrida / velocidade base
 	var spd_name = "walk"
-	SPEED = 70.0
 	
 	if direction.x < 0:
 		animated_player.flip_h = true
@@ -59,6 +58,9 @@ func _physics_process(delta: float) -> void:
 	else:
 		animated_player.play("default")
 	# Aplica velocidade
-	velocity = direction * SPEED
+	velocity = direction * speed
 
 	move_and_slide()
+	
+func _process(delta: float) -> void:
+	speed = Global.player["speed"]
