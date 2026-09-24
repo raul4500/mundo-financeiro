@@ -5,13 +5,15 @@ signal tutorial_finished
 signal focus(point)
 
 # Roteiro do onboarding:
-#   1-4  boas-vindas
-#   5    espera o jogador entrar na escola
+#   1    boas-vindas ao jogo
+#   2    objetivo principal e comandos/controles (movimentação, ações, missões, etc.)
+#   3-4  importância da educação e impacto da formação no salário
+#   5    foco na escola e espera o jogador entrar
 #   6    explicacao dentro do minigame
 #   7    espera o minigame terminar
 #   8    apresenta o escritorio e o libera
 #   9    espera o jogador entrar e sair do escritorio
-#   10   apresenta o resto da cidade e libera tudo
+#   10   apresenta o resto da cidade (casa, mercado, banco) e libera tudo
 const FINAL_STEP := 10
 const OFFICE_WAIT_STEP := 9
 
@@ -31,7 +33,8 @@ var skipped := false
 var message_focus_map := {
 	11: "Market",
 	12: "Bank",
-	13: "Office"
+	13: "Office",
+	22: "Home"
 }
 
 # =============================
@@ -47,9 +50,9 @@ var presentation_guide = [
 	},
 	{
 		"step": 2,
-		"title": "Objetivo principal",
-		"goal": "Mostrar que o objetivo é construir uma vida financeira saudável.",
-		"speaker_note": "Explique que cada ação no jogo afeta o futuro financeiro do personagem."
+		"title": "Objetivo principal e Controles",
+		"goal": "Mostrar a proposta do jogo e ensinar os comandos (movimentação, interação, missões e atalhos).",
+		"speaker_note": "Apresente as teclas de movimento (WASD/Setas, Shift), interação (Enter, Espaço), missões (M/F ou botão) e pause (ESC)."
 	},
 	{
 		"step": 3,
@@ -83,9 +86,9 @@ var presentation_guide = [
 	},
 	{
 		"step": 8,
-		"title": "Conclusão do onboarding",
-		"goal": "Apresentar mercado, banco e escritório e encerrar a introdução da semana 1.",
-		"speaker_note": "Explique o papel de cada local e feche dizendo que o progresso vem de decisões consistentes. Os empreendimentos NÃO entram aqui: eles são o aviso da semana 5."
+		"title": "Conclusão do onboarding e Mapa",
+		"goal": "Apresentar casa (estoque, descanso e sono), mercado e banco e encerrar a introdução da semana 1.",
+		"speaker_note": "Explique o papel da casa e de cada local e feche dizendo que o progresso vem de decisões consistentes. Os empreendimentos NÃO entram aqui: eles são o aviso da semana 5."
 	}
 ]
 
@@ -185,7 +188,13 @@ var messages = [
 
 	"DORMIR é o que encerra o dia: a stamina volta a 100 e o relógio pula para as 08:00 do dia seguinte. Antes das 18h o botão não deixa você dormir. E se você virar a noite acordado, à meia-noite volta para casa à força, paga R$ 30 de café e começa o dia seguinte com metade da stamina.",
 
-	"Por último, a sede. Ela cai mais rápido que a fome — cerca de 14 pontos por dia contra 6 — e chegar a zero é game over, igual à fome. O que vale olhar no mercado é quanto você paga por ponto reposto: a água resolve 25% de sede por R$ 5, ou seja R$ 0,20 por ponto, enquanto a cerveja pede R$ 50 para repor 10% — R$ 5,00 por ponto, vinte e cinco vezes mais caro. É o \"necessidade x desejo\" do escritório, agora com um medidor."
+	"Por último, a sede. Ela cai mais rápido que a fome — cerca de 14 pontos por dia contra 6 — e chegar a zero é game over, igual à fome. O que vale olhar no mercado é quanto você paga por ponto reposto: a água resolve 25% de sede por R$ 5, ou seja R$ 0,20 por ponto, enquanto a cerveja pede R$ 50 para repor 10% — R$ 5,00 por ponto, vinte e cinco vezes mais caro. É o \"necessidade x desejo\" do escritório, agora com um medidor.",
+
+	# Índices 28-29: Controles e comandos básicos do jogo (ensinados logo após a introdução
+	# e antes de apresentar a escola).
+	"Antes de começar a explorar a cidade, conheça os comandos básicos:\n\n• Movimentação: use as teclas W, A, S, D ou as Setas do teclado para andar pelo mapa. Segure SHIFT para correr.\n• Interação: aproxime-se de portas de prédios ou de pessoas e pressione ENTER para entrar ou interagir.\n• Confirmação: use a barra de ESPAÇO para avançar alertas, diálogos e saltar obstáculos nos minigames.",
+
+	"Fique atento à interface e aos atalhos do jogo:\n\n• Missões: clique no botão MISSÕES no topo da tela (ou use as teclas M ou F) para ver seus objetivos da semana. Cumprir missões é essencial para evoluir.\n• Relógio e Calendário: no topo você acompanha o dia atual, o horário e a semana em andamento.\n• Pausa e Salvamento: pressione ESC a qualquer momento para abrir o menu de pausa, salvar seu progresso ou sair do jogo com segurança."
 ]
 
 # =============================
@@ -291,7 +300,7 @@ func _resume_step(resume_step: int) -> void:
 		1:
 			emit_signal("show_message", messages[0], true)
 		2:
-			emit_signal("show_message", messages[1], true)
+			queue_messages([messages[1], messages[28], messages[29]])
 		3:
 			emit_signal("show_message", messages[2], true)
 		4:
@@ -334,21 +343,26 @@ func _queue_office_intro() -> void:
 # bloco dos empreendimentos saiu daqui: virou o aviso da semana 5, quando o
 # nível 5 do escritório destrava e o jogador tem chance de ter capital.
 func _queue_world_tour() -> void:
+	Global.player["tutorial_home_shown"] = true
 	queue_messages([
 		messages[10],
-		# A casa antes do mercado: a ordem lógica é "você mora aqui, e compra
-		# ali". O detalhe das ações da casa fica para a primeira visita, em
-		# on_player_entered_home() — aqui só o que a casa é.
-		messages[22],
-		messages[11],
-		messages[19],  # o que cada item do mercado repõe de fome e de sede
-		messages[20],  # fome zerada é game over
-		messages[12],
-		messages[16],  # a barra de stamina
-		messages[17],  # o dia acaba quando você vai dormir em casa
-		messages[18],  # a penalidade da meia-noite
-		messages[14],
-		messages[15]
+		# A casa é apresentada junto com o restante do mapa logo após a consultoria:
+		# a câmera foca a casa (índice 22 em message_focus_map), e todas as
+		# suas mecânicas (estoque, alimentação, descanso, sono e sede) são explicadas.
+		messages[22],  # Aquela é a sua casa (foco em "Home")
+		messages[23],  # Estoque da casa (compras do mercado ficam guardadas lá)
+		messages[24],  # Botões COMER e BEBER
+		messages[25],  # DESCANSAR e ASSISTIR TV
+		messages[16],  # Barra de STAMINA
+		messages[17],  # DORMIR encerra o dia (aviso das 18h)
+		messages[18],  # Penalidade da meia-noite (R$ 30 e metade da stamina)
+		messages[27],  # Sede, decaimento e custo-benefício
+		messages[11],  # Mercado (foco em "Market")
+		messages[19],  # O que cada item do mercado repõe de fome e sede
+		messages[20],  # Fome zerada é game over
+		messages[12],  # Banco (foco em "Bank")
+		messages[14],  # Lembre-se: gastar com consciência, economizar e investir
+		messages[15]   # Conclusão do onboarding: "Agora é com você..."
 	])
 
 # Passo 9. A apresentação do escritório terminou com a câmera parada lá
@@ -364,8 +378,22 @@ func _return_camera_and_wait() -> void:
 func _finish_tutorial() -> void:
 	step = TUTORIAL_DONE
 	Global.player["tutorial_step"] = TUTORIAL_DONE
+	Global.player["tutorial_home_shown"] = true
+	# Garante que todos os status fiquem em 100% ao liberar o jogador para explorar o mundo
+	Global.player["hunger"] = 100.0
+	Global.player["thirst"] = 100.0
+	Global.player["stamina"] = 100.0
 	Global.set_unlock_stage(Global.UNLOCK_ALL)
 	emit_signal("tutorial_finished")
+
+func is_tutorial_active() -> bool:
+	if skipped:
+		return false
+	if step >= TUTORIAL_DONE:
+		return false
+	if has_node("/root/Global"):
+		return Global.is_tutorial_active()
+	return step < TUTORIAL_DONE
 
 func _message_index(text: String) -> int:
 	for i in range(messages.size()):
@@ -430,7 +458,7 @@ func _next_step():
 		1:
 			emit_signal("show_message", messages[0], true)
 		2:
-			emit_signal("show_message", messages[1], true)
+			queue_messages([messages[1], messages[28], messages[29]])
 		3:
 			emit_signal("show_message", messages[2], true)
 		4:

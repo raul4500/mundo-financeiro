@@ -1,13 +1,7 @@
-[2026-09-24T11:46:31] === Sessão iniciada ===
-[2026-09-24T11:46:31] [INFO] Logger inicializado
-[2026-09-24T11:46:31] [INFO] save loaded
-[2026-09-24T11:46:31] [INFO] TimeManager inicializado
-[2026-09-24T11:46:38] [INFO] Arquivo deletado com sucesso: user://savegame.json
-[2026-09-24T11:46:56] [INFO] Missão concluída: Não gaste dinheiro por 1 dia
-[2026-09-24T11:46:58] [INFO] Missões da semana concluídas com sucesso
-[2026-09-24T11:46:58] [INFO] Evento sorteado: Promoção imperdível
-[2026-09-24T11:47:03] [INFO] Pendência criada: Promoção imperdível — Comprar (conta de R$ 250.00)
-[2026-09-24T11:47:23] [INFO] Conta paga: Promoção imperdível — Comprar (R$ 250.00)
-[2026-09-24T11:47:23] [INFO] Missão concluída: Resolva um evento inesperado (pague ou resgate no banco)
-[2026-09-24T11:48:37] [INFO] Evento sorteado: Promoção no trabalho
-[2026-09-24T11:48:37] [INFO] Pendência criada: Promoção no trabalho (bônus de R$ 800.00)
+[2026-09-24T14:55:18] === Sessão iniciada ===
+[2026-09-24T14:55:18] [INFO] Logger inicializado
+[2026-09-24T14:55:18] [INFO] save loaded
+[2026-09-24T14:55:18] [INFO] TimeManager inicializado
+[2026-09-24T14:55:28] [INFO] Arquivo deletado com sucesso: user://savegame.json
+[2026-09-24T14:56:08] [INFO] Minigame: checkpoint alcançado. Nível 2.
+[2026-09-24T14:56:09] [INFO] Minigame: sessão encerrada. Liberado na semana 2.

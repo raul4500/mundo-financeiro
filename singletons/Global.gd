@@ -148,6 +148,11 @@ func unlock_stage() -> int:
 		return UNLOCK_SCHOOL_ONLY
 	return int(player.get("unlock_stage", UNLOCK_SCHOOL_ONLY))
 
+func is_tutorial_active() -> bool:
+	if player == null or typeof(player) != TYPE_DICTIONARY:
+		return false
+	return int(player.get("tutorial_step", 1)) < LEGACY_TUTORIAL_DONE and unlock_stage() < UNLOCK_ALL
+
 # So' avanca. Um evento fora de ordem nao pode retrancar o que ja' abriu.
 func set_unlock_stage(stage: int) -> void:
 	if player == null:
@@ -191,6 +196,12 @@ func ensure_player_state() -> void:
 		# existe quando esta funcao roda.
 		if int(player.get("tutorial_step", 1)) >= 8:
 			player["tutorial_step"] = LEGACY_TUTORIAL_DONE
+			player["tutorial_home_shown"] = true
+	# Durante o tutorial inicial, os status ficam travados em 100% até a liberação do mapa
+	if is_tutorial_active():
+		player["hunger"] = 100.0
+		player["thirst"] = 100.0
+		player["stamina"] = 100.0
 	if not player.has("position") or typeof(player["position"]) != TYPE_DICTIONARY:
 		player["position"] = {"x": 180.0, "y": 210.0}
 	if not player.has("investments"):
@@ -510,6 +521,11 @@ func consume_drink() -> Dictionary:
 func apply_home_action(action_name: String, hunger_delta: float, stamina_delta: float, time_cost: float = 0.0) -> Dictionary:
 	if player == null:
 		return {"success": false, "message": "Estado do jogador não inicializado."}
+	if is_tutorial_active():
+		player["hunger"] = 100.0
+		player["thirst"] = 100.0
+		player["stamina"] = 100.0
+		return {"success": true, "message": "%s" % action_name}
 	player["hunger"] = clampf(float(player.get("hunger", 100.0)) + float(hunger_delta), 0.0, 100.0)
 	player["stamina"] = clampf(float(player.get("stamina", 100.0)) + float(stamina_delta), 0.0, 100.0)
 	var log = player.get("home_actions_log", [])
@@ -536,6 +552,11 @@ func apply_home_action(action_name: String, hunger_delta: float, stamina_delta: 
 func decay_need_state() -> bool:
 	if player == null:
 		return true
+	if is_tutorial_active():
+		player["hunger"] = 100.0
+		player["thirst"] = 100.0
+		player["stamina"] = 100.0
+		return true
 	player["hunger"] = clampf(float(player.get("hunger", 100.0)) - HUNGER_DECAY_PER_DAY, 0.0, 100.0)
 	player["thirst"] = clampf(float(player.get("thirst", 100.0)) - THIRST_DECAY_PER_DAY, 0.0, 100.0)
 	if player["hunger"] <= 0.0:
@@ -561,6 +582,12 @@ func trigger_game_over(message: String) -> void:
 func evaluate_week_status() -> Dictionary:
 	if player == null:
 		return {"penalty": 0.0, "message": "Sem avaliação"}
+	if is_tutorial_active():
+		player["hunger"] = 100.0
+		player["thirst"] = 100.0
+		player["stamina"] = 100.0
+		player["last_week_status"] = {"hunger": 100.0, "thirst": 100.0, "stamina": 100.0}
+		return {"penalty": 0.0, "message": "Sem avaliação durante o tutorial"}
 	var hunger = float(player.get("hunger", 100.0))
 	var thirst = float(player.get("thirst", 100.0))
 	var stamina = float(player.get("stamina", 100.0))

@@ -68,3 +68,18 @@ func _on_open_pressed() -> void:
 
 func _on_close_pressed() -> void:
 	panel.visible = false
+
+func _unhandled_input(event: InputEvent) -> void:
+	if Global.player_hud_hidden or Global.gameplay_locked:
+		return
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_M or event.keycode == KEY_F:
+			if panel.visible:
+				_on_close_pressed()
+			else:
+				_on_open_pressed()
+			get_viewport().set_input_as_handled()
+		elif event.is_action_pressed("ui_cancel") and panel.visible:
+			_on_close_pressed()
+			get_viewport().set_input_as_handled()
+

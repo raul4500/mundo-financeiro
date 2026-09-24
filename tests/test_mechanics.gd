@@ -25,6 +25,10 @@ func _fresh_player() -> void:
 	Global.player["stamina"] = 100.0
 	Global.player["day"] = 1
 	Global.player["hour"] = 8
+	# Para testes de mecânicas gerais (stamina, sono, game over, FIIs), o jogador
+	# já concluiu o tutorial para avaliar o loop normal de gameplay.
+	Global.player["tutorial_step"] = TutorialManager.TUTORIAL_DONE
+	Global.player["unlock_stage"] = Global.UNLOCK_ALL
 	TimeManager.current_day = 1
 	TimeManager.current_hour = 8
 	TimeManager.current_minute = 0
@@ -212,6 +216,8 @@ func _enter_world() -> void:
 func test_novo_jogo_so_libera_a_escola() -> void:
 	print("liberacao: novo jogo abre so' a escola")
 	_fresh_player()
+	Global.player["tutorial_step"] = 1
+	Global.player["unlock_stage"] = Global.UNLOCK_SCHOOL_ONLY
 	_check(Global.unlock_stage() == Global.UNLOCK_SCHOOL_ONLY, "estagio inicial = so' a escola")
 	_check(Global.is_place_unlocked("school"), "escola aberta")
 	for place in ["office", "bank", "market", "home", "restaurant_small", "arcade_medium", "shopping_large"]:
@@ -222,6 +228,7 @@ func test_pular_tutorial_libera_tudo_e_nao_volta() -> void:
 	print("pular tutorial: libera tudo e nao reaparece (item 1)")
 	_fresh_player()
 	Global.player["tutorial_step"] = 1
+	Global.player["unlock_stage"] = Global.UNLOCK_SCHOOL_ONLY
 	TutorialManager.start_tutorial()
 	_check(TutorialManager.can_skip(), "o botao de pular aparece no passo 1")
 	TutorialManager.skip_tutorial()
@@ -288,6 +295,21 @@ func test_ordem_escritorio_depois_o_resto() -> void:
 	_enter_world()
 	_check(TutorialManager.pending_messages.size() > 0, "o tour do mundo entrou na fila")
 
+	var has_home_focus := false
+	var has_market_focus := false
+	var has_bank_focus := false
+	for entry in TutorialManager.pending_messages:
+		var foc: String = str(entry.get("focus", ""))
+		if foc == "Home":
+			has_home_focus = true
+		elif foc == "Market":
+			has_market_focus = true
+		elif foc == "Bank":
+			has_bank_focus = true
+	_check(has_home_focus, "o tour foca a casa")
+	_check(has_market_focus, "o tour foca o mercado")
+	_check(has_bank_focus, "o tour foca o banco")
+
 	# O tour termina quando a fila esvazia.
 	var guard := 0
 	while not TutorialManager.pending_messages.is_empty() and guard < 50:
@@ -298,10 +320,84 @@ func test_ordem_escritorio_depois_o_resto() -> void:
 	TutorialManager.continue_tutorial_after_alert()
 	_check(int(Global.player["tutorial_step"]) == TutorialManager.TUTORIAL_DONE, "tutorial concluido")
 	_check(Global.unlock_stage() == Global.UNLOCK_ALL, "cidade inteira liberada no fim")
+	_check(bool(Global.player.get("tutorial_home_shown", false)), "tutorial da casa marcado como visto")
+
+	TutorialManager.pending_messages.clear()
+	TutorialManager.on_player_entered_home()
+	_check(TutorialManager.pending_messages.is_empty(), "entrar em casa depois do tour nao repete o tutorial")
 
 	TutorialManager.pending_messages.clear()
 	_enter_world()
 	_check(TutorialManager.pending_messages.is_empty(), "tutorial concluido nao se repete")
+
+func test_tutorial_fluxo_inicial_controles_e_escola() -> void:
+	print("tutorial: intro -> controles -> escola")
+	_fresh_player()
+	Global.player["tutorial_step"] = 1
+	Global.player["unlock_stage"] = Global.UNLOCK_SCHOOL_ONLY
+	TutorialManager.start_tutorial()
+	_check(TutorialManager.step == 1, "inicia no passo 1 (boas-vindas)")
+	_check(TutorialManager.can_skip(), "pode pular no passo 1")
+
+	# Avanca do passo 1 para o 2: o passo 2 enfileira objetivo principal e controles
+	TutorialManager.continue_tutorial_after_alert()
+	_check(TutorialManager.step == 2, "avancou para o passo 2")
+	_check(not TutorialManager.can_skip(), "nao pode pular no passo 2")
+	_check(TutorialManager.pending_messages.size() == 2, "2 mensagens de controles pendentes na fila do passo 2")
+
+	# Consome os alertas de controles
+	TutorialManager.continue_tutorial_after_alert()
+	_check(TutorialManager.pending_messages.size() == 1, "1 mensagem de controles restante")
+	TutorialManager.continue_tutorial_after_alert()
+	_check(TutorialManager.pending_messages.is_empty(), "fila de controles esvaziada")
+
+	# Proxima confirmacao avanca para a escola (passo 3)
+	TutorialManager.continue_tutorial_after_alert()
+	_check(TutorialManager.step == 3, "passo 3 apresenta a escola apos os controles")
+
+	# Avanca para o passo 4 (impacto no salario)
+	TutorialManager.continue_tutorial_after_alert()
+	_check(TutorialManager.step == 4, "passo 4 explica salario e formacao")
+
+	# Avanca para o passo 5 (espera entrar na escola)
+	TutorialManager.continue_tutorial_after_alert()
+	_check(TutorialManager.step == 5, "passo 5 foca na escola e aguarda jogador")
+
+	# Entrar na escola avanca para o passo 6
+	TutorialManager.on_player_entered_school()
+	_check(TutorialManager.step == 6, "entrou na escola: avancou para o minigame")
+
+func test_status_travados_em_100_durante_tutorial() -> void:
+	print("tutorial: status (fome, sede, stamina) travados em 100 ate concluir ou pular")
+	_fresh_player()
+	Global.player["tutorial_step"] = 1
+	Global.player["unlock_stage"] = Global.UNLOCK_SCHOOL_ONLY
+	_check(Global.is_tutorial_active(), "tutorial ativo no inicio")
+
+	# Avanca tempo com o tutorial ativo: stamina nao cai, 18h nao dispara alerta
+	_run_until(18, 0)
+	_check(float(Global.player["stamina"]) == 100.0, "stamina continua 100 as 18h no tutorial")
+	_check(not TimeManager._exhaustion_alert_shown, "aviso das 18h nao dispara durante o tutorial")
+
+	# Fim do dia / decay_need_state nao reduz fome nem sede
+	var survived: bool = Global.decay_need_state()
+	_check(survived, "decay_need_state durante tutorial nao mata")
+	_check(float(Global.player["hunger"]) == 100.0, "fome continua 100 no tutorial")
+	_check(float(Global.player["thirst"]) == 100.0, "sede continua 100 no tutorial")
+
+	# Pular tutorial libera o mundo e destrava o decaimento normal
+	TutorialManager.start_tutorial()
+	TutorialManager.skip_tutorial()
+	_check(not Global.is_tutorial_active(), "tutorial inativo apos pular")
+	_check(float(Global.player["stamina"]) == 100.0, "stamina continua 100 logo apos pular")
+	_check(float(Global.player["hunger"]) == 100.0, "fome continua 100 logo apos pular")
+	_check(float(Global.player["thirst"]) == 100.0, "sede continua 100 logo apos pular")
+
+	# Agora que o tutorial acabou, o decaimento de stamina funciona normalmente
+	TimeManager.current_hour = 8
+	TimeManager.current_minute = 0
+	_run_until(18, 0)
+	_check(float(Global.player["stamina"]) < 100.0, "apos tutorial, stamina decai normalmente")
 
 func test_save_antigo_nao_retranca_a_cidade() -> void:
 	print("save antigo: sem unlock_stage entra com tudo aberto")
@@ -399,6 +495,8 @@ func _ready() -> void:
 	test_novo_jogo_so_libera_a_escola()
 	test_pular_tutorial_libera_tudo_e_nao_volta()
 	test_ordem_escritorio_depois_o_resto()
+	test_tutorial_fluxo_inicial_controles_e_escola()
+	test_status_travados_em_100_durante_tutorial()
 	test_save_antigo_nao_retranca_a_cidade()
 	test_reset_de_time_manager_destrava_partida_nova()
 	test_semana_repetida_reprocessa_empreendimento()

@@ -109,9 +109,20 @@ Os botões usam `focus_mode = FOCUS_NONE` de propósito. Um botão com foco é a
 
 `TutorialManager.skip_tutorial()` marca `skipped`, limpa a fila de mensagens e pula `step` e `tutorial_step` para `FINAL_STEP`. O botão de pular só aparece na primeira mensagem (`can_skip()` exige `step == 1`).
 
-**O tutorial tem dois estágios.**
+**O tutorial tem dois estágios principais (onboarding e avisos semanais).**
 
-*Estágio 1 — onboarding linear.* `messages` (15 entradas) e a máquina de 8 passos de `_next_step()`, que roda uma vez só, da abertura do jogo até o fim da semana 1. Os passos 1–4 são as boas-vindas, o 5 foca a câmera na escola, o 6 explica o minigame (`messages[4]` a `messages[8]`, incluindo as regras de trava da escola), o 7 espera o minigame terminar e o 8 fecha apresentando mercado, banco e escritório (`messages[8]` a `messages[14]`).
+*Estágio 1 — onboarding linear.* `messages` e a máquina de passos de `_next_step()`, que roda uma vez só, da abertura do jogo até o fim da semana 1:
+1. Boas-vindas (`messages[0]`, botão de pular disponível).
+2. Objetivo principal e Controles (`messages[1]`, `messages[28]` e `messages[29]`): ensina movimentação (WASD/Setas, Shift), interações (Enter, Espaço), missões (M/F ou botão na HUD) e pause (ESC) **antes** de citar ou focar a escola.
+3. Primeiro passo: a escola (`messages[2]`).
+4. Escolaridade e salário (`messages[3]`).
+5. Foco da câmera na escola (`emit_signal("focus", "School")`) e aguarda o jogador entrar.
+6. Explicação dentro do minigame de formação (`messages[4]` a `messages[8]`).
+7. Espera o minigame terminar.
+8. Pós-minigame: primeiro salário e apresentação/destravamento do escritório (`messages[9]`, `messages[13]`, `messages[21]`).
+9. Espera o jogador entrar e sair do escritório de consultoria.
+10. Tour do mundo: apresenta a casa com foco de câmera (`"Home"`, `messages[22]`) e explica todas as mecânicas domésticas (estoque, alimentação, descanso, sono, penalidade da meia-noite e sede: `messages[23-25, 16-18, 27]`), seguido do mercado com foco (`"Market"`, `messages[11, 19, 20]`), banco com foco (`"Bank"`, `messages[12]`) e mensagens finais (`messages[14, 15]`). Ao concluir, destrava a cidade inteira (`UNLOCK_ALL`) e marca `tutorial_home_shown = true`.
+11. Tutorial concluído (`TUTORIAL_DONE = 11`).
 
 *Estágio 2 — avisos semanais.* `weekly_messages` é um dicionário `semana → Array[String]`, disparado por `TutorialManager.on_week_changed(week)`, que o `TimeManager` chama na virada de semana logo após `week_changed`. Cada semana ensina só o que acabou de destravar:
 
@@ -126,11 +137,13 @@ As semanas escolhidas acompanham o que o resto do jogo já libera: `EventsManage
 
 `Global.player["tutorial_weeks_shown"]` guarda as semanas já mostradas, para um reload não repetir. A comparação passa por `_week_already_shown()`, que converte cada item com `int()` — depois de salvar e carregar, o JSON devolve os números como float e comparar `2` com `2.0` direto no `Array.has()` é frágil.
 
-`skip_tutorial()` marca **todas** as semanas de `weekly_messages` como vistas: o botão diz "Pular tutorial", então pula o tutorial inteiro, não só o onboarding. Isso vai para `Global.player` de propósito — a variável `skipped` não é salva, então checá-la faria os avisos semanais voltarem após um reload.
+`skip_tutorial()` marca **todas** as semanas de `weekly_messages` como vistas e define `tutorial_home_shown = true`: o botão diz "Pular tutorial", então pula o tutorial inteiro, não só o onboarding. Isso vai para `Global.player` de propósito — a variável `skipped` não é salva, então checá-la faria os avisos semanais voltarem após um reload.
 
-*Estágio 3 — blocos de primeira visita.* Algumas mecânicas não pertencem a uma semana nem a um passo do onboarding: dependem de o jogador **entrar num lugar**, o que pode acontecer na semana 1 ou na 4. O único caso hoje é a casa: `TutorialManager.on_player_entered_home()`, chamado por `home.gd._ready()` depois do `_build_ui()` (as mensagens citam os botões, que precisam já estar na tela atrás do alerta). A trava é `Global.player["tutorial_home_shown"]`, persistida pelo mesmo motivo de `tutorial_weeks_shown`, e `skip_tutorial()` também a marca. O tour do passo 10 dá só uma linha sobre a casa (`messages[22]`); o detalhe das ações fica para a visita.
+*Estágio 3 — mecânicas da casa.* A apresentação detalhada da casa agora faz parte do tour do mundo (Passo 10), ocorrendo após o minigame e a consultoria. Quando o tour roda, marca `Global.player["tutorial_home_shown"] = true`. `home.gd._ready()` mantém a chamada a `TutorialManager.on_player_entered_home()` como segurança/fallback, mas a trava impede que mensagens sejam exibidas novamente ao entrar na residência.
 
-**O array `messages` é append-only.** Os índices 0–21 são citados um a um em `_next_step()`, `_resume_step()`, `_queue_office_intro()` e `_queue_world_tour()`; inserir no meio renumera tudo e quebra as quatro. Conteúdo novo entra no fim — hoje 22 (a casa, no tour) e 23–27 (estoque, comer/beber, descansar/TV, dormir, sede).
+**Status congelados em 100% durante o tutorial inicial:** Enquanto o tutorial inicial não for concluído (`Global.is_tutorial_active()` — isto é, `tutorial_step < 11` e `unlock_stage < UNLOCK_ALL`), os status do jogador (`hunger`, `thirst`, `stamina`) não diminuem e permanecem cravados em 100.0. O aviso de cansaço das 18h e a penalidade de meia-noite não acontecem. Assim que o jogador é liberado para explorar o mundo (conclusão do tour no Passo 10) ou ao usar o botão "Pular tutorial", todos os status são confirmados em 100% e a simulação de decaimento natural começa a atuar normalmente.
+
+**O array `messages` é append-only.** Os índices 0–21 são citados um a um em `_next_step()`, `_resume_step()`, `_queue_office_intro()` e `_queue_world_tour()`; inserir no meio renumera tudo e quebra as quatro. Conteúdo novo entra no fim — 22 (a casa, no tour com foco `"Home"`), 23–27 (estoque, comer/beber, descansar/TV, dormir, sede) e 28–29 (comandos e controles básicos).
 
 **Os números das mensagens dos empreendimentos são copiados dos arquivos em `scripts/enterprise/data/`** — ao mexer em `purchase_price`, `water_bill`, `electricity_bill`, `starting_capacity`, `employee_salary` ou `upgrade_costs`, atualize o texto do tutorial junto, senão ele passa a ensinar valores errados.
 

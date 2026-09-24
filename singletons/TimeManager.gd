@@ -112,6 +112,8 @@ func _add_minute():
 func _warn_exhaustion() -> void:
 	if _exhaustion_alert_shown:
 		return
+	if Global.is_tutorial_active():
+		return
 	_exhaustion_alert_shown = true
 	AlertManager.alert("Já está tarde! Volte para casa para dormir.\n\nSe virar a noite acordado, vai pagar caro por isso.")
 
@@ -123,6 +125,11 @@ func _warn_exhaustion() -> void:
 # =============================================================
 func _decay_stamina() -> bool:
 	if Global.player == null:
+		return false
+	if Global.is_tutorial_active():
+		Global.player["stamina"] = 100.0
+		Global.player["hunger"] = 100.0
+		Global.player["thirst"] = 100.0
 		return false
 		
 	var stamina := float(Global.player.get("stamina", 100.0))
@@ -191,6 +198,13 @@ func _faint():
 # Meia-noite sem ter dormido: volta para casa a força, paga o café e acorda
 # com metade da stamina.
 func _handle_midnight() -> void:
+	if day_end_pending:
+		return
+	if Global.is_tutorial_active():
+		Global.player["stamina"] = 100.0
+		Global.player["hunger"] = 100.0
+		Global.player["thirst"] = 100.0
+		return
 	# Nao precisa mexer na posicao: _advance_to_next_day() liga
 	# return_home_next_day e main_game._ready() poe o jogador na porta de casa.
 	# Piso em zero: sem isto a penalidade empurrava o saldo cada vez mais fundo
@@ -217,7 +231,12 @@ func _close_day(restored_stamina: float) -> bool:
 	# empreendimentos — sem isto update_prices() nunca era chamado por ninguém
 	# e a "volatilidade" dos fundos ficava só no papel.
 	FIIManager.update_prices()
-	Global.player["stamina"] = clampf(restored_stamina, 0.0, 100.0)
+	if Global.is_tutorial_active():
+		Global.player["stamina"] = 100.0
+		Global.player["hunger"] = 100.0
+		Global.player["thirst"] = 100.0
+	else:
+		Global.player["stamina"] = clampf(restored_stamina, 0.0, 100.0)
 	Global.player["positive_days_count"] = int(Global.player.get("positive_days_count", 0)) + 1
 	day_end_pending = true
 	Global.play_time = false
