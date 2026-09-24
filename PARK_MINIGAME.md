@@ -22,7 +22,7 @@ Dar ao jogador algo ativo para fazer durante o dia (feedback de playtest: "não 
 5. A sessão constrói sua própria UI em código (timer + placar no topo da tela) e spawna a primeira moeda.
 6. Jogador anda pelo mapa (movimento normal, sem trocar de cena) coletando moedas antes de cada uma expirar.
 7. A cada 5 moedas coletadas (até 2 vezes por sessão), o jogo pausa para um quiz.
-8. A sessão termina de dois jeitos: o tempo geral (120s) acaba (`_end_session()`), ou o jogador aperta **BACKSPACE** e sai por vontade própria (`_quit_session()`) — ver §5.1. Em ambos os casos: mostra quantas moedas foram coletadas, restaura o HUD (`player_hud_hidden = false`) e libera a trava de sessão ativa.
+8. A sessão termina de dois jeitos: o tempo geral (120s) acaba (`_end_session()`), ou o jogador aperta **BACKSPACE** e sai por vontade própria (`_quit_session()`) — ver §5.1. Em ambos os casos: mostra quantas moedas foram coletadas, restaura o HUD (`player_hud_hidden = false`), libera a trava de sessão ativa e retoma os alertas externos (aviso das 18h do `TimeManager` e eventos inesperados do `EventsManager` que ocorreram durante a corrida são retidos via `AlertManager.defer_alerts()` e exibidos ordenadamente logo após a confirmação do resultado).
 
 ## 4. Moedas
 

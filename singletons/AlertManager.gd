@@ -27,6 +27,41 @@ var on_confirm_callback: Callable
 # eram N travas (uma por chamada) para um único destravamento (o clique).
 var _queue: Array = []
 
+# Fila de alertas adiados. Usada quando _defer_count > 0 (ex.: durante minigames).
+# Alertas não-imediatos são retidos aqui em vez de interromper a jogabilidade.
+var _defer_count: int = 0
+var _deferred_queue: Array = []
+
+func defer_alerts() -> void:
+	_defer_count += 1
+
+func resume_alerts() -> void:
+	_defer_count = max(0, _defer_count - 1)
+	if _defer_count == 0 and not _deferred_queue.is_empty():
+		for entry in _deferred_queue:
+			_queue.append(entry)
+		_deferred_queue.clear()
+		if not panel.visible:
+			_show_next()
+
+func is_deferring() -> bool:
+	return _defer_count > 0
+
+func reset() -> void:
+	_queue.clear()
+	_deferred_queue.clear()
+	_defer_count = 0
+	_clear_choices()
+	if is_instance_valid(panel):
+		panel.visible = false
+	if is_instance_valid(blocker):
+		blocker.visible = false
+	if is_instance_valid(skip_button):
+		skip_button.visible = false
+	on_confirm_callback = Callable()
+	next_step = false
+
+
 func _ready():
 	# Autoloads entram na árvore antes da cena atual, então qualquer CanvasLayer
 	# da cena (HUD, missões, pause) ficaria por cima do alerta e roubaria os
@@ -165,10 +200,17 @@ func _create_alert_ui():
 # =============================
 # 🚨 MOSTRAR ALERTA
 # =============================
-func alert(text: String, step: bool = false, callback: Callable = Callable()):
-	_queue.append({"text": text, "step": step, "callback": callback, "choices": []})
+func alert(text: String, step: bool = false, callback: Callable = Callable(), immediate: bool = false):
+	var entry = {"text": text, "step": step, "callback": callback, "choices": []}
+	if _defer_count > 0 and not immediate:
+		_deferred_queue.append(entry)
+		return
+	_queue.append(entry)
 	if not panel.visible:
 		_show_next()
+
+func alert_immediate(text: String, step: bool = false, callback: Callable = Callable()) -> void:
+	alert(text, step, callback, true)
 
 
 # =============================
@@ -177,13 +219,18 @@ func alert(text: String, step: bool = false, callback: Callable = Callable()):
 # Cada escolha é {"text": String, "callback": Callable}. O jogador é obrigado a
 # clicar numa opção: o OK some e a barra de espaço não fecha, senão a decisão
 # sumiria da tela sem virar nada.
-func alert_choice(text: String, choices: Array):
+func alert_choice(text: String, choices: Array, immediate: bool = false):
 	if choices.is_empty():
-		alert(text)
+		alert(text, false, Callable(), immediate)
 		return
-	_queue.append({"text": text, "step": false, "callback": Callable(), "choices": choices})
+	var entry = {"text": text, "step": false, "callback": Callable(), "choices": choices}
+	if _defer_count > 0 and not immediate:
+		_deferred_queue.append(entry)
+		return
+	_queue.append(entry)
 	if not panel.visible:
 		_show_next()
+
 
 
 func _show_next() -> void:
@@ -267,6 +314,8 @@ func _on_skip_pressed():
 # =============================
 func _input(event):
 	if not panel.visible:
+		return
+	if TransitionManager.is_transitioning():
 		return
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_SPACE:
 		# Consome o evento para o Espaço não vazar para o gameplay (pulo, etc.).

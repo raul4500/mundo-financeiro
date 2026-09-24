@@ -308,6 +308,7 @@ func new_game(name: String, money: float) -> void:
 	# preso em true (deixado por uma morte de fome/sede) travava o relógio da
 	# partida nova inteira.
 	TimeManager.reset()
+	AlertManager.reset()
 
 	TimeManager.update_time()
 	if get_tree() != null:

@@ -53,6 +53,7 @@ var run_in_target_x := 0.0
 # A cena pega um lock em _ready() e o devolve ao comecar a correr. Sem esta
 # flag, sair no meio do run-in devolveria o mesmo lock duas vezes.
 var lock_released := false
+var alerts_deferred := false
 
 func notify_tutorial_minigame_finished() -> void:
 	TutorialManager.on_minigame_finished()
@@ -69,12 +70,16 @@ func _exit_tree() -> void:
 	# Encerra a sessão ao sair da cena por qualquer caminho, para nenhuma
 	# sessão "aberta" sobrar e valer na próxima entrada no minigame.
 	MinigameManager.end_session()
+	if alerts_deferred:
+		alerts_deferred = false
+		AlertManager.resume_alerts()
 	# Se a cena for abandonada antes de começar (o menu de pausa permite voltar
 	# ao menu principal), o lock precisa ser devolvido, senão o contador fica
 	# preso e o jogo inteiro continua travado.
 	if not lock_released:
 		lock_released = true
 		Global.unlock_gameplay()
+
 
 # Posiciona jogador e câmera no trecho do mapa correspondente à escolaridade.
 func _place_player() -> void:
@@ -157,6 +162,10 @@ func _on_start_pressed() -> void:
 	# gameplay é o que basta para ele sair correndo.
 	lock_released = true
 	Global.unlock_gameplay()
+
+	# Adia alertas externos (18h, eventos inesperados) para não interromper os saltos
+	AlertManager.defer_alerts()
+	alerts_deferred = true
 
 # A corrida só passa a valer quando o jogador chega ao marcador. Ver o comentário
 # de run_in_active: é isto que impede o obstáculo do caminho de encerrar a

@@ -70,3 +70,7 @@ func _fade_to(target_alpha: float) -> void:
 	var tween = create_tween()
 	tween.tween_property(fade_rect, "modulate:a", target_alpha, FADE_DURATION)
 	await tween.finished
+
+func is_transitioning() -> bool:
+	return _transitioning
+

@@ -30,6 +30,7 @@ var _score_label: Label
 var _quiz_layer: Control
 var _quiz_question_label: Label
 var _quiz_option_buttons: Array = []
+var _alerts_deferred := false
 
 func start(world: Node2D, spawn_polygon: PackedVector2Array) -> void:
 	_world = world
@@ -45,6 +46,8 @@ func start(world: Node2D, spawn_polygon: PackedVector2Array) -> void:
 	_active = true
 	Global.player_hud_hidden = true
 	ParkMinigameManager.begin_session()
+	AlertManager.defer_alerts()
+	_alerts_deferred = true
 	_build_ui()
 	_spawn_next_coin()
 
@@ -237,7 +240,7 @@ func _on_quiz_option_pressed(index: int) -> void:
 		feedback = "Resposta certa! Você ganhou um cupom de %d%% de desconto no mercado." % int(ParkMinigameManager.QUIZ_REWARD_DISCOUNT * 100)
 	else:
 		feedback = "Não foi dessa vez. Continue coletando moedas!"
-	AlertManager.alert(feedback, false, Callable(self, "_on_quiz_feedback_closed"))
+	AlertManager.alert_immediate(feedback, false, Callable(self, "_on_quiz_feedback_closed"))
 
 func _on_quiz_feedback_closed() -> void:
 	if _active:
@@ -252,7 +255,10 @@ func _end_session() -> void:
 		_current_coin.queue_free()
 	Global.player_hud_hidden = false
 	ParkMinigameManager.end_session()
-	AlertManager.alert("Tempo esgotado! Você coletou %d moeda(s)." % _coins_collected)
+	AlertManager.alert_immediate("Tempo esgotado! Você coletou %d moeda(s)." % _coins_collected)
+	if _alerts_deferred:
+		_alerts_deferred = false
+		AlertManager.resume_alerts()
 	queue_free()
 
 # Saída antecipada pelo próprio jogador (BACKSPACE). Só chamada fora do quiz
@@ -265,7 +271,10 @@ func _quit_session() -> void:
 		_current_coin.queue_free()
 	Global.player_hud_hidden = false
 	ParkMinigameManager.end_session()
-	AlertManager.alert("Você saiu do parque. Moedas coletadas: %d." % _coins_collected)
+	AlertManager.alert_immediate("Você saiu do parque. Moedas coletadas: %d." % _coins_collected)
+	if _alerts_deferred:
+		_alerts_deferred = false
+		AlertManager.resume_alerts()
 	queue_free()
 
 # Cobre a saída pelo menu de pausa (Sair troca de cena direto, sem passar por
@@ -277,5 +286,8 @@ func _exit_tree() -> void:
 		_active = false
 		ParkMinigameManager.end_session()
 	Global.player_hud_hidden = false
+	if _alerts_deferred:
+		_alerts_deferred = false
+		AlertManager.resume_alerts()
 	if is_instance_valid(_quiz_layer) and _quiz_layer.visible:
 		Global.unlock_gameplay()
