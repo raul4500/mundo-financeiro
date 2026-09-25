@@ -50,11 +50,13 @@ func fill_bars(bar, qtd, texture):
 func complete_empty_bars(bar: HBoxContainer, qtd) -> void:
 	if qtd <= 0:
 		return
+	var m = 1
 	if qtd == 10:
+		m += 1
 		var empty_left = TextureRect.new()
 		empty_left.texture = empty_textures[0]
 		bar.add_child(empty_left)
-	for i in range(qtd-1):
+	for i in range(qtd-m):
 		var empty_center = TextureRect.new()
 		empty_center.texture = empty_textures[1]
 		bar.add_child(empty_center)
