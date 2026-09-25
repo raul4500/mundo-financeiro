@@ -59,15 +59,15 @@ var missions_data: Dictionary = {
 	2: [
 		{
 			"id": "construir_reserva",
-			"description": "Construa uma reserva de emergência (guarde R$200)",
+			"description": "Construa uma reserva de emergência (guarde R$120)",
 			"type": "money_min",
-			"value": 200
+			"value": 120
 		},
 		{
 			"id": "economizar_300",
-			"description": "Economize R$300",
+			"description": "Economize R$150",
 			"type": "money_min",
-			"value": 300
+			"value": 150
 		},
 		{
 			"id": "resolver_evento",
@@ -87,10 +87,10 @@ var missions_data: Dictionary = {
 			"type": "analyze"
 		},
 		{
-			"id": "economizar_500",
-			"description": "Economize R$500",
+			"id": "economizar_300_s3",
+			"description": "Economize R$300",
 			"type": "money_min",
-			"value": 500
+			"value": 300
 		}
 	],
 	4: [
@@ -105,10 +105,10 @@ var missions_data: Dictionary = {
 			"type": "diversify"
 		},
 		{
-			"id": "lucro_200",
-			"description": "Ganhe R$200 com investimentos",
+			"id": "lucro_fii",
+			"description": "Ganhe R$20 com investimentos",
 			"type": "profit",
-			"value": 200
+			"value": 20
 		}
 	],
 	5: [

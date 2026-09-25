@@ -2,21 +2,21 @@ extends Control
 
 var items: Dictionary = {
 	"Comidas": {
-		"bread": {"price": 20, "hunger_restore": 10, "thirst_restore": 0},
-		"rice": {"price": 90, "hunger_restore": 70, "thirst_restore": 5},
-		"hamburger": {"price": 60, "hunger_restore": 50, "thirst_restore": 0},
-		"apple": {"price": 15, "hunger_restore": 15, "thirst_restore": 8},
-		"banana": {"price": 12, "hunger_restore": 12, "thirst_restore": 3},
-		"cheese": {"price": 35, "hunger_restore": 25, "thirst_restore": 0},
-		"meat": {"price": 150, "hunger_restore": 100, "thirst_restore": 0},
-		"egg": {"price": 18, "hunger_restore": 18, "thirst_restore": 0},
-		"fish": {"price": 80, "hunger_restore": 65, "thirst_restore": 0}
+		"bread": {"price": 4, "hunger_restore": 10, "thirst_restore": 0},
+		"rice": {"price": 25, "hunger_restore": 70, "thirst_restore": 5},
+		"hamburger": {"price": 35, "hunger_restore": 50, "thirst_restore": 0},
+		"apple": {"price": 7, "hunger_restore": 15, "thirst_restore": 8},
+		"banana": {"price": 6, "hunger_restore": 12, "thirst_restore": 3},
+		"cheese": {"price": 20, "hunger_restore": 25, "thirst_restore": 0},
+		"meat": {"price": 70, "hunger_restore": 100, "thirst_restore": 0},
+		"egg": {"price": 8, "hunger_restore": 18, "thirst_restore": 0},
+		"fish": {"price": 45, "hunger_restore": 65, "thirst_restore": 0}
 	},
 	"Bebidas": {
 		"water": {"price": 5, "hunger_restore": 3, "thirst_restore": 25},
 		"juice": {"price": 20, "hunger_restore": 15, "thirst_restore": 35},
 		"coffee": {"price": 30, "hunger_restore": 10, "thirst_restore": 15},
-		"milk": {"price": 25, "hunger_restore": 20, "thirst_restore": 15},
+		"milk": {"price": 15, "hunger_restore": 20, "thirst_restore": 15},
 		"soda": {"price": 25, "hunger_restore": 12, "thirst_restore": 20},
 		"tea": {"price": 15, "hunger_restore": 8, "thirst_restore": 30},
 		"energy_drink": {"price": 45, "hunger_restore": 30, "thirst_restore": 20},

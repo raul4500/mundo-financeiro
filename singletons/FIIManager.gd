@@ -22,26 +22,32 @@ func _log_error(message: String) -> void:
 	else:
 		print("[ERROR] %s" % message)
 
-var funds = {
-	"FII_SHOPPING": {
-		"name": "FII Shopping",
-		"price": 100.0,
-		"dividend_yield": 0.01,
-		"volatility": 0.02
-	},
-	"FII_LAJES": {
-		"name": "FII Lajes Corporativas",
-		"price": 120.0,
-		"dividend_yield": 0.008,
-		"volatility": 0.015
-	},
-	"FII_LOGISTICA": {
-		"name": "FII Logística",
-		"price": 90.0,
-		"dividend_yield": 0.012,
-		"volatility": 0.025
+# Yields subidos na auditoria de balanceamento (ECONOMY_BALANCE_PLAN.md,
+# achado #4): com 0,8-1,2%/semana, a missão "lucro_200" da semana 4 exigia
+# ~R$10-20 mil investidos, inatingível no ritmo normal de jogo.
+func _default_funds() -> Dictionary:
+	return {
+		"FII_SHOPPING": {
+			"name": "FII Shopping",
+			"price": 100.0,
+			"dividend_yield": 0.025,
+			"volatility": 0.02
+		},
+		"FII_LAJES": {
+			"name": "FII Lajes Corporativas",
+			"price": 120.0,
+			"dividend_yield": 0.02,
+			"volatility": 0.015
+		},
+		"FII_LOGISTICA": {
+			"name": "FII Logística",
+			"price": 90.0,
+			"dividend_yield": 0.03,
+			"volatility": 0.025
+		}
 	}
-}
+
+var funds = _default_funds()
 
 var portfolio = {}
 # Preco medio pago por cota, por fundo. Separado de `portfolio` (que continua
@@ -71,26 +77,7 @@ func reset() -> void:
 	avg_price = {}
 	total_invested = 0.0
 	total_dividends_received = 0.0
-	funds = {
-		"FII_SHOPPING": {
-			"name": "FII Shopping",
-			"price": 100.0,
-			"dividend_yield": 0.01,
-			"volatility": 0.02
-		},
-		"FII_LAJES": {
-			"name": "FII Lajes Corporativas",
-			"price": 120.0,
-			"dividend_yield": 0.008,
-			"volatility": 0.015
-		},
-		"FII_LOGISTICA": {
-			"name": "FII Logística",
-			"price": 90.0,
-			"dividend_yield": 0.012,
-			"volatility": 0.025
-		}
-	}
+	funds = _default_funds()
 	emit_signal("portfolio_updated")
 	emit_signal("funds_updated")
 

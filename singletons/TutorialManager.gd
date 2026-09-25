@@ -166,7 +166,7 @@ var messages = [
 
 	"Se você virar a noite acordado, à meia-noite volta para casa à força, paga R$ 30 de café para aguentar o dia seguinte e acorda com apenas metade da stamina. Planejar a volta para casa faz parte do orçamento.",
 
-	"No mercado, cada item mostra quanto ele repõe de fome e de sede. Comida barata repõe pouco e comida cara repõe muito: o pão custa R$ 20 e devolve 10% de fome, a carne custa R$ 150 e devolve 100%. As bebidas ficam na aba ao lado e cuidam da sede. Compare o preço por porcentagem antes de encher o carrinho.",
+	"No mercado, cada item mostra quanto ele repõe de fome e de sede. Comida barata repõe pouco e comida cara repõe muito: o pão custa R$ 4 e devolve 10% de fome, a carne custa R$ 70 e devolve 100%. As bebidas ficam na aba ao lado e cuidam da sede. Compare o preço por porcentagem antes de encher o carrinho.",
 
 	"E cuidado com a fome: ela cai um pouco a cada dia que passa e só volta comendo. Se a fome chegar a zero, é game over. Manter comida no estoque de casa não é luxo, é sobrevivência.",
 

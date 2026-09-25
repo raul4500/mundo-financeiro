@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://dcbgk5qjcltii" path="res://scripts/hud/hud_control.gd" id="3_phaeh"]
 [ext_resource type="PackedScene" uid="uid://cha446b7n3r5r" path="res://scenes/menus/pause_menu.tscn" id="5_es4m5"]
 [ext_resource type="Texture2D" uid="uid://bxqlroa6yctq2" path="res://assests/sprites/status-bars/yellow_thunder.png" id="5_fsrjl"]
+[ext_resource type="Script" uid="uid://cugfhq4fjq06c" path="res://scripts/player/player-stats.gd" id="5_mh0hk"]
 [ext_resource type="Script" uid="uid://b8pmiwonxqp53" path="res://scripts/hud/missions_ui.gd" id="5_olb2f"]
 [ext_resource type="Texture2D" uid="uid://cbssfvxhbc8nt" path="res://assests/sprites/status-bars/chicken.png" id="6_mh0hk"]
 [ext_resource type="Texture2D" uid="uid://ysaexo743f2a" path="res://assests/sprites/status-bars/water_drop.png" id="7_18rgo"]
@@ -56,6 +57,7 @@ offset_top = -112.0
 offset_right = 228.0
 offset_bottom = -8.0
 grow_vertical = 0
+script = ExtResource("5_mh0hk")
 
 [node name="Stamina" type="HBoxContainer" parent="Hud/HudControl/VBoxContainer" unique_id=189281032]
 layout_mode = 2

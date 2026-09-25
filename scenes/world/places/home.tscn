@@ -3,15 +3,13 @@
 [ext_resource type="Script" uid="uid://brqyirmkigsp3" path="res://scripts/world/home/home.gd" id="1_ecgb0"]
 [ext_resource type="Theme" uid="uid://b2pfdp8p48jam" path="res://themes/font_theme.tres" id="2_22txc"]
 [ext_resource type="Texture2D" uid="uid://bflybnt72b4wy" path="res://assests/sprites/indoors-backgrounds/home.jpeg" id="2_tq22s"]
+[ext_resource type="Script" uid="uid://cugfhq4fjq06c" path="res://scripts/player/player-stats.gd" id="4_smyue"]
+[ext_resource type="Texture2D" uid="uid://bxqlroa6yctq2" path="res://assests/sprites/status-bars/yellow_thunder.png" id="5_fknsj"]
+[ext_resource type="Texture2D" uid="uid://cbssfvxhbc8nt" path="res://assests/sprites/status-bars/chicken.png" id="6_berv3"]
+[ext_resource type="Texture2D" uid="uid://ysaexo743f2a" path="res://assests/sprites/status-bars/water_drop.png" id="7_x66rk"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5t7o5"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1kn83"]
-bg_color = Color(0.32761508, 0.27060032, 0.20298055, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w05is"]
-bg_color = Color(0.6462829, 0.5642851, 0.44263944, 1)
 
 [node name="Home" type="Control" unique_id=994487351]
 layout_mode = 3
@@ -81,78 +79,66 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_5t7o5")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/Main-panel" unique_id=590604411]
+[node name="Status-panel" type="Panel" parent="HBoxContainer/Main-panel" unique_id=913373877]
 layout_mode = 0
 offset_right = 524.0
-offset_bottom = 167.0
-
-[node name="Status-panel" type="Panel" parent="HBoxContainer/Main-panel/VBoxContainer" unique_id=913373877]
-layout_mode = 2
+offset_bottom = 122.0
 size_flags_vertical = 3
 theme = ExtResource("2_22txc")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel" unique_id=181958207]
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/Main-panel/Status-panel" unique_id=449090422]
 layout_mode = 1
-anchors_preset = 10
+anchors_preset = 14
+anchor_top = 0.5
 anchor_right = 1.0
-offset_left = 9.0
-offset_top = 10.0
-offset_right = -9.0
-offset_bottom = 160.0
+anchor_bottom = 0.5
+offset_left = 8.0
+offset_top = -52.0
+offset_right = -10.0
+offset_bottom = 52.0
 grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4_smyue")
 
-[node name="Hunger-container" type="HBoxContainer" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer" unique_id=1979286062]
+[node name="Stamina" type="HBoxContainer" parent="HBoxContainer/Main-panel/Status-panel/VBoxContainer" unique_id=328548629]
 layout_mode = 2
+size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Hunger-container" unique_id=396427205]
+[node name="Icon" type="TextureRect" parent="HBoxContainer/Main-panel/Status-panel/VBoxContainer/Stamina" unique_id=2113253886]
+custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 0.5
-text = "Fome"
+size_flags_stretch_ratio = 0.8
+texture = ExtResource("5_fknsj")
 
-[node name="ProgressBar" type="ProgressBar" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Hunger-container" unique_id=1922615308]
+[node name="Stamina-bar" type="HBoxContainer" parent="HBoxContainer/Main-panel/Status-panel/VBoxContainer/Stamina" unique_id=1221769920]
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 1
-theme_override_font_sizes/font_size = 24
-theme_override_styles/background = SubResource("StyleBoxFlat_1kn83")
-theme_override_styles/fill = SubResource("StyleBoxFlat_w05is")
+theme_override_constants/separation = -1
 
-[node name="Thirst-container" type="HBoxContainer" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer" unique_id=1700400001]
+[node name="Hunger" type="HBoxContainer" parent="HBoxContainer/Main-panel/Status-panel/VBoxContainer" unique_id=1893701614]
 layout_mode = 2
+size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Thirst-container" unique_id=1700400002]
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/Main-panel/Status-panel/VBoxContainer/Hunger" unique_id=517622392]
+custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 0.5
-text = "Sede"
+texture = ExtResource("6_berv3")
 
-[node name="ProgressBar" type="ProgressBar" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Thirst-container" unique_id=1700400003]
+[node name="Hunger-bar" type="HBoxContainer" parent="HBoxContainer/Main-panel/Status-panel/VBoxContainer/Hunger" unique_id=1261721410]
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 1
-theme_override_font_sizes/font_size = 24
-theme_override_styles/background = SubResource("StyleBoxFlat_1kn83")
-theme_override_styles/fill = SubResource("StyleBoxFlat_w05is")
+theme_override_constants/separation = -1
 
-[node name="Stamina-container" type="HBoxContainer" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer" unique_id=1661655551]
+[node name="Thirst" type="HBoxContainer" parent="HBoxContainer/Main-panel/Status-panel/VBoxContainer" unique_id=498099155]
 layout_mode = 2
+size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Stamina-container" unique_id=954268840]
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/Main-panel/Status-panel/VBoxContainer/Thirst" unique_id=1256196244]
+custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
-text = "STAMINA"
+texture = ExtResource("7_x66rk")
 
-[node name="ProgressBar" type="ProgressBar" parent="HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Stamina-container" unique_id=618480214]
+[node name="Thirst-bar" type="HBoxContainer" parent="HBoxContainer/Main-panel/Status-panel/VBoxContainer/Thirst" unique_id=1521299423]
 layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 1
-theme_override_font_sizes/font_size = 24
-theme_override_styles/background = SubResource("StyleBoxFlat_1kn83")
-theme_override_styles/fill = SubResource("StyleBoxFlat_w05is")
-
-[node name="status-message" type="Label" parent="HBoxContainer/Main-panel/VBoxContainer" unique_id=700110184]
-layout_mode = 2
-theme = ExtResource("2_22txc")
+theme_override_constants/separation = -1
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer" unique_id=1897515743]
 layout_mode = 2
@@ -204,5 +190,13 @@ offset_bottom = 543.0
 theme = ExtResource("2_22txc")
 text = "SAIR
 "
+
+[node name="status-message" type="Label" parent="." unique_id=700110184]
+layout_mode = 0
+offset_left = 206.0
+offset_top = 211.0
+offset_right = 729.0
+offset_bottom = 257.0
+theme = ExtResource("2_22txc")
 
 [node name="Node2D" type="Node2D" parent="." unique_id=452569176]

@@ -32,10 +32,7 @@ const CHARACTER_Y_OFFSET = {
 @onready var money_label: Label = $"Money-label"
 @onready var time_label: Label = $"Time-label"
 @onready var actions_box: VBoxContainer = $"HBoxContainer/Actions/VBoxContainer"
-@onready var hunger_bar: ProgressBar = $"HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Hunger-container/ProgressBar"
-@onready var thirst_bar: ProgressBar = $"HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Thirst-container/ProgressBar"
-@onready var stamina_bar: ProgressBar = $"HBoxContainer/Main-panel/VBoxContainer/Status-panel/VBoxContainer/Stamina-container/ProgressBar"
-@onready var status_label: Label = $"HBoxContainer/Main-panel/VBoxContainer/status-message"
+@onready var status_label: Label = $"status-message"
 @onready var inventory_scroll: ScrollContainer = $"HBoxContainer/VBoxContainer/Inventory-panel/Inventory-scroll"
 @onready var history_scroll: ScrollContainer = $"HBoxContainer/VBoxContainer/History-panel/History-scroll"
 @onready var exit_button: Button = $"Exit"
@@ -85,9 +82,6 @@ func _build_ui() -> void:
 	_build_character()
 	inventory_list = _get_or_create_list(inventory_scroll)
 	history_list = _get_or_create_list(history_scroll)
-	_setup_bar(hunger_bar)
-	_setup_bar(thirst_bar)
-	_setup_bar(stamina_bar)
 
 	status_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 	status_label.text = "TUDO EM ORDEM."
@@ -193,11 +187,6 @@ func _update_ui() -> void:
 
 	money_label.text = "R$ %.2f" % float(Global.player.get("money", 0.0))
 	_update_time_label()
-
-	hunger_bar.value = clampf(float(Global.player.get("hunger", 100.0)), 0.0, 100.0)
-	thirst_bar.value = clampf(float(Global.player.get("thirst", 100.0)), 0.0, 100.0)
-	stamina_bar.value = clampf(float(Global.player.get("stamina", 100.0)), 0.0, 100.0)
-
 	_render_inventory()
 	_render_history()
 
