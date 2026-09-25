@@ -28,14 +28,21 @@ func fill_bars(bar, qtd, texture):
 			node.queue_free()
 	if qtd <= 0:
 		return
+	var full = false
+	var m = 1
+	if qtd == 10:
+		full = true
+		m += 1
 	var left = TextureRect.new()
 	left.texture = texture[0]
-	bar.add_child(left)
-	for i in range(qtd-2):
+	bar.add_child(left)	
+	if qtd == 1:
+		return
+	for i in range(qtd-m):
 		var center = TextureRect.new()
 		center.texture = texture[1]
 		bar.add_child(center)
-	if qtd == 10:
+	if full:
 		var right = TextureRect.new()
 		right.texture = texture[2]
 		bar.add_child(right)
