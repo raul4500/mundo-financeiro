@@ -28,6 +28,8 @@ func fill_bars(bar, qtd, texture):
 			node.queue_free()
 	if qtd <= 0:
 		return
+	if qtd == 11:
+		qtd = 10
 	var full = false
 	var m = 1
 	if qtd == 10:
@@ -71,5 +73,5 @@ func complete_empty_bars(bar: HBoxContainer, qtd) -> void:
 	#stamina_bar.value = clampf(float(Global.player.get("stamina", 100.0)), 0.0, 100.0)
 
 func _process(delta: float) -> void:
-	print(int(Global.player["stamina"]/10))
+	#print(Global.player["stamina"])
 	_update_needs_ui()

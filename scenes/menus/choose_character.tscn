@@ -2,48 +2,12 @@
 
 [ext_resource type="Script" uid="uid://c6aknosj6rayg" path="res://scripts/menus/choose_character.gd" id="1_y5l5p"]
 [ext_resource type="Texture2D" uid="uid://dsle21iibnuq5" path="res://assests/sprites/backgrounds/choose-character-brackground.png" id="2_teua1"]
-[ext_resource type="Texture2D" uid="uid://cngb5cgrpieyt" path="res://assests/sprites/Raul/pixil-layer-main.png" id="2_veens"]
 [ext_resource type="PackedScene" uid="uid://decxoygcije53" path="res://scenes/players/enzo.tscn" id="4_4iitr"]
 [ext_resource type="PackedScene" uid="uid://jwam377tqte6" path="res://scenes/players/melissa.tscn" id="4_6b5gi"]
+[ext_resource type="PackedScene" uid="uid://dp8mac00denuj" path="res://scenes/players/raul.tscn" id="4_teua1"]
 [ext_resource type="PackedScene" uid="uid://de82ksrqhcn32" path="res://scenes/players/matheus.tscn" id="4_veens"]
 [ext_resource type="PackedScene" uid="uid://b7msjawe3sejd" path="res://scenes/players/phillip.tscn" id="6_6b5gi"]
 [ext_resource type="Theme" uid="uid://b2pfdp8p48jam" path="res://themes/font_theme.tres" id="8_y1ocr"]
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_d1bwa"]
-atlas = ExtResource("2_veens")
-region = Rect2(32, 128, 16, 16)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_rpvxj"]
-atlas = ExtResource("2_veens")
-region = Rect2(48, 128, 16, 16)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_x3we4"]
-atlas = ExtResource("2_veens")
-region = Rect2(64, 128, 16, 16)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_uo8c8"]
-atlas = ExtResource("2_veens")
-region = Rect2(80, 128, 16, 16)
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_cb8dg"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_d1bwa")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_rpvxj")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_x3we4")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_uo8c8")
-}],
-"loop": 1,
-"name": &"default",
-"speed": 5.0
-}]
 
 [node name="Choose_character" type="Control" unique_id=527423592]
 layout_mode = 3
@@ -83,12 +47,9 @@ custom_minimum_size = Vector2(150, 200)
 layout_mode = 2
 theme = ExtResource("8_y1ocr")
 
-[node name="Raul" type="AnimatedSprite2D" parent="HBoxContainer/raul" unique_id=1931265334]
-position = Vector2(80, 97.50001)
-scale = Vector2(9.25, 10.125001)
-sprite_frames = SubResource("SpriteFrames_cb8dg")
-autoplay = "default"
-frame_progress = 0.5018258
+[node name="Raul" parent="HBoxContainer/raul" unique_id=731281275 instance=ExtResource("4_teua1")]
+position = Vector2(76, 100.5)
+scale = Vector2(9, 9)
 
 [node name="Label" type="Label" parent="HBoxContainer/raul" unique_id=1853330632]
 layout_mode = 1
@@ -170,8 +131,8 @@ custom_minimum_size = Vector2(150, 200)
 layout_mode = 2
 
 [node name="Phillip" parent="HBoxContainer/phillip" unique_id=1520360165 instance=ExtResource("6_6b5gi")]
-position = Vector2(80.99999, 155.49998)
-scale = Vector2(9.0375, 9.671876)
+position = Vector2(79.00003, 108.5)
+scale = Vector2(9, 9)
 
 [node name="Label" type="Label" parent="HBoxContainer/phillip" unique_id=1623052769]
 layout_mode = 1

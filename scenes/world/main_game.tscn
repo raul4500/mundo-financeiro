@@ -2128,6 +2128,7 @@ texture = ExtResource("22_p5roh")
 [node name="Park-zone" type="Area2D" parent="Park" unique_id=1012451930]
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Park/Park-zone" unique_id=762143145]
+visible = false
 polygon = PackedVector2Array(749, 787, 1205, 787, 1205, 567, 1192, 521, 1171.8855, 564.339, 1093, 558, 1058, 507, 1043, 425, 1022, 419, 990, 347, 987, 233, 885, 230, 881, 361, 756, 359)
 
 [connection signal="tree_entered" from="." to="." method="_on_tree_entered"]

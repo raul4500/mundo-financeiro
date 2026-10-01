@@ -21,7 +21,7 @@ const EXHAUSTION_HOUR := 18
 const MIDNIGHT_HOUR := 24
 
 # 100 de stamina divididos pelas 960 horas-jogo entre 08h e 24h (16h = 960 min).
-const STAMINA_DECAY_PER_MINUTE := 100.0 / 960.0
+const STAMINA_DECAY_PER_MINUTE := 110.0 / 960.0
 # Depois das 19h a queda dobra e ganha mais 10% por hora (ver BUGFIX_PLAN 7.2).
 const ACCEL_START_HOUR := 19
 const MIDNIGHT_PENALTY := 30.0
@@ -88,16 +88,16 @@ func _add_minute():
 	if day_end_pending:
 		return
 	current_minute += 1
+	
 	var no_stamina = _decay_stamina()
-
-	if current_minute >= 60:
-		current_minute = 0
-		current_hour += 1
-		
-		if no_stamina:
+	if no_stamina:
 			var no_speed = Global.lose_speed()
 			if no_speed:
 				_faint()
+	
+	if current_minute >= 60:
+		current_minute = 0
+		current_hour += 1
 		
 		if current_hour >= MIDNIGHT_HOUR:
 			_handle_midnight()
@@ -127,24 +127,24 @@ func _decay_stamina() -> bool:
 	if Global.player == null:
 		return false
 	if Global.is_tutorial_active():
-		Global.player["stamina"] = 100.0
+		Global.player["stamina"] = 110.0
 		Global.player["hunger"] = 100.0
 		Global.player["thirst"] = 100.0
 		return false
 		
-	var stamina := float(Global.player.get("stamina", 100.0))
+	var stamina := float(Global.player.get("stamina", 110.0))
 
 	var decay_rate := STAMINA_DECAY_PER_MINUTE
 	if current_hour >= ACCEL_START_HOUR:
 		decay_rate *= 2.0 * (1.0 + float(current_hour - ACCEL_START_HOUR) * 0.1)
 
-	stamina = clampf(stamina - decay_rate, 0.0, 100.0)
+	stamina = clampf(stamina - decay_rate, 0.0, 110.0)
 	
-	if stamina <= 0.0:
-		stamina = 0.0
+	if stamina < 10.0:
 		if not _no_stamina_alert_shown:
 			NotificationManager.notify("Você está exausto, volte para casa imediatamente!")
 			_no_stamina_alert_shown = true
+		Global.player["stamina"] = stamina
 		return true
 		
 	Global.player["stamina"] = stamina
@@ -168,7 +168,7 @@ func sleep() -> Dictionary:
 	# ponytail: "stamina <= 0 libera dormir cedo" e' inatingivel hoje (a queda
 	# passiva tira no maximo ~62 de 100 ate' as 18h) — se uma acao futura
 	# drenar stamina mais rapido, reabrir esse caminho como exploit.
-	if current_hour < EXHAUSTION_HOUR and float(Global.player.get("stamina", 100.0)) > 0.0:
+	if current_hour < EXHAUSTION_HOUR and float(Global.player.get("stamina", 110.0)) > 0.0:
 		return {
 			"success": false,
 			"message": "AINDA É CEDO PARA DORMIR. VOLTE DEPOIS DAS %02dH." % EXHAUSTION_HOUR
@@ -201,7 +201,7 @@ func _handle_midnight() -> void:
 	if day_end_pending:
 		return
 	if Global.is_tutorial_active():
-		Global.player["stamina"] = 100.0
+		Global.player["stamina"] = 110.0
 		Global.player["hunger"] = 100.0
 		Global.player["thirst"] = 100.0
 		return
@@ -232,11 +232,11 @@ func _close_day(restored_stamina: float) -> bool:
 	# e a "volatilidade" dos fundos ficava só no papel.
 	FIIManager.update_prices()
 	if Global.is_tutorial_active():
-		Global.player["stamina"] = 100.0
+		Global.player["stamina"] = 110.0
 		Global.player["hunger"] = 100.0
 		Global.player["thirst"] = 100.0
 	else:
-		Global.player["stamina"] = clampf(restored_stamina, 0.0, 100.0)
+		Global.player["stamina"] = clampf(restored_stamina, 0.0, 110.0)
 	Global.player["positive_days_count"] = int(Global.player.get("positive_days_count", 0)) + 1
 	day_end_pending = true
 	Global.play_time = false

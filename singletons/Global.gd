@@ -77,7 +77,7 @@ var data_model = {
 	"positive_days_count": 0,
 	"hunger": 100.0,
 	"thirst": 100.0,
-	"stamina": 100.0,
+	"stamina": 110.0,
 	"speed": 70.0,
 	"home_inventory": {},
 	"home_actions_log": [],
@@ -201,7 +201,7 @@ func ensure_player_state() -> void:
 	if is_tutorial_active():
 		player["hunger"] = 100.0
 		player["thirst"] = 100.0
-		player["stamina"] = 100.0
+		player["stamina"] = 110.0
 	if not player.has("position") or typeof(player["position"]) != TYPE_DICTIONARY:
 		player["position"] = {"x": 180.0, "y": 210.0}
 	if not player.has("investments"):
@@ -228,12 +228,12 @@ func ensure_player_state() -> void:
 	if not player.has("tutorial_weeks_shown") or typeof(player["tutorial_weeks_shown"]) != TYPE_ARRAY:
 		player["tutorial_weeks_shown"] = []
 	if not player.has("last_week_status"):
-		player["last_week_status"] = {"hunger": 100.0, "thirst": 100.0, "stamina": 100.0}
+		player["last_week_status"] = {"hunger": 100.0, "thirst": 100.0, "stamina": 110.0}
 	player["money"] = float(player.get("money", 0.0))
 	player["saldo"] = float(player.get("saldo", 0.0))
 	player["hunger"] = clampf(float(player.get("hunger", 100.0)), 0.0, 100.0)
 	player["thirst"] = clampf(float(player.get("thirst", 100.0)), 0.0, 100.0)
-	player["stamina"] = clampf(float(player.get("stamina", 100.0)), 0.0, 100.0)
+	player["stamina"] = clampf(float(player.get("stamina", 110.0)), 0.0, 110.0)
 	normalize_home_inventory()
 
 func normalize_home_inventory() -> void:
@@ -299,7 +299,7 @@ func new_game(name: String, money: float) -> void:
 	player["positive_days_count"] = 0
 	player["hunger"] = 100.0
 	player["thirst"] = 100.0
-	player["stamina"] = 100.0
+	player["stamina"] = 110.0
 	player["speed"] = 70.0
 	player["home_inventory"] = {}
 	player["home_actions_log"] = []
@@ -310,7 +310,7 @@ func new_game(name: String, money: float) -> void:
 	player["park_minigame"] = ParkMinigameManager.default_progress()
 	player["market_discount"] = 0.0
 	player["tutorial_home_shown"] = false
-	player["last_week_status"] = {"hunger": 100.0, "thirst": 100.0, "stamina": 100.0}
+	player["last_week_status"] = {"hunger": 100.0, "thirst": 100.0, "stamina": 110.0}
 
 	# Reset FIIManager state to ensure new game doesn't inherit old portfolio
 	FIIManager.reset()
@@ -481,7 +481,7 @@ func consume_item(category: String, need_key: String, action: Dictionary) -> Dic
 	var thirst_gain = float(chosen_item.get("thirst", 0.0))
 	player["hunger"] = clampf(float(player.get("hunger", 100.0)) + hunger_gain, 0.0, 100.0)
 	player["thirst"] = clampf(float(player.get("thirst", 100.0)) + thirst_gain, 0.0, 100.0)
-	player["stamina"] = clampf(float(player.get("stamina", 100.0)) + hunger_gain * STAMINA_PER_FOOD_ENERGY, 0.0, 100.0)
+	player["stamina"] = clampf(float(player.get("stamina", 110.0)) + hunger_gain * STAMINA_PER_FOOD_ENERGY, 0.0, 110.0)
 
 	var item_label = str(chosen_item.get("name", chosen_name))
 	player["home_actions_log"] = player.get("home_actions_log", [])
@@ -527,7 +527,7 @@ func apply_home_action(action_name: String, hunger_delta: float, stamina_delta: 
 		player["stamina"] = 100.0
 		return {"success": true, "message": "%s" % action_name}
 	player["hunger"] = clampf(float(player.get("hunger", 100.0)) + float(hunger_delta), 0.0, 100.0)
-	player["stamina"] = clampf(float(player.get("stamina", 100.0)) + float(stamina_delta), 0.0, 100.0)
+	player["stamina"] = clampf(float(player.get("stamina", 110.0)) + float(stamina_delta), 0.0, 110.0)
 	var log = player.get("home_actions_log", [])
 	log.append({
 		"type": action_name,
@@ -555,7 +555,7 @@ func decay_need_state() -> bool:
 	if is_tutorial_active():
 		player["hunger"] = 100.0
 		player["thirst"] = 100.0
-		player["stamina"] = 100.0
+		player["stamina"] = 110.0
 		return true
 	player["hunger"] = clampf(float(player.get("hunger", 100.0)) - HUNGER_DECAY_PER_DAY, 0.0, 100.0)
 	player["thirst"] = clampf(float(player.get("thirst", 100.0)) - THIRST_DECAY_PER_DAY, 0.0, 100.0)
@@ -585,12 +585,12 @@ func evaluate_week_status() -> Dictionary:
 	if is_tutorial_active():
 		player["hunger"] = 100.0
 		player["thirst"] = 100.0
-		player["stamina"] = 100.0
-		player["last_week_status"] = {"hunger": 100.0, "thirst": 100.0, "stamina": 100.0}
+		player["stamina"] = 110.0
+		player["last_week_status"] = {"hunger": 100.0, "thirst": 100.0, "stamina": 110.0}
 		return {"penalty": 0.0, "message": "Sem avaliação durante o tutorial"}
 	var hunger = float(player.get("hunger", 100.0))
 	var thirst = float(player.get("thirst", 100.0))
-	var stamina = float(player.get("stamina", 100.0))
+	var stamina = float(player.get("stamina", 110.0))
 	player["last_week_status"] = {"hunger": hunger, "thirst": thirst, "stamina": stamina}
 	var penalty = 0.0
 	if hunger < 35.0 or thirst < 35.0 or stamina < 35.0:
@@ -600,7 +600,7 @@ func evaluate_week_status() -> Dictionary:
 		player["money"] = max(0.0, float(player.get("money", 0.0)) - penalty)
 		player["hunger"] = clampf(hunger + 10.0, 0.0, 100.0)
 		player["thirst"] = clampf(thirst + 10.0, 0.0, 100.0)
-		player["stamina"] = clampf(stamina + 10.0, 0.0, 100.0)
+		player["stamina"] = clampf(stamina + 10.0, 0.0, 110.0)
 	return {"penalty": penalty, "message": "Status da semana avaliado."}
 
 func _return_to_main_menu() -> void:
@@ -609,13 +609,11 @@ func _return_to_main_menu() -> void:
 		TransitionManager.change_scene("res://scenes/menus/main_menu.tscn")
 		
 func lose_speed() -> bool :
-	player["speed"] -= 20.0
+	player["speed"] -= 0.35
 	if player["speed"] < 0:
 		player["speed"] = 0.0
 		return true
 	return false
-	
-	
 
 func reestore_speed() -> void:
 	player["speed"] = 70.0
