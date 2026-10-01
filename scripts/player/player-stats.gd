@@ -37,16 +37,19 @@ func fill_bars(bar, qtd, texture):
 		m += 1
 	var left = TextureRect.new()
 	left.texture = texture[0]
-	bar.add_child(left)	
+	#left.custom_minimum_size = ver
+	bar.add_child(left)
 	if qtd == 1:
 		return
 	for i in range(qtd-m):
 		var center = TextureRect.new()
 		center.texture = texture[1]
+		#center.custom_minimum_size = ver
 		bar.add_child(center)
 	if full:
 		var right = TextureRect.new()
 		right.texture = texture[2]
+		#right.custom_minimum_size = ver
 		bar.add_child(right)
 
 func complete_empty_bars(bar: HBoxContainer, qtd) -> void:
@@ -57,13 +60,16 @@ func complete_empty_bars(bar: HBoxContainer, qtd) -> void:
 		m += 1
 		var empty_left = TextureRect.new()
 		empty_left.texture = empty_textures[0]
+		#empty_left.custom_minimum_size = ver
 		bar.add_child(empty_left)
 	for i in range(qtd-m):
 		var empty_center = TextureRect.new()
 		empty_center.texture = empty_textures[1]
+		#empty_center.custom_minimum_size = ver
 		bar.add_child(empty_center)
 	var empty_right = TextureRect.new()
 	empty_right.texture = empty_textures[2]
+	#empty_right.custom_minimum_size = ver
 	bar.add_child(empty_right)
 	
 	
