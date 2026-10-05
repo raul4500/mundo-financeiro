@@ -63,7 +63,7 @@ func _ready() -> void:
 	update_time()
 
 func _process(delta):
-	if Global.player == null:
+	if Global.player == null or Global.in_school_minigame:
 		return
 	if Global.play_time == true:
 		timer += delta * time_scale

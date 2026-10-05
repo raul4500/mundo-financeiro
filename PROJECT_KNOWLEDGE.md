@@ -837,6 +837,8 @@ Obstáculos em `y = -43`, checkpoints em `y = -115`, espaçamento de 156 px entr
 
 O `_exit_tree()` devolve o lock se a cena for abandonada antes de começar. Isso não é teórico: o minigame tem um menu de pausa que leva ao menu principal, e sem essa devolução o contador de `gameplay_locked` ficaria preso e travaria o jogo inteiro.
 
+**Tempo congelado durante o minigame da escola:** Ao entrar na escola, `MinigameManager.is_in_minigame = true` (que sincroniza `Global.in_school_minigame = true`) e `Global.play_time = false`. O `TimeManager._process()` e `EventsManager._process()` são suspensos enquanto o jogador estiver na cena da escola. Isso impede que a simulação do mundo principal interfira no minigame: a stamina não decai, o aviso das 18h e a penalidade/teletransporte da meia-noite não acontecem, e eventos inesperados não são sorteados durante a corrida. Além disso, `AlertManager._close_alert()` e `pause_menu.toggle_pause()` não religam `play_time` enquanto `Global.in_school_minigame` for verdadeiro. Ao sair da cena (checkpoint, colisão ou menu), `is_in_minigame` volta a `false` no `_exit_tree()`, e o mundo principal (`main_game.gd`) retoma o relógio com `Global.play_time = true`.
+
 ## 13. Fluxo do jogo em alto nível
 
 Ciclo típico:

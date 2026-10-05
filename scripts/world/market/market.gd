@@ -2,44 +2,44 @@ extends Control
 
 var items: Dictionary = {
 	"Comidas": {
-		"bread": {"price": 4, "hunger_restore": 10, "thirst_restore": 0},
-		"rice": {"price": 25, "hunger_restore": 70, "thirst_restore": 5},
-		"hamburger": {"price": 35, "hunger_restore": 50, "thirst_restore": 0},
-		"apple": {"price": 7, "hunger_restore": 15, "thirst_restore": 8},
-		"banana": {"price": 6, "hunger_restore": 12, "thirst_restore": 3},
-		"cheese": {"price": 20, "hunger_restore": 25, "thirst_restore": 0},
-		"meat": {"price": 70, "hunger_restore": 100, "thirst_restore": 0},
-		"egg": {"price": 8, "hunger_restore": 18, "thirst_restore": 0},
-		"fish": {"price": 45, "hunger_restore": 65, "thirst_restore": 0}
+		"Pão": {"price": 4, "hunger_restore": 10, "thirst_restore": 0},
+		"Arroz": {"price": 25, "hunger_restore": 70, "thirst_restore": 5},
+		"Hamburger": {"price": 35, "hunger_restore": 50, "thirst_restore": 0},
+		"Maçã": {"price": 7, "hunger_restore": 15, "thirst_restore": 8},
+		"Banana": {"price": 6, "hunger_restore": 12, "thirst_restore": 3},
+		"Queijo": {"price": 20, "hunger_restore": 25, "thirst_restore": 0},
+		"Carne": {"price": 70, "hunger_restore": 100, "thirst_restore": 0},
+		"Ovo": {"price": 8, "hunger_restore": 18, "thirst_restore": 0},
+		"Peixe": {"price": 45, "hunger_restore": 65, "thirst_restore": 0}
 	},
 	"Bebidas": {
-		"water": {"price": 5, "hunger_restore": 3, "thirst_restore": 25},
-		"juice": {"price": 20, "hunger_restore": 15, "thirst_restore": 35},
-		"coffee": {"price": 30, "hunger_restore": 10, "thirst_restore": 15},
-		"milk": {"price": 15, "hunger_restore": 20, "thirst_restore": 15},
-		"soda": {"price": 25, "hunger_restore": 12, "thirst_restore": 20},
-		"tea": {"price": 15, "hunger_restore": 8, "thirst_restore": 30},
-		"energy_drink": {"price": 45, "hunger_restore": 30, "thirst_restore": 20},
+		"Água": {"price": 5, "hunger_restore": 3, "thirst_restore": 25},
+		"Suco": {"price": 20, "hunger_restore": 15, "thirst_restore": 35},
+		"Café": {"price": 30, "hunger_restore": 10, "thirst_restore": 15},
+		"Leite": {"price": 15, "hunger_restore": 20, "thirst_restore": 15},
+		"Refrigerante": {"price": 25, "hunger_restore": 12, "thirst_restore": 20},
+		"Chá": {"price": 15, "hunger_restore": 8, "thirst_restore": 30},
+		"Energético": {"price": 45, "hunger_restore": 30, "thirst_restore": 20},
 	},
 }
 
 const ITEM_ICONS := {
-	"bread": "res://assests/sprites/market/bread.png",
-	"hamburger": "res://assests/sprites/market/hamburguer.png",
-	"apple": "res://assests/sprites/market/apple.png",
-	"banana": "res://assests/sprites/market/banana.png",
-	"cheese": "res://assests/sprites/market/cheese.png",
-	"meat": "res://assests/sprites/market/meat.png",
-	"egg": "res://assests/sprites/market/egg.png",
-	"fish": "res://assests/sprites/market/fish.png",
-	"rice": "res://assests/sprites/market/rice.png",
-	"water": "res://assests/sprites/market/water_bottle.png",
-	"juice": "res://assests/sprites/market/juice_box.png",
-	"coffee": "res://assests/sprites/market/coffee.png",
-	"milk": "res://assests/sprites/market/milk.png",
-	"soda": "res://assests/sprites/market/soda.png",
-	"tea": "res://assests/sprites/market/tea.png",
-	"energy_drink": "res://assests/sprites/market/energy_drink.png",
+	"Pão": "res://assests/sprites/market/bread.png",
+	"Hamburger": "res://assests/sprites/market/hamburguer.png",
+	"Maçã": "res://assests/sprites/market/apple.png",
+	"Banana": "res://assests/sprites/market/banana.png",
+	"Queijo": "res://assests/sprites/market/cheese.png",
+	"Carne": "res://assests/sprites/market/meat.png",
+	"Ovo": "res://assests/sprites/market/egg.png",
+	"Peixe": "res://assests/sprites/market/fish.png",
+	"Arroz": "res://assests/sprites/market/rice.png",
+	"Água": "res://assests/sprites/market/water_bottle.png",
+	"Suco": "res://assests/sprites/market/juice_box.png",
+	"Café": "res://assests/sprites/market/coffee.png",
+	"Leite": "res://assests/sprites/market/milk.png",
+	"Refrigerante": "res://assests/sprites/market/soda.png",
+	"Chá": "res://assests/sprites/market/tea.png",
+	"Energético": "res://assests/sprites/market/energy_drink.png",
 }
 
 @onready var category_list: VBoxContainer = $HBoxContainer/CategoryPanel/CategoryList
@@ -116,14 +116,14 @@ func _create_tooltip_ui() -> void:
 	_tooltip_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_tooltip_title.theme = load("res://themes/label.tres")
 	_tooltip_title.add_theme_font_size_override("font_size", 16)
-	_tooltip_title.add_theme_color_override("font_color", Color(1, 0.84, 0))
+	_tooltip_title.add_theme_color_override("font_color", Color(0.157, 0.087, 0.0, 1.0))
 	vbox.add_child(_tooltip_title)
 
 	_tooltip_desc = Label.new()
 	_tooltip_desc.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_tooltip_desc.theme = load("res://themes/label.tres")
 	_tooltip_desc.add_theme_font_size_override("font_size", 14)
-	_tooltip_desc.add_theme_color_override("font_color", Color.WHITE)
+	_tooltip_desc.add_theme_color_override("font_color", Color(0.129, 0.117, 0.101, 1.0))
 	vbox.add_child(_tooltip_desc)
 
 func _show_tooltip(for_node: Control, item_name: String, item_data: Dictionary) -> void:
@@ -278,19 +278,22 @@ func _on_buy_item(group_name: String, item_name: String) -> void:
 	kart_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	remove_product.text = "X"
+	remove_product.custom_minimum_size = Vector2(40, 0)
 	remove_product.theme = load("res://themes/sell_button.tres")
 
 	container.anchor_right = 1.0
 	container.anchor_bottom = 1.0
 	container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	container.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	container.alignment = BoxContainer.ALIGNMENT_CENTER
-	container.add_theme_constant_override("separation", 5)
 
-	product_name.text = "%s - R$%d (%s)" % [item_name.capitalize(), int(price), _restore_label(item_data)]
+	product_name.text = "%s - R$%d" % [item_name.capitalize(), int(price)]
 	product_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 
+	var spacer = Control.new()
+	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
 	container.add_child(product_name)
+	container.add_child(spacer)
 	container.add_child(remove_product)
 	kart_list.add_child(container)
 

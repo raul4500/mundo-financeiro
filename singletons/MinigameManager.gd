@@ -32,6 +32,11 @@ const MAX_SCHOOL_LEVEL := 5
 # Começa desligada de propósito: fora do minigame, e durante a tela de início,
 # encostar numa área não deve valer nada.
 var _session_active := false
+var is_in_minigame: bool = false:
+	set(val):
+		is_in_minigame = val
+		if Engine.has_singleton("Global") or Global != null:
+			Global.in_school_minigame = val
 
 func _logger() -> Node:
 	if get_tree() == null or get_tree().root == null:

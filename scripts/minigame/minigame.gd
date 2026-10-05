@@ -29,7 +29,6 @@ const RUN_IN_PADDING := 300.0
 # Label que mostra o salário atual na câmera
 @onready var salary_label = null
 
-var time_display: Label
 var curr_level = Global.player["school_level"]
 
 # Tela de início: o jogo fica travado até o jogador apertar "Começar" e a
@@ -59,7 +58,8 @@ func notify_tutorial_minigame_finished() -> void:
 	TutorialManager.on_minigame_finished()
 
 func _ready() -> void:
-	Global.play_time = true
+	MinigameManager.is_in_minigame = true
+	Global.play_time = false
 	_place_player()
 	_create_start_screen()
 	# Trava até o jogador começar. O contador de Global convive com o lock do
@@ -67,6 +67,7 @@ func _ready() -> void:
 	Global.lock_gameplay()
 
 func _exit_tree() -> void:
+	MinigameManager.is_in_minigame = false
 	# Encerra a sessão ao sair da cena por qualquer caminho, para nenhuma
 	# sessão "aberta" sobrar e valer na próxima entrada no minigame.
 	MinigameManager.end_session()

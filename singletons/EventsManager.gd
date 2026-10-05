@@ -50,7 +50,7 @@ func _process(delta: float) -> void:
 	# O sorteio só corre enquanto o jogador está de fato jogando. Sem esta
 	# guarda o timer continuava contando no menu inicial e na escolha de
 	# personagem, porque este script é um autoload e nunca sai da árvore.
-	if not Global.play_time or Global.gameplay_locked:
+	if not Global.play_time or Global.gameplay_locked or Global.in_school_minigame:
 		return
 	spawn_timer += delta
 	if spawn_timer < SPAWN_INTERVAL:

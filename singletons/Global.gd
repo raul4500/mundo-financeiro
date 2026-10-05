@@ -112,6 +112,7 @@ var data_model = {
 var play_time := false
 var gameplay_locked := false
 var _gameplay_lock_count := 0
+var in_school_minigame := false
 # Liga durante o minigame do parque: os HUDs (dinheiro/necessidades, relogio,
 # missoes) se escondem enquanto isto for true, sobrando so' o timer da sessao.
 # Nao e' salvo, igual gameplay_locked: e' estado de execucao, nao de save.
@@ -139,8 +140,9 @@ func unlock_gameplay() -> void:
 func force_release_all_gameplay_locks() -> void:
 	_gameplay_lock_count = 0
 	gameplay_locked = false
-	# Also ensure game time resumes
-	play_time = true
+	# Also ensure game time resumes if not in school minigame
+	if not in_school_minigame:
+		play_time = true
 	print("Global: force released all gameplay locks")
 
 func unlock_stage() -> int:
@@ -278,6 +280,7 @@ func normalize_home_inventory() -> void:
 func new_game(name: String, money: float) -> void:
 	SaveManager.delete_save()
 	_game_over = false
+	in_school_minigame = false
 	player = _new_player_data()
 	player["name"] = name
 	player["money"] = float(money)
@@ -604,6 +607,7 @@ func evaluate_week_status() -> Dictionary:
 	return {"penalty": penalty, "message": "Status da semana avaliado."}
 
 func _return_to_main_menu() -> void:
+	in_school_minigame = false
 	SaveManager.delete_save()
 	if get_tree() != null:
 		TransitionManager.change_scene("res://scenes/menus/main_menu.tscn")
