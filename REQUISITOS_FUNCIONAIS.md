@@ -1,4 +1,4 @@
-﻿# Especificação de Requisitos Funcionais (RF) — Mundo Financeiro
+# Especificação de Requisitos Funcionais (RF) — Mundo Financeiro
 
 Este documento consolida a especificação completa de Requisitos Funcionais do jogo **Mundo Financeiro** (Godot 4). Os requisitos estão organizados por módulos de negócio e sistemas do jogo.
 
@@ -16,11 +16,11 @@ Este documento consolida a especificação completa de Requisitos Funcionais do 
 
 ## 2. Sistema de Tempo e Ciclo de Vida
 
-- **RF006 - Passagem do Tempo**: O jogo deve simular a passagem de minutos, horas (00h a 23h), dias (1 a 7) e semanas progressivas.
+- **RF006 - Passagem do Tempo**: O jogo deve simular a passagem de minutos, horas (00h a 23h), dias (1 a 5) e semanas progressivas.
 - **RF007 - Controle de Fluxo Temporal**: O tempo deve avançar somente quando a flag de execução estiver ativa (Global.play_time), pausando durante a exibição de menus, alertas modais, cutscenes e transições.
 - **RF008 - Pausa Fora do Mapa**: O relógio do jogo deve pausar a contagem de tempo quando o jogador estiver fora do mapa principal ou em cenas de interior que operem com tempo suspenso.
 - **RF009 - Virada de Dia e Rotinas Noturnas**: Ao concluir 24 horas (ou ao acionar a ação de dormir), o sistema deve fechar o dia, processar a degradação de necessidades diárias, operações de empreendimentos e registrar estatísticas de gastos diários.
-- **RF010 - Fechamento Semanal (Rollover)**: Ao final de 7 dias, o sistema deve executar a rotina de encerramento da semana:
+- **RF010 - Fechamento Semanal (Rollover)**: Ao final de 5 dias, o sistema deve executar a rotina de encerramento da semana:
   - Pagar proventos e dividendos de investimentos em FIIs;
   - Gerar as contas fixas da residência para a semana vencida;
   - Gerar despesas e contas dos empreendimentos ativos;
@@ -122,7 +122,7 @@ Este documento consolida a especificação completa de Requisitos Funcionais do 
 - **RF056 - Missões Semanais Baseadas em Estado**: O jogo deve definir missões por semana que avaliem variáveis reais de estado (saldo mínimo, retenção de gastos, diversificação de carteira, resolução de pendências, posse de empreendimento).
 - **RF057 - Verificação em Tempo Real no HUD**: O HUD deve exibir e atualizar em tempo real o status de cumprimento das missões correntes da semana via atalho ou painel de missões.
 - **RF058 - Notificações de Conquista (Toasts)**: Ao completar o critério de uma missão durante a partida, o jogo deve emitir notificação visual temporária na tela.
-- **RF059 - Validação Obrigatória de Virada de Semana**: Ao término do 7º dia da semana, o sistema deve avaliar se todas as metas foram cumpridas:
+- **RF059 - Validação Obrigatória de Virada de Semana**: Ao término do 5º dia da semana, o sistema deve avaliar se todas as metas foram cumpridas:
   - Se aprovado: concede bônus/salário semanal e avança para a semana seguinte;
   - Se reprovado: exibe alerta de reprovação e repete a semana atual para nova tentativa.
 

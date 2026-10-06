@@ -34,7 +34,8 @@ var message_focus_map := {
 	11: "Market",
 	12: "Bank",
 	13: "Office",
-	22: "Home"
+	22: "Home",
+	30: "Park"
 }
 
 # =============================
@@ -87,8 +88,8 @@ var presentation_guide = [
 	{
 		"step": 8,
 		"title": "Conclusão do onboarding e Mapa",
-		"goal": "Apresentar casa (estoque, descanso e sono), mercado e banco e encerrar a introdução da semana 1.",
-		"speaker_note": "Explique o papel da casa e de cada local e feche dizendo que o progresso vem de decisões consistentes. Os empreendimentos NÃO entram aqui: eles são o aviso da semana 5."
+		"goal": "Apresentar casa (estoque, descanso e sono), mercado, banco e parque e encerrar a introdução da semana 1.",
+		"speaker_note": "Explique o papel da casa, mercado, banco e do parque (minigame casual de caça às moedas e quiz com cupom de desconto) e feche dizendo que o progresso vem de decisões consistentes. Os empreendimentos NÃO entram aqui: eles são o aviso da semana 5."
 	}
 ]
 
@@ -194,7 +195,10 @@ var messages = [
 	# e antes de apresentar a escola).
 	"Antes de começar a explorar a cidade, conheça os comandos básicos:\n\n• Movimentação: use as teclas W, A, S, D ou as Setas do teclado para andar pelo mapa. Segure SHIFT para correr.\n• Interação: aproxime-se de portas de prédios ou de pessoas e pressione ENTER para entrar ou interagir.\n• Confirmação: use a barra de ESPAÇO para avançar alertas, diálogos e saltar obstáculos nos minigames.",
 
-	"Fique atento à interface e aos atalhos do jogo:\n\n• Missões: clique no botão MISSÕES no topo da tela (ou use as teclas M ou F) para ver seus objetivos da semana. Cumprir missões é essencial para evoluir.\n• Relógio e Calendário: no topo você acompanha o dia atual, o horário e a semana em andamento.\n• Pausa e Salvamento: pressione ESC a qualquer momento para abrir o menu de pausa, salvar seu progresso ou sair do jogo com segurança."
+	"Fique atento à interface e aos atalhos do jogo:\n\n• Missões: clique no botão MISSÕES no topo da tela (ou use as teclas M ou F) para ver seus objetivos da semana. Cumprir missões é essencial para evoluir.\n• Relógio e Calendário: no topo você acompanha o dia atual, o horário e a semana em andamento.\n• Pausa e Salvamento: pressione ESC a qualquer momento para abrir o menu de pausa, salvar seu progresso ou sair do jogo com segurança.",
+
+	# Índice 30: Apresentação do Parque e seu minigame durante o tour do mapa.
+	"Aquele é o parque da cidade. Lá você encontra um minigame casual de caçar moedas contra o relógio. A cada 5 moedas coletadas, você responde a um quiz sobre os conteúdos da consultoria e pode ganhar um cupom de 15% de desconto no mercado! Para participar, mantenha suas necessidades (fome, sede e stamina) acima de 50% e venha antes das 16h (máximo de 2 partidas por dia)."
 ]
 
 # =============================
@@ -361,6 +365,7 @@ func _queue_world_tour() -> void:
 		messages[19],  # O que cada item do mercado repõe de fome e sede
 		messages[20],  # Fome zerada é game over
 		messages[12],  # Banco (foco em "Bank")
+		messages[30],  # Parque (foco em "Park")
 		messages[14],  # Lembre-se: gastar com consciência, economizar e investir
 		messages[15]   # Conclusão do onboarding: "Agora é com você..."
 	])

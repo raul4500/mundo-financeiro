@@ -149,6 +149,7 @@ func _create_alert_ui():
 	confirm_button = Button.new()
 	confirm_button.theme = panel_theme
 	confirm_button.z_index = 199
+	confirm_button.custom_minimum_size = Vector2(250, 0)
 	confirm_button.text = "OK"
 	confirm_button.focus_mode = Control.FOCUS_NONE
 	confirm_button.mouse_filter = Control.MOUSE_FILTER_STOP

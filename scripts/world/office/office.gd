@@ -50,30 +50,54 @@ var levels_data: Array = [
 	{
 		"id": 3,
 		"title": "Investimentos básicos",
-		"objective": "Apresentar as primeiras formas de fazer o dinheiro render.",
+		"objective": "Apresentar as primeiras formas de fazer o dinheiro render com segurança e previsibilidade.",
 		"topics": [
 			{
-				"name": "Poupança",
-				"description": "A poupança é uma forma simples de guardar dinheiro e receber um pequeno rendimento ao longo do tempo. Ela é considerada segura, mas geralmente rende pouco.\n\nÉ como guardar dinheiro em um cofre que, de vez em quando, adiciona algumas moedas a mais.\n\nApesar de não ser o melhor investimento, é um bom começo para quem está aprendendo, pois ensina o hábito de guardar e acompanhar o crescimento do dinheiro."
+				"name": "Poupança: o primeiro passo",
+				"description": "A caderneta de poupança é a aplicação mais tradicional do país e o ponto de partida de quase todo investidor iniciante. Ela não cobra taxas de administração nem imposto de renda, conta com garantia e é muito simples de usar.\n\nPorém, ela esconde uma armadilha clássica: o rendimento costuma ser muito baixo. Em muitos momentos econômicos, a rentabilidade da poupança mal empata ou até perde para a inflação. Isso gera a ilusão de que o dinheiro está crescendo só porque o saldo na conta aumentou, enquanto na prática ele está perdendo poder de compra nas prateleiras dos supermercados.\n\nPense na poupança como as rodinhas de uma bicicleta infantil: são excelentes para dar os primeiros passos e aprender o hábito de guardar, mas devem ser deixadas para trás assim que você ganha confiança para buscar investimentos melhores."
 			},
 			{
-				"name": "Renda fixa",
-				"description": "Investimentos de renda fixa são aqueles em que você já tem uma ideia de quanto vai ganhar. Eles funcionam como um acordo: você empresta seu dinheiro e recebe de volta com juros.\n\nPor exemplo: você investe R$100 e sabe que receberá R$110 após um período.\n\nSão considerados mais seguros e previsíveis, ideais para quem está começando.\n\nPense como emprestar dinheiro para alguém confiável com um contrato definido."
+				"name": "Renda fixa e títulos públicos",
+				"description": "Investimentos de renda fixa funcionam como um contrato formal de empréstimo: você empresta o seu dinheiro para uma instituição e ela devolve o valor corrigido com juros em uma data futura pré-acordada.\n\nOs dois principais destinos na renda fixa são:\n• O Governo (Tesouro Direto): você financia obras públicas, saúde e educação do país. É considerado o investimento de menor risco de crédito de toda a economia nacional.\n• Os Bancos (CDBs, LCIs, LCAs): você empresta para instituições financeiras e conta com a proteção do FGC (Fundo Garantidor de Créditos) até o teto regulamentar.\n\nA grande vantagem é a previsibilidade: você já sabe com antecedência qual regra guiará seus rendimentos (seja uma taxa fixa acordada ou um índice como a taxa Selic/CDI), permitindo planejar o crescimento do patrimônio sem sustos."
+			},
+			{
+				"name": "Juros compostos: o motor da riqueza",
+				"description": "Enquanto os juros simples incidem apenas sobre o capital inicial, os juros compostos calculam o rendimento sobre o valor aplicado somado a todos os juros já gerados nos períodos anteriores. É o clássico efeito de juro sobre juro.\n\nO físico Albert Einstein costumava chamar os juros compostos de \"a oitava maravilha do mundo: quem entende, ganha; quem não entende, paga\".\n\nExemplo prático: se você aplicar R$ 1.000 a uma taxa de 10% ao ano:\n• No 1º ano, você ganha R$ 100 e fica com R$ 1.100.\n• No 2º ano, os 10% incidem sobre R$ 1.100, rendendo R$ 110 (totalizando R$ 1.210).\n• No 10º ano, o saldo terá mais que dobrado sem que você precise fazer nenhum esforço extra.\n\nCuriosidade: no início da jornada de investimentos, o valor que você guarda todo mês representa quase todo o seu patrimônio. Mas no longo prazo, o volume gerado pelos juros compostos ultrapassa o valor do seu próprio salário, criando uma verdadeira bola de neve a seu favor."
+			},
+			{
+				"name": "Inflação: o ladrão invisível",
+				"description": "A inflação é o aumento generalizado e contínuo dos preços de bens e serviços. Quando a inflação acontece, não são as coisas que sobem de valor por mágica; é o poder de compra da sua moeda que está encolhendo.\n\nSe uma compra básica de alimentos custava R$ 100 no ano passado e a inflação foi de 10%, hoje você precisa de R$ 110 para levar para casa exatamente os mesmos produtos. Por isso, deixar dinheiro parado na carteira, na conta-corrente ou embaixo do colchão é garantia de empobrecimento diário e silencioso.\n\nO conceito que todo investidor precisa dominar é o Ganho Real: se seu investimento rende 8% no ano e a inflação foi de 5%, o seu ganho real foi de aproximadamente 3%. Nunca avalie um rendimento isoladamente; compare-o sempre com a inflação para garantir que seu poder de compra está sendo protegido."
+			},
+			{
+				"name": "Liquidez: ter o dinheiro na mão",
+				"description": "Liquidez é a velocidade e a facilidade com que você consegue transformar um investimento de volta em dinheiro disponível para uso imediato, sem sofrer deságio ou penalidade financeira.\n\nOs investimentos se dividem essencialmente em dois perfis de liquidez:\n• Alta liquidez (diária ou imediata): você pede o resgate e o dinheiro cai na conta no mesmo dia (D+0) ou no próximo dia útil (D+1). Esse é o modelo obrigatório para a sua reserva de emergência e para os compromissos do mês.\n• Baixa liquidez (com prazo de carência): seu dinheiro fica retido por meses ou anos. Em troca de abrir mão da disponibilidade imediata, o emissor do título costuma pagar taxas de juros consideravelmente maiores.\n\nRegra prática: jamais aplique o dinheiro de pagar contas essenciais ou imprevistos em investimentos com prazo fechado. Tentar resgatar antes do vencimento pode resultar em perdas pesadas ou simplesmente ser recusado pelas regras do produto."
 			}
 		]
 	},
 	{
 		"id": 4,
 		"title": "Mercado financeiro",
-		"objective": "Introduzir conceitos de risco e retorno no mercado financeiro.",
+		"objective": "Introduzir os fundamentos da renda variável, gestão de risco e geração de renda passiva.",
 		"topics": [
 			{
-				"name": "Ações e fundos imobiliários",
-				"description": "Ações representam pequenas partes de uma empresa. Ao comprar uma ação, você se torna sócio dela e pode ganhar com o crescimento do negócio.\n\nFundos imobiliários permitem investir em imóveis sem precisar comprar um diretamente. Você recebe parte dos lucros gerados por esses imóveis.\n\nÉ como participar de um negócio em grupo: você não precisa fazer tudo sozinho, mas recebe parte dos resultados."
+				"name": "Ações e Fundos Imobiliários (FIIs)",
+				"description": "Na renda variável, você deixa de ser apenas um credor que empresta dinheiro e se torna coproprietário de ativos reais da economia.\n\n• Ações: representam frações do capital de uma empresa. Ao comprar uma ação na Bolsa de Valores, você se torna sócio do negócio, colhendo os frutos da expansão da empresa e da valorização das marcas.\n• Fundos Imobiliários (FIIs): reúnem milhares de investidores para adquirir grandes empreendimentos imobiliários, como galpões logísticos de e-commerce, shoppings e edifícios comerciais de alto padrão.\n\nNo Mundo Financeiro você investe diretamente em FIIs pelo menu do Banco. Em vez de precisar juntar centenas de milhares de reais para comprar um imóvel físico, arcar com reformas e cobrar inquilinos, você compra cotas acessíveis e recebe sua parte proporcional dos aluguéis gerados todos os meses."
 			},
 			{
-				"name": "Risco e retorno",
-				"description": "No mundo dos investimentos, existe uma relação importante: quanto maior o potencial de ganho, maior o risco.\n\nInvestimentos mais seguros tendem a render menos, enquanto investimentos mais arriscados podem gerar grandes ganhos ou perdas.\n\nÉ como escolher entre um caminho seguro e um atalho perigoso: o atalho pode ser mais rápido, mas também pode dar errado.\n\nO segredo é equilibrar risco e retorno de acordo com seus objetivos."
+				"name": "Risco e Retorno: a balança dos mercados",
+				"description": "A regra mais universal do mercado financeiro afirma que não existe retorno elevado sem risco proporcional.\n\nAplicações ultrasseguras pagam rendimentos moderados, porém previsíveis. Já ativos de renda variável, como ações e fundos imobiliários, possuem potencial para multiplicar seu capital no longo prazo, mas com as cotas oscilando para cima e para baixo constantemente.\n\nSe alguém oferecer uma oportunidade de investimento prometendo lucros altos, garantidos e sem nenhum risco, desconfie na hora: matematicamente, isso não existe no mercado sério.\n\nO objetivo do investidor consciente não é fugir de todo e qualquer risco, mas sim conhecer seu perfil de tolerância (conservador, moderado ou arrojado) e assumir apenas riscos calculados e inteligentes, alinhados aos seus prazos."
+			},
+			{
+				"name": "Diversificação: a regra dos ovos e da cesta",
+				"description": "Um antigo ditado popular sintetiza a gestão de patrimônio: \"nunca coloque todos os seus ovos em uma única cesta\", pois uma simples queda quebra todos eles de uma só vez.\n\nO economista Harry Markowitz ganhou o Prêmio Nobel ao demonstrar matematicamente que a diversificação é o único \"almoço grátis\" dos investimentos. Ao espalhar seus recursos entre ativos de naturezas distintas que não reagem da mesma forma aos cenários econômicos, você diminui o risco geral da sua carteira sem sacrificar o potencial de retorno.\n\nNo jogo, você pratica isso na missão da Semana 4: concentrar todo o seu capital apenas em fundos de shopping centers deixa você vulnerável a crises de consumo. Mas ao diversificar adquirindo cotas de galpões logísticos e lajes corporativas, a estabilidade de um setor compensa as oscilações de outro."
+			},
+			{
+				"name": "Proventos e Dividendos: renda passiva",
+				"description": "Proventos são as fatias do lucro líquido que as empresas e os fundos imobiliários distribuem periodicamente aos seus acionistas e cotistas em dinheiro na conta.\n\nNo Brasil, os Fundos Imobiliários são obrigados por lei a distribuir no mínimo 95% do lucro semestral auferido. Na rotina dos mercados, quase todos pagam esses rendimentos todos os meses, caindo limpos e sem imposto de renda para a pessoa física.\n\nEssa é a definição autêntica de Renda Passiva: dinheiro trabalhando e gerando novos recursos para você de forma automática, sem exigir que você venda mais horas do seu dia.\n\nO segredo dos grandes investidores é o reinvestimento: usar os proventos recebidos para comprar novas cotas. No mês seguinte, mais cotas geram mais proventos, criando um ciclo perpétuo e acelerado de crescimento patrimonial."
+			},
+			{
+				"name": "Volatilidade e o Efeito Manada",
+				"description": "Volatilidade é a intensidade e a frequência com que os preços das cotas negociadas em Bolsa sobem e descem em curtos espaços de tempo. Ela é movida por notícias diárias, balanços trimestrais, taxas de juros e pelo comportamento emocional coletivo dos investidores.\n\nO maior adversário de quem ingressa no mercado de capitais não é a matemática, mas o descontrole emocional. O erro mais devastador é o \"efeito manada\": o investidor leigo compra cotas quando elas estão no topo porque todos estão eufóricos, e entra em pânico na primeira queda do mercado, vendendo seus ativos no fundo e consolidando um prejuízo real.\n\nLembre-se: oscilações no painel só se transformam em prejuízo de fato se você apertar o botão de vender na baixa. No jogo, vender cotas com prejuízo é penalizado com imposto sobre a perda. Paciência, disciplina e visão de longo prazo são as maiores virtudes de quem investe com sabedoria."
 			}
 		]
 	},

@@ -1633,6 +1633,9 @@ position = Vector2(1022, 100)
 [node name="Bank" type="Marker2D" parent="Camera-focusPoints" unique_id=224065423]
 position = Vector2(578, 660)
 
+[node name="Park" type="Marker2D" parent="Camera-focusPoints" unique_id=1800000009]
+position = Vector2(950, 300)
+
 [node name="Parking-lines" type="Control" parent="." unique_id=719537061]
 layout_mode = 3
 anchors_preset = 0
@@ -2128,7 +2131,7 @@ texture = ExtResource("22_p5roh")
 [node name="Park-zone" type="Area2D" parent="Park" unique_id=1012451930]
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Park/Park-zone" unique_id=762143145]
-polygon = PackedVector2Array(749, 787, 1205, 787, 1205, 567, 1192, 521, 1171.8855, 564.339, 1093, 558, 1058, 507, 1043, 425, 1022, 419, 990, 347, 987, 233, 885, 230, 881, 361, 756, 359)
+polygon = PackedVector2Array(759, 785, 1192, 783, 1197, 566, 1192, 521, 1171.8855, 564.339, 1093, 558, 1058, 507, 1043, 425, 1022, 419, 990, 347, 987, 233, 885, 230, 883, 359, 756, 359)
 
 [connection signal="tree_entered" from="." to="." method="_on_tree_entered"]
 [connection signal="tree_exited" from="." to="." method="_on_tree_exited"]

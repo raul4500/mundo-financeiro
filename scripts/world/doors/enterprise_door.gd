@@ -3,13 +3,15 @@ extends Area2D
 @export var enterprise_id: String = "restaurant_small"
 @export var destination_scene: String = "res://scenes/world/places/restaurant.tscn"
 
+const UI_THEME := preload("res://themes/font_theme.tres")
+
 var player_inside := false
 var dialog_locked := false
 # Sem esta trava o alerta de porta trancada reabriria a cada quadro, porque
 # _process usa is_key_pressed.
 var locked_alert_shown := false
 var purchase_layer: CanvasLayer
-var purchase_panel: Panel
+var purchase_panel: Control
 var purchase_label: Label
 var buy_button: Button
 var exit_button: Button
@@ -85,30 +87,33 @@ func _build_purchase_ui() -> void:
 	blocker.name = "Blocker"
 	purchase_layer.add_child(blocker)
 
-	purchase_panel = Panel.new()
-	purchase_panel.set_anchors_preset(Control.PRESET_CENTER)
-	purchase_panel.position = Vector2(-280, -150)
-	purchase_panel.size = Vector2(560, 300)
+	var center = CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	purchase_layer.add_child(center)
+
+	purchase_panel = PanelContainer.new()
+	purchase_panel.theme = UI_THEME
+	purchase_panel.custom_minimum_size = Vector2(560, 0)
 	purchase_panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	purchase_panel.visible = false
-	purchase_layer.add_child(purchase_panel)
+	center.add_child(purchase_panel)
 
 	var margin = MarginContainer.new()
-	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
-	margin.add_theme_constant_override("margin_left", 24)
-	margin.add_theme_constant_override("margin_right", 24)
-	margin.add_theme_constant_override("margin_top", 24)
-	margin.add_theme_constant_override("margin_bottom", 24)
+	margin.add_theme_constant_override("margin_left", 28)
+	margin.add_theme_constant_override("margin_right", 28)
+	margin.add_theme_constant_override("margin_top", 28)
+	margin.add_theme_constant_override("margin_bottom", 28)
 	purchase_panel.add_child(margin)
 
 	var box = VBoxContainer.new()
-	box.add_theme_constant_override("separation", 14)
+	box.add_theme_constant_override("separation", 16)
 	margin.add_child(box)
 
 	purchase_label = Label.new()
+	purchase_label.custom_minimum_size = Vector2(480, 0)
 	purchase_label.autowrap_mode = TextServer.AUTOWRAP_WORD
 	purchase_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	purchase_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	box.add_child(purchase_label)
 
 	var buttons = HBoxContainer.new()
@@ -119,12 +124,14 @@ func _build_purchase_ui() -> void:
 	buy_button = Button.new()
 	buy_button.text = "Comprar"
 	buy_button.custom_minimum_size = Vector2(150, 44)
+	buy_button.focus_mode = Control.FOCUS_NONE
 	buy_button.pressed.connect(_on_buy_pressed)
 	buttons.add_child(buy_button)
 
 	exit_button = Button.new()
 	exit_button.text = "Sair"
 	exit_button.custom_minimum_size = Vector2(150, 44)
+	exit_button.focus_mode = Control.FOCUS_NONE
 	exit_button.pressed.connect(_on_exit_pressed)
 	buttons.add_child(exit_button)
 

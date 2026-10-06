@@ -121,7 +121,7 @@ Os botões usam `focus_mode = FOCUS_NONE` de propósito. Um botão com foco é a
 7. Espera o minigame terminar.
 8. Pós-minigame: primeiro salário e apresentação/destravamento do escritório (`messages[9]`, `messages[13]`, `messages[21]`).
 9. Espera o jogador entrar e sair do escritório de consultoria.
-10. Tour do mundo: apresenta a casa com foco de câmera (`"Home"`, `messages[22]`) e explica todas as mecânicas domésticas (estoque, alimentação, descanso, sono, penalidade da meia-noite e sede: `messages[23-25, 16-18, 27]`), seguido do mercado com foco (`"Market"`, `messages[11, 19, 20]`), banco com foco (`"Bank"`, `messages[12]`) e mensagens finais (`messages[14, 15]`). Ao concluir, destrava a cidade inteira (`UNLOCK_ALL`) e marca `tutorial_home_shown = true`.
+10. Tour do mundo: apresenta a casa com foco de câmera (`"Home"`, `messages[22]`) e explica todas as mecânicas domésticas (estoque, alimentação, descanso, sono, penalidade da meia-noite e sede: `messages[23-25, 16-18, 27]`), seguido do mercado com foco (`"Market"`, `messages[11, 19, 20]`), banco com foco (`"Bank"`, `messages[12]`), parque com foco (`"Park"`, `messages[30]` — caça às moedas, quiz semanal, cupom de desconto no mercado e regras de acesso) e mensagens finais (`messages[14, 15]`). Ao concluir, destrava a cidade inteira (`UNLOCK_ALL`) e marca `tutorial_home_shown = true`.
 11. Tutorial concluído (`TUTORIAL_DONE = 11`).
 
 *Estágio 2 — avisos semanais.* `weekly_messages` é um dicionário `semana → Array[String]`, disparado por `TutorialManager.on_week_changed(week)`, que o `TimeManager` chama na virada de semana logo após `week_changed`. Cada semana ensina só o que acabou de destravar:
@@ -143,7 +143,7 @@ As semanas escolhidas acompanham o que o resto do jogo já libera: `EventsManage
 
 **Status congelados em 100% durante o tutorial inicial:** Enquanto o tutorial inicial não for concluído (`Global.is_tutorial_active()` — isto é, `tutorial_step < 11` e `unlock_stage < UNLOCK_ALL`), os status do jogador (`hunger`, `thirst`, `stamina`) não diminuem e permanecem cravados em 100.0. O aviso de cansaço das 18h e a penalidade de meia-noite não acontecem. Assim que o jogador é liberado para explorar o mundo (conclusão do tour no Passo 10) ou ao usar o botão "Pular tutorial", todos os status são confirmados em 100% e a simulação de decaimento natural começa a atuar normalmente.
 
-**O array `messages` é append-only.** Os índices 0–21 são citados um a um em `_next_step()`, `_resume_step()`, `_queue_office_intro()` e `_queue_world_tour()`; inserir no meio renumera tudo e quebra as quatro. Conteúdo novo entra no fim — 22 (a casa, no tour com foco `"Home"`), 23–27 (estoque, comer/beber, descansar/TV, dormir, sede) e 28–29 (comandos e controles básicos).
+**O array `messages` é append-only.** Os índices 0–21 são citados um a um em `_next_step()`, `_resume_step()`, `_queue_office_intro()` e `_queue_world_tour()`; inserir no meio renumera tudo e quebra as quatro. Conteúdo novo entra no fim — 22 (a casa, no tour com foco `"Home"`), 23–27 (estoque, comer/beber, descansar/TV, dormir, sede), 28–29 (comandos e controles básicos) e 30 (o parque, no tour com foco `"Park"`).
 
 **Os números das mensagens dos empreendimentos são copiados dos arquivos em `scripts/enterprise/data/`** — ao mexer em `purchase_price`, `water_bill`, `electricity_bill`, `starting_capacity`, `employee_salary` ou `upgrade_costs`, atualize o texto do tutorial junto, senão ele passa a ensinar valores errados.
 
@@ -427,7 +427,7 @@ Quando o tempo passa:
 4. ao completar um dia:
    - `Global.decay_need_state()` é chamado
    - `positive_days_count` cresce
-5. ao completar semana (7 dias):
+5. ao completar semana (5 dias):
    - `Global.evaluate_week_status()` é chamado
    - as missões da semana são avaliadas
    - se aprovadas, o jogador recebe pagamento da semana e avança a semana
@@ -801,7 +801,7 @@ Estado em `Global.player["minigame_progress"] = {"unlock_week": int, "unlock_day
 
 **`MAX_SCHOOL_LEVEL = 5`** casa com os 5 níveis do escritório e com os 4 checkpoints do mapa (`Level1`..`Level4` levam do nível 1 ao 5). No nível máximo `can_play()` devolve `false`. Sem esse teto, um jogador no topo nasceria depois do último checkpoint e correria até o fim do chão, caindo no vazio sem nada encerrar a corrida.
 
-**`Global.get_absolute_day()`** existe por causa disso: `Global.player["day"]` vai de 1 a 7 e reseta na virada de semana, então não serve para cooldown — um cooldown de 2 dias iniciado no dia 6 precisa continuar valendo no dia 1 da semana seguinte. O helper devolve `(week - 1) * 7 + day`.
+**`Global.get_absolute_day()`** existe por causa disso: `Global.player["day"]` vai de 1 a 5 e reseta na virada de semana, então não serve para cooldown — um cooldown de 2 dias iniciado no dia 4 precisa continuar valendo no dia 1 da semana seguinte. O helper devolve `(week - 1) * 5 + day`.
 
 **O limite de nível é por corrida, não por área.** `MinigameManager._session_active` é ligado por `begin_session()` e o desfecho o consome. Já foi feito errado uma vez: cada `Area2D` tinha o próprio guard `finished`, o que só impedia a **mesma** área de disparar duas vezes — com vários checkpoints no mapa, o jogador subia um nível em cada um que atravessasse. Um guard por área é sempre insuficiente aqui.
 
@@ -953,22 +953,22 @@ As missões semanais foram projetadas para reforçar, na prática, os tópicos a
   - Justificativa: exercícios de economia básica e registro de despesas para ensinar o hábito de acompanhar gastos.
 
 - Semana 2
-  - Missões: construir_reserva (guardar R$200), economizar_300, resolver_evento
+  - Missões: construir_reserva (guardar R$120 no banco), economizar_300, resolver_evento
   - Escritório (Nível 2): Reserva de emergência, Imprevistos financeiros, Eventos inesperados no jogo
   - Tutorial: instrução para checar o painel "Contas / Bônus pendentes" no Banco e como pagar/resgatar
-  - Justificativa: força a prática de guardar reserva e a interação com o sistema de eventos (resolver pendências geradas nesta semana).
+  - Justificativa: força a prática de guardar reserva no banco (saldo bancário) e a interação com o sistema de eventos (resolver pendências geradas nesta semana).
 
 - Semana 3
   - Missões: investir_fundo, analise_gastos, economizar_500
-  - Escritório (Nível 3): Poupança e renda fixa
+  - Escritório (Nível 3): Investimentos básicos — Poupança, Renda fixa e títulos públicos, Juros compostos (o motor da riqueza), Inflação (ladrão invisível e ganho real), Liquidez (reserva vs longo prazo)
   - Tutorial: guia sobre como investir no menu de investimentos (FII/portfolio)
-  - Justificativa: consolidar hábito de poupar e iniciar investimentos simples.
+  - Justificativa: consolidar hábito de poupar e iniciar investimentos simples com compreensão de juros compostos, inflação e liquidez.
 
 - Semana 4
   - Missões: investir_acoes, diversificar, lucro_200
-  - Escritório (Nível 4): Ações, Fundos Imobiliários, risco e retorno
+  - Escritório (Nível 4): Mercado financeiro — Ações e Fundos Imobiliários (FIIs), Risco e Retorno (balança dos mercados), Diversificação (Markowitz e ovos na cesta), Proventos e Dividendos (renda passiva e reinvestimento), Volatilidade e Efeito Manada
   - Tutorial: recomendações para diversificação e onde ver lucros/perdas na interface de investimentos
-  - Justificativa: introduzir risco/retorno e medir resultados práticos via lucro alvo.
+  - Justificativa: introduzir risco/retorno, diversificação real, proventos de FIIs e controle emocional contra o efeito manada.
 
 - Semana 5
   - Missões: comprar_empreeendimento (compre ao menos 1 empreendimento), pagar_contas_emp (pague contas pendentes do empreendimento), repor_estoque

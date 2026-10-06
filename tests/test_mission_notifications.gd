@@ -57,16 +57,37 @@ func _ready() -> void:
 	_announced.clear()
 	Global.player["week"] = 2
 	Global.player["money"] = 1000.0
+	Global.player["saldo"] = 1000.0
 	MissionManager.refresh_progress(true)
 	assert(_announced.is_empty(), "A virada de semana não deveria anunciar")
-	assert(MissionManager.is_completed("construir_reserva") == true, "Com R$1000 a reserva já está cumprida")
+	assert(MissionManager.is_completed("construir_reserva") == true, "Com R$1000 no banco a reserva já está cumprida")
 	assert(MissionManager.is_completed("economizar_100") == false, "Missão de outra semana não deveria continuar marcada")
 	print("  ok   Virada de semana semeia em silêncio")
 
-	# 6. refresh_progress() sem argumento nunca notifica.
+	# 6. Teste específico de reserva de emergência no banco (bank_min):
+	#    Dinheiro na carteira NÃO cumpre a reserva; apenas saldo depositado no banco cumpre.
+	MissionManager.reset_progress()
+	Global.player["week"] = 2
+	Global.player["money"] = 5000.0
+	Global.player["saldo"] = 0.0
+	MissionManager.refresh_progress(true)
+	assert(MissionManager.is_completed("construir_reserva") == false, "Dinheiro na mão não deve cumprir a reserva de emergência")
+	_announced.clear()
+	Global.player["saldo"] = 120.0
+	MissionManager.refresh_progress(true)
+	assert(MissionManager.is_completed("construir_reserva") == true, "Com R$120 no banco a reserva deve estar cumprida")
+	assert(_announced.has("construir_reserva"), "Deveria anunciar conclusão da reserva de emergência")
+	# Se sacar abaixo da meta, a missão desmarca
+	Global.player["saldo"] = 80.0
+	MissionManager.refresh_progress(true)
+	assert(MissionManager.is_completed("construir_reserva") == false, "Sacar do banco abaixo da meta desmarca a missão")
+	print("  ok   Reserva de emergência valida saldo no banco e desmarca se sacar")
+
+	# 7. refresh_progress() sem argumento nunca notifica.
 	MissionManager.reset_progress()
 	Global.player["week"] = 1
 	Global.player["money"] = 0.0
+	Global.player["saldo"] = 0.0
 	MissionManager.refresh_progress()
 	_announced.clear()
 	Global.player["money"] = 999.0
@@ -75,6 +96,7 @@ func _ready() -> void:
 	print("  ok   refresh_progress() silencioso por padrão")
 
 	print("=== Todos os testes de notificação de missão passaram ===")
+	get_tree().quit(0)
 
 func _on_mission_completed(mission: Dictionary) -> void:
 	_announced.append(str(mission.get("id", "")))

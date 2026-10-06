@@ -1,10 +1,5 @@
-[2026-10-05T14:46:15] === Sessão iniciada ===
-[2026-10-05T14:46:15] [INFO] Logger inicializado
-[2026-10-05T14:46:15] [INFO] save loaded
-[2026-10-05T14:46:15] [INFO] TimeManager inicializado
-[2026-10-05T14:46:17] [INFO] Arquivo deletado com sucesso: user://savegame.json
-[2026-10-05T14:46:43] [INFO] Minigame: checkpoint alcançado. Nível 2.
-[2026-10-05T14:46:57] [INFO] Minigame: checkpoint alcançado. Nível 3.
-[2026-10-05T14:47:10] [INFO] Minigame: checkpoint alcançado. Nível 4.
-[2026-10-05T14:47:19] [INFO] Minigame: sessão encerrada. Liberado na semana 2.
-[2026-10-05T14:47:31] [INFO] Missão concluída: Não gaste dinheiro por 1 dia
+[2026-10-05T20:08:59] === Sessão iniciada ===
+[2026-10-05T20:08:59] [INFO] Logger inicializado
+[2026-10-05T20:08:59] [INFO] save loaded
+[2026-10-05T20:08:59] [INFO] TimeManager inicializado
+[2026-10-05T20:09:18] [INFO] Arquivo deletado com sucesso: user://savegame.json

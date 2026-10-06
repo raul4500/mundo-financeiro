@@ -59,15 +59,15 @@ var missions_data: Dictionary = {
 	2: [
 		{
 			"id": "construir_reserva",
-			"description": "Construa uma reserva de emergência (guarde R$120)",
-			"type": "money_min",
+			"description": "Construa uma reserva de emergência (guarde R$120 no banco)",
+			"type": "bank_min",
 			"value": 120
 		},
 		{
 			"id": "economizar_300",
-			"description": "Economize R$150",
+			"description": "Economize R$ 50",
 			"type": "money_min",
-			"value": 150
+			"value": 50
 		},
 		{
 			"id": "resolver_evento",
@@ -209,6 +209,8 @@ func _check_mission(mission: Dictionary) -> bool:
 	match mission["type"]:
 		"money_min":
 			return float(player.get("money", 0.0)) >= float(mission.get("value", 0.0))
+		"bank_min":
+			return float(player.get("saldo", 0.0)) >= float(mission.get("value", 0.0))
 		"no_spend_day":
 			return bool(player.get("had_no_spend_day", false))
 		"log_expense":

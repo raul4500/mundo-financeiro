@@ -19,6 +19,7 @@ var day_end_pending := false
 const DAY_START_HOUR := 8
 const EXHAUSTION_HOUR := 18
 const MIDNIGHT_HOUR := 24
+const DAYS_PER_WEEK := 5
 
 # 100 de stamina divididos pelas 960 horas-jogo entre 08h e 24h (16h = 960 min).
 const STAMINA_DECAY_PER_MINUTE := 110.0 / 960.0
@@ -251,7 +252,7 @@ func _advance_to_next_day() -> void:
 	Global.reestore_speed()
 	if Global.is_game_over():
 		return
-	var week_rollover := current_day >= 7
+	var week_rollover := current_day >= DAYS_PER_WEEK
 	current_day = 1 if week_rollover else current_day + 1
 	current_hour = DAY_START_HOUR
 	current_minute = 0
@@ -289,7 +290,7 @@ func _process_week_rollover() -> void:
 		TutorialManager.on_week_changed(int(Global.player["week"]))
 		EventsManager.maybe_spawn_events(int(Global.player["week"]))
 	else:
-		# Semana repetida: os dias 1-7 vão rodar de novo com o mesmo número de
+		# Semana repetida: os dias 1-5 vão rodar de novo com o mesmo número de
 		# semana. Sem isto, o guard de "já processado" dos empreendimentos
 		# barrava a operação diária pela semana inteira (ver
 		# EnterpriseManager.reset_operation_guards()), e o "sem gastar" da

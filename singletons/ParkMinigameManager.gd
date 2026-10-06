@@ -14,7 +14,7 @@ extends Node
 const ParkQuizData = preload("res://scripts/park/park_quiz_data.gd")
 
 const MAX_PLAYS_PER_DAY := 2
-const SESSION_SECONDS := 120.0
+const SESSION_SECONDS := 60.0
 const COIN_LIFETIME := 10.0
 const COINS_PER_QUIZ := 5
 const MAX_QUIZZES_PER_SESSION := 2

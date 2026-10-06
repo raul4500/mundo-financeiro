@@ -340,11 +340,13 @@ func load_data() -> void:
 		ensure_player_state()
 		print("game loaded")
 
-# Dia absoluto desde o começo da partida. player["day"] vai de 1 a 7 e reseta
+const DAYS_PER_WEEK := 5
+
+# Dia absoluto desde o começo da partida. player["day"] vai de 1 a 5 e reseta
 # na virada de semana, então não serve para cooldown: um cooldown de 2 dias
-# iniciado no dia 6 precisa continuar valendo no dia 1 da semana seguinte.
+# iniciado no dia 4 precisa continuar valendo no dia 1 da semana seguinte.
 func get_absolute_day() -> int:
-	return (int(player.get("week", 1)) - 1) * 7 + int(player.get("day", 1))
+	return (int(player.get("week", 1)) - 1) * DAYS_PER_WEEK + int(player.get("day", 1))
 
 func update_salary() -> void:
 	var base_salary = 200.0

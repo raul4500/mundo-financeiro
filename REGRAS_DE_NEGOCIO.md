@@ -1,4 +1,4 @@
-﻿# Catálogo de Regras de Negócio (RN) — Mundo Financeiro
+# Catálogo de Regras de Negócio (RN) — Mundo Financeiro
 
 Este documento consolida as Regras de Negócio (RN) que regem o comportamento econômico, pedagógico, temporal e de sobrevivência do jogo **Mundo Financeiro**.
 
@@ -40,7 +40,7 @@ Este documento consolida as Regras de Negócio (RN) que regem o comportamento ec
     - Conta de Energia Elétrica: R$ 45,00;
     - Aluguel / Condomínio: R$ 75,00.
 - **RN012 - Prazos de Vencimento de Contas**:
-  - Toda conta doméstica ou empresarial gerada na semana W recebe vencimento para a semana seguinte (due_week = W + 1), concedendo 7 dias completos para pagamento sem sanções imediatas.
+  - Toda conta doméstica ou empresarial gerada na semana W recebe vencimento para a semana seguinte (due_week = W + 1), concedendo 5 dias completos para pagamento sem sanções imediatas.
 - **RN013 - Quitação Proativa via Sistema Bancário**:
   - As contas domésticas e despesas inesperadas nunca são debitadas diretamente na conta corrente no ato do vencimento; exigem que o jogador compareça à instituição bancária e autorize manualmente o pagamento com saldo suficiente.
 - **RN014 - Extrato Financeiro e Classificação de Despesas**:
@@ -66,7 +66,7 @@ Este documento consolida as Regras de Negócio (RN) que regem o comportamento ec
 - **RN019 - Volatilidade e Oscilação Diária de Mercado**:
   - Os preços das cotas sofrem flutuação diária percentual com base no fator de volatilidade de cada classe de fundo ao final de cada dia de jogo.
 - **RN020 - Proventos e Pagamento Semanal de Dividendos**:
-  - Ao término de cada semana de 7 dias, o jogador recebe dividendos líquidos calculados por:  
+  - Ao término de cada semana de 5 dias, o jogador recebe dividendos líquidos calculados por:  
     \text{Provento} = \text{Cotação Atual} \times \text{Dividend Yield} \times \text{Quantidade de Cotas}
 - **RN021 - Apuração de Rentabilidade Real da Carteira**:
   - O lucro contábil auferido em investimentos corresponde exclusivamente à soma do valor de mercado da carteira atual mais os dividendos históricos recebidos, subtraindo-se o total histórico aportado.
@@ -118,4 +118,4 @@ Este documento consolida as Regras de Negócio (RN) que regem o comportamento ec
 - **RN034 - Validação Determinística de Metas Sem Anistia**:
   - Para avançar da Semana W para W+1, o jogador deve satisfazer simultaneamente todas as missões estipuladas para a respectiva semana na exata hora do fechamento semanal.
 - **RN035 - Reprovação Educativa sem Morte do Jogo**:
-  - Se o jogador não cumprir uma ou mais missões ao final do 7º dia, a semana é reiniciada para nova oportunidade de aprendizado econômico, mantendo o patrimônio e os negócios do jogador, resetando apenas os guards de operações diárias para que os rendimentos continuem funcionando.
+  - Se o jogador não cumprir uma ou mais missões ao final do 5º dia, a semana é reiniciada para nova oportunidade de aprendizado econômico, mantendo o patrimônio e os negócios do jogador, resetando apenas os guards de operações diárias para que os rendimentos continuem funcionando.

@@ -298,6 +298,7 @@ func test_ordem_escritorio_depois_o_resto() -> void:
 	var has_home_focus := false
 	var has_market_focus := false
 	var has_bank_focus := false
+	var has_park_focus := false
 	for entry in TutorialManager.pending_messages:
 		var foc: String = str(entry.get("focus", ""))
 		if foc == "Home":
@@ -306,9 +307,12 @@ func test_ordem_escritorio_depois_o_resto() -> void:
 			has_market_focus = true
 		elif foc == "Bank":
 			has_bank_focus = true
+		elif foc == "Park":
+			has_park_focus = true
 	_check(has_home_focus, "o tour foca a casa")
 	_check(has_market_focus, "o tour foca o mercado")
 	_check(has_bank_focus, "o tour foca o banco")
+	_check(has_park_focus, "o tour foca o parque")
 
 	# O tour termina quando a fila esvazia.
 	var guard := 0

@@ -203,8 +203,8 @@ func _cmd_advance_day() -> void:
 func _cmd_advance_week() -> void:
 	_fulfill_missions_data()
 	var cur_w := int(Global.player.get("week", 1))
-	TimeManager.current_day = 7
-	Global.player["day"] = 7
+	TimeManager.current_day = Global.DAYS_PER_WEEK
+	Global.player["day"] = Global.DAYS_PER_WEEK
 	TimeManager._close_day(100.0)
 	TimeManager._advance_to_next_day()
 	_show_toast("Semana avançada! Agora na Semana %d" % int(Global.player.get("week", cur_w + 1)))
@@ -290,9 +290,10 @@ func _cmd_setup_enterprise() -> void:
 func _fulfill_missions_data() -> void:
 	var week := int(Global.player.get("week", 1))
 	Global.player["money"] = max(float(Global.player.get("money", 0.0)), 2000.0)
+	Global.player["saldo"] = max(float(Global.player.get("saldo", 0.0)), 200.0)
 	Global.player["had_no_spend_day"] = true
-	Global.player["no_spend_days_count"] = 7
-	Global.player["positive_days_count"] = 7
+	Global.player["no_spend_days_count"] = Global.DAYS_PER_WEEK
+	Global.player["positive_days_count"] = Global.DAYS_PER_WEEK
 	
 	# Garante ao menos 1 registro de despesa para missões de análise/registro
 	var expenses: Array = Global.player.get("expense_history", [])
