@@ -22,7 +22,7 @@ const FAIL_COOLDOWN_DAYS := 2
 # do mapa (Level1..Level4 levam do nível 1 ao 5). Sem este teto, um jogador no
 # nível máximo nasceria depois do último checkpoint e correria até o fim do
 # chão, caindo no vazio sem nada encerrar a corrida.
-const MAX_SCHOOL_LEVEL := 5
+const MAX_SCHOOL_LEVEL := 6
 
 # Uma corrida só conta enquanto esta flag estiver ligada, e o primeiro
 # desfecho (checkpoint ou obstáculo) a desliga. É o que garante "no máximo 1

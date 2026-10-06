@@ -371,6 +371,13 @@ script = ExtResource("9_b7ekc")
 position = Vector2(4533, -106)
 shape = SubResource("RectangleShape2D_8e78p")
 
+[node name="Level5" type="Area2D" parent="Map/levels" unique_id=135677437]
+script = ExtResource("9_b7ekc")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Map/levels/Level5" unique_id=646046494]
+position = Vector2(6387, -106)
+shape = SubResource("RectangleShape2D_8e78p")
+
 [node name="Marker_5" type="Marker2D" parent="Map/levels" unique_id=1394132031]
 position = Vector2(4554, -43)
 
@@ -487,3 +494,4 @@ horizontal_alignment = 1
 [connection signal="body_shape_entered" from="Map/levels/Level2" to="Map/levels/Level2" method="_on_body_shape_entered"]
 [connection signal="body_shape_entered" from="Map/levels/Level3" to="Map/levels/Level3" method="_on_body_shape_entered"]
 [connection signal="body_shape_entered" from="Map/levels/Level4" to="Map/levels/Level4" method="_on_body_shape_entered"]
+[connection signal="body_shape_entered" from="Map/levels/Level5" to="Map/levels/Level5" method="_on_body_shape_entered"]

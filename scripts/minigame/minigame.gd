@@ -7,11 +7,11 @@ const LABEL_THEME = preload("res://themes/label.tres")
 # Cada marcador fica logo depois do checkpoint anterior, para o jogador não
 # reconquistar um nível que já tem.
 const SPAWN_MARKERS := [
-	"map/levels/Marker_1",         # nível 1 — início do mapa
-	"map/levels/Marker_2",  # nível 2 — depois do Level1
-	"map/levels/Marker_3",         # nível 3 — depois do Level2
-	"map/levels/Marker_4",         # nível 4 — depois do Level3
-	"map/levels/Marker_5"
+	"Map/levels/Marker_1",         # nível 1 — início do mapa
+	"Map/levels/Marker_2",         # nível 2 — depois do Level1
+	"Map/levels/Marker_3",         # nível 3 — depois do Level2
+	"Map/levels/Marker_4",         # nível 4 — depois do Level3
+	"Map/levels/Marker_5"          # nível 5 — depois do Level4
 ]
 # A câmera nasce um pouco à frente do jogador, como nos marcadores originais
 # (jogador 170 / câmera 212 no nível 1).
@@ -60,6 +60,7 @@ func notify_tutorial_minigame_finished() -> void:
 func _ready() -> void:
 	MinigameManager.is_in_minigame = true
 	Global.play_time = false
+	curr_level = int(Global.player.get("school_level", 1))
 	_place_player()
 	_create_start_screen()
 	# Trava até o jogador começar. O contador de Global convive com o lock do
@@ -94,6 +95,8 @@ func _place_player() -> void:
 	# Desliga smoothing da câmera do minigame — o comportamento desejado é seguir
 	# apenas no eixo X sem suavização e manter Y fixo mesmo durante pulos.
 	camera.position_smoothing_enabled = false
+	if level_label != null:
+		level_label.text = "Level %s" % str(curr_level)
 
 func _create_start_screen() -> void:
 	# layer 50: acima do display de tempo (5), abaixo do AlertManager (100),
