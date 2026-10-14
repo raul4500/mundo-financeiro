@@ -42,6 +42,7 @@
 [ext_resource type="Script" uid="uid://cyj6db5r1uicx" path="res://scripts/world/park_trees.gd" id="25_n6ekm"]
 [ext_resource type="Texture2D" uid="uid://cdmrairsampti" path="res://assests/sprites/buildings/Assets/Circular table.png" id="32_l88cl"]
 [ext_resource type="Texture2D" uid="uid://87x2bbb20fly" path="res://assests/sprites/buildings/Assets/Front chair.png" id="33_lf7ue"]
+[ext_resource type="Script" uid="uid://gdpq8m4vqa1e" path="res://scripts/world/world-exit.gd" id="36_paixt"]
 [ext_resource type="Texture2D" uid="uid://b8ajuklcad458" path="res://assests/sprites/trees/forest.png" id="40_l0vhb"]
 [ext_resource type="Script" uid="uid://cbh3ltf2wcq5j" path="res://scripts/park/park_minigame_trigger.gd" id="41_pktrg"]
 [ext_resource type="Texture2D" uid="uid://cvg7de5fvj2op" path="res://assests/sprites/trees/small-forest-1.png" id="42_jwcxe"]
@@ -714,6 +715,9 @@ radius = 22.022715
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_snp3k"]
 radius = 22.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_x2j0j"]
+size = Vector2(9, 154)
 
 [node name="main_game" type="Node2D" unique_id=2056535382]
 y_sort_enabled = true
@@ -1561,12 +1565,14 @@ position = Vector2(855, 476)
 texture = ExtResource("18_jwcxe")
 
 [node name="SquareTable" type="Sprite2D" parent="Scenario" unique_id=1860631288]
-position = Vector2(898, 429)
+position = Vector2(898, 449)
 texture = ExtResource("19_nkiop")
+offset = Vector2(0, -20)
 
 [node name="SquareTable2" type="Sprite2D" parent="Scenario" unique_id=1270831091]
-position = Vector2(864, 386)
+position = Vector2(864, 406)
 texture = ExtResource("19_nkiop")
+offset = Vector2(0, -20)
 
 [node name="FireHidrant2" type="Sprite2D" parent="Scenario" unique_id=1903298362]
 position = Vector2(324, 234)
@@ -1768,6 +1774,20 @@ polygon = PackedVector2Array(1211, 217, 1299, 217, 1298, 64, 1312, 64, 1314, 227
 [node name="CollisionPolygon2D3" type="CollisionPolygon2D" parent="Colisions/City-exits" unique_id=1825254881]
 polygon = PackedVector2Array(741, 805, -119, 812, -118, 816)
 
+[node name="Area2D" type="Area2D" parent="Colisions/City-exits" unique_id=1828192202]
+script = ExtResource("36_paixt")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colisions/City-exits/Area2D" unique_id=1967206862]
+position = Vector2(-142, 197)
+shape = SubResource("RectangleShape2D_x2j0j")
+
+[node name="Area2D2" type="Area2D" parent="Colisions/City-exits" unique_id=266441877]
+script = ExtResource("36_paixt")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Colisions/City-exits/Area2D2" unique_id=908356577]
+position = Vector2(1293, 140)
+shape = SubResource("RectangleShape2D_x2j0j")
+
 [node name="StaticBody2D3" type="StaticBody2D" parent="Colisions" unique_id=2088575058]
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Colisions/StaticBody2D3" unique_id=1302933316]
@@ -1892,6 +1912,12 @@ polygon = PackedVector2Array(835, 486, 875, 486, 875, 480, 835, 480)
 [node name="CollisionPolygon2D36" type="CollisionPolygon2D" parent="Colisions/StaticBody2D3" unique_id=913436340]
 position = Vector2(375, -384)
 polygon = PackedVector2Array(835, 486, 881, 486, 881, 480, 835, 480)
+
+[node name="CollisionPolygon2D37" type="CollisionPolygon2D" parent="Colisions/StaticBody2D3" unique_id=2040997265]
+polygon = PackedVector2Array(889, 457, 907, 457, 909, 451, 909, 440, 887, 440, 887, 451)
+
+[node name="CollisionPolygon2D38" type="CollisionPolygon2D" parent="Colisions/StaticBody2D3" unique_id=1135682030]
+polygon = PackedVector2Array(855, 412, 873, 412, 875, 408, 875, 397, 853, 397, 853, 408)
 
 [node name="Big-houses" type="StaticBody2D" parent="Colisions" unique_id=2015684205]
 
@@ -2199,3 +2225,5 @@ polygon = PackedVector2Array(759, 785, 1192, 783, 1197, 566, 1192, 521, 1171.885
 [connection signal="body_shape_exited" from="Doors/Shopping_door" to="Doors/Shopping_door" method="_on_body_shape_exited"]
 [connection signal="body_shape_entered" from="Doors/Park_trigger" to="Doors/Park_trigger" method="_on_body_shape_entered"]
 [connection signal="body_shape_exited" from="Doors/Park_trigger" to="Doors/Park_trigger" method="_on_body_shape_exited"]
+[connection signal="body_shape_entered" from="Colisions/City-exits/Area2D" to="Colisions/City-exits/Area2D" method="_on_body_shape_entered"]
+[connection signal="body_shape_entered" from="Colisions/City-exits/Area2D2" to="Colisions/City-exits/Area2D2" method="_on_body_shape_entered"]

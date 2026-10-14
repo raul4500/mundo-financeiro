@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bb6500lgdif47"]
 
 [ext_resource type="Script" uid="uid://jf6x5estu730" path="res://scripts/world/office/office.gd" id="1_7iq43"]
+[ext_resource type="Texture2D" uid="uid://cdrhdr5hskidu" path="res://assests/sprites/indoors-backgrounds/pixilart-drawing.png" id="2_eexgp"]
 [ext_resource type="Theme" uid="uid://b2pfdp8p48jam" path="res://themes/font_theme.tres" id="2_qcymq"]
 
 [node name="Control" type="Control" unique_id=496329955]
@@ -11,6 +12,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_7iq43")
+
+[node name="PixilartDrawing" type="Sprite2D" parent="." unique_id=1436288178]
+position = Vector2(579.5, 328.12503)
+scale = Vector2(3.883333, 3.3087494)
+texture = ExtResource("2_eexgp")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=564243796]
 layout_mode = 0

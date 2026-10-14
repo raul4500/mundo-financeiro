@@ -6,5 +6,5 @@ extends Node2D
 func _ready() -> void:
 	for tree in tree_list.get_children():
 		if tree is Sprite2D:
-			tree.global_position.y += 20
-			tree.offset.y -= 20
+			tree.global_position.y += 17
+			tree.offset.y -= 17

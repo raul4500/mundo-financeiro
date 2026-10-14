@@ -1,7 +1,9 @@
 [gd_scene format=3 uid="uid://b4xvk2fnxmf73"]
 
 [ext_resource type="Script" uid="uid://dhgjxsjmqw3kg" path="res://scripts/world/market/market.gd" id="1_ovrwm"]
+[ext_resource type="Texture2D" uid="uid://dyocbahfn2wkv" path="res://assests/sprites/indoors-backgrounds/ablbal.png" id="2_af7vp"]
 [ext_resource type="Theme" uid="uid://b2pfdp8p48jam" path="res://themes/font_theme.tres" id="3_3pbar"]
+[ext_resource type="Texture2D" uid="uid://bctk4wx6uk4hp" path="res://assests/sprites/indoors-backgrounds/aslasla2.png" id="3_80np3"]
 [ext_resource type="Theme" uid="uid://bgmqv8sn4sahi" path="res://themes/buy_button.tres" id="4_h2mo7"]
 [ext_resource type="Theme" uid="uid://ctf4tsiarnho2" path="res://themes/sell_button.tres" id="5_af7vp"]
 
@@ -13,6 +15,16 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ovrwm")
+
+[node name="Ablbal" type="Sprite2D" parent="." unique_id=893336001]
+position = Vector2(896, 545.25)
+scale = Vector2(9.48, 8.6730795)
+texture = ExtResource("2_af7vp")
+
+[node name="Aslasla2" type="Sprite2D" parent="." unique_id=753969556]
+position = Vector2(925, 208.87498)
+scale = Vector2(11.472, 17.990002)
+texture = ExtResource("3_80np3")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1768410827]
 layout_mode = 0

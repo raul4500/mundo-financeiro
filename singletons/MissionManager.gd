@@ -41,9 +41,9 @@ var missions_data: Dictionary = {
 	1: [
 		{
 			"id": "economizar_100",
-			"description": "Economize R$100",
+			"description": "Tenha pelo menos R$80,00 até o fim da semana",
 			"type": "money_min",
-			"value": 100
+			"value": 80
 		},
 		{
 			"id": "sem_gastar",
@@ -52,14 +52,14 @@ var missions_data: Dictionary = {
 		},
 		{
 			"id": "registrar_gastos",
-			"description": "Registre seus gastos",
+			"description": "Faça uma compra no mercado",
 			"type": "log_expense"
 		}
 	],
 	2: [
 		{
 			"id": "construir_reserva",
-			"description": "Construa uma reserva de emergência (guarde R$120 no banco)",
+			"description": "Construa uma reserva de emergência (guarde R$120,00 no banco)",
 			"type": "bank_min",
 			"value": 120
 		},
@@ -83,12 +83,12 @@ var missions_data: Dictionary = {
 		},
 		{
 			"id": "analise_gastos",
-			"description": "Analise seus gastos da semana",
+			"description": "Analise seus gastos da semana no banco",
 			"type": "analyze"
 		},
 		{
 			"id": "economizar_300_s3",
-			"description": "Economize R$300",
+			"description": "Tenha pelo menos R$300,00 até o fim da semana",
 			"type": "money_min",
 			"value": 300
 		}

@@ -73,4 +73,3 @@ func _fade_to(target_alpha: float) -> void:
 
 func is_transitioning() -> bool:
 	return _transitioning
-

@@ -118,4 +118,3 @@ func return_to_player(move_time := 2.0) -> void:
 	is_cinematic = false
 	_skip_requested = false
 	emit_signal("focus_returned")
-

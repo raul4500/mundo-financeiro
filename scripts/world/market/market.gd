@@ -3,7 +3,7 @@ extends Control
 var items: Dictionary = {
 	"Comidas": {
 		"Pão": {"price": 4, "hunger_restore": 10, "thirst_restore": 0},
-		"Arroz": {"price": 25, "hunger_restore": 70, "thirst_restore": 5},
+		#"Arroz": {"price": 25, "hunger_restore": 70, "thirst_restore": 5},
 		"Hamburger": {"price": 35, "hunger_restore": 50, "thirst_restore": 0},
 		"Maçã": {"price": 7, "hunger_restore": 15, "thirst_restore": 8},
 		"Banana": {"price": 6, "hunger_restore": 12, "thirst_restore": 3},
@@ -17,7 +17,7 @@ var items: Dictionary = {
 		"Suco": {"price": 20, "hunger_restore": 15, "thirst_restore": 35},
 		"Café": {"price": 30, "hunger_restore": 10, "thirst_restore": 15},
 		"Leite": {"price": 15, "hunger_restore": 20, "thirst_restore": 15},
-		"Refrigerante": {"price": 25, "hunger_restore": 12, "thirst_restore": 20},
+		#"Refrigerante": {"price": 25, "hunger_restore": 12, "thirst_restore": 20},
 		"Chá": {"price": 15, "hunger_restore": 8, "thirst_restore": 30},
 		"Energético": {"price": 45, "hunger_restore": 30, "thirst_restore": 20},
 	},
@@ -177,7 +177,7 @@ func _populate_items(group_name: String) -> void:
 		var price = item_data["price"]
 
 		var product = Panel.new()
-		product.custom_minimum_size = Vector2(170, 190)
+		product.custom_minimum_size = Vector2(160, 190)
 		product.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		product.mouse_filter = Control.MOUSE_FILTER_PASS
 
