@@ -140,8 +140,8 @@ func unlock_gameplay() -> void:
 func force_release_all_gameplay_locks() -> void:
 	_gameplay_lock_count = 0
 	gameplay_locked = false
-	# Also ensure game time resumes if not in school minigame
-	if not in_school_minigame:
+	# Also ensure game time resumes if not in school minigame and not in tutorial
+	if not in_school_minigame and not is_any_tutorial_active():
 		play_time = true
 	print("Global: force released all gameplay locks")
 
@@ -153,7 +153,20 @@ func unlock_stage() -> int:
 func is_tutorial_active() -> bool:
 	if player == null or typeof(player) != TYPE_DICTIONARY:
 		return false
+	if has_node("/root/TutorialManager"):
+		var tm = get_node("/root/TutorialManager")
+		if tm != null and tm.skipped:
+			return false
 	return int(player.get("tutorial_step", 1)) < LEGACY_TUTORIAL_DONE and unlock_stage() < UNLOCK_ALL
+
+func is_any_tutorial_active() -> bool:
+	if is_tutorial_active():
+		return true
+	if has_node("/root/TutorialManager"):
+		var tm = get_node("/root/TutorialManager")
+		if tm != null and tm.has_method("is_any_tutorial_active"):
+			return tm.is_any_tutorial_active()
+	return false
 
 # So' avanca. Um evento fora de ordem nao pode retrancar o que ja' abriu.
 func set_unlock_stage(stage: int) -> void:
@@ -323,6 +336,7 @@ func new_game(name: String, money: float) -> void:
 	# partida nova inteira.
 	TimeManager.reset()
 	AlertManager.reset()
+	TutorialManager.reset()
 
 	TimeManager.update_time()
 	if get_tree() != null:
@@ -523,7 +537,7 @@ func consume_drink() -> Dictionary:
 		"time_cost": 0.25
 	})
 
-func apply_home_action(action_name: String, hunger_delta: float, stamina_delta: float, time_cost: float = 0.0) -> Dictionary:
+func apply_home_action(action_name: String, hunger_delta: float, stamina_delta: float, time_cost: float = 0.0, thirst_delta: float = 0.0) -> Dictionary:
 	if player == null:
 		return {"success": false, "message": "Estado do jogador não inicializado."}
 	if is_tutorial_active():
@@ -531,7 +545,18 @@ func apply_home_action(action_name: String, hunger_delta: float, stamina_delta: 
 		player["thirst"] = 100.0
 		player["stamina"] = 100.0
 		return {"success": true, "message": "%s" % action_name}
-	player["hunger"] = clampf(float(player.get("hunger", 100.0)) + float(hunger_delta), 0.0, 100.0)
+
+	var current_hunger := float(player.get("hunger", 100.0))
+	if hunger_delta < 0.0 and abs(hunger_delta) > current_hunger:
+		return {"success": false, "message": "Você está com muita fome para realizar esta ação."}
+
+	var current_thirst := float(player.get("thirst", 100.0))
+	if thirst_delta < 0.0 and abs(thirst_delta) > current_thirst:
+		return {"success": false, "message": "Você está com muita sede para realizar esta ação."}
+
+	player["hunger"] = clampf(current_hunger + float(hunger_delta), 0.0, 100.0)
+	if thirst_delta != 0.0:
+		player["thirst"] = clampf(current_thirst + float(thirst_delta), 0.0, 100.0)
 	player["stamina"] = clampf(float(player.get("stamina", 110.0)) + float(stamina_delta), 0.0, 110.0)
 	var log = player.get("home_actions_log", [])
 	log.append({
@@ -539,17 +564,18 @@ func apply_home_action(action_name: String, hunger_delta: float, stamina_delta: 
 		"day": player.get("day", 1),
 		"week": player.get("week", 1),
 		"hunger": player["hunger"],
+		"thirst": player.get("thirst", 100.0),
 		"stamina": player["stamina"],
 		"time_cost": float(time_cost)
 	})
 	player["home_actions_log"] = log
 	TimeManager.spend_hours(time_cost)
-	# Descansar/TV gastam fome para devolver stamina: sem este check, a fome
-	# podia zerar aqui e o jogador seguir andando livre até o próximo dormir
-	# ou meia-noite fechar o dia — e só então "descobrir" que já tinha morrido.
 	if player["hunger"] <= 0.0:
 		trigger_game_over("Você morreu de fome!")
 		return {"success": false, "message": "Você morreu de fome!"}
+	if float(player.get("thirst", 100.0)) <= 0.0:
+		trigger_game_over("Você morreu de desidratação!")
+		return {"success": false, "message": "Você morreu de desidratação!"}
 	return {"success": true, "message": "%s" % action_name}
 
 # Fechamento do dia. A stamina e' tratada minuto a minuto pelo TimeManager;
@@ -582,6 +608,7 @@ func trigger_game_over(message: String) -> void:
 		return
 	_game_over = true
 	play_time = false
+	SaveManager.delete_save()
 	AlertManager.alert(message, false, Callable(self, "_return_to_main_menu"))
 
 func evaluate_week_status() -> Dictionary:
@@ -608,9 +635,22 @@ func evaluate_week_status() -> Dictionary:
 		player["stamina"] = clampf(stamina + 10.0, 0.0, 110.0)
 	return {"penalty": penalty, "message": "Status da semana avaliado."}
 
-func _return_to_main_menu() -> void:
+func reset_game_state_to_menu() -> void:
+	_game_over = false
 	in_school_minigame = false
+	player_hud_hidden = false
+	play_time = false
+	force_release_all_gameplay_locks()
+	player = _new_player_data()
+	FIIManager.reset()
+	MissionManager.reset_progress()
+	TimeManager.reset()
+	AlertManager.reset()
+	TutorialManager.reset()
+
+func _return_to_main_menu() -> void:
 	SaveManager.delete_save()
+	reset_game_state_to_menu()
 	if get_tree() != null:
 		TransitionManager.change_scene("res://scenes/menus/main_menu.tscn")
 		

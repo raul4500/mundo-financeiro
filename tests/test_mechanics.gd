@@ -469,14 +469,14 @@ func test_penalidades_tem_piso_em_zero() -> void:
 	_check(float(Global.player["money"]) == 0.0, "penalidade de semana ruim para em zero, nao vai a -15")
 
 func test_descansar_com_fome_zerando_e_game_over_na_hora() -> void:
-	print("auditoria: Descansar/TV que zera a fome dispara game-over na hora, nao so' no proximo fechamento de dia")
+	print("auditoria: Descansar/TV com gasto maior que a fome atual e' bloqueado sem disparar game-over")
 	_fresh_player()
 	Global._game_over = false
 	Global.player["hunger"] = 10.0
 	var result: Dictionary = Global.apply_home_action("VOCÊ DESCANSOU.", -12.0, 18.0, 1.0)
-	_check(float(Global.player["hunger"]) == 0.0, "a fome zerou (clamp)")
-	_check(Global.is_game_over(), "game-over disparou no instante da acao, sem esperar dormir/meia-noite")
-	_check(not bool(result.get("success", true)), "apply_home_action reporta falha quando a acao mata de fome")
+	_check(float(Global.player["hunger"]) == 10.0, "a fome nao caiu porque a acao foi bloqueada")
+	_check(not Global.is_game_over(), "game-over nao disparou porque a acao foi bloqueada")
+	_check(not bool(result.get("success", true)), "apply_home_action reporta falha quando o gasto excede a fome")
 
 func test_ensure_player_state_recupera_o_nome() -> void:
 	print("auditoria: ensure_player_state() recupera a chave 'name' ausente")

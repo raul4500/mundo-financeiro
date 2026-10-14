@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cob58h3gwfil1"]
+
+[ext_resource type="Script" path="res://tests/test_home_actions_cost_guard.gd" id="1_test"]
+
+[node name="TestHomeActionsCostGuard" type="Node"]
+script = ExtResource("1_test")

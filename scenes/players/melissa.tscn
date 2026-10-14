@@ -214,6 +214,7 @@ animations = [{
 }]
 
 [node name="Melissa" type="AnimatedSprite2D" unique_id=483421411]
+y_sort_enabled = true
 sprite_frames = SubResource("SpriteFrames_tjed3")
 animation = &"up"
 autoplay = "default"

@@ -222,6 +222,7 @@ animations = [{
 }]
 
 [node name="Enzo" type="AnimatedSprite2D" unique_id=2095464486]
+y_sort_enabled = true
 sprite_frames = SubResource("SpriteFrames_b1p56")
 animation = &"walk"
 autoplay = "default"

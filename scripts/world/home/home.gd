@@ -46,7 +46,8 @@ var character_sprite: AnimatedSprite2D
 
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	Global.play_time = true
+	if not Global.is_any_tutorial_active():
+		Global.play_time = true
 	Global.ensure_player_state()
 	TimeManager.time_changed.connect(_on_time_changed)
 	TimeManager.day_changed.connect(_on_day_changed)

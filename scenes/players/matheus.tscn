@@ -223,6 +223,7 @@ animations = [{
 }]
 
 [node name="Matheus" type="AnimatedSprite2D" unique_id=1904495750]
+y_sort_enabled = true
 sprite_frames = SubResource("SpriteFrames_j05p5")
 animation = &"walk"
 autoplay = "default"

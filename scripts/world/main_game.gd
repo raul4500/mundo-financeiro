@@ -42,7 +42,8 @@ func _on_tree_exited() -> void:
 	Global.player["position"]["y"] = character.global_position.y
 
 func _on_tree_entered() -> void:
-	Global.play_time = true
+	if not Global.is_any_tutorial_active():
+		Global.play_time = true
 	
 func _process(delta: float) -> void:
 	pass
@@ -65,3 +66,6 @@ func _focus(point: String) -> void:
 	else:
 		# Mantém compatibilidade com fluxo antigo (vai e volta)
 		await CameraManager.focus(target_node)
+		if has_node("/root/Global"):
+			Global.force_release_all_gameplay_locks()
+

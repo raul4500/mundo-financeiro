@@ -27,6 +27,13 @@ const TUTORIAL_DONE := 11
 var step := 0
 var pending_messages: Array = []
 var skipped := false
+var is_displaying_tutorial_messages := false
+
+func reset() -> void:
+	step = 0
+	pending_messages.clear()
+	skipped = false
+	is_displaying_tutorial_messages = false
 
 # Mapeamento de mensagens para pontos de foco (nomes de nodes sob
 # Camera-focusPoints). Índices referem-se a posições no array `messages`.
@@ -53,7 +60,7 @@ var presentation_guide = [
 		"step": 2,
 		"title": "Objetivo principal e Controles",
 		"goal": "Mostrar a proposta do jogo e ensinar os comandos (movimentação, interação, missões e atalhos).",
-		"speaker_note": "Apresente as teclas de movimento (WASD/Setas, Shift), interação (Enter, Espaço), missões (M/F ou botão) e pause (ESC)."
+		"speaker_note": "Apresente as teclas de movimento (WASD/Setas), interação (Enter, Espaço), missões (M/F ou botão) e pause (ESC)."
 	},
 	{
 		"step": 3,
@@ -193,7 +200,7 @@ var messages = [
 
 	# Índices 28-29: Controles e comandos básicos do jogo (ensinados logo após a introdução
 	# e antes de apresentar a escola).
-	"Antes de começar a explorar a cidade, conheça os comandos básicos:\n\n• Movimentação: use as teclas W, A, S, D ou as Setas do teclado para andar pelo mapa. Segure SHIFT para correr.\n• Interação: aproxime-se de portas de prédios ou de pessoas e pressione ENTER para entrar ou interagir.\n• Confirmação: use a barra de ESPAÇO para avançar alertas, diálogos e saltar obstáculos nos minigames.",
+	"Antes de começar a explorar a cidade, conheça os comandos básicos:\n\n• Movimentação: use as teclas W, A, S, D ou as Setas do teclado para andar pelo mapa.\n• Interação: aproxime-se de portas de prédios ou de pessoas e pressione ENTER para entrar ou interagir.\n• Confirmação: use a barra de ESPAÇO para avançar alertas, diálogos e saltar obstáculos nos minigames.",
 
 	"Fique atento à interface e aos atalhos do jogo:\n\n• Missões: clique no botão MISSÕES no topo da tela (ou use as teclas M ou F) para ver seus objetivos da semana. Cumprir missões é essencial para evoluir.\n• Relógio e Calendário: no topo você acompanha o dia atual, o horário e a semana em andamento.\n• Pausa e Salvamento: pressione ESC a qualquer momento para abrir o menu de pausa, salvar seu progresso ou sair do jogo com segurança.",
 
@@ -266,6 +273,7 @@ func skip_tutorial() -> void:
 	if skipped:
 		return
 	skipped = true
+	is_displaying_tutorial_messages = false
 	pending_messages.clear()
 	# "Pular tutorial" pula o tutorial inteiro, não só o onboarding: marca
 	# todas as semanas como já vistas. Vai para Global.player de propósito —
@@ -286,6 +294,8 @@ func skip_tutorial() -> void:
 	# para que o jogador não fique travado permanentemente após pular.
 	if has_node("/root/Global"):
 		Global.force_release_all_gameplay_locks()
+	if has_node("/root/Global") and not Global.gameplay_locked and not Global.in_school_minigame:
+		Global.play_time = true
 
 func resume_tutorial(saved_step: int) -> void:
 	# Retoma o tutorial do passo que foi salvo. Chama quando o jogo carrega
@@ -300,6 +310,8 @@ func _resume_step(resume_step: int) -> void:
 	# "wait" states (ex.: esperar ir à escola), então pulamos para eles
 	# sem fazer nada; outros mostram mensagens/foco logo.
 	Global.player["tutorial_step"] = resume_step
+	if is_any_tutorial_active() and has_node("/root/Global"):
+		Global.play_time = false
 	match resume_step:
 		1:
 			emit_signal("show_message", messages[0], true)
@@ -382,6 +394,7 @@ func _return_camera_and_wait() -> void:
 # É o que garante que main_game._ready() não vai repetir nada.
 func _finish_tutorial() -> void:
 	step = TUTORIAL_DONE
+	is_displaying_tutorial_messages = false
 	Global.player["tutorial_step"] = TUTORIAL_DONE
 	Global.player["tutorial_home_shown"] = true
 	# Garante que todos os status fiquem em 100% ao liberar o jogador para explorar o mundo
@@ -400,6 +413,13 @@ func is_tutorial_active() -> bool:
 		return Global.is_tutorial_active()
 	return step < TUTORIAL_DONE
 
+func is_any_tutorial_active() -> bool:
+	if is_tutorial_active():
+		return true
+	if is_displaying_tutorial_messages or not pending_messages.is_empty():
+		return true
+	return false
+
 func _message_index(text: String) -> int:
 	for i in range(messages.size()):
 		if messages[i] == text:
@@ -409,6 +429,9 @@ func _message_index(text: String) -> int:
 func queue_messages(list: Array) -> void:
 	if list.is_empty():
 		return
+	is_displaying_tutorial_messages = true
+	if has_node("/root/Global"):
+		Global.play_time = false
 	# Normalize para um Array de dicionários com {"text":..., "focus":...}
 	pending_messages.clear()
 	for item in list:
@@ -447,17 +470,24 @@ func continue_tutorial_after_alert() -> void:
 	if not pending_messages.is_empty():
 		_show_next_queued_message()
 		return
+	is_displaying_tutorial_messages = false
 	if step >= FINAL_STEP:
-		_finish_tutorial()
-		await CameraManager.return_to_player()
-		if has_node("/root/Global"):
-			Global.force_release_all_gameplay_locks()
+		if step == FINAL_STEP:
+			_finish_tutorial()
+			if CameraManager.is_cinematic and CameraManager.player != null:
+				await CameraManager.return_to_player()
+			if has_node("/root/Global"):
+				Global.force_release_all_gameplay_locks()
+		if has_node("/root/Global") and not is_any_tutorial_active() and not Global.gameplay_locked and not Global.in_school_minigame:
+			Global.play_time = true
 		return
 	_next_step()
 
 func _next_step():
 	step += 1
 	Global.player["tutorial_step"] = step
+	if is_any_tutorial_active() and has_node("/root/Global"):
+		Global.play_time = false
 
 	match step:
 		1:

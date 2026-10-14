@@ -13,6 +13,9 @@ func _ready() -> void:
 	TimeManager.timer = 0.0
 	TimeManager.day_end_pending = false
 	AlertManager.reset()
+	Global.player["tutorial_step"] = TutorialManager.TUTORIAL_DONE
+	Global.set_unlock_stage(Global.UNLOCK_ALL)
+	TutorialManager.skipped = true
 	Global.force_release_all_gameplay_locks()
 
 	# 1. Fora do minigame, o tempo roda normalmente quando play_time == true

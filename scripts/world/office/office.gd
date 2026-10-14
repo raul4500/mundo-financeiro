@@ -164,7 +164,8 @@ var time_display: Label
 
 
 func _ready() -> void:
-	Global.play_time = true
+	if not Global.is_any_tutorial_active():
+		Global.play_time = true
 	_create_time_display()
 	_load_player_progress()
 	_build_ui()

@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cysorttest001"]
+
+[ext_resource type="Script" path="res://tests/test_ysort.gd" id="1_test"]
+
+[node name="TestYsort" type="Node2D"]
+script = ExtResource("1_test")

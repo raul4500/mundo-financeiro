@@ -15,11 +15,11 @@
 size = Vector2(9, 5)
 
 [node name="Player" type="CharacterBody2D" unique_id=1495462931]
+y_sort_enabled = true
 scale = Vector2(1.5, 1.5)
 script = ExtResource("1_sguum")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=143520596]
-y_sort_enabled = true
 position = Vector2(-0.5, 4.5)
 shape = SubResource("RectangleShape2D_tys1d")
 

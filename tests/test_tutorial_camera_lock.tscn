@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://c_test_tut_cam_lock"]
+
+[ext_resource type="Script" path="res://tests/test_tutorial_camera_lock.gd" id="1_test"]
+
+[node name="TestTutorialCameraLock" type="Node"]
+script = ExtResource("1_test")

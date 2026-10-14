@@ -7,10 +7,11 @@ func _ready() -> void:
 	# ligam Global.play_time no _ready() e nenhuma o desliga ao sair. Sem esta
 	# linha o tempo continuava correndo com o jogo no menu (bug 9.1).
 	Global.play_time = false
-	if Global.player["name"] != "":
-		continue_button.visible = true
+	continue_button.visible = SaveManager.has_save() and Global.player.get("name", "") != ""
 
 func start() -> void:
+	if not SaveManager.has_save() or Global.player.get("name", "") == "":
+		return
 	Global.unlock_gameplay()
 	TransitionManager.change_scene("res://scenes/world/main_game.tscn")
 

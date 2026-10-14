@@ -27,7 +27,7 @@ func _log_error(message: String) -> void:
 		print("[ERROR] %s" % message)
 
 func save_game():
-	if Global.player == null:
+	if Global.player == null or Global.player.get("name", "") == "" or Global.is_game_over():
 		return
 
 	FIIManager.save_data()
@@ -52,10 +52,18 @@ func load_game():
 	file.close()
 	var data = JSON.parse_string(content)
 	if data is Dictionary:
+		if float(data.get("hunger", 100.0)) <= 0.0 or float(data.get("thirst", 100.0)) <= 0.0:
+			_log_warning("Save com personagem morto detectado. Deletando save.")
+			delete_save()
+			return false
 		_log_info("save loaded")
 		return data
 	_log_warning("save inválido")
 	return false
+
+func has_save(caminho: String = "savegame.json") -> bool:
+	var save_path = "user://%s" % caminho
+	return FileAccess.file_exists(save_path)
 
 func _ready() -> void:
 	pass

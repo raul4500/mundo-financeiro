@@ -222,6 +222,7 @@ animations = [{
 }]
 
 [node name="Phillip" type="AnimatedSprite2D" unique_id=1520360165]
+y_sort_enabled = true
 sprite_frames = SubResource("SpriteFrames_epnyk")
 animation = &"down"
 autoplay = "default"

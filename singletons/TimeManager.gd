@@ -64,7 +64,7 @@ func _ready() -> void:
 	update_time()
 
 func _process(delta):
-	if Global.player == null or Global.in_school_minigame:
+	if Global.player == null or Global.in_school_minigame or Global.is_any_tutorial_active():
 		return
 	if Global.play_time == true:
 		timer += delta * time_scale
@@ -77,6 +77,8 @@ func spend_hours(hours: float) -> Dictionary:
 		return {"success": false, "message": "O tempo precisa ser maior que zero."}
 	if Global.player == null:
 		return {"success": false, "message": "Estado do jogador não inicializado."}
+	if Global.is_any_tutorial_active():
+		return {"success": true, "minutes": 0}
 
 	var minutes_to_spend := int(round(hours * 60.0))
 	for _minute in range(minutes_to_spend):

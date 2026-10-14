@@ -302,9 +302,13 @@ func _on_choice_pressed(callback: Callable) -> void:
 # ✅ FECHAR ALERTA
 # =============================
 func _on_confirm_pressed():
+	if not panel.visible:
+		return
 	_close_alert()
 
 func _on_skip_pressed():
+	if not panel.visible:
+		return
 	TutorialManager.skip_tutorial()
 	# Impede que _close_alert() avance o tutorial que acabou de ser pulado.
 	next_step = false
@@ -329,15 +333,18 @@ func _input(event):
 
 
 func _close_alert():
+	if not panel.visible and not blocker.visible:
+		return
 	_clear_choices()
 	blocker.visible = false
 	panel.visible = false
 	skip_button.visible = false
 
+
 	# 🔓 destrava jogo. O tempo só volta a correr se nada mais estiver
 	# travando o gameplay (cutscene de câmera, diálogo de compra, etc.).
 	Global.unlock_gameplay()
-	if not Global.gameplay_locked and not Global.in_school_minigame:
+	if not Global.gameplay_locked and not Global.in_school_minigame and not Global.is_any_tutorial_active():
 		Global.play_time = true
 
 	var callback = on_confirm_callback
