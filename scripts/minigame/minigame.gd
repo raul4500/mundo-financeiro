@@ -96,7 +96,7 @@ func _place_player() -> void:
 	# apenas no eixo X sem suavização e manter Y fixo mesmo durante pulos.
 	camera.position_smoothing_enabled = false
 	if level_label != null:
-		level_label.text = "Level %s" % str(curr_level)
+		level_label.text = "%s" % MinigameManager.LEVEL_LABELS[curr_level-1]
 
 func _create_start_screen() -> void:
 	# layer 50: acima do display de tempo (5), abaixo do AlertManager (100),
@@ -202,7 +202,7 @@ func _process(delta: float) -> void:
 	# Não há smoothing — posição é atualizada diretamente.
 	var target_x = player.global_position.x + CAMERA_OFFSET.x
 	camera.global_position = Vector2(target_x, camera.global_position.y)
-	level_label.text = "Level %s" %str(int(Global.player["school_level"]))
+	level_label.text = "%s" %MinigameManager.LEVEL_LABELS[Global.player["school_level"]-1]
 	# Atualiza o label de salário
 	if salary_label != null:
 		salary_label.text = "Salário: R$ %d" % int(Global.player.get("salary", 0))

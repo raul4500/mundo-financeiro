@@ -476,7 +476,7 @@ grow_horizontal = 2
 size_flags_horizontal = 4
 theme = ExtResource("12_0k17t")
 theme_override_font_sizes/font_size = 8
-text = "Level 0"
+text = "Básico"
 horizontal_alignment = 1
 
 [connection signal="body_shape_entered" from="Map/obstacles/obstacle2" to="Map/obstacles/obstacle2" method="_on_body_shape_entered"]

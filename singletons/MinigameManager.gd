@@ -1,8 +1,12 @@
 extends Node
 
 const LEVEL_LABELS := [
+	"Sem estudo",
 	"Fundamental",
-	""
+	"Ensino médio",
+	"Superior",
+	"Mestrado",
+	"Doutorado",
 ]
 
 # Quantas semanas a subida de nível trava a escola.

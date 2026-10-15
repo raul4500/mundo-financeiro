@@ -86,7 +86,7 @@ func _build_ui() -> void:
 	_build_quiz_ui()
 
 func _update_labels() -> void:
-	_timer_label.text = "⏱ %d s" % int(ceil(max(_time_left, 0.0)))
+	_timer_label.text = "%d s" % int(ceil(max(_time_left, 0.0)))
 	_score_label.text = "Moedas: %d" % _coins_collected
 
 func _process(delta: float) -> void:
