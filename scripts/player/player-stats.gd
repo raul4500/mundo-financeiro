@@ -17,7 +17,7 @@ func _ready() -> void:
 func _update_needs_ui() -> void:
 	var bars = [stamina_bar, hunger_bar, thirst_bar]
 	var textures = [stamina_textures, hunger_textures, thirst_textures]
-	
+	print(Global.player["hunger"])
 	var stats = ["stamina", "hunger", "thirst"]
 	for i in stats.size():
 		fill_bars(bars[i], int(Global.player[stats[i]]/10), textures[i])

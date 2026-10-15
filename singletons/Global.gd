@@ -3,11 +3,11 @@ extends Node
 var player: Dictionary
 
 # Fome perdida por dia dormido. Comer no mercado/casa e' o que repoe.
-const HUNGER_DECAY_PER_MINUTE := 0.008
+const HUNGER_DECAY_PER_MINUTE := 0.02
 # Sede perdida por dia dormido. Cai mais rapido que a fome de proposito: zera
 # em ~7 dias contra ~17 da fome, e e' o que da' utilidade a's bebidas do
 # mercado. Com agua a R$ 5 repondo 25%, sao ~R$ 20/semana.
-const THIRST_DECAY_PER_MINUTE := 0.05
+const THIRST_DECAY_PER_MINUTE := 0.07
 
 # Espelha os thirst_restore de market.gd["Bebidas"]. Serve para migrar saves
 # gravados antes da sede existir, onde a bebida entrou como "food" e sem valor
@@ -469,7 +469,7 @@ func consume_item(category: String, need_key: String, action: Dictionary) -> Dic
 		return {"success": false, "message": "Estado do jogador não inicializado."}
 	# >= e nao ==: depois de um restauro parcial o valor fica em 99.999997 e a
 	# comparacao exata de float nunca casaria.
-	if float(player.get(need_key, 100.0)) >= 100.0:
+	if float(player.get(need_key, 110.0)) >= 110.0:
 		return {"success": false, "message": str(action["already_full"])}
 
 	var rank_field = str(_NEED_FIELD[need_key])
@@ -589,7 +589,7 @@ func decay_need_state() -> bool:
 		player["stamina"] = 110.0
 		return true
 	player["hunger"] = clampf(float(player.get("hunger", 110.0)) - HUNGER_DECAY_PER_MINUTE, 0.0, 110.0)
-	player["thirst"] = clampf(float(player.get("thirst", 110.0)) - HUNGER_DECAY_PER_MINUTE, 0.0, 110.0)
+	player["thirst"] = clampf(float(player.get("thirst", 110.0)) - 	THIRST_DECAY_PER_MINUTE, 0.0, 110.0)
 	if player["hunger"] <= 0.0:
 		trigger_game_over("Você morreu de fome!")
 		return false

@@ -398,8 +398,8 @@ func _finish_tutorial() -> void:
 	Global.player["tutorial_step"] = TUTORIAL_DONE
 	Global.player["tutorial_home_shown"] = true
 	# Garante que todos os status fiquem em 100% ao liberar o jogador para explorar o mundo
-	Global.player["hunger"] = 100.0
-	Global.player["thirst"] = 100.0
+	Global.player["hunger"] = 110.0
+	Global.player["thirst"] = 110.0
 	Global.player["stamina"] = 110.0
 	Global.set_unlock_stage(Global.UNLOCK_ALL)
 	emit_signal("tutorial_finished")

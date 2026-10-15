@@ -133,8 +133,8 @@ func _decay_stamina() -> bool:
 		return false
 	if Global.is_tutorial_active():
 		Global.player["stamina"] = 110.0
-		Global.player["hunger"] = 100.0
-		Global.player["thirst"] = 100.0
+		Global.player["hunger"] = 110.0
+		Global.player["thirst"] = 110.0
 		return false
 		
 	var stamina := float(Global.player.get("stamina", 110.0))
@@ -181,7 +181,7 @@ func sleep() -> Dictionary:
 	# Morreu de fome no fechamento: o alerta de game-over ja' esta' na tela e
 	# nao pode ser sobrescrito pelo alerta do sono (o AlertManager mostra uma
 	# caixa por vez, sem fila).
-	if not _close_day(100.0):
+	if not _close_day(110.0):
 		return {"success": true, "message": "VOCÊ MORREU DE FOME."}
 	AlertManager.alert(
 		"Você dormiu e recuperou toda a stamina.\n\nUm novo dia começa às 08:00.",
@@ -207,8 +207,8 @@ func _handle_midnight() -> void:
 		return
 	if Global.is_tutorial_active():
 		Global.player["stamina"] = 110.0
-		Global.player["hunger"] = 100.0
-		Global.player["thirst"] = 100.0
+		Global.player["hunger"] = 110.0
+		Global.player["thirst"] = 110.0
 		return
 	# Nao precisa mexer na posicao: _advance_to_next_day() liga
 	# return_home_next_day e main_game._ready() poe o jogador na porta de casa.
@@ -238,8 +238,8 @@ func _close_day(restored_stamina: float) -> bool:
 	FIIManager.update_prices()
 	if Global.is_tutorial_active():
 		Global.player["stamina"] = 110.0
-		Global.player["hunger"] = 100.0
-		Global.player["thirst"] = 100.0
+		Global.player["hunger"] = 110.0
+		Global.player["thirst"] = 110.0
 	else:
 		Global.player["stamina"] = clampf(restored_stamina, 0.0, 110.0)
 	Global.player["positive_days_count"] = int(Global.player.get("positive_days_count", 0)) + 1
