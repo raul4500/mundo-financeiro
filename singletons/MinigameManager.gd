@@ -1,18 +1,9 @@
 extends Node
 
-# =============================================================
-# TRAVAS DO MINIGAME
-#
-# A PRIMEIRA sessão é diferente das demais: é a corrida de formação
-# inicial, sem limite de níveis. O jogador atravessa quantos
-# checkpoints conseguir e a corrida só acaba quando ele bate.
-# Depois dela, a escola trava até a semana seguinte.
-#
-# Da SEGUNDA sessão em diante vale o limite de 1 nível:
-#   - alcançou o checkpoint -> sobe 1 nível, corrida acaba,
-#     escola trancada até a semana seguinte;
-#   - bateu antes disso     -> escola trancada por 2 dias de jogo.
-# =============================================================
+const LEVEL_LABELS := [
+	"Fundamental",
+	""
+]
 
 # Quantas semanas a subida de nível trava a escola.
 const LEVEL_LOCK_WEEKS := 1

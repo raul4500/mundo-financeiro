@@ -41,9 +41,9 @@ var missions_data: Dictionary = {
 	1: [
 		{
 			"id": "economizar_100",
-			"description": "Tenha pelo menos R$80,00 até o fim da semana",
+			"description": "Tenha pelo menos R$100,00 até o fim da semana",
 			"type": "money_min",
-			"value": 80
+			"value": 100
 		},
 		{
 			"id": "sem_gastar",
@@ -65,9 +65,9 @@ var missions_data: Dictionary = {
 		},
 		{
 			"id": "economizar_300",
-			"description": "Economize R$ 50",
+			"description": "Economize R$ 120",
 			"type": "money_min",
-			"value": 50
+			"value": 120
 		},
 		{
 			"id": "resolver_evento",

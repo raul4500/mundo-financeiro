@@ -98,6 +98,8 @@ func _add_minute():
 			if no_speed:
 				_faint()
 	
+	Global.decay_need_state()
+	
 	if current_minute >= 60:
 		current_minute = 0
 		current_hour += 1
@@ -118,7 +120,7 @@ func _warn_exhaustion() -> void:
 	if Global.is_tutorial_active():
 		return
 	_exhaustion_alert_shown = true
-	AlertManager.alert("Já está tarde! Volte para casa para dormir.\n\nSe virar a noite acordado, vai pagar caro por isso.")
+	AlertManager.alert("Já está tarde! Lembre-se de dormir.\n\nSe virar a noite acordado, vai pagar caro por isso.")
 
 # =============================================================
 # QUEDA DE STAMINA
