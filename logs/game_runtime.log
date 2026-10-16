@@ -1,6 +1,18 @@
-[2026-10-14T22:22:49] === Sessão iniciada ===
-[2026-10-14T22:22:49] [INFO] Logger inicializado
-[2026-10-14T22:22:49] [INFO] save loaded
-[2026-10-14T22:22:49] [INFO] TimeManager inicializado
-[2026-10-14T22:22:53] [INFO] Arquivo deletado com sucesso: user://savegame.json
-[2026-10-14T22:23:14] [INFO] Missão concluída: Não gaste dinheiro por 1 dia
+[2026-10-16T16:44:07] === Sessão iniciada ===
+[2026-10-16T16:44:07] [INFO] Logger inicializado
+[2026-10-16T16:44:07] [INFO] save loaded
+[2026-10-16T16:44:07] [INFO] TimeManager inicializado
+[2026-10-16T16:44:10] [INFO] Arquivo deletado com sucesso: user://savegame.json
+[2026-10-16T16:44:36] [INFO] Missões da semana concluídas com sucesso
+[2026-10-16T16:44:36] [INFO] Evento sorteado: Problema no carro
+[2026-10-16T16:44:36] [INFO] Pendência criada: Problema no carro (conta de R$ 500.00)
+[2026-10-16T16:44:37] [INFO] Missões da semana concluídas com sucesso
+[2026-10-16T16:44:37] [INFO] Evento sorteado: Problema no carro
+[2026-10-16T16:44:37] [INFO] Pendência criada: Problema no carro (conta de R$ 500.00)
+[2026-10-16T16:44:37] [INFO] Missões da semana concluídas com sucesso
+[2026-10-16T16:44:37] [INFO] Evento sorteado: Trabalho extra
+[2026-10-16T16:44:37] [INFO] Pendência criada: Trabalho extra (bônus de R$ 400.00)
+[2026-10-16T16:44:39] [INFO] Missões da semana concluídas com sucesso
+[2026-10-16T16:44:39] [INFO] Evento sorteado: Problema no carro
+[2026-10-16T16:44:39] [INFO] Pendência criada: Problema no carro (conta de R$ 500.00)
+[2026-10-16T16:45:35] [INFO] Conta paga: Problema no carro (R$ 500.00)

@@ -80,19 +80,58 @@ func test_dormir_fecha_o_dia() -> void:
 	_check(TimeManager.day_end_pending, "o dia ficou trancado esperando o alerta")
 	_check(not bool(TimeManager.sleep()["success"]), "dormir duas vezes no mesmo dia nao vale")
 
-func test_fome_zerada_e_game_over() -> void:
-	print("fome: zerar no fechamento e' game-over, e o alerta abre UMA vez (fase 8.1)")
+func test_fome_zerada_desmaia_em_vez_de_game_over() -> void:
+	print("fome zerada: desmaia (-R$30, dia fecha, acorda com 50 por cento) e NAO e' game-over")
 	_fresh_player()
-	Global.player["hunger"] = 3.0
-	var alive: bool = Global.decay_need_state()
-	_check(not alive, "decay_need_state devolveu false")
-	_check(Global.is_game_over(), "a trava de game-over ligou")
-	# A trava e' o que consertou o bug 8.1: antes, Global._process() reabria o
-	# alerta a cada quadro e o botao OK nunca conseguia fechar a caixa.
-	var lock_before := Global._gameplay_lock_count
-	Global.trigger_game_over("Você morreu de fome!")
-	Global.trigger_game_over("Você morreu de fome!")
-	_check(Global._gameplay_lock_count == lock_before, "chamar de novo nao empilha novos locks")
+	Global._game_over = false
+	Global.player["money"] = 100.0
+	Global.player["hunger"] = 0.0
+	var message := TimeManager.collapse_if_needs_depleted()
+	_check(message.find("fome") != -1 and message.find("sede") == -1, "o desmaio cita so' a fome")
+	_check(not Global.is_game_over(), "nao e' game-over")
+	_check(is_equal_approx(float(Global.player["money"]), 70.0), "cobrou R$ 30")
+	_check(TimeManager.day_end_pending, "o dia fechou (avanca quando o jogador fecha o alerta)")
+	_check(float(Global.player["hunger"]) > 45.0, "acorda com a fome restaurada, nao em zero")
+	# Sem isto, o primeiro minuto do dia seguinte desmaiaria de novo, em loop.
+	_check(TimeManager.collapse_if_needs_depleted() == "", "nao desmaia duas vezes no mesmo dia")
+	_check(is_equal_approx(float(Global.player["money"]), 70.0), "sem segunda cobranca")
+	AlertManager.reset()
+
+func test_sede_zerada_desmaia() -> void:
+	print("sede zerada: mesmo desfecho da fome; as duas juntas citam as duas")
+	_fresh_player()
+	Global._game_over = false
+	Global.player["thirst"] = 0.0
+	var message := TimeManager.collapse_if_needs_depleted()
+	_check(message.find("sede") != -1 and message.find("fome") == -1, "o desmaio cita so' a sede")
+	_check(float(Global.player["thirst"]) > 45.0, "sede restaurada")
+	AlertManager.reset()
+
+	_fresh_player()
+	Global.player["hunger"] = 0.0
+	Global.player["thirst"] = 0.0
+	message = TimeManager.collapse_if_needs_depleted()
+	_check(message.find("fome e sede") != -1, "as duas zeradas: 'fome e sede'")
+	_check(float(Global.player["hunger"]) > 45.0 and float(Global.player["thirst"]) > 45.0, "as duas restauradas")
+	AlertManager.reset()
+
+	# Sem dinheiro a cobranca nao deixa o saldo negativo.
+	_fresh_player()
+	Global.player["money"] = 10.0
+	Global.player["thirst"] = 0.0
+	TimeManager.collapse_if_needs_depleted()
+	_check(float(Global.player["money"]) == 0.0, "cobranca para em zero, sem saldo negativo")
+	AlertManager.reset()
+
+func test_fome_que_zera_no_decaimento_desmaia() -> void:
+	print("fome: o minuto de jogo que zera a fome dispara o desmaio")
+	_fresh_player()
+	Global._game_over = false
+	Global.player["hunger"] = Global.HUNGER_DECAY_PER_MINUTE
+	TimeManager._add_minute()
+	_check(TimeManager.day_end_pending, "o dia fechou no minuto em que a fome zerou")
+	_check(not Global.is_game_over(), "sem game-over")
+	AlertManager.reset()
 
 func test_imposto_sobre_prejuizo_em_fii() -> void:
 	print("FII: vender abaixo do preco medio paga 10%% sobre o prejuizo (fase 10.1)")
@@ -162,16 +201,6 @@ func test_beber_escolhe_bebida_e_repoe_sede() -> void:
 
 	_check(bool(Global.consume_food().get("success", false)), "COMER ainda acha a comida")
 	_check(not Global.player["home_inventory"].has("bread"), "o pao foi consumido")
-
-func test_sede_zerada_e_game_over() -> void:
-	print("sede: chegar a zero no fechamento do dia e' game over")
-	_fresh_player()
-	Global._game_over = false
-	Global.player["hunger"] = 100.0
-	Global.player["thirst"] = Global.THIRST_DECAY_PER_DAY
-	_check(not Global.decay_need_state(), "o decaimento que zera a sede devolve false")
-	_check(abs(float(Global.player["thirst"])) < 0.01, "sede ficou em 0")
-	Global._game_over = false
 
 func test_bebida_de_save_antigo_e_migrada() -> void:
 	print("sede: bebida gravada como comida em save antigo vira 'drink' com valor de sede")
@@ -489,11 +518,12 @@ func _ready() -> void:
 	print("=== auto-teste das mecanicas ===")
 	test_stamina_dura_o_dia_inteiro()
 	test_dormir_fecha_o_dia()
-	test_fome_zerada_e_game_over()
+	test_fome_zerada_desmaia_em_vez_de_game_over()
+	test_sede_zerada_desmaia()
+	test_fome_que_zera_no_decaimento_desmaia()
 	test_imposto_sobre_prejuizo_em_fii()
 	test_comida_do_mercado_repoe_fome()
 	test_beber_escolhe_bebida_e_repoe_sede()
-	test_sede_zerada_e_game_over()
 	test_bebida_de_save_antigo_e_migrada()
 	test_mercado_e_migracao_nao_divergem()
 	test_novo_jogo_so_libera_a_escola()

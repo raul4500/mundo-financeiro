@@ -485,11 +485,26 @@ Exemplos:
 - compra e venda de cotas
 - dividendos
 
-### Fundos base presentes
+### Fundos presentes
 
-- `FII_SHOPPING`
-- `FII_LAJES`
-- `FII_LOGISTICA`
+Oito, definidos em `FIIManager._default_funds()` (fonte única; `funds` e `reset()` usam a mesma função). Risco e retorno andam juntos de propósito: maior volatilidade, maior yield semanal.
+
+| Id | Nome exibido | Preço | Yield/semana | Volatilidade/dia |
+|---|---|---:|---:|---:|
+| `FII_RECEBIVEIS` | Recebíveis | R$ 100 | 1,9% | ±0,8% |
+| `FII_RESIDENCIAL` | Residencial | R$ 85 | 2,1% | ±1,2% |
+| `FII_LAJES` | Lajes Corporativas | R$ 120 | 2,0% | ±1,5% |
+| `FII_HOSPITAIS` | Hospitais | R$ 140 | 2,3% | ±1,7% |
+| `FII_SHOPPING` | Shopping | R$ 100 | 2,5% | ±2,0% |
+| `FII_AGRO` | Agro | R$ 110 | 2,7% | ±2,2% |
+| `FII_LOGISTICA` | Logística | R$ 90 | 3,0% | ±2,5% |
+| `FII_HOTEIS` | Hotéis | R$ 75 | 3,2% | ±3,0% |
+
+O **id** (`FII_*`) é a chave gravada no save e em `portfolio`: não renomear. O **nome exibido não leva a sigla "FII"** (estourava o label dos cards).
+
+**Saves antigos:** o save grava o dicionário `funds` inteiro, então um save velho só conhecia os fundos da época, com nome e taxas da época. `FIIManager._merge_default_funds()` (chamada em `load_data()`) acrescenta os fundos que faltam e reaplica o que é catálogo (`name`, `dividend_yield`, `volatility`), preservando só o `price` salvo, que é estado de jogo.
+
+**Loja** (`scripts/world/bank/fii_shop.gd`, aba `FII-shop` do banco): o grid (`Fund-grid`, `columns = 2`) é da cena; o script cria um card por fundo com nome, preço, volatilidade ("±x% ao dia"), input e Comprar/Vender. **Vender fica desativado** enquanto `FIIManager.portfolio` não tem cotas do fundo. A loja se redesenha em `funds_updated`, que `buy_fund`, `sell_fund` e `reset` emitem. Colunas: 2 e não 3 como no mercado, porque a aba tem ~640 px e dois botões + SpinBox não cabem num card de ~205 px.
 
 ### Dados do fundo
 
@@ -626,17 +641,21 @@ Durante o tempo, ambos descem. Se o jogador não comer ou não investir em desca
 
 ## 10.1 Necessidades: fome, sede e stamina
 
-Três medidores, todos 0–100, todos em `Global.player`. Dois deles matam:
+Três medidores, todos em `Global.player`. **Nenhum mata**: zerar qualquer um faz o jogador desmaiar.
 
 | Medidor | Decai | Zerar | Repõe |
 |---|---|---|---|
-| `hunger` | `HUNGER_DECAY_PER_DAY = 6` por dia dormido | game over | comer (item do estoque) |
-| `thirst` | `THIRST_DECAY_PER_DAY = 14` por dia dormido | game over | beber (item do estoque) |
-| `stamina` | `STAMINA_DECAY_PER_MINUTE = 100/960`, minuto a minuto | só impede jogar | dormir (volta a 100) |
+| `hunger` | `HUNGER_DECAY_PER_MINUTE` por minuto de jogo | desmaio | comer (item do estoque) |
+| `thirst` | `THIRST_DECAY_PER_MINUTE` por minuto de jogo | desmaio | beber (item do estoque) |
+| `stamina` | `STAMINA_DECAY_PER_MINUTE = 100/960`, minuto a minuto | desmaio (depois de a velocidade cair a zero) | dormir |
 
-Fome e sede caem juntas em `Global.decay_need_state()`, o ponto único do
-fechamento do dia. A ordem entre as duas não importa porque
-`trigger_game_over()` tem a trava `_game_over`: só o primeiro alerta abre.
+**Desmaio** (`TimeManager._faint(cause)`, único caminho para os três): cobra `MIDNIGHT_PENALTY` (R$ 30, piso em zero), fecha o dia com `_close_day()` e, quando o jogador fecha o alerta, `_advance_to_next_day()` o leva para casa no dia seguinte. Fome e sede entram por `TimeManager.collapse_if_needs_depleted()`, chamada a cada minuto em `_add_minute()` e logo após `Global.apply_home_action()`. O texto cita a causa ("exaustão", "fome", "sede" ou "fome e sede").
+
+**A necessidade zerada é restaurada a `MIDNIGHT_STAMINA` (50) no `_close_day()`** (`Global.restore_depleted_needs()`). Sem isso o jogador acordaria ainda em zero e desmaiaria de novo no primeiro minuto do dia seguinte, em loop. Consequência assumida: sem dinheiro nem comida, o desmaio se repete a cada ~dia pagando R$ 0 (a cobrança tem piso em zero) — não há mais derrota por fome.
+
+`Global.trigger_game_over()` continua existindo (e a trava `_game_over`, e `SaveManager` não grava durante um game over), mas **nada o chama hoje**. `SaveManager.load_game()` também não apaga mais saves com fome/sede zeradas.
+
+Fome e sede caem em `Global.decay_need_state()`, que só decai e devolve `false` se alguma zerou; quem desmaia o jogador é `TimeManager`.
 
 A sede cai **mais rápido** que a fome de propósito — zera em ~7 dias contra ~17.
 É o que dá utilidade às bebidas: antes delas existir a sede, `market.gd` mandava
@@ -717,7 +736,7 @@ São geradas três contas para a semana encerrada: água (R$ 30), luz (R$ 45) e 
 
 No banco, a aba **Contas da casa** lista somente as pendências, com valor, semana de criação, vencimento e botão **Pagar**. `HouseBillsManager.pay_bill()` valida o saldo, desconta o valor, remove a pendência, registra uma entrada de categoria `house_bill` em `expense_history` e move a conta para `house_bill_history` (limitado a 50 entradas).
 
-As duas listas fazem parte de `Global.player`, então já são persistidas pelo `SaveManager`; `ensure_player_state()` também as cria para saves antigos. O tutorial da semana 2 apresenta as contas domésticas, esclarecendo que elas aparecem no banco e só debitam dinheiro quando o jogador confirma o pagamento.
+As duas listas fazem parte de `Global.player`, então já são persistidas pelo `SaveManager`; `ensure_player_state()` também as cria para saves antigos. O tutorial da semana 2 apresenta as contas domésticas e os dois prazos (vencimento e data limite) — ver 12.3.
 
 ## 12. Sistema bancário
 
@@ -730,7 +749,17 @@ Seu papel inclui:
 - exibir despesas e registros do dia
 - funcionar como fonte visual do registro de gastos
 
-Histórico de gastos é representado em `Global.player["expense_history"]` e pode ser renderizado com `VBoxContainer`/`ScrollContainer`.
+Histórico de gastos é representado em `Global.player["expense_history"]`.
+
+### Abas em cards
+
+As cinco abas do `TabContainer` (Histórico, Eventos, Contas da casa, FII-shop, Portfolio) mostram **um card por registro**, num `GridContainer` de 2 colunas (`columns = 2` na cena; mercado usa 3, mas a aba do banco tem ~640 px). O card é montado por `scripts/world/bank/bank_card.gd` (`BankCard.new_card()`, `make_label()`, `make_button()`, `new_empty_card()`), para as cinco terem o mesmo visual e uma regra só.
+
+- Estrutura do card: `PanelContainer > MarginContainer > VBoxContainer`. **`PanelContainer`, não `Panel`:** `Panel` não lê o tamanho mínimo dos filhos e o texto de prazo (que quebra em várias linhas) vazaria para fora do card. `custom_minimum_size` é só o piso, para cards da mesma linha não ficarem com alturas muito diferentes.
+- Labels usam `label.tres` (o `Label` do `font_theme.tres` tem fundo `label_round.png` e corpo 24: caixa dentro de caixa) e **sempre com autowrap**, senão pedem a largura do texto inteiro e empurram o card para fora do grid (ver 3.5).
+- Lista vazia vira **um card de aviso** (`new_empty_card()`), não um `Label` solto, que ficaria preso à primeira célula do grid.
+- Conteúdo de cada card: **histórico** = item, preço, "Semana N - Dia M" (mais recente primeiro); **eventos** e **contas da casa** = título, valor (com juros se vencida), prazos e botão Pagar/Resgatar; **loja** = nome, preço, volatilidade, input, Comprar/Vender; **carteira** = nome, cotas, valor.
+- Os nós de lista mantêm os nomes antigos (`History-list`, `Events-list`, `House-bills-list`), agora `GridContainer`; o da carteira virou `Holdings-grid` e o da loja `Fund-grid`. Todas as listas redesenham com `remove_child()` antes do `queue_free()`.
 
 Além da aba **Eventos** para imprevistos e bônus, o `TabContainer` `Investimentos` tem a aba **Contas da casa**. Ela é um painel fixo na cena; `banco.gd` apenas preenche sua lista e reage ao sinal `HouseBillsManager.bills_updated`.
 
@@ -780,7 +809,7 @@ Persistência sai de graça: `SaveManager.save_game()` serializa `Global.player`
 
 **Decisões deliberadas**, para não serem "corrigidas" por engano:
 
-- não existe expiração nem multa automática. O plano pedia para documentar antes de aplicar penalidades, e uma conta vencida que se cobra sozinha reintroduziria exatamente o débito automático que a mudança removeu. `due_week` não é usado;
+- ~~não existe expiração nem multa automática~~ — **superado** por 12.3: contas e eventos de cobrança agora vencem, rendem juros e são cobrados sozinhos na data limite;
 - a UI fica só no banco, não em casa. `location` existe no modelo e `get_pending_events(location)` já filtra, então acrescentar um painel em casa é só passar `"home"`;
 - **o aviso do evento é um alerta modal, não uma notificação.** `event_ui.gd` e `event_message.tscn` foram removidos: a apresentação vive em `EventsManager._show_pending_alert()` e `_show_choice_alert()`, sobre o `AlertManager`. O evento mexe no dinheiro e, no caso com `escolhas`, exige uma decisão — um aviso que some sozinho descartaria a escolha em silêncio. O painel antigo também não pausava o jogo, só aparecia;
 - **o alerta só aparece se a pendência foi mesmo criada.** Antes o painel abria mesmo quando `has_pending_from_source()` descartava o sorteio, anunciando uma conta que não existia;
@@ -838,6 +867,29 @@ Obstáculos em `y = -43`, checkpoints em `y = -115`, espaçamento de 156 px entr
 O `_exit_tree()` devolve o lock se a cena for abandonada antes de começar. Isso não é teórico: o minigame tem um menu de pausa que leva ao menu principal, e sem essa devolução o contador de `gameplay_locked` ficaria preso e travaria o jogo inteiro.
 
 **Tempo congelado durante o minigame da escola:** Ao entrar na escola, `MinigameManager.is_in_minigame = true` (que sincroniza `Global.in_school_minigame = true`) e `Global.play_time = false`. O `TimeManager._process()` e `EventsManager._process()` são suspensos enquanto o jogador estiver na cena da escola. Isso impede que a simulação do mundo principal interfira no minigame: a stamina não decai, o aviso das 18h e a penalidade/teletransporte da meia-noite não acontecem, e eventos inesperados não são sorteados durante a corrida. Além disso, `AlertManager._close_alert()` e `pause_menu.toggle_pause()` não religam `play_time` enquanto `Global.in_school_minigame` for verdadeiro. Ao sair da cena (checkpoint, colisão ou menu), `is_in_minigame` volta a `false` no `_exit_tree()`, e o mundo principal (`main_game.gd`) retoma o relógio com `Global.play_time = true`.
+
+## 12.3 Prazos, juros, cobrança automática e semana repetida
+
+**Linha do tempo de uma conta** (contas da casa e eventos que cobram; **bônus ficam de fora**; contas de empreendimento têm regra própria, a de -25% de receita, e não entram aqui):
+
+| Campo | Conta da casa | Evento |
+|---|---|---|
+| `due_week` — vence no **fim** (último dia) dessa semana | geração + 1 | semana em que nasceu |
+| `limit_week` — cobrada sozinha no fim dessa semana | geração + 2 | semana de origem + 1 |
+
+Pagar até o fim da semana do vencimento custa o valor original. Depois, o valor cresce **10% ao dia, composto** (`DebtRules.INTEREST_PER_DAY`), a partir do dia seguinte ao vencimento. Cinco dias de atraso = 1,1⁵ ≈ 1,61x.
+
+**O valor com juros é sempre derivado do dia atual** (`current_amount()` em `HouseBillsManager`/`EventsManager`, que usam `scripts/economy/debt_rules.gd`); o `amount` gravado nunca muda. É o que faz uma semana repetida devolver os mesmos valores em vez de aplicar juros sobre juros já cobrados.
+
+**Cobrança automática** em `TimeManager._process_week_rollover()`, depois que as missões passam e **antes** de liberar a semana seguinte: soma tudo com `limit_week <= semana que acaba` (com juros até o último dia dela), recebe o salário, e cobra tirando primeiro da carteira e depois do banco (`Global.charge_funds()`). Se carteira + banco + salário não cobrem, a semana se repete. Essa checagem vem **antes** de `verify_missions()` para o alerta "Parabéns, vai para a próxima semana" não aparecer logo antes de "você perdeu a semana" (`MissionManager.all_passed()` responde sem alertar). A cobrança usa `register_expense(..., count_as_daily_spend = false)`: acontece já no dia 1 da semana nova e não pode estragar o "dia sem gastar" de um dia ainda não jogado.
+
+**Pagamento manual** (banco) também usa carteira + banco e o valor de hoje com juros.
+
+**Semana repetida** (`TimeManager._repeat_week()`, tanto por missão falhada quanto por dívida): `Global.restore_week_start()` devolve **dinheiro, banco e o estado das contas** à foto tirada no início da semana (`Global.snapshot_week_start()`, chamada em `new_game()`, no fim de cada virada de semana bem-sucedida e em `ensure_player_state()` para saves antigos). As contas entram na foto de propósito: sem elas, pagar uma conta numa tentativa fracassada devolveria o dinheiro **e** deixaria a conta paga — dívida perdoada de graça.
+
+**Limite conhecido:** compras (estoque da casa, FIIs, empreendimentos, upgrades) **não** voltam na foto. Dá para gastar, falhar a semana de propósito e ficar com o que comprou e o dinheiro de volta. Fechar isso exige restaurar mais estado (inventário, `FIIManager`, `enterprises`).
+
+**Escritório com relógio parado.** `Global.in_office` é ligado por `office.gd._ready()` e solto em `_exit_tree()`. `Global.time_frozen_by_scene()` (minigame da escola **ou** escritório) é o ponto único que `AlertManager._close_alert()`, `TutorialManager`, `pause_menu`, `EventsManager` e `TimeManager._process()` consultam antes de religar/avançar `play_time`; sem isso, fechar um alerta dentro do escritório religava o relógio.
 
 ## 13. Fluxo do jogo em alto nível
 
@@ -1141,7 +1193,7 @@ Achados por simulação manual de ponta a ponta do jogo. Documentados aqui para 
 - **`Global.DRINK_THIRST` (migração de saves antigos) estava fora de sincronia com `market.gd["Bebidas"]`**: faltava `milk` e sobravam `hot_chocolate`/`milkshake`/`beer`/`wine`, que não existem mais no mercado. Corrigido para espelhar exatamente as 7 bebidas atuais — `tests/test_mechanics.gd` cobre isso.
 - **Evento com escolha sorteado de novo enquanto uma pendência anterior do mesmo tipo ainda está aberta**: o jogador clicava numa opção e `create_pending_event()` descartava a pendência em silêncio (`has_pending_from_source()`), sem feedback nenhum. Agora `EventsManager.trigger_evento()` checa o mesmo guard **antes** de mostrar o diálogo de escolha, igual ao caminho sem escolha já fazia.
 - **`ensure_player_state()` nunca recuperava a chave `"name"`.** Um save sem ela fazia `main_menu.gd` (único lugar com acesso direto por colchete, `!= ""` contra `null`) tratar um save inválido como válido. `"name"` entrou na lista de chaves normalizadas.
-- **`apply_home_action()` (Descansar/Assistir TV) podia zerar a fome sem checar game over na hora** — o alerta de morte só aparecia depois, no próximo dormir/meia-noite. Agora chama `trigger_game_over()` imediatamente se a fome zerar.
+- **`apply_home_action()` (Descansar/Assistir TV) podia zerar a fome sem checar na hora.** Corrigido, e depois superado: fome/sede zerada não é mais game over, vira desmaio (ver 10.1) — `apply_home_action()` chama `TimeManager.collapse_if_needs_depleted()` ao fim.
 - **Dinheiro não tinha piso.** As penalidades da meia-noite (-R$30) e de semana ruim (-R$25) podiam empurrar o saldo indefinidamente negativo, sem consequência nem recuperação. Ambas agora usam `max(0.0, ...)`.
 - Baixa severidade, também corrigidos: o check do painel de missões só reavaliava no instante em que F era pressionado, não enquanto ficava segurado; `had_no_spend_day`/`no_spend_days_count` não resetavam numa semana repetida.
 

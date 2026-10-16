@@ -344,7 +344,7 @@ func _close_alert():
 	# 🔓 destrava jogo. O tempo só volta a correr se nada mais estiver
 	# travando o gameplay (cutscene de câmera, diálogo de compra, etc.).
 	Global.unlock_gameplay()
-	if not Global.gameplay_locked and not Global.in_school_minigame and not Global.is_any_tutorial_active():
+	if not Global.gameplay_locked and not Global.time_frozen_by_scene() and not Global.is_any_tutorial_active():
 		Global.play_time = true
 
 	var callback = on_confirm_callback

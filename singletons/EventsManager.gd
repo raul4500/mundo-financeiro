@@ -1,5 +1,7 @@
 extends Node
 
+const DebtRules = preload("res://scripts/economy/debt_rules.gd")
+
 signal evento_ocorreu(evento)
 # Emitido quando a lista de pendências muda (criação, pagamento, resgate).
 # A UI do banco escuta este sinal para se redesenhar sem precisar de polling.
@@ -50,7 +52,7 @@ func _process(delta: float) -> void:
 	# O sorteio só corre enquanto o jogador está de fato jogando. Sem esta
 	# guarda o timer continuava contando no menu inicial e na escolha de
 	# personagem, porque este script é um autoload e nunca sai da árvore.
-	if not Global.play_time or Global.gameplay_locked or Global.in_school_minigame or Global.is_any_tutorial_active():
+	if not Global.play_time or Global.gameplay_locked or Global.time_frozen_by_scene() or Global.is_any_tutorial_active():
 		return
 	spawn_timer += delta
 	if spawn_timer < SPAWN_INTERVAL:
@@ -142,6 +144,13 @@ func _show_pending_alert(evento: Dictionary, pendencia: Dictionary) -> void:
 		_money_text(float(pendencia.get("amount", 0.0))),
 		"resgate" if is_bonus else "pague"
 	]
+	if not is_bonus:
+		# O jogador precisa saber do prazo ANTES de ignorar a conta.
+		text += "\n\nVence no fim da semana %d. Depois disso cresce %d%% ao dia e, no fim da semana %d, o jogo cobra sozinho (carteira + banco)." % [
+			event_due_week(pendencia),
+			int(DebtRules.INTEREST_PER_DAY * 100.0),
+			event_limit_week(pendencia)
+		]
 	AlertManager.alert(text)
 
 func _show_choice_alert(evento: Dictionary) -> void:
@@ -207,6 +216,11 @@ func create_pending_event(evento: Dictionary, impacto: Dictionary) -> Dictionary
 		"title": str(evento.get("titulo", "Evento")),
 		"description": str(evento.get("descricao", "")),
 		"week_generated": int(Global.player.get("week", 1)),
+		# Conta: vence no fim da semana em que nasceu e é cobrada sozinha no fim
+		# da seguinte, com juros do atraso (scripts/economy/debt_rules.gd).
+		# Bônus não vence nem expira; os campos só valem para is_bonus = false.
+		"due_week": int(Global.player.get("week", 1)),
+		"limit_week": int(Global.player.get("week", 1)) + 1,
 		# amount é sempre positivo: o sinal vive em is_bonus. Guardar o valor
 		# negativo fazia pay_event() creditar o jogador em vez de debitar.
 		"amount": abs(raw_amount),
@@ -245,6 +259,46 @@ func _find_event(event_id: String) -> Dictionary:
 			return ev
 	return {}
 
+# Eventos de saves antigos não têm due_week/limit_week.
+func event_due_week(ev: Dictionary) -> int:
+	return int(ev.get("due_week", int(ev.get("week_generated", 1))))
+
+func event_limit_week(ev: Dictionary) -> int:
+	return int(ev.get("limit_week", event_due_week(ev) + 1))
+
+# Valor com juros em `as_of_abs_day` (padrão: hoje). `amount` fica o original.
+func current_amount(ev: Dictionary, as_of_abs_day: int = -1) -> float:
+	if as_of_abs_day < 0:
+		as_of_abs_day = Global.get_absolute_day()
+	var overdue := DebtRules.overdue_days(as_of_abs_day, event_due_week(ev), Global.DAYS_PER_WEEK)
+	return DebtRules.amount_with_interest(abs(float(ev.get("amount", 0.0))), overdue)
+
+func overdue_days_of(ev: Dictionary) -> int:
+	return DebtRules.overdue_days(Global.get_absolute_day(), event_due_week(ev), Global.DAYS_PER_WEEK)
+
+func _is_open_debt(ev: Dictionary) -> bool:
+	return str(ev.get("status", "")) == "pending" and not bool(ev.get("is_bonus", false))
+
+# Soma das contas (não bônus) cuja data limite chegou até o fim de `week`.
+func total_due_through(week: int) -> float:
+	var as_of := week * Global.DAYS_PER_WEEK
+	var total := 0.0
+	for ev in _pending_list():
+		if _is_open_debt(ev) and event_limit_week(ev) <= week:
+			total += current_amount(ev, as_of)
+	return snappedf(total, 0.01)
+
+# Marca como quitadas as contas cuja data limite chegou. NÃO mexe no dinheiro:
+# quem chama (TimeManager) já cobrou o total de total_due_through() dos fundos.
+func settle_through(week: int) -> void:
+	var as_of := week * Global.DAYS_PER_WEEK
+	for ev in _pending_list():
+		if _is_open_debt(ev) and event_limit_week(ev) <= week:
+			ev["paid_amount"] = current_amount(ev, as_of)
+			ev["status"] = "paid"
+			ev["auto_paid"] = true
+	emit_signal("events_updated")
+
 func pay_event(event_id: String) -> Dictionary:
 	var ev = _find_event(event_id)
 	if ev.is_empty():
@@ -254,14 +308,14 @@ func pay_event(event_id: String) -> Dictionary:
 	if bool(ev.get("is_bonus", false)):
 		return {"success": false, "message": "Isto é um bônus: use Resgatar."}
 
-	# abs(): o sinal vive em is_bonus. Blinda contra saves gravados antes da
-	# correção, que guardavam o valor negativo para contas.
-	var amount = abs(float(ev.get("amount", 0.0)))
-	var money = float(Global.player.get("money", 0.0))
-	if money < amount:
-		return {"success": false, "message": "Dinheiro insuficiente. Faltam R$ %.2f." % (amount - money)}
+	# Valor de hoje, com juros se já venceu (current_amount usa abs(): o sinal
+	# vive em is_bonus, e saves antigos guardavam o valor negativo para contas).
+	# Paga da carteira e, se faltar, do banco.
+	var amount = current_amount(ev)
+	if not Global.charge_funds(amount):
+		return {"success": false, "message": "Dinheiro insuficiente (carteira + banco). Faltam R$ %.2f." % (amount - Global.total_funds())}
 
-	Global.player["money"] = money - amount
+	ev["paid_amount"] = amount
 	ev["status"] = "paid"
 	SaveManager.save_game()
 	emit_signal("events_updated")

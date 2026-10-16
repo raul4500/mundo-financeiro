@@ -54,16 +54,17 @@ func _ready() -> void:
 	print("  ok   start() bloqueado sem save válido")
 	menu_after_death.queue_free()
 	
-	# Cenário 7: Proteção contra save legado corrompido com fome zerada
-	# Cria intencionalmente um save com fome = 0 no disco para testar a proteção do load_game
+	# Cenário 7: fome zerada NÃO é mais morte (o jogador desmaia em vez de perder
+	# o jogo), então um save assim é válido e não pode ser apagado ao carregar.
 	var f = FileAccess.open("user://savegame.json", FileAccess.WRITE)
-	f.store_string('{"name": "Zumbi", "hunger": 0.0, "thirst": 50.0}')
+	f.store_string('{"name": "Faminto", "hunger": 0.0, "thirst": 50.0}')
 	f.close()
 	assert(SaveManager.has_save() == true, "Arquivo de teste gravado")
 	var loaded = SaveManager.load_game()
-	assert(loaded == false, "load_game deve rejeitar save com fome zerada")
-	assert(SaveManager.has_save() == false, "load_game deve ter excluído o save do zumbi")
-	print("  ok   load_game rejeita e exclui save com personagem morto")
+	assert(loaded is Dictionary, "load_game deve aceitar save com fome zerada")
+	assert(SaveManager.has_save() == true, "o save com fome zerada não deve ser apagado")
+	SaveManager.delete_save()
+	print("  ok   load_game aceita save com fome zerada e mantém o arquivo")
 	
 	print("=== Todos os testes de exclusão de save na morte de fome passaram com sucesso! ===")
 	get_tree().quit(0)

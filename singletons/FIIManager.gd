@@ -22,28 +22,66 @@ func _log_error(message: String) -> void:
 	else:
 		print("[ERROR] %s" % message)
 
+# Catálogo de fundos. O id (FII_*) é a chave gravada no save e na carteira: não
+# renomear. O nome exibido NÃO leva a sigla "FII" (a tela já diz que são fundos
+# imobiliários, e a sigla estourava o label do card).
+#
 # Yields subidos na auditoria de balanceamento (ECONOMY_BALANCE_PLAN.md,
 # achado #4): com 0,8-1,2%/semana, a missão "lucro_200" da semana 4 exigia
 # ~R$10-20 mil investidos, inatingível no ritmo normal de jogo.
+#
+# Risco e retorno andam juntos de propósito: quanto maior a volatilidade (variação
+# máxima de preço por dia), maior o yield semanal. Recebíveis é o mais estável e
+# paga menos; Hotéis é o mais instável e paga mais.
 func _default_funds() -> Dictionary:
 	return {
 		"FII_SHOPPING": {
-			"name": "FII Shopping",
+			"name": "Shopping",
 			"price": 100.0,
 			"dividend_yield": 0.025,
 			"volatility": 0.02
 		},
 		"FII_LAJES": {
-			"name": "FII Lajes Corporativas",
+			"name": "Lajes Corporativas",
 			"price": 120.0,
 			"dividend_yield": 0.02,
 			"volatility": 0.015
 		},
 		"FII_LOGISTICA": {
-			"name": "FII Logística",
+			"name": "Logística",
 			"price": 90.0,
 			"dividend_yield": 0.03,
 			"volatility": 0.025
+		},
+		"FII_RECEBIVEIS": {
+			"name": "Recebíveis",
+			"price": 100.0,
+			"dividend_yield": 0.019,
+			"volatility": 0.008
+		},
+		"FII_RESIDENCIAL": {
+			"name": "Residencial",
+			"price": 85.0,
+			"dividend_yield": 0.021,
+			"volatility": 0.012
+		},
+		"FII_HOSPITAIS": {
+			"name": "Hospitais",
+			"price": 140.0,
+			"dividend_yield": 0.023,
+			"volatility": 0.017
+		},
+		"FII_AGRO": {
+			"name": "Agro",
+			"price": 110.0,
+			"dividend_yield": 0.027,
+			"volatility": 0.022
+		},
+		"FII_HOTEIS": {
+			"name": "Hotéis",
+			"price": 75.0,
+			"dividend_yield": 0.032,
+			"volatility": 0.03
 		}
 	}
 
@@ -188,6 +226,20 @@ func save_data():
 		}
 	}
 
+# O save grava o dicionário inteiro de fundos, então um save antigo só conhece os
+# fundos da época, com nomes e taxas da época. Completa os que faltam e
+# reaplica o que é catálogo (nome, yield, volatilidade), preservando só o preço
+# salvo, que é estado de jogo. Sem isso fundos novos nunca apareceriam para
+# quem já tem save, e um ajuste de yield só valeria em partida nova.
+func _merge_default_funds() -> void:
+	var defaults := _default_funds()
+	for fund_id in defaults.keys():
+		if not funds.has(fund_id):
+			funds[fund_id] = defaults[fund_id]
+			continue
+		for key in ["name", "dividend_yield", "volatility"]:
+			funds[fund_id][key] = defaults[fund_id][key]
+
 func load_data():
 	if Global.player == null:
 		return
@@ -198,6 +250,7 @@ func load_data():
 		avg_price = data["avg_price"]
 	if data.has("funds_data"):
 		funds = data["funds_data"]
+	_merge_default_funds()
 	# Save antigo, sem preco medio: adota o preco atual como base de custo, para
 	# uma carteira herdada nao ser taxada por um prejuizo que nunca existiu.
 	for fund_id in portfolio.keys():

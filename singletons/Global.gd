@@ -102,6 +102,9 @@ var data_model = {
 	# Cupom de desconto (0.0 a 1.0) ganho ao acertar o quiz do minigame do
 	# parque. Consumido de uma vez na próxima compra do mercado.
 	"market_discount": 0.0,
+	# Foto do início da semana atual (dinheiro, banco e contas). É o que volta se
+	# a semana for repetida. Ver snapshot_week_start()/restore_week_start().
+	"week_snapshot": {},
 	"last_week_status": {
 		"hunger": 110.0,
 		"thirst": 110.0,
@@ -113,16 +116,26 @@ var play_time := false
 var gameplay_locked := false
 var _gameplay_lock_count := 0
 var in_school_minigame := false
+# Ligada enquanto o jogador está dentro do escritório de consultoria: o relógio
+# não corre lá, para dar tempo de ler sem pressa de voltar para casa.
+var in_office := false
 # Liga durante o minigame do parque: os HUDs (dinheiro/necessidades, relogio,
 # missoes) se escondem enquanto isto for true, sobrando so' o timer da sessao.
 # Nao e' salvo, igual gameplay_locked: e' estado de execucao, nao de save.
 var player_hud_hidden := false
-# Ligada quando a fome zera. Impede que o resto do fluxo do fim de dia continue
+# Ligada por trigger_game_over(). Fome e sede zeradas NÃO chamam mais isso: elas
+# desmaiam o jogador (TimeManager.collapse_if_needs_depleted). A trava continua
+# aqui para qualquer game over futuro; ela impede que o fluxo do fim de dia siga
 # por cima da tela de game-over. Zerada ao comecar/carregar uma partida.
 var _game_over := false
 
 func is_game_over() -> bool:
 	return _game_over
+
+# Cenas em que o relógio fica parado de propósito. Ponto único: quem religa
+# play_time (fechar alerta, despausar, soltar travas) consulta aqui.
+func time_frozen_by_scene() -> bool:
+	return in_school_minigame or in_office
 
 func lock_gameplay() -> void:
 	_gameplay_lock_count += 1
@@ -140,8 +153,8 @@ func unlock_gameplay() -> void:
 func force_release_all_gameplay_locks() -> void:
 	_gameplay_lock_count = 0
 	gameplay_locked = false
-	# Also ensure game time resumes if not in school minigame and not in tutorial
-	if not in_school_minigame and not is_any_tutorial_active():
+	# Also ensure game time resumes if not in a frozen-time scene and not in tutorial
+	if not time_frozen_by_scene() and not is_any_tutorial_active():
 		play_time = true
 	print("Global: force released all gameplay locks")
 
@@ -249,6 +262,10 @@ func ensure_player_state() -> void:
 	player["hunger"] = clampf(float(player.get("hunger", 110.0)), 0.0, 110.0)
 	player["thirst"] = clampf(float(player.get("thirst", 110.0)), 0.0, 110.0)
 	player["stamina"] = clampf(float(player.get("stamina", 110.0)), 0.0, 110.0)
+	# Save anterior à foto da semana: adota o estado de agora como "início",
+	# melhor do que deixar uma semana repetida sem ter para onde voltar.
+	if typeof(player.get("week_snapshot", null)) != TYPE_DICTIONARY or player["week_snapshot"].is_empty():
+		snapshot_week_start()
 	normalize_home_inventory()
 
 func normalize_home_inventory() -> void:
@@ -294,6 +311,7 @@ func new_game(name: String, money: float) -> void:
 	SaveManager.delete_save()
 	_game_over = false
 	in_school_minigame = false
+	in_office = false
 	player = _new_player_data()
 	player["name"] = name
 	player["money"] = float(money)
@@ -327,6 +345,7 @@ func new_game(name: String, money: float) -> void:
 	player["market_discount"] = 0.0
 	player["tutorial_home_shown"] = false
 	player["last_week_status"] = {"hunger": 110.0, "thirst": 110.0, "stamina": 110.0}
+	snapshot_week_start()
 
 	# Reset FIIManager state to ensure new game doesn't inherit old portfolio
 	FIIManager.reset()
@@ -369,7 +388,10 @@ func update_salary() -> void:
 func get_paid() -> void:
 	player["money"] = float(player["money"]) + float(player["salary"])
 
-func register_expense(item_name: String, category: String, price: float, day: int, week: int) -> void:
+# count_as_daily_spend = false para cobranças automáticas da virada de semana:
+# elas acontecem já no dia 1 da semana nova e não podem estragar o "dia sem
+# gastar" (missão sem_gastar) de um dia que o jogador ainda nem jogou.
+func register_expense(item_name: String, category: String, price: float, day: int, week: int, count_as_daily_spend: bool = true) -> void:
 	if player == null:
 		return
 	var history = player.get("expense_history", [])
@@ -381,7 +403,59 @@ func register_expense(item_name: String, category: String, price: float, day: in
 		"week": week
 	})
 	player["expense_history"] = history
-	player["spend_today"] = float(player.get("spend_today", 0.0)) + float(price)
+	if count_as_daily_spend:
+		player["spend_today"] = float(player.get("spend_today", 0.0)) + float(price)
+
+# =============================================================
+# FUNDOS: dinheiro na mão + saldo no banco
+# =============================================================
+func total_funds() -> float:
+	return float(player.get("money", 0.0)) + float(player.get("saldo", 0.0))
+
+# Cobra `amount` tirando primeiro da carteira e só então do banco. Devolve false
+# (sem mexer em nada) se os dois juntos não cobrem.
+func charge_funds(amount: float) -> bool:
+	if amount <= 0.0:
+		return true
+	if total_funds() + 0.001 < amount:
+		return false
+	var money := float(player.get("money", 0.0))
+	var from_wallet := minf(money, amount)
+	player["money"] = snappedf(money - from_wallet, 0.01)
+	player["saldo"] = snappedf(float(player.get("saldo", 0.0)) - (amount - from_wallet), 0.01)
+	return true
+
+# =============================================================
+# FOTO DO INÍCIO DA SEMANA
+# Repetir uma semana (missão falhada ou contas que o jogador não consegue
+# quitar) devolve o jogador ao que ele tinha ao começar a semana: dinheiro,
+# banco e o estado das contas. As contas entram na foto porque, sem elas,
+# pagar uma conta na tentativa fracassada devolveria o dinheiro E deixaria a
+# conta paga — dívida perdoada de graça.
+# Compras (estoque, FIIs, empreendimentos) NÃO voltam: ver ECONOMY_BALANCE_PLAN.
+# =============================================================
+func snapshot_week_start() -> void:
+	if player == null:
+		return
+	player["week_snapshot"] = {
+		"money": float(player.get("money", 0.0)),
+		"saldo": float(player.get("saldo", 0.0)),
+		"pending_house_bills": player.get("pending_house_bills", []).duplicate(true),
+		"house_bill_history": player.get("house_bill_history", []).duplicate(true),
+		"pending_events": player.get("pending_events", []).duplicate(true)
+	}
+
+func restore_week_start() -> void:
+	if player == null:
+		return
+	var snap = player.get("week_snapshot", {})
+	if typeof(snap) != TYPE_DICTIONARY or snap.is_empty():
+		return
+	player["money"] = float(snap.get("money", player.get("money", 0.0)))
+	player["saldo"] = float(snap.get("saldo", player.get("saldo", 0.0)))
+	player["pending_house_bills"] = snap.get("pending_house_bills", []).duplicate(true)
+	player["house_bill_history"] = snap.get("house_bill_history", []).duplicate(true)
+	player["pending_events"] = snap.get("pending_events", []).duplicate(true)
 
 func _food_energy_for(item_name: String, base_price: float) -> float:
 	var price_factor = clamp(base_price / 20.0, 0.5, 3.0)
@@ -570,16 +644,17 @@ func apply_home_action(action_name: String, hunger_delta: float, stamina_delta: 
 	})
 	player["home_actions_log"] = log
 	TimeManager.spend_hours(time_cost)
-	if player["hunger"] <= 0.0:
-		trigger_game_over("Você morreu de fome!")
-		return {"success": false, "message": "Você morreu de fome!"}
-	if float(player.get("thirst", 110.0)) <= 0.0:
-		trigger_game_over("Você morreu de desidratação!")
-		return {"success": false, "message": "Você morreu de desidratação!"}
+	# A ação pode ter zerado fome/sede (o guard acima só recusa quando o custo
+	# passa do que há, e custo igual ao que há deixa em zero). Zerar não mata:
+	# o jogador desmaia, como na exaustão (TimeManager.collapse_if_needs_depleted).
+	var collapse_message := TimeManager.collapse_if_needs_depleted()
+	if collapse_message != "":
+		return {"success": false, "message": collapse_message}
 	return {"success": true, "message": "%s" % action_name}
 
-# Fechamento do dia. A stamina e' tratada minuto a minuto pelo TimeManager;
-# aqui caem fome e sede. Devolve false se o jogador morreu.
+# Cai fome e sede (uma fatia por minuto de jogo, chamada por TimeManager). Não
+# mata: quando uma chega a zero, quem decide é TimeManager.collapse_if_needs_depleted(),
+# que desmaia o jogador. Devolve false se alguma necessidade está zerada.
 func decay_need_state() -> bool:
 	if player == null:
 		return true
@@ -590,15 +665,25 @@ func decay_need_state() -> bool:
 		return true
 	player["hunger"] = clampf(float(player.get("hunger", 110.0)) - HUNGER_DECAY_PER_MINUTE, 0.0, 110.0)
 	player["thirst"] = clampf(float(player.get("thirst", 110.0)) - 	THIRST_DECAY_PER_MINUTE, 0.0, 110.0)
-	if player["hunger"] <= 0.0:
-		trigger_game_over("Você morreu de fome!")
-		return false
-	# A ordem entre os dois nao importa: trigger_game_over() tem a trava
-	# _game_over, entao so' o primeiro alerta abre.
-	if player["thirst"] <= 0.0:
-		trigger_game_over("Você morreu de desidratação!")
-		return false
-	return true
+	return depleted_needs().is_empty()
+
+# Necessidades zeradas agora: "hunger" e/ou "thirst". Vazio durante o tutorial,
+# em que elas ficam travadas em 110.
+func depleted_needs() -> Array:
+	var result: Array = []
+	if player == null or is_tutorial_active():
+		return result
+	if float(player.get("hunger", 110.0)) <= 0.0:
+		result.append("hunger")
+	if float(player.get("thirst", 110.0)) <= 0.0:
+		result.append("thirst")
+	return result
+
+# Devolve as necessidades zeradas a `value`. Sem isto o jogador acordaria no dia
+# seguinte ainda com a necessidade em zero e desmaiaria de novo no primeiro minuto.
+func restore_depleted_needs(value: float) -> void:
+	for need in depleted_needs():
+		player[need] = value
 
 # Ponto unico de game-over. O alerta so' e' aberto uma vez: sem a trava, um
 # chamador em _process reabriria a caixa a cada quadro e o botao OK nunca
@@ -610,6 +695,19 @@ func trigger_game_over(message: String) -> void:
 	play_time = false
 	SaveManager.delete_save()
 	AlertManager.alert(message, false, Callable(self, "_return_to_main_menu"))
+
+const WEEK_STATUS_PENALTY := 25.0
+
+# Quanto evaluate_week_status() tiraria agora, sem aplicar. A cobrança automática
+# de contas precisa contar com isso ao checar se os fundos cobrem tudo; senão a
+# penalidade, que roda depois da checagem, deixaria o saldo curto na hora de
+# cobrar.
+func week_status_penalty_preview() -> float:
+	if player == null or is_tutorial_active():
+		return 0.0
+	if float(player.get("hunger", 110.0)) < 35.0 or float(player.get("thirst", 110.0)) < 35.0 or float(player.get("stamina", 110.0)) < 35.0:
+		return WEEK_STATUS_PENALTY
+	return 0.0
 
 func evaluate_week_status() -> Dictionary:
 	if player == null:
@@ -626,7 +724,7 @@ func evaluate_week_status() -> Dictionary:
 	player["last_week_status"] = {"hunger": hunger, "thirst": thirst, "stamina": stamina}
 	var penalty = 0.0
 	if hunger < 35.0 or thirst < 35.0 or stamina < 35.0:
-		penalty = 25.0
+		penalty = WEEK_STATUS_PENALTY
 		# Piso em zero: sem isto a penalidade empurrava o saldo cada vez mais
 		# fundo no negativo, sem nenhum caminho de recuperação além do salário.
 		player["money"] = max(0.0, float(player.get("money", 0.0)) - penalty)
@@ -638,6 +736,7 @@ func evaluate_week_status() -> Dictionary:
 func reset_game_state_to_menu() -> void:
 	_game_over = false
 	in_school_minigame = false
+	in_office = false
 	player_hud_hidden = false
 	play_time = false
 	force_release_all_gameplay_locks()

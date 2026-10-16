@@ -1,92 +1,79 @@
 extends Panel
 
-@onready var fund_list = $ScrollContainer/VBoxContainer
+# Loja de fundos imobiliários. O grid (colunas, espaçamento) é da cena
+# (bank.tscn, nó Fund-grid); aqui só se criam os cards, um por fundo:
+#   nome / preço atual / volatilidade / quantidade / Comprar | Vender
 
-func _ready():
+const BankCard = preload("res://scripts/world/bank/bank_card.gd")
+
+const CARD_MIN_HEIGHT := 210
+
+@onready var fund_list: GridContainer = $"ScrollContainer/Fund-grid"
+
+func _ready() -> void:
+	# buy_fund/sell_fund/reset emitem funds_updated, então este sinal cobre também
+	# o estado do botão Vender (que depende da carteira).
 	FIIManager.funds_updated.connect(_on_funds_updated)
 	load_funds()
 
-func _on_funds_updated():
+func _on_funds_updated() -> void:
 	load_funds()
 
-func load_funds():
-	# limpa lista
+func load_funds() -> void:
+	# remove_child antes do queue_free: queue_free só libera no fim do frame, e
+	# dois rebuilds no mesmo frame empilhariam cards velhos com os novos.
 	for child in fund_list.get_children():
+		fund_list.remove_child(child)
 		child.queue_free()
-	
+
 	for fund_id in FIIManager.funds.keys():
-		var fund = FIIManager.funds[fund_id]
-		
-		var container = VBoxContainer.new()
-		container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		container.size_flags_vertical = Control.SIZE_EXPAND_FILL
-		container.add_theme_constant_override("separation", 16)
+		fund_list.add_child(_make_card(str(fund_id), FIIManager.funds[fund_id]))
 
-# =============================
-# 🏷️ LABEL
-# =============================
-		var label = Label.new()
-		label.text = "%s - R$%.2f" % [fund["name"], fund["price"]]
-		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+func _make_card(fund_id: String, fund: Dictionary) -> PanelContainer:
+	var parts := BankCard.new_card(CARD_MIN_HEIGHT)
+	var box: VBoxContainer = parts["box"]
 
-# IMPORTANTE: não deixar expandir demais
-		label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	box.add_child(BankCard.make_label(str(fund["name"]), 20))
+	box.add_child(BankCard.make_label("R$ %.2f" % float(fund["price"]), 18))
+	# volatility é a variação máxima de preço por dia (update_prices sorteia entre
+	# -volatility e +volatility), então "±x% ao dia".
+	box.add_child(BankCard.make_label("Volatilidade: ±%.1f%% ao dia" % (float(fund["volatility"]) * 100.0), 14))
 
+	var input := SpinBox.new()
+	input.min_value = 1
+	input.max_value = 100
+	input.step = 1
+	input.value = 1
+	input.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	box.add_child(input)
 
-# =============================
-# 🔢INPUT
-# =============================
-		var input = SpinBox.new()
-		input.min_value = 1
-		input.max_value = 100
-		input.step = 1
+	var buttons := HBoxContainer.new()
+	buttons.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	buttons.add_theme_constant_override("separation", 6)
+	box.add_child(buttons)
 
-		input.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		input.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	var buy_btn := BankCard.make_button("Comprar")
+	buy_btn.pressed.connect(_on_buy.bind(fund_id, input))
+	buttons.add_child(buy_btn)
 
+	var sell_btn := BankCard.make_button("Vender")
+	sell_btn.pressed.connect(_on_sell.bind(fund_id, input))
+	# Sem cotas deste fundo não há o que vender.
+	if int(FIIManager.portfolio.get(fund_id, 0)) <= 0:
+		sell_btn.disabled = true
+		sell_btn.tooltip_text = "Você não possui cotas deste fundo."
+	buttons.add_child(sell_btn)
 
-# =============================
-# 🔘 BOTÕES
-# =============================
-		var btn_container = HBoxContainer.new()
-		btn_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-
-		var buy_btn = Button.new()
-		buy_btn.text = "Comprar"
-		buy_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-
-		var sell_btn = Button.new()
-		sell_btn.text = "Vender"
-		sell_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-
-# conectar
-		buy_btn.pressed.connect(_on_buy.bind(fund_id, input))
-		sell_btn.pressed.connect(_on_sell.bind(fund_id, input))
-
-		btn_container.add_child(buy_btn)
-		btn_container.add_child(sell_btn)
-
-
-# =============================
-# 📦 HIERARQUIA CORRETA
-# =============================
-		container.add_child(label)
-		container.add_child(input)
-		container.add_child(btn_container)
-
-		fund_list.add_child(container)
+	return parts["card"]
 
 
 # =============================
 # 💸 AÇÕES
 # =============================
-func _on_buy(fund_id, input):
-	var amount = int(input.value)
-	FIIManager.buy_fund(fund_id, amount)
-	load_funds() # atualiza UI
+# A tela se redesenha sozinha: buy_fund/sell_fund emitem funds_updated quando
+# dão certo, e quando recusam (sem dinheiro, sem cotas) nada mudou para redesenhar.
+func _on_buy(fund_id: String, input: SpinBox) -> void:
+	FIIManager.buy_fund(fund_id, int(input.value))
 
-
-func _on_sell(fund_id, input):
-	var amount = int(input.value)
-	FIIManager.sell_fund(fund_id, amount)
-	load_funds()
+func _on_sell(fund_id: String, input: SpinBox) -> void:
+	FIIManager.sell_fund(fund_id, int(input.value))

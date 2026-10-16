@@ -1,6 +1,10 @@
 extends Control
 
-const EVENT_LABEL_THEME = preload("res://themes/label.tres")
+const BankCard = preload("res://scripts/world/bank/bank_card.gd")
+
+# Alturas mínimas dos cards (o PanelContainer cresce se o texto pedir mais).
+const HISTORY_CARD_HEIGHT := 100
+const DEBT_CARD_HEIGHT := 170
 
 @onready var label_money = $"Account-info/Label_Money"
 @onready var label_saldo = $"Account-info/Label-saldo"
@@ -10,10 +14,10 @@ const EVENT_LABEL_THEME = preload("res://themes/label.tres")
 @onready var cancel_button: Button = $"Transaction-panel/Panel/Cancel"
 @onready var btn_deposit = $Actions/Deposit
 @onready var btn_withdraw = $Actions/Withdraw
-@onready var events_list: VBoxContainer = $"TabContainer/Eventos/Margin/VBoxContainer/Events-scroll/Events-list"
-@onready var house_bills_list: VBoxContainer = $"TabContainer/Contas da casa/Margin/VBoxContainer/House-bills-scroll/House-bills-list"
+@onready var events_list: GridContainer = $"TabContainer/Eventos/Margin/VBoxContainer/Events-scroll/Events-list"
+@onready var house_bills_list: GridContainer = $"TabContainer/Contas da casa/Margin/VBoxContainer/House-bills-scroll/House-bills-list"
 @onready var history_panel: Panel = $"TabContainer/Histórico"
-@onready var history_list: VBoxContainer = $"TabContainer/Histórico/Margin/VBoxContainer/House-bills-scroll/History-list"
+@onready var history_list: GridContainer = $"TabContainer/Histórico/Margin/VBoxContainer/House-bills-scroll/History-list"
 @onready var tab_container: TabContainer = $"TabContainer"
 
 
@@ -59,20 +63,18 @@ func render_history() -> void:
 		child.queue_free()
 	var entries = Global.player.get("expense_history", [])
 	if entries.is_empty():
-		var empty_label = Label.new()
-		empty_label.text = "Nenhuma compra registrada."
-		history_list.add_child(empty_label)
+		history_list.add_child(BankCard.new_empty_card("Nenhuma compra registrada."))
 		return
+	# Mais recente primeiro.
 	for index in range(entries.size() - 1, -1, -1):
 		var entry = entries[index]
-		var row = HBoxContainer.new()
-		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		var label = Label.new()
-		label.autowrap_mode = TextServer.AUTOWRAP_WORD
-		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		label.text = "%s - R$%.2f - Dia %s" % [str(entry.get("item", "-")), float(entry.get("price", 0.0)), str(entry.get("day", 1))]
-		row.add_child(label)
-		history_list.add_child(row)
+		var parts := BankCard.new_card(HISTORY_CARD_HEIGHT)
+		var box: VBoxContainer = parts["box"]
+		box.add_child(BankCard.make_label(str(entry.get("item", "-")), 18))
+		box.add_child(BankCard.make_label("R$ %.2f" % float(entry.get("price", 0.0)), 16))
+		# int(): depois de um load o JSON devolve números como float ("dia 3.0").
+		box.add_child(BankCard.make_label("Semana %d - Dia %d" % [int(entry.get("week", 1)), int(entry.get("day", 1))], 13))
+		history_list.add_child(parts["card"])
 
 # O painel é fixo na cena (bank.tscn). Aqui só preenchemos a lista.
 func render_events() -> void:
@@ -86,48 +88,44 @@ func render_events() -> void:
 
 	var entries = EventsManager.get_pending_events("bank")
 	if entries.is_empty():
-		events_list.add_child(_make_event_label("Nenhuma conta ou bônus pendente."))
+		events_list.add_child(BankCard.new_empty_card("Nenhuma conta ou bônus pendente."))
 		return
 
 	for ev in entries:
-		var row = HBoxContainer.new()
-		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		row.add_theme_constant_override("separation", 10)
-
 		var is_bonus = bool(ev.get("is_bonus", false))
-		var label = _make_event_label("%s | %s de R$ %.2f | semana %d" % [
-			str(ev.get("title", "-")),
-			"Bônus" if is_bonus else "Conta",
-			abs(float(ev.get("amount", 0.0))),
+		var parts := BankCard.new_card(DEBT_CARD_HEIGHT)
+		var box: VBoxContainer = parts["box"]
+		var card: PanelContainer = parts["card"]
+		card.tooltip_text = str(ev.get("description", ""))
+
+		box.add_child(BankCard.make_label(str(ev.get("title", "-")), 18))
+		var button: Button
+		if is_bonus:
+			box.add_child(BankCard.make_label("Bônus: R$ %.2f" % abs(float(ev.get("amount", 0.0))), 16))
 			# int() é obrigatório: depois de um load, o JSON devolve números
 			# como float e o texto sairia "semana 3.0".
-			int(ev.get("week_generated", 0))
-		])
-		label.tooltip_text = str(ev.get("description", ""))
-		row.add_child(label)
-
-		var btn = Button.new()
-		btn.custom_minimum_size = Vector2(120, 36)
-		if is_bonus:
-			btn.text = "Resgatar"
-			btn.pressed.connect(_on_collect_pressed.bind(str(ev.get("id", ""))))
+			box.add_child(BankCard.make_label("Gerado na semana %d" % int(ev.get("week_generated", 0)), 13))
+			button = BankCard.make_button("Resgatar")
+			button.pressed.connect(_on_collect_pressed.bind(str(ev.get("id", ""))))
 		else:
-			btn.text = "Pagar"
-			btn.pressed.connect(_on_pay_pressed.bind(str(ev.get("id", ""))))
-		row.add_child(btn)
-		events_list.add_child(row)
+			var overdue: int = EventsManager.overdue_days_of(ev)
+			box.add_child(BankCard.make_label("Conta: %s" % _debt_amount_text(EventsManager.current_amount(ev), abs(float(ev.get("amount", 0.0))), overdue), 16))
+			box.add_child(BankCard.make_label(_debt_deadline_text(EventsManager.event_due_week(ev), EventsManager.event_limit_week(ev), overdue), 13))
+			button = BankCard.make_button("Pagar")
+			button.pressed.connect(_on_pay_pressed.bind(str(ev.get("id", ""))))
+		box.add_child(button)
+		events_list.add_child(card)
 
-# label.tres em vez do tema do painel: o Label do font_theme.tres tem fundo
-# (label_round.png) e corpo 24, que numa lista densa viram caixas gigantes.
-func _make_event_label(text: String) -> Label:
-	var label = Label.new()
-	label.theme = EVENT_LABEL_THEME
-	label.add_theme_font_size_override("font_size", 15)
-	label.autowrap_mode = TextServer.AUTOWRAP_WORD
-	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	label.text = text
-	return label
+# "R$ 45.00" em dia; "R$ 59.99 (R$ 45.00 + 3 dias de juros)" depois de vencer.
+func _debt_amount_text(current: float, original: float, overdue_days: int) -> String:
+	if overdue_days <= 0:
+		return "R$ %.2f" % current
+	return "R$ %.2f (R$ %.2f + %d dia(s) de juros)" % [current, original, overdue_days]
+
+func _debt_deadline_text(due_week: int, limit_week: int, overdue_days: int) -> String:
+	if overdue_days > 0:
+		return "VENCIDA. Cobrança automática no fim da semana %d." % limit_week
+	return "Vence no fim da semana %d. Cobrança automática no fim da semana %d." % [due_week, limit_week]
 
 func _on_pay_pressed(event_id: String) -> void:
 	_handle_event_result(EventsManager.pay_event(event_id))
@@ -146,29 +144,23 @@ func render_house_bills() -> void:
 
 	var bills := HouseBillsManager.get_pending_bills()
 	if bills.is_empty():
-		house_bills_list.add_child(_make_event_label("Nenhuma conta da casa pendente."))
+		house_bills_list.add_child(BankCard.new_empty_card("Nenhuma conta da casa pendente."))
 		return
 
 	for bill in bills:
-		var row = HBoxContainer.new()
-		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		row.add_theme_constant_override("separation", 10)
+		var overdue := HouseBillsManager.overdue_days_of(bill)
+		var parts := BankCard.new_card(DEBT_CARD_HEIGHT)
+		var box: VBoxContainer = parts["box"]
+		var card: PanelContainer = parts["card"]
+		card.tooltip_text = str(bill.get("description", ""))
 
-		var label = _make_event_label("%s | R$ %.2f | gerada na semana %d | vence na semana %d" % [
-			str(bill.get("title", "Conta da casa")),
-			float(bill.get("amount", 0.0)),
-			int(bill.get("week", 0)),
-			int(bill.get("due_week", 0))
-		])
-		label.tooltip_text = str(bill.get("description", ""))
-		row.add_child(label)
-
-		var button = Button.new()
-		button.text = "Pagar"
-		button.custom_minimum_size = Vector2(120, 36)
+		box.add_child(BankCard.make_label(str(bill.get("title", "Conta da casa")), 18))
+		box.add_child(BankCard.make_label(_debt_amount_text(HouseBillsManager.current_amount(bill), float(bill.get("amount", 0.0)), overdue), 16))
+		box.add_child(BankCard.make_label(_debt_deadline_text(HouseBillsManager.bill_due_week(bill), HouseBillsManager.bill_limit_week(bill), overdue), 13))
+		var button := BankCard.make_button("Pagar")
 		button.pressed.connect(_on_house_bill_pay_pressed.bind(str(bill.get("id", ""))))
-		row.add_child(button)
-		house_bills_list.add_child(row)
+		box.add_child(button)
+		house_bills_list.add_child(card)
 
 func _on_house_bill_pay_pressed(bill_id: String) -> void:
 	var result := HouseBillsManager.pay_bill(bill_id)

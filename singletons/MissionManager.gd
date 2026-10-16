@@ -175,6 +175,14 @@ func _announce(mission: Dictionary) -> void:
 		NotificationManager.notify(text)
 	emit_signal("mission_completed", mission)
 
+# Igual a verify_missions() mas sem alertas nem logs: só responde se todas as
+# missões da semana estão cumpridas agora.
+func all_passed(week: int) -> bool:
+	for mission in get_missions(week):
+		if not _check_mission(mission):
+			return false
+	return true
+
 func verify_missions(week: int) -> bool:
 	var missions = get_missions(week)
 	if missions.is_empty():
@@ -195,7 +203,7 @@ func verify_missions(week: int) -> bool:
 		var text = "Você não completou todas as missões desta semana.\n\nMissões não cumpridas:\n"
 		for m in failed:
 			text += " - %s\n" % str(m.get("description", m.get("id", "missao")))
-		text += "\nVocê precisará repetir a semana até completar todas as missões para avançar. Boa sorte!"
+		text += "\nVocê precisará repetir a semana até completar todas as missões para avançar. Seu dinheiro volta ao valor do início da semana. Boa sorte!"
 		_log_warning("Missões falharam: %s" % text)
 		if has_node("/root/AlertManager"):
 			AlertManager.alert(text)

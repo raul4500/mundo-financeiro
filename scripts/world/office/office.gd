@@ -39,7 +39,7 @@ var levels_data: Array = [
 			},
 			{
 				"name": "Eventos inesperados no jogo",
-				"description": "A partir da semana 2, o jogo passa a sortear eventos inesperados: ocorrências financeiras que aparecem sem você pedir. Alguns são ruins, como o carro quebrar ou uma despesa médica. Outros são bons, como um trabalho freelance ou um bônus no trabalho.\n\nO ponto mais importante: o evento NÃO tira nem coloca dinheiro na sua conta na hora em que aparece. Ele vira uma pendência, e você decide quando resolver.\n\nAs contas a pagar e os bônus a resgatar ficam todos no BANCO, no painel \"Contas e bônus pendentes\", na parte de baixo da tela. Cada linha mostra o título, se é conta ou bônus, o valor e a semana em que apareceu. Ao lado, o botão \"Pagar\" ou \"Resgatar\".\n\nPor que isso importa: uma conta só sai do seu bolso quando você aperta Pagar, e para isso você precisa ter o dinheiro na mão. Se não tiver, a conta continua esperando. É exatamente aqui que a reserva de emergência do tópico anterior deixa de ser teoria: quem guardou dinheiro paga o imprevisto e segue em frente; quem gastou tudo fica com a conta pendurada.\n\nDica prática: sempre que passar no banco, olhe esse painel. Resgate os bônus (é dinheiro parado esperando por você) e pague as contas enquanto tem folga no orçamento."
+				"description": "A partir da semana 2, o jogo passa a sortear eventos inesperados: ocorrências financeiras que aparecem sem você pedir. Alguns são ruins, como o carro quebrar ou uma despesa médica. Outros são bons, como um trabalho freelance ou um bônus no trabalho.\n\nO ponto mais importante: o evento NÃO tira nem coloca dinheiro na sua conta na hora em que aparece. Ele vira uma pendência, e você decide quando resolver.\n\nAs contas a pagar e os bônus a resgatar ficam todos no BANCO, no painel \"Contas e bônus pendentes\", na parte de baixo da tela. Cada linha mostra o título, se é conta ou bônus, o valor, o vencimento e a data limite. Ao lado, o botão \"Pagar\" ou \"Resgatar\".\n\nPor que isso importa: toda conta tem dois prazos. Até o fim da semana do vencimento você paga o valor original. Depois, ela passa a crescer 10% ao dia, com juros sobre juros — R$ 100 viram quase R$ 161 em cinco dias. E no fim da semana da data limite o jogo cobra sozinho o valor total, tirando primeiro do dinheiro na mão e depois do banco. Se os dois juntos não cobrirem tudo, você perde a semana e recomeça com o dinheiro que tinha no início dela.\n\nÉ exatamente aqui que a reserva de emergência do tópico anterior deixa de ser teoria: quem guardou dinheiro paga o imprevisto e segue em frente; quem gastou tudo vê a conta crescer até ser cobrada à força.\n\nDica prática: sempre que passar no banco, olhe esse painel. Resgate os bônus (é dinheiro parado esperando por você) e pague as contas antes de vencerem, enquanto custam o valor original."
 			},
 			{
 				"name": "Juros",
@@ -164,12 +164,20 @@ var time_display: Label
 
 
 func _ready() -> void:
-	if not Global.is_any_tutorial_active():
-		Global.play_time = true
+	# Relógio parado dentro do escritório: o jogador lê sem pressa de voltar para
+	# casa. in_office faz alerta, pause e soltar-travas respeitarem isso em vez
+	# de religar play_time; main_game._ready() religa ao sair.
+	Global.in_office = true
+	Global.play_time = false
 	_create_time_display()
 	_load_player_progress()
 	_build_ui()
 	_build_level_section()
+
+func _exit_tree() -> void:
+	# Qualquer saída (botão, menu de pausa, game over) solta a flag; sem isto o
+	# relógio ficaria congelado no mundo inteiro.
+	Global.in_office = false
 
 func _create_time_display() -> void:
 	time_display = preload("res://scripts/ui/time_display.gd").new()

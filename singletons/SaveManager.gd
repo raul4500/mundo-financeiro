@@ -52,10 +52,9 @@ func load_game():
 	file.close()
 	var data = JSON.parse_string(content)
 	if data is Dictionary:
-		if float(data.get("hunger", 100.0)) <= 0.0 or float(data.get("thirst", 100.0)) <= 0.0:
-			_log_warning("Save com personagem morto detectado. Deletando save.")
-			delete_save()
-			return false
+		# Fome/sede em zero NÃO é mais morte (o jogador desmaia, ver
+		# TimeManager.collapse_if_needs_depleted): um save assim é válido e
+		# desmaia no primeiro minuto, em vez de ser apagado.
 		_log_info("save loaded")
 		return data
 	_log_warning("save inválido")

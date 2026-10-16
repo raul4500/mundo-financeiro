@@ -43,9 +43,9 @@ func update_time():
 
 # Chamado por Global.new_game(). TimeManager é autoload e sobrevive a um game
 # over (o processo continua rodando, só a cena troca para o menu principal):
-# sem isto, um jogador que morresse de fome/sede carregava day_end_pending
-# preso em true para a partida nova inteira, porque só _advance_to_next_day()
-# zera essa flag e ela nunca roda no caminho de morte (ver _close_day()).
+# sem isto, day_end_pending preso em true (só _advance_to_next_day() zera essa
+# flag, e ela não roda quando um game over interrompe o fechamento do dia)
+# travava o relógio da partida nova inteira.
 func reset() -> void:
 	day_end_pending = false
 	timer = 0.0
@@ -64,7 +64,7 @@ func _ready() -> void:
 	update_time()
 
 func _process(delta):
-	if Global.player == null or Global.in_school_minigame or Global.is_any_tutorial_active():
+	if Global.player == null or Global.time_frozen_by_scene() or Global.is_any_tutorial_active():
 		return
 	if Global.play_time == true:
 		timer += delta * time_scale
@@ -94,12 +94,16 @@ func _add_minute():
 	
 	var no_stamina = _decay_stamina()
 	if no_stamina:
-			var no_speed = Global.lose_speed()
-			if no_speed:
-				_faint()
-	
+		var no_speed = Global.lose_speed()
+		if no_speed:
+			_faint("exaustão")
+			return
+
 	Global.decay_need_state()
-	
+	# Fome ou sede em zero: mesmo desfecho da exaustão total.
+	if collapse_if_needs_depleted() != "":
+		return
+
 	if current_minute >= 60:
 		current_minute = 0
 		current_hour += 1
@@ -178,11 +182,7 @@ func sleep() -> Dictionary:
 			"success": false,
 			"message": "AINDA É CEDO PARA DORMIR. VOLTE DEPOIS DAS %02dH." % EXHAUSTION_HOUR
 		}
-	# Morreu de fome no fechamento: o alerta de game-over ja' esta' na tela e
-	# nao pode ser sobrescrito pelo alerta do sono (o AlertManager mostra uma
-	# caixa por vez, sem fila).
-	if not _close_day(110.0):
-		return {"success": true, "message": "VOCÊ MORREU DE FOME."}
+	_close_day(110.0)
 	AlertManager.alert(
 		"Você dormiu e recuperou toda a stamina.\n\nUm novo dia começa às 08:00.",
 		false,
@@ -190,15 +190,30 @@ func sleep() -> Dictionary:
 	)
 	return {"success": true, "message": "VOCÊ DORMIU."}
 
-func _faint():
+# Desmaio: cobra a penalidade, fecha o dia e leva o jogador para casa no dia
+# seguinte (via _advance_to_next_day, quando ele fecha o alerta). `cause` é só o
+# texto: "exaustão", "fome", "sede" ou "fome e sede". Piso em zero no dinheiro:
+# sem dinheiro a cobrança não deixa o saldo negativo nem trava o resgate.
+func _faint(cause: String) -> String:
 	Global.player["money"] = max(0.0, float(Global.player.get("money", 0.0)) - MIDNIGHT_PENALTY)
-	if not _close_day(MIDNIGHT_STAMINA):
-		return
-	AlertManager.alert(
-		"Você desmaiou de exaustão e foi socorrido por uma ambulância! - R$ %d" % int(MIDNIGHT_PENALTY),
-		false,
-		Callable(self, "_advance_to_next_day")
-	)
+	_close_day(MIDNIGHT_STAMINA)
+	var message := "Você desmaiou de %s e foi socorrido por uma ambulância! - R$ %d" % [cause, int(MIDNIGHT_PENALTY)]
+	AlertManager.alert(message, false, Callable(self, "_advance_to_next_day"))
+	return message
+
+# Fome ou sede zeradas não matam: o jogador desmaia, igual à exaustão total.
+# Devolve o texto do desmaio, ou "" se nada estava zerado. Chamada por
+# _add_minute() e por quem muda fome/sede de uma vez (Global.apply_home_action).
+func collapse_if_needs_depleted() -> String:
+	if day_end_pending or Global.player == null:
+		return ""
+	var depleted := Global.depleted_needs()
+	if depleted.is_empty():
+		return ""
+	var cause := "fome e sede"
+	if depleted.size() == 1:
+		cause = "fome" if depleted[0] == "hunger" else "sede"
+	return _faint(cause)
 
 # Meia-noite sem ter dormido: volta para casa a força, paga o café e acorda
 # com metade da stamina.
@@ -215,8 +230,7 @@ func _handle_midnight() -> void:
 	# Piso em zero: sem isto a penalidade empurrava o saldo cada vez mais fundo
 	# no negativo em noites seguidas, sem caminho de recuperação.
 	Global.player["money"] = max(0.0, float(Global.player.get("money", 0.0)) - MIDNIGHT_PENALTY)
-	if not _close_day(MIDNIGHT_STAMINA):
-		return
+	_close_day(MIDNIGHT_STAMINA)
 	AlertManager.alert(
 		"Você passou a noite acordado e teve que comprar muito café para aguentar o dia! - R$ %d" % int(MIDNIGHT_PENALTY),
 		false,
@@ -225,8 +239,7 @@ func _handle_midnight() -> void:
 
 # Fechamento contabil comum aos dois caminhos. Nao avanca o dia: isso acontece
 # em _advance_to_next_day(), depois que o jogador fecha o alerta.
-# Devolve false se o jogador morreu de fome no fechamento.
-func _close_day(restored_stamina: float) -> bool:
+func _close_day(restored_stamina: float) -> void:
 	current_minute = 0
 	if float(Global.player.get("spend_today", 0.0)) == 0.0:
 		Global.player["had_no_spend_day"] = true
@@ -242,18 +255,18 @@ func _close_day(restored_stamina: float) -> bool:
 		Global.player["thirst"] = 110.0
 	else:
 		Global.player["stamina"] = clampf(restored_stamina, 0.0, 110.0)
+		# Quem desmaiou de fome/sede acorda com a necessidade em MIDNIGHT_STAMINA
+		# (mesmo valor da stamina de quem desmaia), senão desmaiaria de novo no
+		# primeiro minuto do dia seguinte, em loop.
+		Global.restore_depleted_needs(MIDNIGHT_STAMINA)
 	Global.player["positive_days_count"] = int(Global.player.get("positive_days_count", 0)) + 1
 	day_end_pending = true
 	Global.play_time = false
-	# Por ultimo: se a fome zerou, decay_need_state abre o alerta de game-over.
-	# O alerta do fim de dia so' e' aberto depois, por quem chamou, e apenas
-	# quando o jogador sobreviveu.
-	return Global.decay_need_state()
+	Global.decay_need_state()
 
 func _advance_to_next_day() -> void:
-	# Morreu de fome no fechamento: o game-over ja' esta' na tela, nao ha'
-	# proximo dia para avancar.
 	Global.reestore_speed()
+	# Game over em curso (trigger_game_over): nao ha' proximo dia para avancar.
 	if Global.is_game_over():
 		return
 	var week_rollover := current_day >= DAYS_PER_WEEK
@@ -277,28 +290,64 @@ func _advance_to_next_day() -> void:
 
 func _process_week_rollover() -> void:
 	var week := int(Global.player.get("week", 1))
-	# Verify missions FIRST. Only if they pass should we process the week.
-	# If missions fail, the player repeats the week without generating bills,
-	# dividends, or applying penalties.
-	if MissionManager.verify_missions(week):
-		# Missions passed. Process the week.
-		EnterpriseManager.generate_all_weekly_bills()
-		HouseBillsManager.generate_weekly_bills()
-		Global.evaluate_week_status()
-		FIIManager.pay_dividends()
-		Global.player["week"] = week + 1
-		Global.player["no_spend_days_count"] = 0
-		Global.player["had_no_spend_day"] = false
-		Global.get_paid()
-		emit_signal("week_changed", Global.player["week"])
-		TutorialManager.on_week_changed(int(Global.player["week"]))
-		EventsManager.maybe_spawn_events(int(Global.player["week"]))
-	else:
-		# Semana repetida: os dias 1-5 vão rodar de novo com o mesmo número de
-		# semana. Sem isto, o guard de "já processado" dos empreendimentos
-		# barrava a operação diária pela semana inteira (ver
-		# EnterpriseManager.reset_operation_guards()), e o "sem gastar" da
-		# tentativa fracassada sobrava de graça na repetição.
-		EnterpriseManager.reset_operation_guards()
-		Global.player["no_spend_days_count"] = 0
-		Global.player["had_no_spend_day"] = false
+	# Missões primeiro: só se passarem a semana é processada. Se falharem, o
+	# jogador repete a semana sem gerar contas, dividendos nem penalidades.
+	#
+	# Passando, antes de liberar a próxima semana o jogo cobra sozinho as contas
+	# (da casa e eventos) cuja data limite chegou. O salário entra antes da
+	# cobrança, então ele conta para cobrir as contas. Sem fundos suficientes
+	# (carteira + banco + salário) a semana se repete. Essa checagem vem ANTES de
+	# verify_missions() para o "Parabéns, você vai para a próxima semana" não
+	# aparecer logo antes de um "você perdeu a semana".
+	var debts_due := _debts_due_through(week)
+	# A penalidade de semana com necessidade crítica sai da carteira DEPOIS desta
+	# checagem (evaluate_week_status), então entra na conta aqui.
+	var funds_with_salary := Global.total_funds() + float(Global.player.get("salary", 0)) - Global.week_status_penalty_preview()
+	if debts_due > funds_with_salary + 0.001 and MissionManager.all_passed(week):
+		AlertManager.alert(
+			"Você completou as missões, mas não tem dinheiro suficiente para quitar as contas que chegaram à data limite.\n\nContas a cobrar: R$ %.2f\nDisponível (carteira + banco + salário): R$ %.2f\n\nVocê perdeu esta semana: ela recomeça com o dinheiro que você tinha no início dela." % [debts_due, funds_with_salary]
+		)
+		_repeat_week()
+		return
+	if not MissionManager.verify_missions(week):
+		_repeat_week()
+		return
+
+	EnterpriseManager.generate_all_weekly_bills()
+	HouseBillsManager.generate_weekly_bills()
+	Global.evaluate_week_status()
+	FIIManager.pay_dividends()
+	Global.player["week"] = week + 1
+	Global.player["no_spend_days_count"] = 0
+	Global.player["had_no_spend_day"] = false
+	Global.get_paid()
+	_settle_debts_through(week, debts_due)
+	if debts_due > 0.0:
+		NotificationManager.notify("Contas vencidas cobradas automaticamente: R$ %.2f" % debts_due, 5.0)
+	emit_signal("week_changed", Global.player["week"])
+	TutorialManager.on_week_changed(int(Global.player["week"]))
+	EventsManager.maybe_spawn_events(int(Global.player["week"]))
+	# Por último: eventos já nasceram, então a foto inclui tudo o que o jogador
+	# encontra ao começar a semana nova. É para onde ele volta se repetir.
+	Global.snapshot_week_start()
+
+func _debts_due_through(week: int) -> float:
+	return snappedf(HouseBillsManager.total_due_through(week) + EventsManager.total_due_through(week), 0.01)
+
+func _settle_debts_through(week: int, total: float) -> void:
+	# O total já foi checado contra os fundos em _process_week_rollover().
+	Global.charge_funds(total)
+	HouseBillsManager.settle_through(week)
+	EventsManager.settle_through(week)
+
+# Semana repetida: os dias 1-5 vão rodar de novo com o mesmo número de semana.
+func _repeat_week() -> void:
+	# Sem isto, o guard de "já processado" dos empreendimentos barrava a
+	# operação diária pela semana inteira (ver
+	# EnterpriseManager.reset_operation_guards()), e o "sem gastar" da
+	# tentativa fracassada sobrava de graça na repetição.
+	EnterpriseManager.reset_operation_guards()
+	Global.player["no_spend_days_count"] = 0
+	Global.player["had_no_spend_day"] = false
+	# Dinheiro, banco e contas voltam ao que eram no início da semana.
+	Global.restore_week_start()

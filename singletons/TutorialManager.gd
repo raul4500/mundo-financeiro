@@ -176,7 +176,7 @@ var messages = [
 
 	"No mercado, cada item mostra quanto ele repõe de fome e de sede. Comida barata repõe pouco e comida cara repõe muito: o pão custa R$ 4 e devolve 10% de fome, a carne custa R$ 70 e devolve 100%. As bebidas ficam na aba ao lado e cuidam da sede. Compare o preço por porcentagem antes de encher o carrinho.",
 
-	"E cuidado com a fome: ela cai um pouco a cada dia que passa e só volta comendo. Se a fome chegar a zero, é game over. Manter comida no estoque de casa não é luxo, é sobrevivência.",
+	"E cuidado com a fome: ela cai um pouco a cada dia que passa e só volta comendo. Se a fome chegar a zero, você desmaia: paga R$ 30 de socorro, acorda em casa no dia seguinte e perde o resto do dia. Manter comida no estoque de casa não é luxo, é sobrevivência.",
 
 	# Passo 8. Fecha a apresentação do escritório, que é o único lugar liberado
 	# nesse momento (ver Global.PLACE_UNLOCK_STAGE).
@@ -196,7 +196,7 @@ var messages = [
 
 	"DORMIR é o que encerra o dia: a stamina volta a 100 e o relógio pula para as 08:00 do dia seguinte. Antes das 18h o botão não deixa você dormir. E se você virar a noite acordado, à meia-noite volta para casa à força, paga R$ 30 de café e começa o dia seguinte com metade da stamina.",
 
-	"Por último, a sede. Ela cai mais rápido que a fome — cerca de 14 pontos por dia contra 6 — e chegar a zero é game over, igual à fome. O que vale olhar no mercado é quanto você paga por ponto reposto: a água resolve 25% de sede por R$ 5, ou seja R$ 0,20 por ponto, enquanto a cerveja pede R$ 50 para repor 10% — R$ 5,00 por ponto, vinte e cinco vezes mais caro. É o \"necessidade x desejo\" do escritório, agora com um medidor.",
+	"Por último, a sede. Ela cai mais rápido que a fome — cerca de 14 pontos por dia contra 6 — e chegar a zero faz você desmaiar, igual à fome. O que vale olhar no mercado é quanto você paga por ponto reposto: a água resolve 25% de sede por R$ 5, ou seja R$ 0,20 por ponto, enquanto a cerveja pede R$ 50 para repor 10% — R$ 5,00 por ponto, vinte e cinco vezes mais caro. É o \"necessidade x desejo\" do escritório, agora com um medidor.",
 
 	# Índices 28-29: Controles e comandos básicos do jogo (ensinados logo após a introdução
 	# e antes de apresentar a escola).
@@ -218,9 +218,9 @@ var messages = [
 # semana de mesmo número (office.gd usa player_level = week).
 var weekly_messages = {
 	2: [
-		"Semana 2. Sua casa também gera contas fixas: água, luz e moradia. Elas aparecem toda semana no banco, na aba \"Contas da casa\", e ficam pendentes até você decidir pagá-las.",
+		"Semana 2. Sua casa também gera contas fixas: água, luz e moradia. Elas aparecem toda semana no banco, na aba \"Contas da casa\", e ficam pendentes até você pagá-las.",
 
-		"Receber uma conta não tira dinheiro do seu bolso automaticamente: a cobrança só acontece quando você aperta Pagar no banco. Planeje o orçamento para quitar as pendências antes do vencimento.",
+		"Cada conta tem dois prazos. Pague até o fim da semana do vencimento e custa o valor original. Depois, ela cresce 10% ao dia, com juros sobre juros. E no fim da semana da data limite o jogo cobra sozinho, tirando do seu dinheiro e do banco: se não der para cobrir tudo, você perde a semana e a recomeça com o dinheiro que tinha no início dela. Pague antes de vencer.",
 
 		"A partir de agora também podem acontecer eventos inesperados: o carro quebra, aparece uma despesa médica, ou você recebe um bônus por um trabalho extra. Essas contas e bônus ficam na aba \"Eventos\" do banco. O nível 2 do escritório é sobre reserva de emergência: é ela que faz uma pendência virar só um susto."
 	],
@@ -232,7 +232,7 @@ var weekly_messages = {
 	4: [
 		"Semana 4. O nível 4 do escritório destravou e fala sobre mercado financeiro. É o conteúdo que ajuda a entender por que o valor dos seus investimentos sobe e desce, e por que ninguém deve colocar tudo em um lugar só.",
 
-		"Uma regra prática dos fundos imobiliários: vender na baixa custa caro. Se você vender uma cota por menos do que pagou por ela, ainda paga 10% de imposto sobre o prejuízo. Diversificar entre os três fundos e esperar a recuperação quase sempre sai mais barato do que vender no susto."
+		"Uma regra prática dos fundos imobiliários: vender na baixa custa caro. Se você vender uma cota por menos do que pagou por ela, ainda paga 10% de imposto sobre o prejuízo. Diversificar entre vários fundos e esperar a recuperação quase sempre sai mais barato do que vender no susto."
 	],
 	5: [
 		"ATENÇÃO: existe uma parte avançada do jogo, os empreendimentos. São três prédios que você pode comprar para virar dono do próprio negócio. Não tenha pressa: essa é a etapa mais difícil e mais arriscada do Mundo Financeiro, porque exige investir um valor alto e assumir despesas fixas que chegam toda semana, com ou sem lucro.",
@@ -294,7 +294,7 @@ func skip_tutorial() -> void:
 	# para que o jogador não fique travado permanentemente após pular.
 	if has_node("/root/Global"):
 		Global.force_release_all_gameplay_locks()
-	if has_node("/root/Global") and not Global.gameplay_locked and not Global.in_school_minigame:
+	if has_node("/root/Global") and not Global.gameplay_locked and not Global.time_frozen_by_scene():
 		Global.play_time = true
 
 func resume_tutorial(saved_step: int) -> void:
@@ -375,7 +375,7 @@ func _queue_world_tour() -> void:
 		messages[27],  # Sede, decaimento e custo-benefício
 		messages[11],  # Mercado (foco em "Market")
 		messages[19],  # O que cada item do mercado repõe de fome e sede
-		messages[20],  # Fome zerada é game over
+		messages[20],  # Fome zerada faz desmaiar
 		messages[12],  # Banco (foco em "Bank")
 		messages[30],  # Parque (foco em "Park")
 		messages[14],  # Lembre-se: gastar com consciência, economizar e investir
@@ -478,7 +478,7 @@ func continue_tutorial_after_alert() -> void:
 				await CameraManager.return_to_player()
 			if has_node("/root/Global"):
 				Global.force_release_all_gameplay_locks()
-		if has_node("/root/Global") and not is_any_tutorial_active() and not Global.gameplay_locked and not Global.in_school_minigame:
+		if has_node("/root/Global") and not is_any_tutorial_active() and not Global.gameplay_locked and not Global.time_frozen_by_scene():
 			Global.play_time = true
 		return
 	_next_step()

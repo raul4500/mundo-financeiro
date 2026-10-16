@@ -2,6 +2,8 @@ extends Node
 
 signal bills_updated
 
+const DebtRules = preload("res://scripts/economy/debt_rules.gd")
+
 const MAX_HISTORY_ENTRIES := 50
 
 # A residência do jogador está sempre disponível no jogo. Se no futuro houver
@@ -58,7 +60,11 @@ func generate_weekly_bills() -> void:
 			"description": str(bill_type["description"]),
 			"amount": float(bill_type["amount"]),
 			"week": week,
+			# Vence no fim da semana seguinte à de geração (a conta aparece no
+			# começo dela). limit_week: a conta é cobrada sozinha no fim dessa
+			# semana, com os juros do atraso. Ver scripts/economy/debt_rules.gd.
 			"due_week": week + 1,
+			"limit_week": week + 2,
 			"paid": false,
 			"category": "house",
 			"created_at_day": int(Global.player.get("day", 1)),
@@ -80,6 +86,55 @@ func get_pending_bills() -> Array:
 			pending.append(bill)
 	return pending
 
+# Contas de saves antigos não têm limit_week: assume a semana seguinte ao vencimento.
+func bill_due_week(bill: Dictionary) -> int:
+	return int(bill.get("due_week", int(bill.get("week", 1)) + 1))
+
+func bill_limit_week(bill: Dictionary) -> int:
+	return int(bill.get("limit_week", bill_due_week(bill) + 1))
+
+# Valor com juros em `as_of_abs_day` (padrão: hoje). O `amount` gravado na conta
+# é sempre o original; ver scripts/economy/debt_rules.gd.
+func current_amount(bill: Dictionary, as_of_abs_day: int = -1) -> float:
+	if as_of_abs_day < 0:
+		as_of_abs_day = Global.get_absolute_day()
+	var overdue := DebtRules.overdue_days(as_of_abs_day, bill_due_week(bill), Global.DAYS_PER_WEEK)
+	return DebtRules.amount_with_interest(float(bill.get("amount", 0.0)), overdue)
+
+func overdue_days_of(bill: Dictionary) -> int:
+	return DebtRules.overdue_days(Global.get_absolute_day(), bill_due_week(bill), Global.DAYS_PER_WEEK)
+
+# Soma das contas cuja data limite chegou até o fim de `week`, com os juros
+# daquele momento. É o que a virada de semana cobra antes de liberar a próxima.
+func total_due_through(week: int) -> float:
+	var as_of := week * Global.DAYS_PER_WEEK
+	var total := 0.0
+	for bill in get_pending_bills():
+		if bill_limit_week(bill) <= week:
+			total += current_amount(bill, as_of)
+	return snappedf(total, 0.01)
+
+# Marca como quitadas as contas cuja data limite chegou. NÃO mexe no dinheiro:
+# quem chama (TimeManager) já cobrou o total de total_due_through() dos fundos.
+func settle_through(week: int) -> void:
+	ensure_state()
+	var as_of := week * Global.DAYS_PER_WEEK
+	var remaining: Array = []
+	for bill in Global.player["pending_house_bills"]:
+		if typeof(bill) != TYPE_DICTIONARY or bool(bill.get("paid", false)) or bill_limit_week(bill) > week:
+			remaining.append(bill)
+			continue
+		var amount := current_amount(bill, as_of)
+		bill["paid"] = true
+		bill["auto_paid"] = true
+		bill["paid_amount"] = amount
+		bill["paid_at_day"] = Global.DAYS_PER_WEEK
+		bill["paid_at_week"] = week
+		_append_history(bill)
+		Global.register_expense(str(bill.get("title", "Conta da casa")), "house_bill", amount, Global.DAYS_PER_WEEK, week, false)
+	Global.player["pending_house_bills"] = remaining
+	bills_updated.emit()
+
 func pay_bill(bill_id: String) -> Dictionary:
 	ensure_state()
 	if Global.player == null:
@@ -90,13 +145,15 @@ func pay_bill(bill_id: String) -> Dictionary:
 		var bill = pending[index]
 		if typeof(bill) != TYPE_DICTIONARY or str(bill.get("id", "")) != bill_id:
 			continue
-		var amount := float(bill.get("amount", 0.0))
-		if float(Global.player.get("money", 0.0)) < amount:
-			return _failure("Dinheiro insuficiente para pagar esta conta da casa.", "insufficient_money")
+		# Valor de hoje, com juros se já venceu. Paga da carteira e, se faltar,
+		# do banco: o mesmo conjunto que a cobrança automática usa.
+		var amount := current_amount(bill)
+		if not Global.charge_funds(amount):
+			return _failure("Dinheiro insuficiente (carteira + banco) para pagar esta conta da casa. Faltam R$ %.2f." % (amount - Global.total_funds()), "insufficient_money")
 
-		Global.player["money"] = float(Global.player["money"]) - amount
 		pending.remove_at(index)
 		Global.player["pending_house_bills"] = pending
+		bill["paid_amount"] = amount
 		bill["paid"] = true
 		bill["paid_at_day"] = int(Global.player.get("day", 1))
 		bill["paid_at_week"] = int(Global.player.get("week", 1))

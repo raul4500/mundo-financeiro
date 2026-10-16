@@ -154,10 +154,12 @@ layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="History-list" type="VBoxContainer" parent="TabContainer/Histórico/Margin/VBoxContainer/House-bills-scroll" unique_id=1868025354]
+[node name="History-list" type="GridContainer" parent="TabContainer/Histórico/Margin/VBoxContainer/House-bills-scroll" unique_id=1868025354]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 6
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 2
 
 [node name="Eventos" type="Panel" parent="TabContainer" unique_id=1700200001]
 layout_mode = 2
@@ -191,10 +193,12 @@ layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="Events-list" type="VBoxContainer" parent="TabContainer/Eventos/Margin/VBoxContainer/Events-scroll" unique_id=1700200006]
+[node name="Events-list" type="GridContainer" parent="TabContainer/Eventos/Margin/VBoxContainer/Events-scroll" unique_id=1700200006]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 6
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 2
 
 [node name="Contas da casa" type="Panel" parent="TabContainer" unique_id=1700200007]
 visible = false
@@ -229,10 +233,12 @@ layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="House-bills-list" type="VBoxContainer" parent="TabContainer/Contas da casa/Margin/VBoxContainer/House-bills-scroll" unique_id=1700200012]
+[node name="House-bills-list" type="GridContainer" parent="TabContainer/Contas da casa/Margin/VBoxContainer/House-bills-scroll" unique_id=1700200012]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 6
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 2
 
 [node name="FII-shop" type="Panel" parent="TabContainer" unique_id=830567245]
 visible = false
@@ -252,9 +258,14 @@ offset_right = -10.0
 offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 2
+horizontal_scroll_mode = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/FII-shop/ScrollContainer" unique_id=960911175]
+[node name="Fund-grid" type="GridContainer" parent="TabContainer/FII-shop/ScrollContainer" unique_id=960911175]
 layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 2
 
 [node name="Portfolio" type="Panel" parent="TabContainer" unique_id=1127985508]
 visible = false
@@ -274,9 +285,14 @@ offset_right = -10.0
 offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 2
+horizontal_scroll_mode = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Portfolio/ScrollContainer" unique_id=632646492]
+[node name="Holdings-grid" type="GridContainer" parent="TabContainer/Portfolio/ScrollContainer" unique_id=632646492]
 layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 2
 
 [node name="Transaction-panel" type="Panel" parent="." unique_id=1171014670]
 visible = false

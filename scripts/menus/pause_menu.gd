@@ -8,7 +8,7 @@ func _ready():
 func toggle_pause():
 	if paused:
 		Global.unlock_gameplay()
-		if not Global.in_school_minigame and not Global.is_any_tutorial_active():
+		if not Global.time_frozen_by_scene() and not Global.is_any_tutorial_active():
 			Global.play_time = true
 		paused = false
 		visible = false
