@@ -46,6 +46,8 @@ var data_model = {
 	"name": "",
 	"money": 0.0,
 	"saldo": 0.0,
+	"poupanca": 0.0,
+	"poupanca_rendimento_total": 0.0,
 	"week": 1,
 	"salary": 200,
 	"school_level": 1,
@@ -208,7 +210,7 @@ func _new_player_data() -> Dictionary:
 func ensure_player_state() -> void:
 	if player == null:
 		player = _new_player_data()
-	for key in ["name", "money", "saldo", "week", "salary", "school_level", "day", "hour", "tutorial_step", "hunger", "thirst", "stamina", "spend_today", "had_no_spend_day", "no_spend_days_count", "positive_days_count", "tutorial_home_shown", "market_discount"]:
+	for key in ["name", "money", "saldo", "poupanca", "poupanca_rendimento_total", "week", "salary", "school_level", "day", "hour", "tutorial_step", "hunger", "thirst", "stamina", "spend_today", "had_no_spend_day", "no_spend_days_count", "positive_days_count", "tutorial_home_shown", "market_discount"]:
 		if not player.has(key):
 			player[key] = data_model.get(key, 0)
 	# Save anterior a' progressao de lugares: nao tem "unlock_stage". Trancar a
@@ -258,6 +260,8 @@ func ensure_player_state() -> void:
 		player["last_week_status"] = {"hunger": 110.0, "thirst": 110.0, "stamina": 110.0}
 	player["money"] = float(player.get("money", 0.0))
 	player["saldo"] = float(player.get("saldo", 0.0))
+	player["poupanca"] = float(player.get("poupanca", 0.0))
+	player["poupanca_rendimento_total"] = float(player.get("poupanca_rendimento_total", 0.0))
 	player["hunger"] = clampf(float(player.get("hunger", 110.0)), 0.0, 110.0)
 	player["thirst"] = clampf(float(player.get("thirst", 110.0)), 0.0, 110.0)
 	player["stamina"] = clampf(float(player.get("stamina", 110.0)), 0.0, 110.0)
@@ -317,6 +321,8 @@ func new_game(name: String, money: float) -> void:
 	player["name"] = name
 	player["money"] = float(money)
 	player["saldo"] = 0.0
+	player["poupanca"] = 0.0
+	player["poupanca_rendimento_total"] = 0.0
 	player["week"] = 1
 	player["school_level"] = 1
 	player["salary"] = max(200, int(money))
@@ -408,22 +414,59 @@ func register_expense(item_name: String, category: String, price: float, day: in
 		player["spend_today"] = float(player.get("spend_today", 0.0)) + float(price)
 
 # =============================================================
-# FUNDOS: dinheiro na mão + saldo no banco
+# FUNDOS: dinheiro na mão + saldo no banco + poupança
 # =============================================================
 func total_funds() -> float:
-	return float(player.get("money", 0.0)) + float(player.get("saldo", 0.0))
+	return float(player.get("money", 0.0)) + float(player.get("saldo", 0.0)) + float(player.get("poupanca", 0.0))
 
-# Cobra `amount` tirando primeiro da carteira e só então do banco. Devolve false
-# (sem mexer em nada) se os dois juntos não cobrem.
+# Cobra `amount` tirando primeiro da carteira, depois do saldo no banco e por
+# fim da poupança (alta liquidez diária D+0, conforme ensinado no nível 3 do
+# escritório). Devolve false (sem mexer em nada) se os fundos totais não cobrem.
 func charge_funds(amount: float) -> bool:
 	if amount <= 0.0:
 		return true
 	if total_funds() + 0.001 < amount:
 		return false
+	var remaining := amount
 	var money := float(player.get("money", 0.0))
-	var from_wallet := minf(money, amount)
+	var from_wallet := minf(money, remaining)
 	player["money"] = snappedf(money - from_wallet, 0.01)
-	player["saldo"] = snappedf(float(player.get("saldo", 0.0)) - (amount - from_wallet), 0.01)
+	remaining -= from_wallet
+
+	if remaining > 0.0001:
+		var saldo := float(player.get("saldo", 0.0))
+		var from_saldo := minf(saldo, remaining)
+		player["saldo"] = snappedf(saldo - from_saldo, 0.01)
+		remaining -= from_saldo
+
+	if remaining > 0.0001:
+		var poupanca := float(player.get("poupanca", 0.0))
+		var from_poupanca := minf(poupanca, remaining)
+		player["poupanca"] = snappedf(poupanca - from_poupanca, 0.01)
+		remaining -= from_poupanca
+
+	return true
+
+# Transfere dinheiro do saldo em conta para a poupança
+func apply_poupanca(amount: float) -> bool:
+	if amount <= 0.0:
+		return false
+	var saldo := float(player.get("saldo", 0.0))
+	if saldo + 0.001 < amount:
+		return false
+	player["saldo"] = snappedf(saldo - amount, 0.01)
+	player["poupanca"] = snappedf(float(player.get("poupanca", 0.0)) + amount, 0.01)
+	return true
+
+# Resgata dinheiro da poupança de volta para o saldo em conta corrente
+func withdraw_poupanca(amount: float) -> bool:
+	if amount <= 0.0:
+		return false
+	var poupanca := float(player.get("poupanca", 0.0))
+	if poupanca + 0.001 < amount:
+		return false
+	player["poupanca"] = snappedf(poupanca - amount, 0.01)
+	player["saldo"] = snappedf(float(player.get("saldo", 0.0)) + amount, 0.01)
 	return true
 
 # =============================================================
@@ -441,6 +484,8 @@ func snapshot_week_start() -> void:
 	player["week_snapshot"] = {
 		"money": float(player.get("money", 0.0)),
 		"saldo": float(player.get("saldo", 0.0)),
+		"poupanca": float(player.get("poupanca", 0.0)),
+		"poupanca_rendimento_total": float(player.get("poupanca_rendimento_total", 0.0)),
 		"pending_house_bills": player.get("pending_house_bills", []).duplicate(true),
 		"house_bill_history": player.get("house_bill_history", []).duplicate(true),
 		"pending_events": player.get("pending_events", []).duplicate(true),
@@ -455,6 +500,8 @@ func restore_week_start() -> void:
 		return
 	player["money"] = float(snap.get("money", player.get("money", 0.0)))
 	player["saldo"] = float(snap.get("saldo", player.get("saldo", 0.0)))
+	player["poupanca"] = float(snap.get("poupanca", player.get("poupanca", 0.0)))
+	player["poupanca_rendimento_total"] = float(snap.get("poupanca_rendimento_total", player.get("poupanca_rendimento_total", 0.0)))
 	player["pending_house_bills"] = snap.get("pending_house_bills", []).duplicate(true)
 	player["house_bill_history"] = snap.get("house_bill_history", []).duplicate(true)
 	player["pending_events"] = snap.get("pending_events", []).duplicate(true)

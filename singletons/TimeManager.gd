@@ -20,6 +20,8 @@ const DAY_START_HOUR := 8
 const EXHAUSTION_HOUR := 18
 const MIDNIGHT_HOUR := 24
 const DAYS_PER_WEEK := 5
+# Taxa diária da Poupança (Renda Fixa): 0.5% ao dia com juros compostos diários
+const DAILY_POUPANCA_RATE := 0.005
 
 # 100 de stamina divididos pelas 960 horas-jogo entre 08h e 24h (16h = 960 min).
 const STAMINA_DECAY_PER_MINUTE := 110.0 / 960.0
@@ -249,6 +251,13 @@ func _close_day(restored_stamina: float) -> void:
 	# empreendimentos — sem isto update_prices() nunca era chamado por ninguém
 	# e a "volatilidade" dos fundos ficava só no papel.
 	FIIManager.update_prices()
+	# Rendimento diário da Poupança (Renda Fixa: 0.5% ao dia, juros compostos diários)
+	var poupanca := float(Global.player.get("poupanca", 0.0))
+	if poupanca > 0.0:
+		var yield_amount := snappedf(poupanca * DAILY_POUPANCA_RATE, 0.01)
+		if yield_amount > 0.0:
+			Global.player["poupanca"] = snappedf(poupanca + yield_amount, 0.01)
+			Global.player["poupanca_rendimento_total"] = snappedf(float(Global.player.get("poupanca_rendimento_total", 0.0)) + yield_amount, 0.01)
 	if Global.is_tutorial_active():
 		Global.player["stamina"] = 110.0
 		Global.player["hunger"] = 110.0

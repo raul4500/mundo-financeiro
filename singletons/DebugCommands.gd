@@ -320,13 +320,18 @@ func _fulfill_missions_data() -> void:
 			"source_id": "cheat"
 		})
 	
-	# Se semana 3 ou 4: garantir investimentos em fundos
-	if FIIManager.get_portfolio_value() <= 0.0 or FIIManager.portfolio.keys().size() < 2:
-		FIIManager.portfolio["FII_SHOPPING"] = 5
-		FIIManager.portfolio["FII_LOGISTICA"] = 5
-		FIIManager.total_invested = 1000.0
-		FIIManager.total_dividends_received = 250.0
-		FIIManager.emit_signal("portfolio_updated")
+	# Se semana 3 ou maior: garantir poupança para a missão de renda fixa
+	if week >= 3:
+		Global.player["poupanca"] = max(float(Global.player.get("poupanca", 0.0)), 100.0)
+	
+	# Se semana 4 ou maior: garantir investimentos em fundos
+	if week >= 4:
+		if FIIManager.get_portfolio_value() <= 0.0 or FIIManager.portfolio.keys().size() < 2:
+			FIIManager.portfolio["FII_SHOPPING"] = 5
+			FIIManager.portfolio["FII_LOGISTICA"] = 5
+			FIIManager.total_invested = 1000.0
+			FIIManager.total_dividends_received = 250.0
+			FIIManager.emit_signal("portfolio_updated")
 	
 	# Se semana 5: garantir restaurante comprado, estoque e sem contas pendentes
 	if week >= 5:

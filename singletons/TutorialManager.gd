@@ -114,15 +114,15 @@ var weekly_guide = [
 	},
 	{
 		"week": 3,
-		"title": "Primeiros investimentos",
-		"goal": "Apontar o jogador para os FIIs no banco, depois de ler o nível 3.",
-		"speaker_note": "Reforce a ordem: estudar primeiro, investir depois."
+		"title": "Primeiros investimentos e Poupança",
+		"goal": "Apresentar a Poupança no banco e o conceito de Renda Fixa após estudar o nível 3.",
+		"speaker_note": "Reforce a ordem: estudar no escritório primeiro, aplicar na poupança depois."
 	},
 	{
 		"week": 4,
-		"title": "Mercado financeiro",
-		"goal": "Contextualizar a variação de valor dos investimentos.",
-		"speaker_note": "Aviso curto; o conteúdo em si está no escritório nível 4."
+		"title": "Mercado financeiro e Fundos Imobiliários",
+		"goal": "Apresentar as cotas de FIIs no banco, diversificação e dividendos após o nível 4.",
+		"speaker_note": "Contextualize a volatilidade e o perigo de vender na baixa; FIIs liberados no banco."
 	},
 	{
 		"week": 5,
@@ -225,14 +225,14 @@ var weekly_messages = {
 		"A partir de agora também podem acontecer eventos inesperados: o carro quebra, aparece uma despesa médica, ou você recebe um bônus por um trabalho extra. Essas contas e bônus ficam na aba \"Eventos\" do banco. O nível 2 do escritório é sobre reserva de emergência: é ela que faz uma pendência virar só um susto."
 	],
 	3: [
-		"Semana 3. O nível 3 do escritório abriu e é sobre investimentos básicos: poupança e renda fixa. Se você já tem uma reserva formada, é a hora de fazer o dinheiro parado começar a render.",
+		"Semana 3. O nível 3 do escritório abriu e é sobre investimentos básicos: poupança, renda fixa, juros compostos e liquidez diária. Se você já tem uma reserva formada, é a hora de fazer o dinheiro parado começar a render com segurança.",
 
-		"No banco você encontra os fundos imobiliários para investir. Leia o conteúdo do escritório antes de aplicar: investir sem entender o que se está comprando é como assinar um contrato sem ler."
+		"No banco você agora tem acesso à aba \"Poupança\". Você pode transferir valores do seu saldo em conta para a poupança, onde eles rendem juros compostos a cada dia dormido. E com liquidez imediata (D+0), você pode resgatar para o saldo a qualquer momento se precisar pagar contas."
 	],
 	4: [
-		"Semana 4. O nível 4 do escritório destravou e fala sobre mercado financeiro. É o conteúdo que ajuda a entender por que o valor dos seus investimentos sobe e desce, e por que ninguém deve colocar tudo em um lugar só.",
+		"Semana 4. O nível 4 do escritório destravou e fala sobre mercado financeiro, ações, fundos imobiliários (FIIs) e volatilidade. É o momento de dar o próximo passo rumo à renda variável!",
 
-		"Uma regra prática dos fundos imobiliários: vender na baixa custa caro. Se você vender uma cota por menos do que pagou por ela, ainda paga 10% de imposto sobre o prejuízo. Diversificar entre vários fundos e esperar a recuperação quase sempre sai mais barato do que vender no susto."
+		"No banco agora estão liberadas as abas \"FII-shop\" e \"Portfolio\". Você pode comprar cotas de fundos e receber dividendos no fim de semana. Mas atenção: diversifique seus ativos e nunca venda cotas na baixa no susto, pois há penalidade sobre prejuízos."
 	],
 	5: [
 		"ATENÇÃO: existe uma parte avançada do jogo, os empreendimentos. São três prédios que você pode comprar para virar dono do próprio negócio. Não tenha pressa: essa é a etapa mais difícil e mais arriscada do Mundo Financeiro, porque exige investir um valor alto e assumir despesas fixas que chegam toda semana, com ou sem lucro.",

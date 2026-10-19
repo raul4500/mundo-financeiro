@@ -1011,15 +1011,17 @@ As missões semanais foram projetadas para reforçar, na prática, os tópicos a
   - Justificativa: força a prática de guardar reserva no banco (saldo bancário) e a interação com o sistema de eventos (resolver pendências geradas nesta semana).
 
 - Semana 3
-  - Missões: investir_fundo, analise_gastos, economizar_500
+  - Missões: aplicar_poupanca (guardar ao menos R$ 50 na poupança), analise_gastos, economizar_300_s3
   - Escritório (Nível 3): Investimentos básicos — Poupança, Renda fixa e títulos públicos, Juros compostos (o motor da riqueza), Inflação (ladrão invisível e ganho real), Liquidez (reserva vs longo prazo)
-  - Tutorial: guia sobre como investir no menu de investimentos (FII/portfolio)
-  - Justificativa: consolidar hábito de poupar e iniciar investimentos simples com compreensão de juros compostos, inflação e liquidez.
+  - Banco: Desbloqueio da aba Poupança (Renda Fixa com liquidez D+0 e rendimento diário de 0,5% com juros compostos)
+  - Tutorial: guia sobre poupança, renda fixa e juros compostos
+  - Justificativa: consolidar o hábito de poupar e iniciar investimentos em Renda Fixa antes de se expor à Renda Variável.
 
 - Semana 4
-  - Missões: investir_acoes, diversificar, lucro_200
+  - Missões: investir_fii (comprar cotas de FII), diversificar (mais de 1 fundo), lucro_fii (ganhar R$ 5 com investimentos)
   - Escritório (Nível 4): Mercado financeiro — Ações e Fundos Imobiliários (FIIs), Risco e Retorno (balança dos mercados), Diversificação (Markowitz e ovos na cesta), Proventos e Dividendos (renda passiva e reinvestimento), Volatilidade e Efeito Manada
-  - Tutorial: recomendações para diversificação e onde ver lucros/perdas na interface de investimentos
+  - Banco: Desbloqueio das abas FII-shop e Portfolio
+  - Tutorial: recomendações para diversificação de fundos, proventos semanais e perigo de vender na baixa
   - Justificativa: introduzir risco/retorno, diversificação real, proventos de FIIs e controle emocional contra o efeito manada.
 
 - Semana 5

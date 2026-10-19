@@ -240,12 +240,91 @@ theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
 columns = 2
 
+[node name="Poupança" type="Panel" parent="TabContainer" unique_id=1700300001]
+visible = false
+layout_mode = 2
+theme = ExtResource("4_0nfyk")
+metadata/_tab_index = 3
+
+[node name="Margin" type="MarginContainer" parent="TabContainer/Poupança" unique_id=1700300002]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Poupança/Margin" unique_id=1700300003]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="TabContainer/Poupança/Margin/VBoxContainer" unique_id=1700300004]
+layout_mode = 2
+theme = ExtResource("5_evlbl")
+theme_override_font_sizes/font_size = 20
+text = "Caderneta de Poupança (Renda Fixa)"
+
+[node name="DescLabel" type="Label" parent="TabContainer/Poupança/Margin/VBoxContainer" unique_id=1700300005]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Aplicação de Renda Fixa tradicional com alta liquidez diária (D+0).
+O saldo aplicado rende 0,5% ao dia com juros compostos calculados a cada noite dormida."
+autowrap_mode = 2
+
+[node name="HSeparator" type="HSeparator" parent="TabContainer/Poupança/Margin/VBoxContainer" unique_id=1700300006]
+layout_mode = 2
+
+[node name="InfoBox" type="VBoxContainer" parent="TabContainer/Poupança/Margin/VBoxContainer" unique_id=1700300007]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PoupancaSaldo" type="Label" parent="TabContainer/Poupança/Margin/VBoxContainer/InfoBox" unique_id=1700300008]
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "Saldo aplicado: R$ 0,00"
+
+[node name="PoupancaYield" type="Label" parent="TabContainer/Poupança/Margin/VBoxContainer/InfoBox" unique_id=1700300009]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "Rendimento total acumulado: R$ 0,00"
+
+[node name="PoupancaTaxa" type="Label" parent="TabContainer/Poupança/Margin/VBoxContainer/InfoBox" unique_id=1700300010]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Taxa de rentabilidade: 0,5% ao dia (juros compostos)"
+
+[node name="PoupancaLiquidez" type="Label" parent="TabContainer/Poupança/Margin/VBoxContainer/InfoBox" unique_id=1700300011]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Liquidez: D+0 (resgate imediato para saldo em conta)"
+
+[node name="HSeparator2" type="HSeparator" parent="TabContainer/Poupança/Margin/VBoxContainer" unique_id=1700300012]
+layout_mode = 2
+
+[node name="Buttons" type="HBoxContainer" parent="TabContainer/Poupança/Margin/VBoxContainer" unique_id=1700300013]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ApplyButton" type="Button" parent="TabContainer/Poupança/Margin/VBoxContainer/Buttons" unique_id=1700300014]
+custom_minimum_size = Vector2(180, 46)
+layout_mode = 2
+text = "Aplicar na Poupança"
+
+[node name="WithdrawButton" type="Button" parent="TabContainer/Poupança/Margin/VBoxContainer/Buttons" unique_id=1700300015]
+custom_minimum_size = Vector2(180, 46)
+layout_mode = 2
+text = "Resgatar para Saldo"
+
 [node name="FII-shop" type="Panel" parent="TabContainer" unique_id=830567245]
 visible = false
 layout_mode = 2
 theme = ExtResource("4_0nfyk")
 script = ExtResource("3_80ajf")
-metadata/_tab_index = 3
+metadata/_tab_index = 4
 
 [node name="ScrollContainer" type="ScrollContainer" parent="TabContainer/FII-shop" unique_id=1857044755]
 layout_mode = 1
@@ -272,7 +351,7 @@ visible = false
 layout_mode = 2
 theme = ExtResource("4_0nfyk")
 script = ExtResource("4_klp1j")
-metadata/_tab_index = 4
+metadata/_tab_index = 5
 
 [node name="ScrollContainer" type="ScrollContainer" parent="TabContainer/Portfolio" unique_id=193056484]
 layout_mode = 1

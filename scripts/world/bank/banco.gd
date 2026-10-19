@@ -19,8 +19,10 @@ const DEBT_CARD_HEIGHT := 170
 @onready var history_panel: Panel = $"TabContainer/Histórico"
 @onready var history_list: GridContainer = $"TabContainer/Histórico/Margin/VBoxContainer/House-bills-scroll/History-list"
 @onready var tab_container: TabContainer = $"TabContainer"
-
-
+@onready var poupanca_saldo_label: Label = $"TabContainer/Poupança/Margin/VBoxContainer/InfoBox/PoupancaSaldo"
+@onready var poupanca_yield_label: Label = $"TabContainer/Poupança/Margin/VBoxContainer/InfoBox/PoupancaYield"
+@onready var btn_apply_poupanca: Button = $"TabContainer/Poupança/Margin/VBoxContainer/Buttons/ApplyButton"
+@onready var btn_withdraw_poupanca: Button = $"TabContainer/Poupança/Margin/VBoxContainer/Buttons/WithdrawButton"
 
 var time_display: Label
 var transaction_type: String = ""
@@ -39,14 +41,19 @@ func _ready():
 	update_labels()
 	btn_deposit.pressed.connect(deposit)
 	btn_withdraw.pressed.connect(withdraw)
+	if btn_apply_poupanca != null:
+		btn_apply_poupanca.pressed.connect(_on_apply_poupanca_pressed)
+	if btn_withdraw_poupanca != null:
+		btn_withdraw_poupanca.pressed.connect(_on_withdraw_poupanca_pressed)
 	confirm_button.pressed.connect(_confirm_transaction)
 	cancel_button.pressed.connect(_cancel_transaction)
 	input.text_changed.connect(_only_numbers.bind(input))
 
 func _process(delta: float) -> void:
-	var is_disabled = Global.player["week"] < 4
-	tab_container.set_tab_disabled(3, is_disabled)
-	tab_container.set_tab_disabled(4, is_disabled)
+	var week := int(Global.player.get("week", 1))
+	tab_container.set_tab_disabled(3, week < 3)
+	tab_container.set_tab_disabled(4, week < 4)
+	tab_container.set_tab_disabled(5, week < 4)
 
 func _create_time_display() -> void:
 	time_display = preload("res://scripts/ui/time_display.gd").new()
@@ -178,6 +185,10 @@ func _handle_event_result(result: Dictionary) -> void:
 func update_labels():
 	label_money.text = "Dinheiro: $" + "%.2f" % Global.player["money"]
 	label_saldo.text = "Banco: $" + "%.2f" % Global.player["saldo"]
+	if poupanca_saldo_label != null:
+		poupanca_saldo_label.text = "Saldo aplicado: R$ %.2f" % float(Global.player.get("poupanca", 0.0))
+	if poupanca_yield_label != null:
+		poupanca_yield_label.text = "Rendimento total acumulado: R$ %.2f" % float(Global.player.get("poupanca_rendimento_total", 0.0))
 	if history_panel != null:
 		render_history()
 	render_events()
@@ -189,10 +200,26 @@ func deposit():
 func withdraw():
 	_open_transaction("withdraw")
 
+func _on_apply_poupanca_pressed() -> void:
+	_open_transaction("apply_poupanca")
+
+func _on_withdraw_poupanca_pressed() -> void:
+	_open_transaction("withdraw_poupanca")
+
 func _open_transaction(type: String) -> void:
 	transaction_type = type
 	input.clear()
-	input.placeholder_text = "Valor para depositar" if type == "deposit" else "Valor para sacar"
+	match type:
+		"deposit":
+			input.placeholder_text = "Valor para depositar"
+		"withdraw":
+			input.placeholder_text = "Valor para sacar"
+		"apply_poupanca":
+			input.placeholder_text = "Valor para aplicar na poupança"
+		"withdraw_poupanca":
+			input.placeholder_text = "Valor para resgatar da poupança"
+		_:
+			input.placeholder_text = "Digite o valor"
 	transaction_panel.visible = true
 	input.grab_focus()
 
@@ -208,13 +235,25 @@ func _confirm_transaction() -> void:
 			return
 		Global.player["money"] -= value
 		Global.player["saldo"] += value
-	else:
+	elif transaction_type == "withdraw":
 		if value > Global.player["saldo"]:
 			transaction_panel.visible = false
 			AlertManager.alert("Saldo insuficiente para realizar este saque.")
 			return
 		Global.player["saldo"] -= value
 		Global.player["money"] += value
+	elif transaction_type == "apply_poupanca":
+		if float(value) > float(Global.player.get("saldo", 0.0)):
+			transaction_panel.visible = false
+			AlertManager.alert("Saldo em conta insuficiente para aplicar na poupança.")
+			return
+		Global.apply_poupanca(float(value))
+	elif transaction_type == "withdraw_poupanca":
+		if float(value) > float(Global.player.get("poupanca", 0.0)):
+			transaction_panel.visible = false
+			AlertManager.alert("Saldo na poupança insuficiente para realizar este resgate.")
+			return
+		Global.withdraw_poupanca(float(value))
 	_cancel_transaction()
 	update_labels()
 

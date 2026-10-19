@@ -77,9 +77,10 @@ var missions_data: Dictionary = {
 	],
 	3: [
 		{
-			"id": "investir_fundo",
-			"description": "Invista em um fundo",
-			"type": "invest"
+			"id": "aplicar_poupanca",
+			"description": "Aplique pelo menos R$ 50,00 na poupança",
+			"type": "poupanca_min",
+			"value": 50
 		},
 		{
 			"id": "analise_gastos",
@@ -95,8 +96,8 @@ var missions_data: Dictionary = {
 	],
 	4: [
 		{
-			"id": "investir_acoes",
-			"description": "Invista em ações",
+			"id": "investir_fii",
+			"description": "Compre cotas de um fundo imobiliário (FII)",
 			"type": "invest"
 		},
 		{
@@ -219,6 +220,8 @@ func _check_mission(mission: Dictionary) -> bool:
 			return Global.total_funds() >= float(mission.get("value", 0.0))
 		"bank_min":
 			return float(player.get("saldo", 0.0)) >= float(mission.get("value", 0.0))
+		"poupanca_min":
+			return float(player.get("poupanca", 0.0)) >= float(mission.get("value", 0.0))
 		"no_spend_day":
 			return bool(player.get("had_no_spend_day", false))
 		"log_expense":
