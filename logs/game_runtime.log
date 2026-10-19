@@ -1,24 +1,10 @@
-[2026-10-19T15:42:54] === Sessão iniciada ===
-[2026-10-19T15:42:54] [INFO] Logger inicializado
-[2026-10-19T15:42:54] [INFO] save loaded
-[2026-10-19T15:42:54] [INFO] TimeManager inicializado
-[2026-10-19T15:42:57] [INFO] Arquivo deletado com sucesso: user://savegame.json
-[2026-10-19T15:43:25] [INFO] Missão concluída: Faça uma compra no mercado
-[2026-10-19T15:44:12] [INFO] Arquivo deletado com sucesso: user://savegame.json
-[2026-10-19T15:45:59] [INFO] Missões da semana concluídas com sucesso
-[2026-10-19T15:45:59] [INFO] Evento sorteado: Promoção imperdível
-[2026-10-19T15:45:59] [INFO] Missões da semana concluídas com sucesso
-[2026-10-19T15:45:59] [INFO] Evento sorteado: Trabalho extra
-[2026-10-19T15:45:59] [INFO] Pendência criada: Trabalho extra (bônus de R$ 400.00)
-[2026-10-19T15:46:00] [INFO] Missões da semana concluídas com sucesso
-[2026-10-19T15:46:00] [INFO] Evento sorteado: Despesa médica
-[2026-10-19T15:46:00] [INFO] Pendência criada: Despesa médica (conta de R$ 100.00)
-[2026-10-19T15:46:00] [INFO] Missões da semana concluídas com sucesso
-[2026-10-19T15:46:00] [INFO] Evento sorteado: Promoção imperdível
-[2026-10-19T15:46:00] [INFO] Missões da semana concluídas com sucesso
-[2026-10-19T15:46:00] [INFO] Evento sorteado: Promoção no trabalho
-[2026-10-19T15:46:00] [INFO] Pendência criada: Promoção no trabalho (bônus de R$ 800.00)
-[2026-10-19T15:46:00] [INFO] Evento sorteado: Despesa médica
-[2026-10-19T15:46:00] [INFO] Pendência criada: Despesa médica (conta de R$ 100.00)
-[2026-10-19T15:46:07] [INFO] Evento sorteado: Despesa médica
-[2026-10-19T15:46:07] [INFO] Evento 'gasto_saude' descartado: já existe pendência do mesmo tipo.
+[2026-10-19T16:33:49] === Sessão iniciada ===
+[2026-10-19T16:33:49] [INFO] Logger inicializado
+[2026-10-19T16:33:49] [INFO] save loaded
+[2026-10-19T16:33:49] [INFO] TimeManager inicializado
+[2026-10-19T16:34:13] [INFO] Missão concluída: Não gaste dinheiro por 1 dia
+[2026-10-19T16:35:43] [INFO] Missões da semana concluídas com sucesso
+[2026-10-19T16:35:43] [INFO] Evento sorteado: Despesa médica
+[2026-10-19T16:35:43] [INFO] Pendência criada: Despesa médica (conta de R$ 100.00)
+[2026-10-19T16:35:55] [INFO] Evento sorteado: Promoção imperdível
+[2026-10-19T16:35:57] [INFO] Missão concluída: Resolva um evento inesperado (pague ou resgate no banco)

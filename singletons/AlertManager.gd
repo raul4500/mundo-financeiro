@@ -209,8 +209,12 @@ func _create_alert_ui():
 # space_grace_msec > 0: nesse tempo depois de abrir, o atalho de espaço é ignorado
 # (só o clique fecha). Para alertas que abrem enquanto o jogador ainda está
 # martelando espaço, como o resultado do minigame; 0 = comportamento normal.
-func alert(text: String, step: bool = false, callback: Callable = Callable(), immediate: bool = false, space_grace_msec: int = 0):
-	var entry = {"text": text, "step": step, "callback": callback, "choices": [], "space_grace_msec": space_grace_msec}
+#
+# text_height > 0: altura da área de texto só para este alerta (padrão:
+# TEXT_VISIBLE_HEIGHT). Para textos longos que precisam aparecer inteiros, sem
+# rolagem, como a explicação de uma resposta errada do quiz do parque.
+func alert(text: String, step: bool = false, callback: Callable = Callable(), immediate: bool = false, space_grace_msec: int = 0, text_height: int = 0):
+	var entry = {"text": text, "step": step, "callback": callback, "choices": [], "space_grace_msec": space_grace_msec, "text_height": text_height}
 	if _defer_count > 0 and not immediate:
 		_deferred_queue.append(entry)
 		return
@@ -218,8 +222,8 @@ func alert(text: String, step: bool = false, callback: Callable = Callable(), im
 	if not panel.visible:
 		_show_next()
 
-func alert_immediate(text: String, step: bool = false, callback: Callable = Callable(), space_grace_msec: int = 0) -> void:
-	alert(text, step, callback, true, space_grace_msec)
+func alert_immediate(text: String, step: bool = false, callback: Callable = Callable(), space_grace_msec: int = 0, text_height: int = 0) -> void:
+	alert(text, step, callback, true, space_grace_msec, text_height)
 
 
 # =============================
@@ -270,6 +274,9 @@ func _show_next() -> void:
 
 	_shown_at_msec = Time.get_ticks_msec()
 	_space_grace_msec = int(entry.get("space_grace_msec", 0))
+	# Sempre reatribui: um alerta alto não pode deixar a caixa alta para o próximo.
+	var text_height := int(entry.get("text_height", 0))
+	text_scroll.custom_minimum_size = Vector2(TEXT_WIDTH, text_height if text_height > 0 else TEXT_VISIBLE_HEIGHT)
 
 	# 🔒 trava jogo. Uma trava por alerta EXIBIDO, não por chamada: é o que
 	# mantém o par com o único unlock_gameplay() de _close_alert().

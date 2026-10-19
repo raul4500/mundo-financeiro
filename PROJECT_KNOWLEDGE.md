@@ -904,6 +904,27 @@ Pagar até o fim da semana do vencimento custa o valor original. Depois, o valor
 
 **Escritório com relógio parado.** `Global.in_office` é ligado por `office.gd._ready()` e solto em `_exit_tree()`. `Global.time_frozen_by_scene()` (minigame da escola **ou** escritório) é o ponto único que `AlertManager._close_alert()`, `TutorialManager`, `pause_menu`, `EventsManager` e `TimeManager._process()` consultam antes de religar/avançar `play_time`; sem isso, fechar um alerta dentro do escritório religava o relógio.
 
+## 12.4 Minigame do parque: gatilho desativado durante a sessão
+
+`Doors/Park_trigger` (`scripts/park/park_minigame_trigger.gd`) é uma `Area2D` com um `Info-panel` ("Parque / Pressione ENTER para caçar moedas"). A sessão roda no próprio mundo aberto, e o painel ficava na frente do jogo. Enquanto `ParkMinigameManager.is_session_active()`, o gatilho inteiro fica **suspenso**: painel escondido, `monitoring = false` (via `set_deferred`) e `player_inside = false`.
+
+- A suspensão **segue o `ParkMinigameManager`**, não o script da sessão: `_process()` compara o estado da sessão com `_suspended` a cada quadro. A sessão acaba por vários caminhos (tempo, BACKSPACE, menu de pausa → `_exit_tree()`), todos passando por `end_session()`, e perguntar a ele religa o gatilho em qualquer um.
+- `player_inside` é zerado ao suspender porque sair da área com `monitoring` desligado **não** gera `body_shape_exited`. Religar com o jogador ainda dentro dispara `body_shape_entered` de novo e o painel volta sozinho.
+- `_on_body_shape_entered` ignora eventos enquanto suspenso: o `monitoring` desliga de forma adiada e um evento do mesmo quadro ainda pode chegar.
+
+**HUD da sessão** (`park_minigame_session.gd._build_ui()`, tudo em código): três cantos numa linha só — **moedas** à esquerda, **tempo restante** no centro, **"Pressione BACKSPACE para sair"** à direita. É um `HBoxContainer` de três células de largura igual (`_add_hud_cell()`), então o tempo fica no centro exato da tela mesmo com laterais de tamanhos diferentes. A **célula** expande, não o `Label`: o `Label` do `font_theme.tres` tem fundo próprio (`label_round.png`) e, esticado, viraria uma faixa de um terço da tela. Os três labels usam `font_theme.tres`.
+
+**Quiz** (`scripts/park/park_quiz_data.gd`): 8 perguntas por semana (1 a 5; semanas acima de 5 reaproveitam o banco da 5), alinhadas ao conteúdo do escritório. Cada pergunta é uma **situação** com personagem e números, não uma definição ("o que são juros?"): o jogador interpreta o caso e aplica o que aprendeu. Formato: `question`, `options` (4), `correct` e `explanations` (4, **na mesma ordem das alternativas**).
+
+- **Alternativas de tamanho parecido:** no máximo 3 palavras de diferença entre a maior e a menor da mesma pergunta, e a certa não pode ser sistematicamente a mais longa; senão o tamanho entrega a resposta. A posição da certa varia (hoje 10/9/11/10 entre as quatro posições).
+- **Explicações escritas à mão**, uma por alternativa. Ao editar uma alternativa, revise a explicação do mesmo índice. A explicação da certa começa com "Certo."; as das erradas dizem por que estão erradas.
+- **Alerta de erro:** `ParkQuizData.wrong_answer_feedback()` monta "Resposta incorreta" + explicação da alternativa escolhida + "A resposta certa era: …" + explicação da certa. O alerta usa `text_height` próprio (`QUIZ_FEEDBACK_HEIGHT`) para o texto inteiro aparecer sem rolagem; a caixa dos outros alertas continua com `TEXT_VISIBLE_HEIGHT`.
+- **Layout:** enunciado em corpo 18 e botões de alternativa com `autowrap_mode` e largura mínima `QUIZ_WIDTH`: `Button` não quebra linha sozinho e uma alternativa longa alargaria a caixa.
+- As perguntas de mecânica do jogo (semana 2, 4 e 5) descrevem as regras **atuais** (pendência com vencimento e data limite, fundos, estoque, contas vencidas): se a mecânica mudar, a pergunta e as explicações precisam mudar junto.
+- Teste: `tests/test_park_quiz_data.tscn`.
+
+**Botão de missões:** some durante a sessão. `MissionsUi` (`missions_ui.gd`) esconde o `Open` quando `Global.player_hud_hidden` (que a sessão liga) e fecha o painel se estava aberto. Isso precisa ficar em `_process()`: a versão anterior do script já fazia, e a reescrita do painel como `Overlay` perdeu o `_process`, o que trouxe o botão de volta.
+
 ## 13. Fluxo do jogo em alto nível
 
 Ciclo típico:

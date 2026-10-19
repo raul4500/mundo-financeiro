@@ -1386,9 +1386,9 @@ shape = SubResource("CircleShape2D_snp3k")
 visible = false
 z_index = 100
 offset_left = 952.0
-offset_top = 244.0
+offset_top = 224.0
 offset_right = 1372.0
-offset_bottom = 376.0
+offset_bottom = 416.00006
 scale = Vector2(0.333333, 0.333333)
 theme = ExtResource("60_dinfo")
 

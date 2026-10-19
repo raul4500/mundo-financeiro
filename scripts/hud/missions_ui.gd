@@ -2,6 +2,7 @@ extends CanvasLayer
 
 @onready var mission_list = $Overlay/Panel/MissionList
 @onready var panel = $Overlay
+@onready var open_button: Button = $Open
 
 var opened = false
 
@@ -59,6 +60,16 @@ func _refresh_marks() -> void:
 
 func _on_mission_completed(_mission: Dictionary) -> void:
 	_refresh_marks()
+
+# Com o HUD do personagem escondido (minigame do parque, ver
+# Global.player_hud_hidden) o botão de missões some junto, e um painel que
+# estivesse aberto fecha. Dá para abrir por M/F também, mas _unhandled_input
+# e _on_open_pressed já ignoram o atalho nesse estado.
+func _process(_delta: float) -> void:
+	var hud_hidden := Global.player_hud_hidden
+	open_button.visible = not hud_hidden
+	if hud_hidden and panel.visible:
+		panel.visible = false
 
 func _on_open_pressed() -> void:
 	if Global.player_hud_hidden:

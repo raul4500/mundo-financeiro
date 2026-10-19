@@ -10,7 +10,15 @@ extends CanvasLayer
 # Construída toda em código (mesmo padrão do AlertManager) para não depender
 # de uma .tscn nova.
 
+const UI_THEME = preload("res://themes/font_theme.tres")
+const ParkQuizData = preload("res://scripts/park/park_quiz_data.gd")
 const ParkCoinScene = preload("res://scenes/park/park_coin.tscn")
+
+# Largura do quiz. Os enunciados são situações de várias linhas e as alternativas
+# podem ter uma dezena de palavras: o texto quebra em vez de alargar a caixa.
+const QUIZ_WIDTH := 560
+# Altura da área de texto do alerta de resposta errada (padrão do alerta: 230).
+const QUIZ_FEEDBACK_HEIGHT := 360
 const ParkCoinScript = preload("res://scripts/park/park_coin.gd")
 
 var _world: Node2D
@@ -24,6 +32,9 @@ var _asked_indices: Array = []
 var _current_coin: Area2D
 var _active := false
 var _quiz_current_correct := -1
+# A pergunta em tela inteira (não só o gabarito): ao errar, o alerta precisa das
+# explicações de cada alternativa.
+var _quiz_current_question: Dictionary = {}
 
 var _timer_label: Label
 var _score_label: Label
@@ -54,36 +65,53 @@ func start(world: Node2D, spawn_polygon: PackedVector2Array) -> void:
 func _build_ui() -> void:
 	layer = 90
 
+	# HUD em três cantos: moedas à esquerda, tempo restante no centro e a dica
+	# de sair à direita. Uma linha (HBoxContainer) com três células de largura
+	# igual: como as duas laterais têm o mesmo espaço, o tempo fica no centro
+	# exato da tela, mesmo com textos laterais de tamanhos diferentes.
 	var top := Control.new()
-	top.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	top.set_anchors_preset(Control.PRESET_FULL_RECT)
 	top.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(top)
 
-	var vbox := VBoxContainer.new()
-	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	vbox.set_anchors_preset(Control.PRESET_TOP_WIDE)
-	vbox.offset_top = 12
-	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	top.add_child(vbox)
+	var margin := MarginContainer.new()
+	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
+	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	margin.add_theme_constant_override("margin_left", 16)
+	margin.add_theme_constant_override("margin_right", 16)
+	margin.add_theme_constant_override("margin_top", 12)
+	top.add_child(margin)
 
-	_timer_label = Label.new()
-	_timer_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_timer_label.add_theme_font_size_override("font_size", 28)
-	vbox.add_child(_timer_label)
+	var row := HBoxContainer.new()
+	row.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	margin.add_child(row)
 
-	_score_label = Label.new()
-	_score_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_score_label.add_theme_font_size_override("font_size", 18)
-	vbox.add_child(_score_label)
-
-	var exit_hint := Label.new()
-	exit_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	exit_hint.add_theme_font_size_override("font_size", 13)
+	_score_label = _add_hud_cell(row, BoxContainer.ALIGNMENT_BEGIN, 20)
+	_timer_label = _add_hud_cell(row, BoxContainer.ALIGNMENT_CENTER, 28)
+	var exit_hint := _add_hud_cell(row, BoxContainer.ALIGNMENT_END, 16)
 	exit_hint.text = "Pressione BACKSPACE para sair"
-	vbox.add_child(exit_hint)
 
 	_update_labels()
 	_build_quiz_ui()
+
+# Uma célula do HUD (expande igual às outras) com um Label dentro, no tema do
+# jogo. A célula, e não o Label, é que expande: o Label do font_theme.tres tem
+# fundo próprio (label_round.png) e, esticado, viraria uma faixa de um terço da
+# tela. Devolve o Label.
+func _add_hud_cell(row: HBoxContainer, alignment: int, font_size: int) -> Label:
+	var cell := HBoxContainer.new()
+	cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	cell.alignment = alignment
+	cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(cell)
+
+	var label := Label.new()
+	label.theme = UI_THEME
+	label.add_theme_font_size_override("font_size", font_size)
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	cell.add_child(label)
+	return label
 
 func _update_labels() -> void:
 	_timer_label.text = "%d s" % int(ceil(max(_time_left, 0.0)))
@@ -190,14 +218,21 @@ func _build_quiz_ui() -> void:
 	margin.add_child(box)
 
 	_quiz_question_label = Label.new()
-	_quiz_question_label.custom_minimum_size = Vector2(420, 0)
+	_quiz_question_label.custom_minimum_size = Vector2(QUIZ_WIDTH, 0)
 	_quiz_question_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	# Enunciado de situação tem várias linhas: corpo menor que o padrão (24) para
+	# a caixa inteira caber na tela junto das quatro alternativas.
+	_quiz_question_label.add_theme_font_size_override("font_size", 18)
 	box.add_child(_quiz_question_label)
 
 	_quiz_option_buttons.clear()
 	for i in range(4):
 		var btn := Button.new()
 		btn.focus_mode = Control.FOCUS_NONE
+		# Button não quebra linha sozinho: sem autowrap e largura mínima, uma
+		# alternativa longa alargaria a caixa inteira.
+		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		btn.custom_minimum_size = Vector2(QUIZ_WIDTH, 0)
 		btn.pressed.connect(_on_quiz_option_pressed.bind(i))
 		box.add_child(btn)
 		_quiz_option_buttons.append(btn)
@@ -217,6 +252,7 @@ func _start_quiz() -> void:
 	var idx = available[randi() % available.size()]
 	_asked_indices.append(idx)
 	var q: Dictionary = pool[idx]
+	_quiz_current_question = q
 
 	_quiz_question_label.text = str(q.get("question", ""))
 	var options: Array = q.get("options", [])
@@ -239,8 +275,11 @@ func _on_quiz_option_pressed(index: int) -> void:
 		ParkMinigameManager.grant_quiz_reward()
 		feedback = "Resposta certa! Você ganhou um cupom de %d%% de desconto no mercado." % int(ParkMinigameManager.QUIZ_REWARD_DISCOUNT * 100)
 	else:
-		feedback = "Não foi dessa vez. Continue coletando moedas!"
-	AlertManager.alert_immediate(feedback, false, Callable(self, "_on_quiz_feedback_closed"))
+		# Explica por que a alternativa escolhida está errada e qual era a certa.
+		feedback = ParkQuizData.wrong_answer_feedback(_quiz_current_question, index)
+	# A explicação de erro é longa: altura própria para a resposta certa não
+	# ficar escondida atrás de rolagem. Acerto usa a altura padrão.
+	AlertManager.alert_immediate(feedback, false, Callable(self, "_on_quiz_feedback_closed"), 0, 0 if correct else QUIZ_FEEDBACK_HEIGHT)
 
 func _on_quiz_feedback_closed() -> void:
 	if _active:

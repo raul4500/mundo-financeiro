@@ -12,11 +12,23 @@ const PARK_ZONE_PATH := "Park/Park-zone/CollisionPolygon2D"
 
 var player_inside := false
 var _locked_alert_shown := false
+# Verdadeiro enquanto a sessão do minigame está rodando: o gatilho inteiro fica
+# desativado (painel escondido e área sem monitorar), porque a caixa de texto
+# ficava na frente do jogo e atrapalhava.
+var _suspended := false
 
 @onready var info_panel: Panel = $"Info-panel"
 @onready var info_hint: Label = $"Info-panel/Margin/VBoxContainer/Hint"
 
 func _process(_delta: float) -> void:
+	# A sessão é encerrada por vários caminhos (tempo, BACKSPACE, menu de pausa),
+	# todos passando por ParkMinigameManager.end_session(); perguntar a ele a cada
+	# quadro é o que religa o gatilho em qualquer um deles.
+	var session_active := ParkMinigameManager.is_session_active()
+	if session_active != _suspended:
+		_set_suspended(session_active)
+	if _suspended:
+		return
 	if Global.gameplay_locked or not player_inside:
 		return
 	if not Input.is_key_pressed(KEY_ENTER):
@@ -36,6 +48,22 @@ func _start_minigame() -> void:
 	var session := ParkMinigameSession.new()
 	get_tree().current_scene.add_child(session)
 	session.start(get_tree().current_scene, spawn_polygon)
+	# Já desativa agora, sem esperar o próximo _process: a caixa não pode piscar
+	# por cima do começo da corrida.
+	_set_suspended(true)
+
+# Liga/desliga o gatilho. Desligar esconde o painel e para de monitorar a área
+# (set_deferred: mudar `monitoring` direto durante um callback de física dá
+# erro). Religar com o jogador ainda dentro da área dispara body_shape_entered
+# de novo, e o painel volta sozinho; por isso player_inside é zerado ao desligar,
+# já que quem sair da área durante a sessão não gera body_shape_exited.
+func _set_suspended(value: bool) -> void:
+	_suspended = value
+	set_deferred("monitoring", not value)
+	if value:
+		info_panel.hide()
+		player_inside = false
+		_locked_alert_shown = false
 
 # Converte o CollisionPolygon2D desenhado no editor (pontos locais) para
 # coordenadas de mundo, que é o espaço em que as moedas são posicionadas.
@@ -58,6 +86,10 @@ func _update_info_hint() -> void:
 		info_hint.text = ParkMinigameManager.lock_reason()
 
 func _on_body_shape_entered(_body_rid: RID, _body: CharacterBody2D, _body_shape_index: int, _local_shape_index: int) -> void:
+	# O monitoring desliga de forma adiada: um evento do mesmo quadro ainda pode
+	# chegar com o gatilho já desativado.
+	if _suspended:
+		return
 	_update_info_hint()
 	info_panel.show()
 	player_inside = true
