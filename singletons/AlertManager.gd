@@ -30,6 +30,11 @@ var _queue: Array = []
 # Fila de alertas adiados. Usada quando _defer_count > 0 (ex.: durante minigames).
 # Alertas não-imediatos são retidos aqui em vez de interromper a jogabilidade.
 var _defer_count: int = 0
+# Instante em que o alerta atual abriu, e quanto tempo o atalho de espaço fica
+# ignorado depois disso (ver _input).
+const SPACE_GRACE_MSEC := 500
+var _shown_at_msec := 0
+var _space_grace_msec := 0
 var _deferred_queue: Array = []
 
 func defer_alerts() -> void:
@@ -201,8 +206,11 @@ func _create_alert_ui():
 # =============================
 # 🚨 MOSTRAR ALERTA
 # =============================
-func alert(text: String, step: bool = false, callback: Callable = Callable(), immediate: bool = false):
-	var entry = {"text": text, "step": step, "callback": callback, "choices": []}
+# space_grace_msec > 0: nesse tempo depois de abrir, o atalho de espaço é ignorado
+# (só o clique fecha). Para alertas que abrem enquanto o jogador ainda está
+# martelando espaço, como o resultado do minigame; 0 = comportamento normal.
+func alert(text: String, step: bool = false, callback: Callable = Callable(), immediate: bool = false, space_grace_msec: int = 0):
+	var entry = {"text": text, "step": step, "callback": callback, "choices": [], "space_grace_msec": space_grace_msec}
 	if _defer_count > 0 and not immediate:
 		_deferred_queue.append(entry)
 		return
@@ -210,8 +218,8 @@ func alert(text: String, step: bool = false, callback: Callable = Callable(), im
 	if not panel.visible:
 		_show_next()
 
-func alert_immediate(text: String, step: bool = false, callback: Callable = Callable()) -> void:
-	alert(text, step, callback, true)
+func alert_immediate(text: String, step: bool = false, callback: Callable = Callable(), space_grace_msec: int = 0) -> void:
+	alert(text, step, callback, true, space_grace_msec)
 
 
 # =============================
@@ -259,6 +267,9 @@ func _show_next() -> void:
 		# Pular o tutorial no meio de uma decisão deixaria o evento sem resposta.
 		skip_button.visible = false
 		_build_choices(choices)
+
+	_shown_at_msec = Time.get_ticks_msec()
+	_space_grace_msec = int(entry.get("space_grace_msec", 0))
 
 	# 🔒 trava jogo. Uma trava por alerta EXIBIDO, não por chamada: é o que
 	# mantém o par com o único unlock_gameplay() de _close_alert().
@@ -328,6 +339,11 @@ func _input(event):
 		# Com escolhas na tela não há atalho: fechar pelo teclado descartaria a
 		# decisão sem criar conta nem bônus.
 		if choice_box.visible:
+			return
+		# Alertas que pediram graça (ver alert()): um aperto de espaço logo ao abrir
+		# é o jogador ainda martelando o pulo, não uma confirmação. O clique no
+		# botão continua valendo.
+		if _space_grace_msec > 0 and Time.get_ticks_msec() - _shown_at_msec < _space_grace_msec:
 			return
 		_close_alert()
 

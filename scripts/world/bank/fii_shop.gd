@@ -73,7 +73,11 @@ func _make_card(fund_id: String, fund: Dictionary) -> PanelContainer:
 # A tela se redesenha sozinha: buy_fund/sell_fund emitem funds_updated quando
 # dão certo, e quando recusam (sem dinheiro, sem cotas) nada mudou para redesenhar.
 func _on_buy(fund_id: String, input: SpinBox) -> void:
-	FIIManager.buy_fund(fund_id, int(input.value))
+	var success = FIIManager.buy_fund(fund_id, int(input.value))
+	if not success:
+		AlertManager.alert("Fundos insuficientes para comprar cotas deste fundo imobiliário.")
 
 func _on_sell(fund_id: String, input: SpinBox) -> void:
-	FIIManager.sell_fund(fund_id, int(input.value))
+	var success = FIIManager.sell_fund(fund_id, int(input.value))
+	if not success:
+		AlertManager.alert("Não foi possível vender cotas deste fundo.")

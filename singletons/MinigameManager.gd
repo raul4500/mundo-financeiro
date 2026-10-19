@@ -121,6 +121,34 @@ func on_obstacle_hit() -> bool:
 	_finish_session(leveled_up)
 	return true
 
+# =============================
+# 🎓 RESULTADO DA CORRIDA
+# =============================
+const WORLD_SCENE := "res://scenes/world/main_game.tscn"
+
+# Texto do resultado: o que o jogador tem AGORA de escolaridade e salário (na
+# primeira corrida, já com todos os níveis que ele subiu).
+func result_text(headline: String) -> String:
+	var level := int(Global.player.get("school_level", 1))
+	var label: String = LEVEL_LABELS[clampi(level - 1, 0, LEVEL_LABELS.size() - 1)]
+	return "%s\n\nEscolaridade: %s\nSalário: R$ %d" % [headline, label, int(Global.player.get("salary", 0))]
+
+# Fim de corrida, por checkpoint (level.gd) ou obstáculo (obstacle.gd): mostra o
+# resultado e só volta ao mundo quando o jogador confirma.
+#
+# alert_immediate: durante a corrida os alertas externos estão adiados
+# (AlertManager.defer_alerts), e este precisa abrir na hora. O alerta trava o
+# gameplay, então o jogador para onde está enquanto lê. A graça no espaço evita
+# que o pulo que ele ainda estava martelando feche o alerta sem dar para ler.
+func show_result_and_return(headline: String) -> void:
+	AlertManager.alert_immediate(result_text(headline), false, Callable(self, "_return_to_world"), AlertManager.SPACE_GRACE_MSEC)
+
+func _return_to_world() -> void:
+	# Mesma sequência que o fim de corrida tinha antes do alerta: avisa o
+	# tutorial (que enfileira as mensagens do passo seguinte) e troca de cena.
+	TutorialManager.on_minigame_finished()
+	TransitionManager.change_scene(WORLD_SCENE)
+
 func _finish_session(lock_by_week: bool) -> void:
 	var mp = _progress()
 	if lock_by_week:

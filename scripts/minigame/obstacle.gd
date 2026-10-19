@@ -8,5 +8,6 @@ func _on_body_shape_entered(body_rid: RID, body: Node2D, body_shape_index: int, 
 	if not MinigameManager.on_obstacle_hit():
 		return
 
-	TutorialManager.on_minigame_finished()
-	TransitionManager.change_scene("res://scenes/world/main_game.tscn")
+	# Mostra escolaridade e salário e só então volta ao mundo (ver
+	# MinigameManager.show_result_and_return).
+	MinigameManager.show_result_and_return("Você bateu em um obstáculo.")

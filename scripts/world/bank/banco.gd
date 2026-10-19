@@ -38,6 +38,10 @@ func _ready():
 		EventsManager.events_updated.connect(render_events)
 	if not HouseBillsManager.bills_updated.is_connected(render_house_bills):
 		HouseBillsManager.bills_updated.connect(render_house_bills)
+	if not FIIManager.funds_updated.is_connected(update_labels):
+		FIIManager.funds_updated.connect(update_labels)
+	if not FIIManager.portfolio_updated.is_connected(update_labels):
+		FIIManager.portfolio_updated.connect(update_labels)
 	update_labels()
 	btn_deposit.pressed.connect(deposit)
 	btn_withdraw.pressed.connect(withdraw)
@@ -54,6 +58,16 @@ func _process(delta: float) -> void:
 	tab_container.set_tab_disabled(3, week < 3)
 	tab_container.set_tab_disabled(4, week < 4)
 	tab_container.set_tab_disabled(5, week < 4)
+
+func _exit_tree() -> void:
+	if EventsManager.events_updated.is_connected(render_events):
+		EventsManager.events_updated.disconnect(render_events)
+	if HouseBillsManager.bills_updated.is_connected(render_house_bills):
+		HouseBillsManager.bills_updated.disconnect(render_house_bills)
+	if FIIManager.funds_updated.is_connected(update_labels):
+		FIIManager.funds_updated.disconnect(update_labels)
+	if FIIManager.portfolio_updated.is_connected(update_labels):
+		FIIManager.portfolio_updated.disconnect(update_labels)
 
 func _create_time_display() -> void:
 	time_display = preload("res://scripts/ui/time_display.gd").new()

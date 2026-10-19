@@ -24,12 +24,18 @@ const RUN_IN_PADDING := 300.0
 
 @onready var player = $"Player-minigame"
 @onready var camera = $Camera2D
-@onready var level_label = $Camera2D/Level
-
-# Label que mostra o salário atual na câmera
-@onready var salary_label = null
+# HUD de nível e salário. Vive num CanvasLayer (nó Hud), não na Camera2D: filho
+# da câmera é desenhado no mundo e herda o zoom 4, então um texto de 8 px era
+# renderizado pequeno e esticado 4x, ficando embaçado. No CanvasLayer o texto é
+# rasterizado no tamanho final da tela, sem mexer em zoom nem em escalas.
+@onready var level_label: Label = $Hud/Margin/Box/Level
+@onready var salary_label: Label = $Hud/Margin/Box/Salary
 
 var curr_level = Global.player["school_level"]
+# Último valor mostrado no HUD. Evita reescrever o texto todo quadro e deixa o
+# HUD se atualizar sozinho quando o nível sobe no meio da corrida.
+var _hud_level := -1
+var _hud_salary := -1
 
 # Tela de início: o jogo fica travado até o jogador apertar "Começar" e a
 # contagem de 3 segundos terminar.
@@ -62,6 +68,7 @@ func _ready() -> void:
 	Global.play_time = false
 	curr_level = int(Global.player.get("school_level", 1))
 	_place_player()
+	_refresh_hud()
 	_create_start_screen()
 	# Trava até o jogador começar. O contador de Global convive com o lock do
 	# alerta de tutorial, que pode estar aberto neste momento.
@@ -95,8 +102,20 @@ func _place_player() -> void:
 	# Desliga smoothing da câmera do minigame — o comportamento desejado é seguir
 	# apenas no eixo X sem suavização e manter Y fixo mesmo durante pulos.
 	camera.position_smoothing_enabled = false
-	if level_label != null:
-		level_label.text = "%s" % MinigameManager.LEVEL_LABELS[curr_level-1]
+	_refresh_hud()
+
+# Mostra nível e salário atuais. Lê de Global.player (que o MinigameManager
+# atualiza ao subir de nível, junto com update_salary()) e só mexe no texto
+# quando o valor mudou.
+func _refresh_hud() -> void:
+	var level := int(Global.player.get("school_level", 1))
+	if level != _hud_level:
+		_hud_level = level
+		level_label.text = MinigameManager.LEVEL_LABELS[clampi(level - 1, 0, MinigameManager.LEVEL_LABELS.size() - 1)]
+	var salary := int(Global.player.get("salary", 0))
+	if salary != _hud_salary:
+		_hud_salary = salary
+		salary_label.text = "Salário: R$ %d" % salary
 
 func _create_start_screen() -> void:
 	# layer 50: acima do display de tempo (5), abaixo do AlertManager (100),
@@ -126,7 +145,7 @@ func _create_start_screen() -> void:
 	margin.add_child(box)
 
 	box.add_child(_make_label("Aula de hoje", 26))
-	var info = _make_label("Desvie dos obstáculos até o próximo checkpoint. Você sobe no máximo 1 nível por tentativa.", 16)
+	var info = _make_label("Desvie dos obstáculos até o próximo checkpoint.", 16)
 	info.custom_minimum_size = Vector2(460, 0)
 	box.add_child(info)
 
@@ -186,6 +205,9 @@ func _process_start_screen(delta: float) -> void:
 	start_button.visible = not tutorial_busy
 
 func _process(delta: float) -> void:
+	# Antes dos early-returns: o checkpoint trava o gameplay no mesmo quadro em
+	# que o nível sobe, e o HUD ainda precisa mostrar o nível e o salário novos.
+	_refresh_hud()
 	if not started:
 		# Durante o run-in a câmera fica parada onde _place_player() a deixou:
 		# é o que faz o jogador aparecer vindo de fora da tela.
@@ -202,7 +224,3 @@ func _process(delta: float) -> void:
 	# Não há smoothing — posição é atualizada diretamente.
 	var target_x = player.global_position.x + CAMERA_OFFSET.x
 	camera.global_position = Vector2(target_x, camera.global_position.y)
-	level_label.text = "%s" %MinigameManager.LEVEL_LABELS[Global.player["school_level"]-1]
-	# Atualiza o label de salário
-	if salary_label != null:
-		salary_label.text = "Salário: R$ %d" % int(Global.player.get("salary", 0))

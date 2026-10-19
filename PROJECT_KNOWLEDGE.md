@@ -836,6 +836,19 @@ Estado em `Global.player["minigame_progress"] = {"unlock_week": int, "unlock_day
 
 A ordem de `begin_session()` também importa: ela é chamada em `_begin_game()`, quando a contagem termina, e **não** em `_ready()`. Nos níveis 2+ o jogador nasce logo depois do checkpoint anterior; se a sessão já estivesse ativa, uma área poderia disparar antes de ele poder jogar. `_exit_tree()` chama `end_session()` para nenhuma sessão aberta sobrar para a próxima entrada.
 
+### Fim de corrida: alerta de resultado
+
+Os dois desfechos (`level.gd`, checkpoint que encerra a corrida, e `obstacle.gd`, batida) chamam `MinigameManager.show_result_and_return(headline)`. Ele abre um alerta com a escolaridade e o salário **atuais** (`result_text()`; na primeira corrida já com todos os níveis que o jogador subiu) e só quando o jogador confirma `_return_to_world()` roda a mesma sequência de antes: `TutorialManager.on_minigame_finished()` e `TransitionManager.change_scene(WORLD_SCENE)`. O tutorial só avança depois do OK.
+
+- **`AlertManager.alert_immediate()`**, não `alert()`: durante a corrida os alertas externos estão adiados (`defer_alerts()` em `minigame.gd`), e este precisa abrir na hora. O alerta trava o gameplay, então o jogador para onde estava enquanto lê.
+- **Graça no espaço:** espaço é o pulo e é também o atalho de confirmar do alerta. O jogador está martelando a tecla quando bate, e um aperto desses fecharia o alerta sem dar para ler. `alert()`/`alert_immediate()` aceitam `space_grace_msec` (aqui `AlertManager.SPACE_GRACE_MSEC` = 500 ms), tempo em que o atalho é ignorado; o clique no botão continua valendo. É **opt-in por alerta**: aplicar a todos quebraria o fluxo do tutorial, que fecha alertas no mesmo instante em que abrem.
+
+### HUD do minigame (nível e salário)
+
+Os labels `Level` e `Salary` ficam em `Hud` (`CanvasLayer`, `layer = 10`) > `Margin` > `Box`, no canto superior direito. **Não podem ser filhos da `Camera2D`**: filho de câmera é desenhado no mundo e herda o `zoom = 4`, então um texto de 8 px saía pequeno e esticado 4x, embaçado. No `CanvasLayer` o texto é rasterizado no tamanho final da tela, sem mexer no zoom nem nas escalas do personagem (e o `Game_Over`, que continua filho da câmera por causa do caminho fixo em `obstacle.gd`, ainda tem o mesmo defeito).
+
+`minigame.gd._refresh_hud()` lê `school_level` e `salary` de `Global.player` e só reescreve o texto quando o valor muda. Roda em `_ready()` e no início de `_process()`, **antes** dos early-returns: o checkpoint trava o gameplay no mesmo quadro em que o nível sobe (e `MinigameManager` chama `Global.update_salary()`), e o HUD ainda precisa mostrar os valores novos.
+
 ### Mapa do minigame
 
 Layout em `scenes/minigame/minigame.tscn`, com 4 obstáculos por checkpoint:

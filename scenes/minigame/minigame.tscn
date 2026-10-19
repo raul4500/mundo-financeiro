@@ -464,19 +464,42 @@ theme_override_font_sizes/font_size = 14
 text = "GAME OVER"
 horizontal_alignment = 1
 
-[node name="Level" type="Label" parent="Camera2D" unique_id=1445771076]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = 64.0
-offset_top = -79.0
-offset_right = 142.0
-offset_bottom = -53.0
+[node name="Hud" type="CanvasLayer" parent="." unique_id=1900200001]
+layer = 10
+
+[node name="Margin" type="MarginContainer" parent="Hud" unique_id=1900200002]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
-size_flags_horizontal = 4
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 12
+
+[node name="Box" type="VBoxContainer" parent="Hud/Margin" unique_id=1900200003]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="Level" type="Label" parent="Hud/Margin/Box" unique_id=1445771076]
+layout_mode = 2
+mouse_filter = 2
 theme = ExtResource("12_0k17t")
-theme_override_font_sizes/font_size = 8
+theme_override_font_sizes/font_size = 24
 text = "Básico"
+horizontal_alignment = 1
+
+[node name="Salary" type="Label" parent="Hud/Margin/Box" unique_id=1900200004]
+layout_mode = 2
+mouse_filter = 2
+theme = ExtResource("12_0k17t")
+theme_override_font_sizes/font_size = 20
+text = "Salário: R$ 0"
 horizontal_alignment = 1
 
 [connection signal="body_shape_entered" from="Map/obstacles/obstacle2" to="Map/obstacles/obstacle2" method="_on_body_shape_entered"]

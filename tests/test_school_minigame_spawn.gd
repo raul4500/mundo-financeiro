@@ -28,7 +28,14 @@ func _ready() -> void:
 		var expected_pos: Vector2 = expected_positions[lvl]
 		var player_node = inst.get_node("Player-minigame")
 		var cam_node = inst.get_node("Camera2D")
-		var label_node = inst.get_node("Camera2D/Level")
+		var label_node = inst.get_node("Hud/Margin/Box/Level")
+		var salary_node = inst.get_node("Hud/Margin/Box/Salary")
+		# O HUD fica num CanvasLayer: filho da Camera2D herdaria o zoom 4 e o texto
+		# sairia embaçado.
+		assert(not cam_node.is_ancestor_of(label_node), "Nível %d: o label de nível não pode ser filho da câmera" % lvl)
+		assert(not cam_node.is_ancestor_of(salary_node), "Nível %d: o label de salário não pode ser filho da câmera" % lvl)
+		assert(salary_node.text == "Salário: R$ %d" % int(Global.player["salary"]),
+			"Nível %d: label de salário deveria mostrar o salário atual, mas mostra '%s'" % [lvl, salary_node.text])
 
 		assert(player_node.global_position == expected_pos,
 			"Nível %d: jogador deveria estar em %s, mas está em %s" % [lvl, expected_pos, player_node.global_position])
@@ -84,6 +91,16 @@ func _ready() -> void:
 	assert(int(Global.player["minigame_progress"]["unlock_week"]) == int(Global.player["week"]) + 1,
 		"Escola deve ser trancada por 1 semana após subir de nível")
 	print("  ok   Avanço de nível e trava semanal funcionando perfeitamente")
+
+	# 5. O HUD acompanha a subida de nível sozinho: nível e salário novos aparecem
+	# no próximo quadro, sem reabrir a cena.
+	game_inst._process(0.0)
+	var hud_level: Label = game_inst.get_node("Hud/Margin/Box/Level")
+	var hud_salary: Label = game_inst.get_node("Hud/Margin/Box/Salary")
+	assert(hud_level.text == MinigameManager.LEVEL_LABELS[3], "HUD deve mostrar o nível 4 depois do checkpoint (mostra '%s')" % hud_level.text)
+	assert(hud_salary.text == "Salário: R$ %d" % int(Global.player["salary"]), "HUD deve mostrar o salário novo (mostra '%s')" % hud_salary.text)
+	assert(int(Global.player["salary"]) == 500, "Nível 4 paga R$ 500 (200 * (1 + 3 * 0,5))")
+	print("  ok   HUD atualiza nível e salário quando o jogador passa de nível")
 
 	game_inst.queue_free()
 	await get_tree().process_frame

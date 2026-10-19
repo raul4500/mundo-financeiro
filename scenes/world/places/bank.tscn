@@ -119,10 +119,9 @@ offset_right = 1123.0
 offset_bottom = 624.0
 theme = ExtResource("4_0nfyk")
 theme_override_styles/panel = SubResource("StyleBoxEmpty_0k17t")
-current_tab = 1
+current_tab = 0
 
 [node name="Histórico" type="Panel" parent="TabContainer" unique_id=1254925116]
-visible = false
 layout_mode = 2
 theme = ExtResource("4_0nfyk")
 metadata/_tab_index = 0
@@ -162,6 +161,7 @@ theme_override_constants/v_separation = 10
 columns = 2
 
 [node name="Eventos" type="Panel" parent="TabContainer" unique_id=1700200001]
+visible = false
 layout_mode = 2
 theme = ExtResource("4_0nfyk")
 metadata/_tab_index = 1
@@ -319,14 +319,14 @@ custom_minimum_size = Vector2(180, 46)
 layout_mode = 2
 text = "Resgatar para Saldo"
 
-[node name="FII-shop" type="Panel" parent="TabContainer" unique_id=830567245]
+[node name="Fundos Imobiliários" type="Panel" parent="TabContainer" unique_id=830567245]
 visible = false
 layout_mode = 2
 theme = ExtResource("4_0nfyk")
 script = ExtResource("3_80ajf")
 metadata/_tab_index = 4
 
-[node name="ScrollContainer" type="ScrollContainer" parent="TabContainer/FII-shop" unique_id=1857044755]
+[node name="ScrollContainer" type="ScrollContainer" parent="TabContainer/Fundos Imobiliários" unique_id=1857044755]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -339,7 +339,7 @@ grow_horizontal = 2
 grow_vertical = 2
 horizontal_scroll_mode = 0
 
-[node name="Fund-grid" type="GridContainer" parent="TabContainer/FII-shop/ScrollContainer" unique_id=960911175]
+[node name="Fund-grid" type="GridContainer" parent="TabContainer/Fundos Imobiliários/ScrollContainer" unique_id=960911175]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 10

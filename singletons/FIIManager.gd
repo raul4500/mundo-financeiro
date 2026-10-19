@@ -129,10 +129,9 @@ func buy_fund(fund_id: String, amount: int):
 	if Global.player == null:
 		_log_error("FIIManager.buy_fund falhou: Global.player nulo")
 		return false
-	if float(Global.player["money"]) < total_cost:
+	if not Global.charge_funds(total_cost):
 		_log_warning("Dinheiro insuficiente para comprar FII: %s" % fund_id)
 		return false
-	Global.player["money"] = float(Global.player["money"]) - total_cost
 	if not portfolio.has(fund_id):
 		portfolio[fund_id] = 0
 	# Preco medio ponderado, calculado antes de somar as cotas novas.

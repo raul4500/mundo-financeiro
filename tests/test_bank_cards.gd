@@ -100,5 +100,25 @@ func _ready() -> void:
 	assert(_box(bank.get_node(BILLS_PATH).get_child(0)).get_child(0).text == "Nenhuma conta da casa pendente.", "Sem contas: volta o card de aviso")
 	print("  ok   Botão Pagar do card quita a conta e redesenha a aba")
 
+	# 4. Comprar e vender FII atualiza imediatamente os labels de saldo e dinheiro do banco.
+	var label_money: Label = bank.get_node("Account-info/Label_Money")
+	var label_saldo: Label = bank.get_node("Account-info/Label-saldo")
+	var money_prev := float(Global.player["money"])
+	FIIManager.buy_fund("FII_SHOPPING", 1)
+	assert(label_money.text == "Dinheiro: $" + "%.2f" % float(Global.player["money"]), "Label de dinheiro deve atualizar ao comprar FII")
+	assert(is_equal_approx(float(Global.player["money"]), money_prev - 100.0), "Dinheiro deduzido ao comprar FII")
+
+	FIIManager.sell_fund("FII_SHOPPING", 1)
+	assert(label_money.text == "Dinheiro: $" + "%.2f" % float(Global.player["money"]), "Label de dinheiro deve atualizar ao vender FII")
+
+	# Compra de FII usando saldo bancário quando a carteira estiver vazia
+	Global.player["money"] = 0.0
+	Global.player["saldo"] = 300.0
+	bank.update_labels()
+	FIIManager.buy_fund("FII_SHOPPING", 1)
+	assert(is_equal_approx(float(Global.player["saldo"]), 200.0), "Compra de FII debita do saldo bancário se dinheiro zerado")
+	assert(label_saldo.text == "Banco: $" + "%.2f" % float(Global.player["saldo"]), "Label de saldo bancário deve atualizar ao comprar FII com saldo")
+	print("  ok   Comprar e vender FII atualiza os labels de saldo/dinheiro do banco em tempo real")
+
 	print("=== Todos os testes das abas do banco passaram ===")
 	get_tree().quit(0)
