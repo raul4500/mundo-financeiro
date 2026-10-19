@@ -15,6 +15,9 @@ extends RefCounted
 # de somar juros sobre juros já cobrados na tentativa anterior.
 
 const INTEREST_PER_DAY := 0.10
+# Teto de juros de mora (máximo +75% do valor original da conta), evitando
+# que dívidas antigas explodam exponencialmente e causem softlock permanente.
+const MAX_INTEREST_MULTIPLIER := 1.75
 
 # Dias de atraso em `as_of_abs_day` (dia absoluto, ver Global.get_absolute_day()).
 # O dia de vencimento ainda não tem juros: o primeiro dia de atraso é o seguinte.
@@ -22,4 +25,5 @@ static func overdue_days(as_of_abs_day: int, due_week: int, days_per_week: int) 
 	return maxi(0, as_of_abs_day - due_week * days_per_week)
 
 static func amount_with_interest(base_amount: float, overdue: int) -> float:
-	return snappedf(base_amount * pow(1.0 + INTEREST_PER_DAY, float(overdue)), 0.01)
+	var multiplier := minf(pow(1.0 + INTEREST_PER_DAY, float(overdue)), MAX_INTEREST_MULTIPLIER)
+	return snappedf(base_amount * multiplier, 0.01)

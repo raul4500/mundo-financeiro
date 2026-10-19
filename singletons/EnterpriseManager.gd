@@ -83,8 +83,8 @@ func can_buy(enterprise_id: String) -> Dictionary:
 	if is_owned(enterprise_id):
 		return {"success": false, "message": "Você já possui este empreendimento.", "reason": "already_owned"}
 	var price = float(info.get("purchase_price", 0.0))
-	if float(Global.player.get("money", 0.0)) < price:
-		return {"success": false, "message": "Dinheiro insuficiente para comprar este empreendimento.", "reason": "insufficient_money"}
+	if Global.total_funds() < price:
+		return {"success": false, "message": "Dinheiro insuficiente (carteira + banco) para comprar este empreendimento. Faltam R$ %.2f." % (price - Global.total_funds()), "reason": "insufficient_money"}
 	return {"success": true, "message": "Compra disponível.", "price": price}
 
 func buy_enterprise(enterprise_id: String) -> Dictionary:
@@ -95,7 +95,8 @@ func buy_enterprise(enterprise_id: String) -> Dictionary:
 	var info = get_enterprise_info(enterprise_id)
 	var state = Global.player["enterprises"][enterprise_id]
 	var price = float(info["purchase_price"])
-	Global.player["money"] = float(Global.player["money"]) - price
+	if not Global.charge_funds(price):
+		return {"success": false, "message": "Dinheiro insuficiente.", "reason": "insufficient_money"}
 	state["owned"] = true
 	state["level"] = 1
 	_append_history(state, "purchase", "Compra do empreendimento", -price)

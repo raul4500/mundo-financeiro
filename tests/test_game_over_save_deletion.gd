@@ -36,7 +36,7 @@ func _ready() -> void:
 	# Simula a chamada do callback de fechamento do alerta
 	Global._return_to_main_menu()
 	assert(Global.player["name"] == "", "Nome do jogador em memória deve ser resetado para vazio")
-	assert(Global.player["hunger"] == 100.0, "Fome em memória deve ser resetada para o padrão do modelo")
+	assert(Global.player["hunger"] == Global.data_model["hunger"], "Fome em memória deve ser resetada para o padrão do modelo")
 	assert(Global.is_game_over() == false, "_game_over deve voltar a false")
 	assert(SaveManager.has_save() == false, "Save continua não existindo")
 	print("  ok   Estado em memória totalmente resetado após retorno ao menu")

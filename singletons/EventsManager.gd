@@ -180,8 +180,33 @@ func _on_choice_taken(evento: Dictionary, escolha: Dictionary) -> void:
 		str(evento.get("titulo", "Evento")),
 		str(escolha.get("descricao", ""))
 	]
-	var pendencia = create_pending_event(escolhido, escolha.get("impacto", {}))
-	# "Não comprar" tem impacto zero e não gera nada: não há o que confirmar.
+	var impacto: Dictionary = escolha.get("impacto", {})
+	var raw_amount = float(impacto.get("dinheiro", 0.0))
+	if is_zero_approx(raw_amount):
+		# Decisão consciente sem custo (ex.: "Não comprar"): registra como evento resolvido
+		# para cumprir a missão semanal (resolver_evento) com mérito financeiro.
+		var source_id = str(evento.get("id", "evento"))
+		var list = _pending_list()
+		var ev = {
+			"id": "%s_%d_%d" % [source_id, int(Time.get_unix_time_from_system()), list.size()],
+			"title": str(escolhido.get("titulo", "Evento")),
+			"description": str(evento.get("descricao", "")),
+			"week_generated": int(Global.player.get("week", 1)),
+			"amount": 0.0,
+			"is_bonus": false,
+			"status": "resolved",
+			"location": "bank",
+			"source_id": source_id
+		}
+		list.append(ev)
+		_prune_resolved(list)
+		SaveManager.save_game()
+		emit_signal("events_updated")
+		AlertManager.alert("Você decidiu não comprar por impulso.\n\nParabéns pelo autocontrole financeiro! O evento foi considerado resolvido.")
+		return
+
+	var pendencia = create_pending_event(escolhido, impacto)
+	# Sem pendência não há o que avisar
 	if not pendencia.is_empty():
 		_show_pending_alert(escolhido, pendencia)
 

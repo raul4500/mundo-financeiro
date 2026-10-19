@@ -290,8 +290,11 @@ func _advance_to_next_day() -> void:
 
 func _process_week_rollover() -> void:
 	var week := int(Global.player.get("week", 1))
+	# Dividendos da semana pagos antes da verificação: contam para a missão de lucro de investimentos.
+	FIIManager.pay_dividends()
+
 	# Missões primeiro: só se passarem a semana é processada. Se falharem, o
-	# jogador repete a semana sem gerar contas, dividendos nem penalidades.
+	# jogador repete a semana sem gerar contas nem penalidades.
 	#
 	# Passando, antes de liberar a próxima semana o jogo cobra sozinho as contas
 	# (da casa e eventos) cuja data limite chegou. O salário entra antes da
@@ -311,12 +314,16 @@ func _process_week_rollover() -> void:
 		return
 	if not MissionManager.verify_missions(week):
 		_repeat_week()
+		# O jogador trabalhou os 5 dias desta tentativa: recebe o salário pelo trabalho realizado,
+		# permitindo acumular capital caso precise repetir a semana para juntar dinheiro.
+		var salary := float(Global.player.get("salary", 200))
+		Global.player["money"] = float(Global.player.get("money", 0.0)) + salary
+		Global.snapshot_week_start()
 		return
 
 	EnterpriseManager.generate_all_weekly_bills()
 	HouseBillsManager.generate_weekly_bills()
 	Global.evaluate_week_status()
-	FIIManager.pay_dividends()
 	Global.player["week"] = week + 1
 	Global.player["no_spend_days_count"] = 0
 	Global.player["had_no_spend_day"] = false

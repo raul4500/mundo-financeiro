@@ -11,6 +11,8 @@
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5t7o5"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_food"]
+
 [node name="Home" type="Control" unique_id=994487351]
 layout_mode = 3
 anchors_preset = 15
@@ -145,23 +147,64 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 1.5
 
-[node name="Inventory-panel" type="Panel" parent="HBoxContainer/VBoxContainer" unique_id=1505798132]
+[node name="Food-tabs" type="TabContainer" parent="HBoxContainer/VBoxContainer" unique_id=1505798132]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme = ExtResource("2_22txc")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_food")
+current_tab = 0
 
-[node name="Inventory-scroll" type="ScrollContainer" parent="HBoxContainer/VBoxContainer/Inventory-panel" unique_id=1998840259]
+[node name="Comidas" type="Panel" parent="HBoxContainer/VBoxContainer/Food-tabs" unique_id=1800100001]
+layout_mode = 2
+theme = ExtResource("2_22txc")
+metadata/_tab_index = 0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/VBoxContainer/Food-tabs/Comidas" unique_id=1800100002]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 7.0
-offset_top = 9.0
-offset_right = -9.0
-offset_bottom = -11.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
 grow_horizontal = 2
 grow_vertical = 2
+horizontal_scroll_mode = 0
+
+[node name="Food-grid" type="GridContainer" parent="HBoxContainer/VBoxContainer/Food-tabs/Comidas/ScrollContainer" unique_id=1800100003]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="Bebidas" type="Panel" parent="HBoxContainer/VBoxContainer/Food-tabs" unique_id=1800100004]
+visible = false
+layout_mode = 2
+theme = ExtResource("2_22txc")
+metadata/_tab_index = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/VBoxContainer/Food-tabs/Bebidas" unique_id=1800100005]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_scroll_mode = 0
+
+[node name="Drink-grid" type="GridContainer" parent="HBoxContainer/VBoxContainer/Food-tabs/Bebidas/ScrollContainer" unique_id=1800100006]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 2
 
 [node name="History-panel" type="Panel" parent="HBoxContainer/VBoxContainer" unique_id=299438473]
 visible = false

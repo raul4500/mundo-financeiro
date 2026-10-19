@@ -34,8 +34,9 @@ func _ready() -> void:
 			"Nível %d: jogador deveria estar em %s, mas está em %s" % [lvl, expected_pos, player_node.global_position])
 		assert(cam_node.global_position == expected_pos + inst.CAMERA_OFFSET,
 			"Nível %d: câmera deveria estar em %s, mas está em %s" % [lvl, expected_pos + inst.CAMERA_OFFSET, cam_node.global_position])
-		assert(label_node.text == "Level %d" % lvl,
-			"Nível %d: label deveria mostrar 'Level %d', mas mostra '%s'" % [lvl, lvl, label_node.text])
+		var expected_label: String = MinigameManager.LEVEL_LABELS[lvl - 1]
+		assert(label_node.text == expected_label,
+			"Nível %d: label deveria mostrar '%s', mas mostra '%s'" % [lvl, expected_label, label_node.text])
 
 		print("  ok   Nível %d spawna corretamente em %s" % [lvl, expected_pos])
 		inst.queue_free()

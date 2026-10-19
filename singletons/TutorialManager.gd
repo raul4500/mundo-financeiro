@@ -188,9 +188,9 @@ var messages = [
 	# _next_step(), _resume_step() e nas duas funções de fila.
 	"Aquela é a sua casa. É o único lugar onde você recupera o que o dia gasta — comer, beber e descansar acontecem lá dentro — e o único lugar onde o dia termina, porque é onde fica a sua cama.",
 
-	"Uma coisa importante sobre o mercado: comida e bebida que você compra NÃO são consumidas na hora da compra. Elas vão para o estoque da sua casa e ficam lá até você usar. O painel de estoque mostra quanto cada item repõe de fome e de sede.",
+	"Uma coisa importante sobre o mercado: comida e bebida que você compra NÃO são consumidas na hora da compra. Elas vão para o estoque da sua casa e ficam lá até você usar. As abas COMIDAS e BEBIDAS da casa mostram o que você tem guardado, em cards, e quanto cada item repõe de fome e de sede.",
 
-	"Os botões COMER e BEBER escolhem sozinhos o item mais eficiente que você tem guardado, e ele sai do estoque. Comer custa 30 minutos do seu dia e beber custa 15. Comer também devolve um pouco de stamina, mas pouco: quem recupera stamina de verdade é o sono.",
+	"Você escolhe o que consumir: abra a aba COMIDAS ou BEBIDAS, ache o card do item e clique em COMER ou BEBER. O item sai do estoque. Comer custa 30 minutos do seu dia e beber custa 15. Comer também devolve um pouco de stamina, mas pouco: quem recupera stamina de verdade é o sono.",
 
 	"DESCANSAR e ASSISTIR TV devolvem stamina e custam 1 hora cada, mas gastam fome no processo. Servem para esticar um dia que está acabando, não para substituir o sono — e se você usá-los sem ter comida no estoque, só está trocando um problema por outro.",
 
@@ -239,7 +239,7 @@ var weekly_messages = {
 
 		"Todo negócio funciona da mesma forma por dentro. Você compra estoque para manter as vendas, paga as contas de água e luz antes do vencimento, contrata funcionários que aumentam a receita e a capacidade de atendimento, e sobe do nível 1 ao nível 5 para liberar equipamentos melhores. Ficar sem estoque derruba a receita para 35%, e deixar uma conta vencer corta outros 25%.",
 
-		"O primeiro é o Restaurante Sabor da Praça, por R$ 1.500. É o negócio de entrada: atende 10 clientes por dia, precisa de ingredientes, bebidas e itens de limpeza no estoque, e as contas somam apenas R$ 50 por semana. É o lugar certo para aprender a rotina de um negócio errando pouco dinheiro.",
+		"O primeiro é o Restaurante Sabor da Praça, por R$ 1.000. É o negócio de entrada: atende 10 clientes por dia, precisa de ingredientes, bebidas e itens de limpeza no estoque, e as contas somam apenas R$ 50 por semana. É o lugar certo para aprender a rotina de um negócio errando pouco dinheiro.",
 
 		"O segundo é o Fliperama Neon, por R$ 12.000. Um negócio de porte médio: começa atendendo 25 clientes e a receita é bem maior, mas as contas sobem para R$ 300 por semana e cada funcionário custa R$ 420 por semana. Aqui você aprende a equilibrar equipe, equipamentos e caixa sem ficar no vermelho.",
 
@@ -367,7 +367,7 @@ func _queue_world_tour() -> void:
 		# suas mecânicas (estoque, alimentação, descanso, sono e sede) são explicadas.
 		messages[22],  # Aquela é a sua casa (foco em "Home")
 		messages[23],  # Estoque da casa (compras do mercado ficam guardadas lá)
-		messages[24],  # Botões COMER e BEBER
+		messages[24],  # Abas COMIDAS e BEBIDAS: escolher o item
 		messages[25],  # DESCANSAR e ASSISTIR TV
 		messages[16],  # Barra de STAMINA
 		messages[17],  # DORMIR encerra o dia (aviso das 18h)
@@ -562,7 +562,7 @@ func on_player_entered_home() -> void:
 	Global.player["tutorial_home_shown"] = true
 	queue_messages([
 		messages[23],  # o estoque: o que se compra no mercado fica guardado aqui
-		messages[24],  # COMER e BEBER
+		messages[24],  # abas COMIDAS e BEBIDAS
 		messages[25],  # DESCANSAR e ASSISTIR TV
 		messages[26],  # DORMIR encerra o dia
 		messages[27]   # sede

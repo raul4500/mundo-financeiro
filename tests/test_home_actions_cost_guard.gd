@@ -32,7 +32,8 @@ func _ready() -> void:
 	Global.player["stamina"] = 50.0
 	var res3 = Global.apply_home_action("VOCÊ DESCANSOU.", -12.0, 18.0, 1.0)
 	assert(res3["success"] == true, "Descansar deve ser permitido quando fome (20) >= gasto (12)")
-	assert(Global.player["hunger"] == 8.0, "Fome deve cair de 20 para 8")
+	# 20 - 12 (ação) - 1.2 (decaimento de 1h de descanso a 0.02/min) = 6.8
+	assert(is_equal_approx(float(Global.player["hunger"]), 6.8), "Fome deve cair para ~6.8 após ação e 1h de descanso")
 	assert(Global.player["stamina"] > 50.0, "Stamina líquida deve ter aumentado")
 	assert(not Global.is_game_over(), "Game over NÃO deve ser disparado")
 	print("  ok   Descansar permitido normalmente quando jogador tem fome suficiente")
@@ -49,7 +50,8 @@ func _ready() -> void:
 	Global.player["thirst"] = 25.0
 	var res5 = Global.apply_home_action("AÇÃO DE TESTE SEDE", 0.0, 10.0, 1.0, -10.0)
 	assert(res5["success"] == true, "Ação com sede permitida quando sede (25) >= gasto (10)")
-	assert(Global.player["thirst"] == 15.0, "Sede deve cair de 25 para 15")
+	# 25 - 10 (ação) - 4.2 (decaimento de 1h a 0.07/min) = 10.8
+	assert(is_equal_approx(float(Global.player["thirst"]), 10.8), "Sede deve cair para ~10.8 após ação e 1h de tempo")
 	assert(not Global.is_game_over(), "Game over NÃO deve ser disparado")
 	print("  ok   Ação com gasto de sede permitida quando jogador tem sede suficiente")
 	

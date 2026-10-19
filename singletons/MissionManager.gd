@@ -106,9 +106,9 @@ var missions_data: Dictionary = {
 		},
 		{
 			"id": "lucro_fii",
-			"description": "Ganhe R$20 com investimentos",
+			"description": "Ganhe R$5 com investimentos",
 			"type": "profit",
-			"value": 20
+			"value": 5
 		}
 	],
 	5: [
@@ -216,7 +216,7 @@ func _check_mission(mission: Dictionary) -> bool:
 		return false
 	match mission["type"]:
 		"money_min":
-			return float(player.get("money", 0.0)) >= float(mission.get("value", 0.0))
+			return Global.total_funds() >= float(mission.get("value", 0.0))
 		"bank_min":
 			return float(player.get("saldo", 0.0)) >= float(mission.get("value", 0.0))
 		"no_spend_day":

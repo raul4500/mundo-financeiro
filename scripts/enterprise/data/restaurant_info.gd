@@ -7,7 +7,7 @@ static func get_data() -> Dictionary:
 		"description": "Um restaurante pequeno para iniciar sua jornada empreendedora.",
 		"size": "small",
 		"category": "Alimentacao",
-		"purchase_price": 1500.0,
+		"purchase_price": 1000.0,
 		"base_daily_revenue": 70.0,
 		"base_daily_expenses": 25.0,
 		"water_bill": 20.0,

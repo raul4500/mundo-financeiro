@@ -8,7 +8,7 @@ var unexpected_events: Dictionary = {"eventos": [
 	  "tipo": "negativo",
 	  "categoria": "emergencia",
 	  "impacto": {
-		"dinheiro": -500
+		"dinheiro": -120
 	  },
 	  "probabilidade": 0.2
 	},
@@ -30,7 +30,7 @@ var unexpected_events: Dictionary = {"eventos": [
 	  "tipo": "negativo",
 	  "categoria": "emergencia",
 	  "impacto": {
-		"dinheiro": -300
+		"dinheiro": -100
 	  },
 	  "probabilidade": 0.2
 	},
@@ -55,7 +55,7 @@ var unexpected_events: Dictionary = {"eventos": [
 		{
 		  "descricao": "Comprar",
 		  "impacto": {
-			"dinheiro": -250
+			"dinheiro": -100
 		  }
 		},
 		{

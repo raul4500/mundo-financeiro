@@ -108,7 +108,7 @@ var levels_data: Array = [
 		"topics": [
 			{
 				"name": "Escolher e comprar o negócio",
-				"description": "Abrir um negócio começa por uma decisão de capital: você troca dinheiro que já tem por uma fonte de renda que ainda não existe.\n\nNo jogo existem três negócios, com portas próprias no mapa:\n\n• Restaurante Sabor da Praça — R$ 1.500\n• Fliperama Neon — R$ 12.000\n• Centro Comercial Mundo Mix — R$ 85.000\n\nO preço de compra é só a entrada. Depois dela você ainda precisa de dinheiro para estoque, contas e funcionários. Comprar um negócio com o caixa raspado é o erro mais comum de quem começa: o negócio abre e trava por falta de capital de giro.\n\nRegra prática: só compre quando sobrar dinheiro suficiente para operar as primeiras semanas sem depender do lucro."
+				"description": "Abrir um negócio começa por uma decisão de capital: você troca dinheiro que já tem por uma fonte de renda que ainda não existe.\n\nNo jogo existem três negócios, com portas próprias no mapa:\n\n• Restaurante Sabor da Praça — R$ 1.000\n• Fliperama Neon — R$ 12.000\n• Centro Comercial Mundo Mix — R$ 85.000\n\nO preço de compra é só a entrada. Depois dela você ainda precisa de dinheiro para estoque, contas e funcionários. Comprar um negócio com o caixa raspado é o erro mais comum de quem começa: o negócio abre e trava por falta de capital de giro.\n\nRegra prática: só compre quando sobrar dinheiro suficiente para operar as primeiras semanas sem depender do lucro."
 			},
 			{
 				"name": "Como o negócio gera lucro",
@@ -148,7 +148,7 @@ var levels_data: Array = [
 			},
 			{
 				"name": "Escalar para negócios maiores",
-				"description": "Os três negócios do jogo formam uma escada de risco e retorno, a mesma lógica dos investimentos.\n\nO restaurante custa R$ 1.500 e fatura pouco, mas erra barato: se algo der errado, o prejuízo é pequeno. O Centro Comercial custa R$ 85.000 e fatura R$ 2.600 por dia, mas só de água e luz consome R$ 1.550 por semana — um mês de descuido ali custa mais que o restaurante inteiro.\n\nEscalar não é só ter dinheiro para o preço de compra. É ter reserva para aguentar as semanas ruins de um negócio com custos fixos muito maiores.\n\nO caminho saudável é o mesmo de uma carteira de investimentos: comece pequeno, aprenda a administrar de verdade — estoque, contas, capacidade, equipe —, acumule reserva e só então suba um degrau. Empreender bem é menos sobre ter a ideia certa e mais sobre sobreviver ao tempo suficiente para ela dar resultado."
+				"description": "Os três negócios do jogo formam uma escada de risco e retorno, a mesma lógica dos investimentos.\n\nO restaurante custa R$ 1.000 e fatura pouco, mas erra barato: se algo der errado, o prejuízo é pequeno. O Centro Comercial custa R$ 85.000 e fatura R$ 2.600 por dia, mas só de água e luz consome R$ 1.550 por semana — um mês de descuido ali custa mais que o restaurante inteiro.\n\nEscalar não é só ter dinheiro para o preço de compra. É ter reserva para aguentar as semanas ruins de um negócio com custos fixos muito maiores.\n\nO caminho saudável é o mesmo de uma carteira de investimentos: comece pequeno, aprenda a administrar de verdade — estoque, contas, capacidade, equipe —, acumule reserva e só então suba um degrau. Empreender bem é menos sobre ter a ideia certa e mais sobre sobreviver ao tempo suficiente para ela dar resultado."
 			}
 		]
 	}

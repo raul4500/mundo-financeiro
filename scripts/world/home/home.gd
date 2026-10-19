@@ -1,6 +1,13 @@
 extends Control
 
 const UI_THEME = preload("res://themes/font_theme.tres")
+const BankCard = preload("res://scripts/world/bank/bank_card.gd")
+# Ícones dos itens vêm do mercado (fonte única do mapa nome -> sprite). O item do
+# estoque guarda o nome exibido ("Pão"), a mesma chave de ITEM_ICONS.
+const MarketScript = preload("res://scripts/world/market/market.gd")
+
+const ITEM_CARD_HEIGHT := 190
+const ITEM_ICON_SIZE := 48
 
 # Mesmo mapa usado por player.gd e raul_minigame.gd: o nome salvo em
 # Global.player["name"] aponta para a cena do sprite animado.
@@ -33,14 +40,15 @@ const CHARACTER_Y_OFFSET = {
 @onready var time_label: Label = $"Time-label"
 @onready var actions_box: VBoxContainer = $"HBoxContainer/Actions/VBoxContainer"
 @onready var status_label: Label = $"status-message"
-@onready var inventory_scroll: ScrollContainer = $"HBoxContainer/VBoxContainer/Inventory-panel/Inventory-scroll"
+# Abas Comidas/Bebidas (cena home.tscn, nó Food-tabs): o estoque da casa em cards.
+@onready var food_grid: GridContainer = $"HBoxContainer/VBoxContainer/Food-tabs/Comidas/ScrollContainer/Food-grid"
+@onready var drink_grid: GridContainer = $"HBoxContainer/VBoxContainer/Food-tabs/Bebidas/ScrollContainer/Drink-grid"
 @onready var history_scroll: ScrollContainer = $"HBoxContainer/VBoxContainer/History-panel/History-scroll"
 @onready var exit_button: Button = $"Exit"
 # Node2D vazio na cena que serve de âncora para o sprite do personagem.
 @onready var character_holder: Node2D = $"Node2D"
 
 # Containers criados em runtime dentro dos scrolls fixos.
-var inventory_list: VBoxContainer
 var history_list: VBoxContainer
 var character_sprite: AnimatedSprite2D
 
@@ -81,7 +89,6 @@ func _update_time_label() -> void:
 func _build_ui() -> void:
 	_build_action_buttons()
 	_build_character()
-	inventory_list = _get_or_create_list(inventory_scroll)
 	history_list = _get_or_create_list(history_scroll)
 
 	status_label.autowrap_mode = TextServer.AUTOWRAP_WORD
@@ -107,8 +114,8 @@ func _build_action_buttons() -> void:
 	title.text = "AÇÕES"
 	actions_box.add_child(title)
 
-	actions_box.add_child(_make_button("COMER", _on_eat_pressed))
-	actions_box.add_child(_make_button("BEBER", _on_drink_pressed))
+	# Comer e beber não são mais botões: o jogador escolhe o item nas abas
+	# Comidas e Bebidas (_render_inventory).
 	actions_box.add_child(_make_button("DESCANSAR", _on_rest_pressed))
 	actions_box.add_child(_make_button("ASSISTIR TV", _on_tv_pressed))
 	actions_box.add_child(_make_button("DORMIR", _on_sleep_pressed))
@@ -191,40 +198,67 @@ func _update_ui() -> void:
 	_render_inventory()
 	_render_history()
 
+# Estoque da casa em cards, um grid por aba: itens "food" em Comidas, "drink" em
+# Bebidas. Cada card tem ícone, nome, quantidade, o que repõe e o botão de consumir.
 func _render_inventory() -> void:
-	if inventory_list == null:
+	if food_grid == null or drink_grid == null:
 		return
-	_clear_children(inventory_list)
+	_clear_children(food_grid)
+	_clear_children(drink_grid)
 
-	var items = Global.get_home_inventory_items()
-	if items.is_empty():
-		inventory_list.add_child(_make_info_label("Você não tem itens no estoque."))
-		return
+	for item in Global.get_home_inventory_items():
+		var category := str(item.get("category", "food"))
+		if category == "drink":
+			drink_grid.add_child(_make_item_card(item))
+		elif category == "food":
+			food_grid.add_child(_make_item_card(item))
 
-	for item in items:
-		var row = HBoxContainer.new()
-		row.theme = UI_THEME
-		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	if food_grid.get_child_count() == 0:
+		food_grid.add_child(BankCard.new_empty_card("Você não tem comidas no estoque."))
+	if drink_grid.get_child_count() == 0:
+		drink_grid.add_child(BankCard.new_empty_card("Você não tem bebidas no estoque."))
 
-		var label = Label.new()
-		label.theme = UI_THEME
-		label.text = "%s x%s" % [item.get("name", "Item"), str(item.get("quantity", 0))]
-		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+func _make_item_card(item: Dictionary) -> PanelContainer:
+	var is_drink := str(item.get("category", "food")) == "drink"
+	var item_name := str(item.get("name", "Item"))
+	var parts := BankCard.new_card(ITEM_CARD_HEIGHT)
+	var box: VBoxContainer = parts["box"]
 
-		# Mesmo formato do card do mercado: mostra so' o que o item repoe.
-		var restores: Array = []
-		if float(item.get("energy", 0.0)) > 0.0:
-			restores.append("Fome +%.0f%%" % float(item.get("energy", 0.0)))
-		if float(item.get("thirst", 0.0)) > 0.0:
-			restores.append("Sede +%.0f%%" % float(item.get("thirst", 0.0)))
+	box.add_child(_make_item_icon(item_name))
+	box.add_child(BankCard.make_label(item_name, 18))
+	box.add_child(BankCard.make_label("Estoque: %d" % int(item.get("quantity", 0)), 13))
+	box.add_child(BankCard.make_label(_restore_text(item), 14))
 
-		var meta = Label.new()
-		meta.theme = UI_THEME
-		meta.text = " / ".join(restores) if not restores.is_empty() else "—"
+	var button := BankCard.make_button("BEBER" if is_drink else "COMER")
+	# A chave do estoque é o nome em minúsculas (ver Global.normalize_home_inventory).
+	button.pressed.connect(_on_consume_pressed.bind(item_name.to_lower()))
+	box.add_child(button)
+	return parts["card"]
 
-		row.add_child(label)
-		row.add_child(meta)
-		inventory_list.add_child(row)
+# Mesmo ícone do card do mercado. Sem sprite para o item, um espaço vazio do
+# mesmo tamanho mantém os cards alinhados (o nome já aparece logo abaixo).
+func _make_item_icon(item_name: String) -> Control:
+	var icon_path: String = MarketScript.ITEM_ICONS.get(item_name, "")
+	if icon_path == "" or not ResourceLoader.exists(icon_path):
+		var spacer := Control.new()
+		spacer.custom_minimum_size = Vector2(ITEM_ICON_SIZE, ITEM_ICON_SIZE)
+		return spacer
+	var icon := TextureRect.new()
+	icon.texture = load(icon_path)
+	icon.custom_minimum_size = Vector2(ITEM_ICON_SIZE, ITEM_ICON_SIZE)
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	return icon
+
+# "Fome +10% / Sede +8%": só o que o item repõe, como no card do mercado.
+func _restore_text(item: Dictionary) -> String:
+	var parts: Array = []
+	if float(item.get("energy", 0.0)) > 0.0:
+		parts.append("Fome +%.0f%%" % float(item.get("energy", 0.0)))
+	if float(item.get("thirst", 0.0)) > 0.0:
+		parts.append("Sede +%.0f%%" % float(item.get("thirst", 0.0)))
+	return " / ".join(parts) if not parts.is_empty() else "Sem efeito"
 
 func _render_history() -> void:
 	if history_list == null:
@@ -256,14 +290,10 @@ func _make_info_label(text: String) -> Label:
 # AÇÕES DA CASA (lógica de gameplay inalterada)
 # =============================================================
 
-func _on_eat_pressed() -> void:
-	var result = Global.consume_food()
-	status_label.text = result.get("message", "VOCÊ COMEU.")
-	_update_ui()
-
-func _on_drink_pressed() -> void:
-	var result = Global.consume_drink()
-	status_label.text = result.get("message", "VOCÊ BEBEU.")
+# Comer ou beber o item escolhido no card (a categoria do item decide qual).
+func _on_consume_pressed(item_key: String) -> void:
+	var result = Global.consume_specific_item(item_key)
+	status_label.text = result.get("message", "")
 	_update_ui()
 
 func _on_rest_pressed() -> void:

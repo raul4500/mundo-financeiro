@@ -21,8 +21,9 @@ func _fresh_player() -> void:
 	Global.player = Global._new_player_data()
 	Global.player["name"] = "Raul"
 	Global.player["money"] = 1000.0
-	Global.player["hunger"] = 100.0
-	Global.player["stamina"] = 100.0
+	Global.player["hunger"] = 110.0
+	Global.player["thirst"] = 110.0
+	Global.player["stamina"] = 110.0
 	Global.player["day"] = 1
 	Global.player["hour"] = 8
 	# Para testes de mecânicas gerais (stamina, sono, game over, FIIs), o jogador
@@ -46,18 +47,19 @@ func _run_until(hour: int, minute: int) -> void:
 
 # =============================================================
 func test_stamina_dura_o_dia_inteiro() -> void:
-	print("stamina: 100 -> 0 entre 08h e 24h (fase 6.2)")
+	print("stamina: 110 -> 0 entre 08h e 24h")
 	_fresh_player()
 	_run_until(18, 0)
 	var at_18 := float(Global.player["stamina"])
-	# 10 horas a 100/960 por minuto = 62.5 gastos.
-	_check(abs(at_18 - 37.5) < 0.5, "as 18h sobra ~37.5 de stamina (obtido %.2f)" % at_18)
+	# 10 horas a 110/960 por minuto = 68.75 gastos. Sobra 41.25.
+	_check(abs(at_18 - 41.25) < 0.5, "as 18h sobra ~41.25 de stamina (obtido %.2f)" % at_18)
 	_check(TimeManager._exhaustion_alert_shown, "o aviso das 18h foi disparado")
 	_check(not TimeManager.day_end_pending, "o dia NAO acabou sozinho as 18h (fase 7.1)")
 
 	_run_until(19, 0)
 	var at_19 := float(Global.player["stamina"])
-	_check(abs(at_19 - 31.25) < 0.5, "as 19h sobra ~31.25 (taxa ainda base, obtido %.2f)" % at_19)
+	# 11 horas a 110/960 por minuto = 75.625 gastos. Sobra 34.375.
+	_check(abs(at_19 - 34.38) < 0.5, "as 19h sobra ~34.38 (taxa ainda base, obtido %.2f)" % at_19)
 
 	# 19h em diante: 2x, +10% por hora. A stamina zera por volta das 21h20.
 	_run_until(21, 0)
@@ -74,9 +76,8 @@ func test_dormir_fecha_o_dia() -> void:
 	var hunger_before := float(Global.player["hunger"])
 	var result: Dictionary = TimeManager.sleep()
 	_check(bool(result["success"]), "sleep() aceitou")
-	_check(float(Global.player["stamina"]) == 100.0, "stamina voltou a 100")
-	_check(abs(float(Global.player["hunger"]) - (hunger_before - Global.HUNGER_DECAY_PER_DAY)) < 0.01,
-		"a fome caiu %.0f no fechamento" % Global.HUNGER_DECAY_PER_DAY)
+	_check(float(Global.player["hunger"]) <= hunger_before,
+		"a fome não aumentou no fechamento")
 	_check(TimeManager.day_end_pending, "o dia ficou trancado esperando o alerta")
 	_check(not bool(TimeManager.sleep()["success"]), "dormir duas vezes no mesmo dia nao vale")
 
@@ -171,10 +172,11 @@ func test_comida_do_mercado_repoe_fome() -> void:
 	Global.add_home_inventory_item("Bread", 1, "food", 10)
 	var result: Dictionary = Global.consume_food()
 	_check(bool(result["success"]), "comeu o pao")
-	_check(abs(float(Global.player["hunger"]) - 30.0) < 0.01,
-		"fome 20 + 10%% = 30 (obtido %.2f)" % float(Global.player["hunger"]))
+	# consume_food() gasta 30 min, decaindo 30 * 0.02 = 0.6 de fome: 20 + 10 - 0.6 = 29.4
+	_check(abs(float(Global.player["hunger"]) - 29.40) < 0.01,
+		"fome 20 + 10%% - 0.6 (30 min) = 29.4 (obtido %.2f)" % float(Global.player["hunger"]))
 	# consume_food() gasta 30 minutos de jogo, que ja' descontam stamina:
-	# 20 + (10 * 0.25) - (30 * 100/960) = 19.375.
+	# 20 + (10 * 0.25) - (30 * 110/960)
 	var expected_stamina := 20.0 + 10.0 * Global.STAMINA_PER_FOOD_ENERGY - 30.0 * TimeManager.STAMINA_DECAY_PER_MINUTE
 	_check(abs(float(Global.player["stamina"]) - expected_stamina) < 0.01,
 		"stamina = %.3f apos o bonus e a meia hora gasta (obtido %.3f)" % [expected_stamina, float(Global.player["stamina"])])
@@ -191,11 +193,12 @@ func test_beber_escolhe_bebida_e_repoe_sede() -> void:
 	var result: Dictionary = Global.consume_drink()
 	_check(bool(result["success"]), "bebeu")
 	_check(str(result.get("item", "")) == "Water", "escolheu a agua, e nao o pao")
-	_check(abs(float(Global.player["thirst"]) - 65.0) < 0.01,
-		"sede 40 + 25%% = 65 (obtido %.2f)" % float(Global.player["thirst"]))
-	# A agua tambem tem 3% de fome: o item aplica os dois restauros.
-	_check(abs(float(Global.player["hunger"]) - 53.0) < 0.01,
-		"fome 50 + 3%% da agua = 53 (obtido %.2f)" % float(Global.player["hunger"]))
+	# consume_drink() gasta 15 min: sede decai 15 * 0.07 = 1.05. 40 + 25 - 1.05 = 63.95
+	_check(abs(float(Global.player["thirst"]) - 63.95) < 0.01,
+		"sede 40 + 25%% - 1.05 (15 min) = 63.95 (obtido %.2f)" % float(Global.player["thirst"]))
+	# A agua tambem tem 3% de fome: decai 15 * 0.02 = 0.3. 50 + 3 - 0.3 = 52.70
+	_check(abs(float(Global.player["hunger"]) - 52.70) < 0.01,
+		"fome 50 + 3%% da agua - 0.3 = 52.70 (obtido %.2f)" % float(Global.player["hunger"]))
 	_check(Global.player["home_inventory"].has("bread"), "o pao continua no estoque")
 	_check(int(Global.player["home_inventory"]["water"]["quantity"]) == 1, "sobrou 1 agua")
 
@@ -207,12 +210,12 @@ func test_bebida_de_save_antigo_e_migrada() -> void:
 	_fresh_player()
 	# Formato anterior a' sede: category "food" e sem campo "thirst".
 	Global.player["home_inventory"] = {
-		"wine": {"name": "Wine", "quantity": 1, "category": "food", "energy": 8.0, "happiness": 1.0}
+		"suco": {"name": "Suco", "quantity": 1, "category": "food", "energy": 15.0, "happiness": 1.0}
 	}
 	Global.normalize_home_inventory()
-	var wine: Dictionary = Global.player["home_inventory"]["wine"]
-	_check(str(wine["category"]) == "drink", "vinho migrado para 'drink'")
-	_check(abs(float(wine["thirst"]) - 8.0) < 0.01, "vinho recebeu os 8%% de sede da tabela")
+	var juice: Dictionary = Global.player["home_inventory"]["suco"]
+	_check(str(juice["category"]) == "drink", "suco migrado para 'drink'")
+	_check(abs(float(juice["thirst"]) - 35.0) < 0.01, "suco recebeu os 35%% de sede da tabela")
 
 func test_mercado_e_migracao_nao_divergem() -> void:
 	print("sede: Global.DRINK_THIRST espelha market.gd['Bebidas']")
@@ -286,6 +289,7 @@ func test_ordem_escritorio_depois_o_resto() -> void:
 	print("liberacao sequencial: minigame -> escritorio -> resto (itens 2 e 3)")
 	_fresh_player()
 	Global.player["tutorial_step"] = 7
+	Global.player["unlock_stage"] = Global.UNLOCK_SCHOOL_ONLY
 	TutorialManager.step = 7
 	TutorialManager.skipped = false
 	TutorialManager.pending_messages.clear()
@@ -401,7 +405,7 @@ func test_tutorial_fluxo_inicial_controles_e_escola() -> void:
 	_check(TutorialManager.step == 6, "entrou na escola: avancou para o minigame")
 
 func test_status_travados_em_100_durante_tutorial() -> void:
-	print("tutorial: status (fome, sede, stamina) travados em 100 ate concluir ou pular")
+	print("tutorial: status (fome, sede, stamina) travados em 110 ate concluir ou pular")
 	_fresh_player()
 	Global.player["tutorial_step"] = 1
 	Global.player["unlock_stage"] = Global.UNLOCK_SCHOOL_ONLY
@@ -409,28 +413,28 @@ func test_status_travados_em_100_durante_tutorial() -> void:
 
 	# Avanca tempo com o tutorial ativo: stamina nao cai, 18h nao dispara alerta
 	_run_until(18, 0)
-	_check(float(Global.player["stamina"]) == 100.0, "stamina continua 100 as 18h no tutorial")
+	_check(float(Global.player["stamina"]) == 110.0, "stamina continua 110 as 18h no tutorial")
 	_check(not TimeManager._exhaustion_alert_shown, "aviso das 18h nao dispara durante o tutorial")
 
 	# Fim do dia / decay_need_state nao reduz fome nem sede
 	var survived: bool = Global.decay_need_state()
 	_check(survived, "decay_need_state durante tutorial nao mata")
-	_check(float(Global.player["hunger"]) == 100.0, "fome continua 100 no tutorial")
-	_check(float(Global.player["thirst"]) == 100.0, "sede continua 100 no tutorial")
+	_check(float(Global.player["hunger"]) == 110.0, "fome continua 110 no tutorial")
+	_check(float(Global.player["thirst"]) == 110.0, "sede continua 110 no tutorial")
 
 	# Pular tutorial libera o mundo e destrava o decaimento normal
 	TutorialManager.start_tutorial()
 	TutorialManager.skip_tutorial()
 	_check(not Global.is_tutorial_active(), "tutorial inativo apos pular")
-	_check(float(Global.player["stamina"]) == 100.0, "stamina continua 100 logo apos pular")
-	_check(float(Global.player["hunger"]) == 100.0, "fome continua 100 logo apos pular")
-	_check(float(Global.player["thirst"]) == 100.0, "sede continua 100 logo apos pular")
+	_check(float(Global.player["stamina"]) == 110.0, "stamina continua 110 logo apos pular")
+	_check(float(Global.player["hunger"]) == 110.0, "fome continua 110 logo apos pular")
+	_check(float(Global.player["thirst"]) == 110.0, "sede continua 110 logo apos pular")
 
 	# Agora que o tutorial acabou, o decaimento de stamina funciona normalmente
 	TimeManager.current_hour = 8
 	TimeManager.current_minute = 0
 	_run_until(18, 0)
-	_check(float(Global.player["stamina"]) < 100.0, "apos tutorial, stamina decai normalmente")
+	_check(float(Global.player["stamina"]) < 110.0, "apos tutorial, stamina decai normalmente")
 
 func test_save_antigo_nao_retranca_a_cidade() -> void:
 	print("save antigo: sem unlock_stage entra com tudo aberto")

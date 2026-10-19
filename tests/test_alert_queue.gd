@@ -123,4 +123,4 @@ func _ready() -> void:
 	print("  ok   reset() limpa filas e zera defer_count")
 
 	print("=== Todos os testes de alerta passaram ===")
-
+	get_tree().quit(0)

@@ -16,8 +16,7 @@ const THIRST_DECAY_PER_MINUTE := 0.07
 # ponytail: duplicacao aceita porque a alternativa e' o Global depender de uma
 # cena de UI. Um teste em tests/test_mechanics.gd compara as duas listas.
 const DRINK_THIRST := {
-	"water": 25, "juice": 35, "coffee": 15, "milk": 15, "soda": 20,
-	"tea": 30, "energy_drink": 20
+	"Água": 25, "Suco": 35, "Café": 15, "Leite": 15, "Chá": 30, "Energético": 20
 }
 
 # =============================================================
@@ -289,10 +288,12 @@ func normalize_home_inventory() -> void:
 		# ("hot_chocolate" -> "Hot Chocolate"), entao a chave volta a ter "_"
 		# para casar com DRINK_THIRST, que espelha market.gd.
 		var drink_key = normalized_key.replace(" ", "_")
-		if DRINK_THIRST.has(drink_key):
-			category = "drink"
-			if thirst <= 0.0:
-				thirst = float(DRINK_THIRST[drink_key])
+		for dname in DRINK_THIRST.keys():
+			if dname.to_lower() == normalized_key or dname.to_lower() == drink_key:
+				category = "drink"
+				if thirst <= 0.0:
+					thirst = float(DRINK_THIRST[dname])
+				break
 		normalized[normalized_key] = {
 			"name": item_name,
 			"quantity": int(max(0, item.get("quantity", 0))),
@@ -442,7 +443,8 @@ func snapshot_week_start() -> void:
 		"saldo": float(player.get("saldo", 0.0)),
 		"pending_house_bills": player.get("pending_house_bills", []).duplicate(true),
 		"house_bill_history": player.get("house_bill_history", []).duplicate(true),
-		"pending_events": player.get("pending_events", []).duplicate(true)
+		"pending_events": player.get("pending_events", []).duplicate(true),
+		"home_inventory": player.get("home_inventory", {}).duplicate(true)
 	}
 
 func restore_week_start() -> void:
@@ -456,6 +458,9 @@ func restore_week_start() -> void:
 	player["pending_house_bills"] = snap.get("pending_house_bills", []).duplicate(true)
 	player["house_bill_history"] = snap.get("house_bill_history", []).duplicate(true)
 	player["pending_events"] = snap.get("pending_events", []).duplicate(true)
+	if snap.has("home_inventory") and typeof(snap["home_inventory"]) == TYPE_DICTIONARY:
+		player["home_inventory"] = snap["home_inventory"].duplicate(true)
+		normalize_home_inventory()
 
 func _food_energy_for(item_name: String, base_price: float) -> float:
 	var price_factor = clamp(base_price / 20.0, 0.5, 3.0)
@@ -561,7 +566,31 @@ func consume_item(category: String, need_key: String, action: Dictionary) -> Dic
 			chosen_item = item
 	if chosen_item == null:
 		return {"success": false, "message": str(action["empty_stock"])}
+	return _consume_chosen(chosen_name, action)
 
+# Consome exatamente o item escolhido pelo jogador (card da casa), em vez do
+# "melhor" que consume_item() escolhe sozinha. `item_key` é a chave do estoque
+# (nome em minúsculas, ver normalize_home_inventory). A categoria do item decide
+# se conta como comer ou beber: tempo gasto, mensagens e qual necessidade já
+# cheia bloqueia o consumo.
+func consume_specific_item(item_key: String) -> Dictionary:
+	if player == null:
+		return {"success": false, "message": "Estado do jogador não inicializado."}
+	var inventory = player.get("home_inventory", {})
+	if not inventory.has(item_key) or int(inventory[item_key].get("quantity", 0)) <= 0:
+		return {"success": false, "message": "Você não tem mais este item."}
+	var is_drink := str(inventory[item_key].get("category", "food")) == "drink"
+	var action: Dictionary = DRINK_ACTION if is_drink else EAT_ACTION
+	var need_key := "thirst" if is_drink else "hunger"
+	if float(player.get(need_key, 110.0)) >= 110.0:
+		return {"success": false, "message": str(action["already_full"])}
+	return _consume_chosen(item_key, action)
+
+# Tira 1 unidade do estoque, aplica os ganhos do item e gasta o tempo da ação.
+# Parte comum de consume_item() e consume_specific_item().
+func _consume_chosen(chosen_name: String, action: Dictionary) -> Dictionary:
+	var inventory = player.get("home_inventory", {})
+	var chosen_item = inventory[chosen_name]
 	inventory[chosen_name]["quantity"] = int(inventory[chosen_name].get("quantity", 0)) - 1
 	if inventory[chosen_name]["quantity"] <= 0:
 		inventory.erase(chosen_name)
@@ -592,24 +621,28 @@ func consume_item(category: String, need_key: String, action: Dictionary) -> Dic
 
 # Fachadas. consume_food() e' mantida porque home.gd e tests/test_mechanics.gd
 # ja' a chamam.
+const EAT_ACTION := {
+	"already_full": "Você não está com fome.",
+	"empty_stock": "Sem comida no estoque.",
+	"done": "Você comeu %s.",
+	"log_type": "eat",
+	"time_cost": 0.5
+}
+
+const DRINK_ACTION := {
+	"already_full": "Você não está com sede.",
+	"empty_stock": "Sem bebida no estoque.",
+	"done": "Você bebeu %s.",
+	"log_type": "drink",
+	# Beber custa metade do tempo de comer.
+	"time_cost": 0.25
+}
+
 func consume_food() -> Dictionary:
-	return consume_item("food", "hunger", {
-		"already_full": "Você não está com fome.",
-		"empty_stock": "Sem comida no estoque.",
-		"done": "Você comeu %s.",
-		"log_type": "eat",
-		"time_cost": 0.5
-	})
+	return consume_item("food", "hunger", EAT_ACTION)
 
 func consume_drink() -> Dictionary:
-	return consume_item("drink", "thirst", {
-		"already_full": "Você não está com sede.",
-		"empty_stock": "Sem bebida no estoque.",
-		"done": "Você bebeu %s.",
-		"log_type": "drink",
-		# Beber custa metade do tempo de comer.
-		"time_cost": 0.25
-	})
+	return consume_item("drink", "thirst", DRINK_ACTION)
 
 func apply_home_action(action_name: String, hunger_delta: float, stamina_delta: float, time_cost: float = 0.0, thirst_delta: float = 0.0) -> Dictionary:
 	if player == null:

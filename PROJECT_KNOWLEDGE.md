@@ -576,10 +576,11 @@ Ele escreve em arquivo em `logs/game_runtime.log`, criando pastas quando necess�
 Capturados com `@onready`, todos definidos no editor:
 
 - `Money-label` e `Time-label` — dinheiro e dia/semana no topo;
-- `HBoxContainer/Actions/VBoxContainer` — container **vazio** na cena, preenchido em runtime com os botões Comer, Beber, Descansar, Assistir TV e Dormir;
+- `HBoxContainer/Actions/VBoxContainer` — container **vazio** na cena, preenchido em runtime com os botões Descansar, Assistir TV e Dormir (Comer e Beber **não** são mais botões: ver abas abaixo);
 - `.../Hunger-container/ProgressBar`, `.../Thirst-container/ProgressBar` e `.../Stamina-container/ProgressBar` — as barras usam `show_percentage`, então não existem labels separados de porcentagem;
 - `.../status-message` — mensagem de retorno das ações;
-- `Inventory-scroll` e `History-scroll` — recebem um `VBoxContainer` criado em runtime para as linhas;
+- `HBoxContainer/VBoxContainer/Food-tabs` — `TabContainer` com as abas **Comidas** e **Bebidas**, cada uma com um `GridContainer` de 2 colunas (`Food-grid`, `Drink-grid`) que `_render_inventory()` enche com cards do estoque;
+- `History-scroll` — recebe um `VBoxContainer` criado em runtime para as linhas;
 - `Exit` — botão fixo da cena, conectado por código (a cena não tem seção `[connection]`);
 - `Node2D` — âncora **vazia** onde `_build_character()` instancia o sprite do personagem em runtime.
 
@@ -613,9 +614,9 @@ Na função, a variável local se chama `sprite_position` e não `position` de p
 
 - `_build_ui()` — só cria o que é dinâmico: botões de ação e os containers de lista dentro dos scrolls
 - `_update_ui()` — atualiza status da UI
-- `_render_inventory()` — exibe estoque
+- `_render_inventory()` — exibe o estoque em cards, itens `food` na aba Comidas e `drink` na aba Bebidas (card = ícone, nome, "Estoque: N", "Fome +x% / Sede +y%" e botão COMER ou BEBER; mesmo `BankCard` das abas do banco)
 - `_render_history()` — exibe histórico de ações (últimas 10)
-- `_on_eat_pressed()` — chama `Global.consume_food()`
+- `_on_consume_pressed(item_key)` — chama `Global.consume_specific_item()` com o item do card
 - `_on_rest_pressed()` — chama `Global.apply_home_action("rest", -12.0, 18.0, 1.0)`
 - `_on_tv_pressed()` — chama `Global.apply_home_action("watch_tv", -6.0, 14.0, 1.0)`
 - `_on_exit_pressed()` — volta para o mapa principal
@@ -662,12 +663,11 @@ A sede cai **mais rápido** que a fome de propósito — zera em ~7 dias contra 
 `"Comidas"` e `"Bebidas"` para a mesma categoria `"food"`, e bebida era apenas
 comida ruim (cerveja a R$ 50 repondo 5% de fome).
 
-### Consumo: uma função, dois botões
+### Consumo: o jogador escolhe o item
 
-`Global.consume_item(category, need_key, action)` é o ponto único. `consume_food()`
-e `consume_drink()` são fachadas de uma linha que passam a categoria filtrada
-(`"food"` / `"drink"`), a necessidade que ordena a escolha do "melhor" item, e um
-dicionário com os textos e o custo de tempo (0,5 h comer / 0,25 h beber).
+A casa chama `Global.consume_specific_item(item_key)`: consome **exatamente** o item do card clicado (`item_key` = nome em minúsculas, a chave do estoque). A categoria do item decide se vale como comer ou beber (`EAT_ACTION`/`DRINK_ACTION`: textos, 0,5 h comer / 0,25 h beber, e qual necessidade já cheia bloqueia).
+
+`Global.consume_item(category, need_key, action)` continua existindo e escolhe sozinha o "melhor" item da categoria; `consume_food()` e `consume_drink()` são fachadas dela, hoje sem chamador na UI (só testes). As duas terminam em `_consume_chosen()`, que tira 1 do estoque, aplica os ganhos e gasta o tempo.
 
 **O item aplica sempre os dois restauros.** Leite mata um pouco de sede,
 milkshake mata um pouco de fome; quem decide a categoria é o botão, não o efeito.

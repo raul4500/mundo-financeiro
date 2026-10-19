@@ -72,3 +72,4 @@ func _ready() -> void:
 	print("  ok   Trava de horário (antes das 16h)")
 
 	print("=== Todos os testes do minigame do parque passaram ===")
+	get_tree().quit(0)
