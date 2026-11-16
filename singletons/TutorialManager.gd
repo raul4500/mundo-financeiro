@@ -142,6 +142,8 @@ var messages = [
 
 	"Sua escolaridade define o nível do seu salário. Quanto maior for sua formação, maiores serão as oportunidades dentro do jogo e melhor será o seu rendimento semanal.",
 
+	"Preste atenção: seu desempenho no minigame vai impactar sua vida financeira. Quanto mais longe você chegar, maior será sua formação e o seu salário inicial.",
+
 	"Neste minigame, você precisará pular com o botão 'espaço' para desviar dos obstáculos que aparecem durante sua corrida de formação.",
 
 	"O objetivo é melhorar seu nível de escolaridade para conquistar um salário maior no futuro. Sempre pense em como cada decisão pode abrir ou fechar portas para suas metas financeiras.",
