@@ -1,12 +1,12 @@
-# 🎮 Mundo Financeiro
+# Mundo Financeiro
 
 ### Um jogo digital educativo sobre educação financeira
 
-\<p align="center">   \<img src="[https://mundo-financeiro-home.vercel.app/assets/interior-banco.png](https://mundo-financeiro-home.vercel.app/assets/interior-banco.png)" width="700" alt="Interior do banco no Mundo Financeiro"> \</p>
+<p align="center">   <img src="https://mundo-financeiro-home.vercel.app/assets/interior-banco.png" width="700" alt="Interior do banco no Mundo Financeiro"> </p>
 
-\<p align="center">   \<strong>Aprenda a administrar seu dinheiro tomando decisões em um mundo virtual!\</strong> \</p>
+<p align="center">   <strong>Aprenda a administrar seu dinheiro tomando decisões em um mundo virtual!</strong> </p>
 
-\<p align="center">   \<a href="[https://mundo-financeiro-home.vercel.app/](https://mundo-financeiro-home.vercel.app/)">🌐 Landing Page\</a> •   \<a href="[https://github.com/raul4500/mundo-financeiro](https://github.com/raul4500/mundo-financeiro)">💻 Repositório\</a> \</p>
+<p align="center">   <a href="https://mundo-financeiro-home.vercel.app/">🌐 Landing Page</a> •   <a href="https://github.com/raul4500/mundo-financeiro">💻 Repositório</a> </p>
 
 ---
 
@@ -22,21 +22,21 @@ Mais do que acumular dinheiro, o jogador precisa aprender a tomar decisões cons
 
 > **Cometa os erros de dinheiro aqui, antes que custem de verdade.**
 
-## 🖼️ Galeria do jogo
+## Galeria do jogo
 
 Conheça alguns dos ambientes desenvolvidos para o Mundo Financeiro.
 
-\<p align="center">   \<img src="[https://mundo-financeiro-home.vercel.app/assets/casa.png](https://mundo-financeiro-home.vercel.app/assets/casa.png)" width="180" alt="Casa do personagem">   \<img src="[https://mundo-financeiro-home.vercel.app/assets/escola.png](https://mundo-financeiro-home.vercel.app/assets/escola.png)" width="280" alt="Escola"> \</p>
+<p align="center">   <img src="https://mundo-financeiro-home.vercel.app/assets/casa.png" width="180" alt="Casa do personagem">   <img src="https://mundo-financeiro-home.vercel.app/assets/escola.png" width="280" alt="Escola"> </p>
 
-\<p align="center">   \<img src="[https://mundo-financeiro-home.vercel.app/assets/mercado.png](https://mundo-financeiro-home.vercel.app/assets/mercado.png)" width="180" alt="Mercado">   \<img src="[https://mundo-financeiro-home.vercel.app/assets/banco.png](https://mundo-financeiro-home.vercel.app/assets/banco.png)" width="280" alt="Banco"> \</p>
+<p align="center">   <img src="https://mundo-financeiro-home.vercel.app/assets/mercado.png" width="180" alt="Mercado">   <img src="https://mundo-financeiro-home.vercel.app/assets/banco.png" width="280" alt="Banco"> </p>
 
-\<p align="center">   \<img src="[https://mundo-financeiro-home.vercel.app/assets/interior-escritorio.png](https://mundo-financeiro-home.vercel.app/assets/interior-escritorio.png)" width="420" alt="Interior do escritório de consultoria financeira"> \</p>
+<p align="center">   <img src="https://mundo-financeiro-home.vercel.app/assets/interior-escritorio.png" width="420" alt="Interior do escritório de consultoria financeira"> </p>
 
-\<p align="center">
-&#x20; \<img src="[https://mundo-financeiro-home.vercel.app/assets/interior-fliperama.png](https://mundo-financeiro-home.vercel.app/assets/interior-fliperama.png)" width="420" alt="Interior do fliperama">
-\</p>
+<p align="center">
+&#x20; <img src="https://mundo-financeiro-home.vercel.app/assets/interior-fliperama.png" width="420" alt="Interior do fliperama">
+</p>
 
-## 🕹️ Como funciona?
+## Como funciona?
 
 A experiência é organizada em **cinco semanas**, cada uma dedicada ao desenvolvimento de uma competência financeira.
 
@@ -50,7 +50,7 @@ A experiência é organizada em **cinco semanas**, cada uma dedicada ao desenvol
 
 Cada semana apresenta novas missões, conteúdos educativos e possibilidades de interação, liberando progressivamente novos ambientes e funcionalidades.
 
-### 🏙️ Explore a cidade
+### Explore a cidade
 
 O jogador pode visitar diferentes estabelecimentos e interagir com os elementos da cidade:
 
@@ -61,7 +61,7 @@ O jogador pode visitar diferentes estabelecimentos e interagir com os elementos 
 - **Parque:** minigame de coleta de moedas acompanhado de perguntas educativas.
 - **Negócios:** aquisição e administração de empreendimentos comerciais.
 
-### 💰 Principais mecânicas
+### Principais mecânicas
 
 - Sistema de carteira e saldo bancário independentes.
 - Gerenciamento de fome, sede e energia.
@@ -75,7 +75,7 @@ O jogador pode visitar diferentes estabelecimentos e interagir com os elementos 
 - Missões e objetivos semanais.
 - Sistema de salvamento com até cinco espaços independentes.
 
-### 📚 Aprendizado na prática
+### Aprendizado na prática
 
 O jogo utiliza situações-problema para apresentar conceitos financeiros de maneira contextualizada.
 
@@ -83,7 +83,7 @@ Por exemplo, ao receber o salário, o jogador precisa decidir como distribuir se
 
 As decisões possuem consequências dentro da simulação, permitindo experimentar diferentes estratégias sem comprometer dinheiro real.
 
-## 🛠️ Tecnologias utilizadas
+## Tecnologias utilizadas
 
 | Tecnologia      | Aplicação                                                    |
 | --------------- | ------------------------------------------------------------ |
@@ -94,7 +94,7 @@ As decisões possuem consequências dentro da simulação, permitindo experiment
 | Visual Paradigm | Modelagem e elaboração de diagramas UML.                     |
 | Google Forms    | Coleta de feedback e avaliação da experiência dos jogadores. |
 
-## 🧪 Testes e resultados
+## Testes e resultados
 
 O Mundo Financeiro passou por uma etapa de testes com **16 participantes**, estudantes do 2º e 3º ano do Ensino Técnico Integrado ao Ensino Médio do Instituto Federal de São Paulo.
 
@@ -110,7 +110,7 @@ Os testes também identificaram oportunidades de melhoria na navegação pelo ma
 
 A avaliação concentrou-se principalmente na experiência dos participantes e no funcionamento das mecânicas, não constituindo uma comprovação isolada da aprendizagem efetiva dos conceitos financeiros.
 
-## 👥 Equipe de desenvolvimento
+## Equipe de desenvolvimento
 
 Projeto desenvolvido por cinco estudantes do Instituto Federal de São Paulo (IFSP) – Campus São Paulo.
 
@@ -122,7 +122,7 @@ Projeto desenvolvido por cinco estudantes do Instituto Federal de São Paulo (IF
 | Phillip da Silva Marcelino Bonfim  | Documentação e testes      |
 | Raul Ferreira Borges               | Desenvolvimento do jogo    |
 
-## 📂 Documentação
+## Documentação
 
 O projeto possui documentação técnica e acadêmica, contemplando:
 
@@ -137,7 +137,7 @@ Ao todo, foram documentados **86 requisitos funcionais e 24 requisitos não func
 
 📄 [Acesse a documentação completa do projeto](https://github.com/raul4500/mundo-financeiro)
 
-## 🚀 Como baixar e executar o jogo
+## Como baixar e executar o jogo
 
 O Mundo Financeiro é um projeto acadêmico de código aberto e gratuito.
 
@@ -170,12 +170,12 @@ Ou acesse o GitHub e selecione:
 
 ---
 
-\<p align="center">
-&#x20; \<strong>🌎 Mundo Financeiro\</strong>
-&#x20; \<br>
+<p align="center">
+&#x20; <strong>Mundo Financeiro</strong>
+&#x20; <br>
 &#x20; Educação financeira através da experiência.
-&#x20; \<br>\<br>
+&#x20; <br><br>
 &#x20; Desenvolvido com dedicação por estudantes do IFSP – Campus São Paulo.
-&#x20; \<br>\<br>
-&#x20; \<a href="[https://mundo-financeiro-home.vercel.app/](https://mundo-financeiro-home.vercel.app/)">Visite nossa Landing Page\</a>
-\</p>
+&#x20; <br><br>
+&#x20; <a href="https://mundo-financeiro-home.vercel.app/">Visite nossa Landing Page</a>
+</p>
