@@ -14,6 +14,7 @@ var char_name = ""
 var animated_player: Node = null
 
 var clock_scene = preload("res://scenes/ui/clock.tscn")
+var notebook_scene = preload("res://scenes/ui/tutorial_notebook.tscn")
 
 func _ready() -> void:
 	char_name = Global.player.get("name", "")
@@ -27,6 +28,9 @@ func _ready() -> void:
 
 	var clock_ui = clock_scene.instantiate()
 	add_child(clock_ui)
+
+	var notebook_ui = notebook_scene.instantiate()
+	add_child(notebook_ui)
 
 func _physics_process(delta: float) -> void:
 	

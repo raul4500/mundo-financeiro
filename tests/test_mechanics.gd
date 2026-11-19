@@ -569,6 +569,30 @@ func test_confirmacao_leitura_consultoria() -> void:
 	remove_child(office_scene)
 	office_scene.free()
 
+func test_caderno_tutorial_guia_ingame() -> void:
+	print("caderno de tutorial: abre, pausa tempo, navega topicos e fecha destravando")
+	_fresh_player()
+	AlertManager.reset()
+	Global.force_release_all_gameplay_locks()
+	var nb: CanvasLayer = load("res://scenes/ui/tutorial_notebook.tscn").instantiate()
+	add_child(nb)
+
+	_check(not nb.is_open, "caderno nasce fechado")
+	nb.open_notebook()
+	_check(nb.is_open and nb.panel.visible, "open_notebook abre o painel do guia")
+	_check(Global.gameplay_locked and not Global.play_time, "abrir o guia trava gameplay e pausa o tempo")
+
+	for i in range(nb.TOPICS.size()):
+		nb.select_topic(i)
+		_check(nb.content_label.text.length() > 20, "topico %d carrega conteudo" % i)
+
+	nb.close_notebook()
+	_check(not nb.is_open and not nb.panel.visible, "close_notebook fecha o painel")
+	_check(not Global.gameplay_locked, "fechar o guia destrava o gameplay")
+
+	remove_child(nb)
+	nb.free()
+
 func _ready() -> void:
 	print("=== auto-teste das mecanicas ===")
 	test_stamina_dura_o_dia_inteiro()
@@ -594,6 +618,7 @@ func _ready() -> void:
 	test_ensure_player_state_recupera_o_nome()
 	test_continuar_jogo_destrava_movimento()
 	test_confirmacao_leitura_consultoria()
+	test_caderno_tutorial_guia_ingame()
 
 	print("=== %d falha(s) ===" % failures.size())
 	for f in failures:

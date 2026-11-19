@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://c_tutorial_notebook_ui"]
+
+[ext_resource type="Script" path="res://scripts/ui/tutorial_notebook.gd" id="1_nb"]
+
+[node name="TutorialNotebook" type="CanvasLayer"]
+script = ExtResource("1_nb")

@@ -4,6 +4,24 @@ var paused = false
 
 func _ready():
 	visible = false
+	var vbox := get_node_or_null("VBoxContainer")
+	if vbox != null and vbox.get_node_or_null("guia") == null:
+		var guia_btn := Button.new()
+		guia_btn.name = "guia"
+		guia_btn.custom_minimum_size = Vector2(500, 70)
+		guia_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		guia_btn.text = "Guia do Jogo"
+		guia_btn.pressed.connect(_on_guia_pressed)
+		vbox.add_child(guia_btn)
+		vbox.move_child(guia_btn, 1)
+
+func _on_guia_pressed() -> void:
+	if paused:
+		toggle_pause()
+	if get_tree() != null and get_tree().current_scene != null:
+		var nb = get_tree().current_scene.find_child("TutorialNotebook", true, false)
+		if nb != null and nb.has_method("open_notebook"):
+			nb.open_notebook()
 
 func toggle_pause():
 	if paused:
