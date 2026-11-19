@@ -333,22 +333,22 @@ func _on_skip_pressed():
 	_close_alert()
 
 # =============================
-# ⌨️ APENAS ESPAÇO FUNCIONA
+# ⌨️ ESPAÇO OU ENTER FUNCIONAM
 # =============================
 func _input(event):
 	if not panel.visible:
 		return
 	if TransitionManager.is_transitioning():
 		return
-	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_SPACE:
-		# Consome o evento para o Espaço não vazar para o gameplay (pulo, etc.).
+	if event is InputEventKey and event.pressed and not event.echo and (event.keycode == KEY_SPACE or event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER):
+		# Consome o evento para a tecla não vazar para o gameplay (pulo, etc.).
 		get_viewport().set_input_as_handled()
 		# Com escolhas na tela não há atalho: fechar pelo teclado descartaria a
 		# decisão sem criar conta nem bônus.
 		if choice_box.visible:
 			return
-		# Alertas que pediram graça (ver alert()): um aperto de espaço logo ao abrir
-		# é o jogador ainda martelando o pulo, não uma confirmação. O clique no
+		# Alertas que pediram graça (ver alert()): um aperto de espaço/enter logo ao abrir
+		# é o jogador ainda martelando a ação anterior, não uma confirmação. O clique no
 		# botão continua valendo.
 		if _space_grace_msec > 0 and Time.get_ticks_msec() - _shown_at_msec < _space_grace_msec:
 			return

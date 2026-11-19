@@ -122,5 +122,30 @@ func _ready() -> void:
 	assert(AlertManager._deferred_queue.is_empty(), "Reset deve limpar _deferred_queue")
 	print("  ok   reset() limpa filas e zera defer_count")
 
+	# 10. Tecla ENTER e KP_ENTER fecham alertas comuns, mas não alertas com escolha
+	AlertManager.alert("alerta enter 1")
+	assert(AlertManager.panel.visible == true, "Alerta deve abrir")
+	var enter_ev := InputEventKey.new()
+	enter_ev.keycode = KEY_ENTER
+	enter_ev.pressed = true
+	enter_ev.echo = false
+	AlertManager._input(enter_ev)
+	assert(AlertManager.panel.visible == false, "KEY_ENTER deve fechar alerta simples")
+	assert(Global.gameplay_locked == false, "KEY_ENTER deve destravar gameplay")
+
+	AlertManager.alert("alerta kp enter")
+	var kp_ev := InputEventKey.new()
+	kp_ev.keycode = KEY_KP_ENTER
+	kp_ev.pressed = true
+	kp_ev.echo = false
+	AlertManager._input(kp_ev)
+	assert(AlertManager.panel.visible == false, "KEY_KP_ENTER deve fechar alerta simples")
+
+	AlertManager.alert_choice("escolha enter", [{"text": "Sim", "callback": func(): pass}])
+	AlertManager._input(enter_ev)
+	assert(AlertManager.panel.visible == true, "KEY_ENTER não deve fechar alerta com escolhas")
+	AlertManager._close_alert()
+	print("  ok   KEY_ENTER e KEY_KP_ENTER fecham alertas comuns e respeitam escolhas")
+
 	print("=== Todos os testes de alerta passaram ===")
 	get_tree().quit(0)
