@@ -77,8 +77,8 @@ var presentation_guide = [
 	{
 		"step": 5,
 		"title": "Minigame de formação",
-		"goal": "Explicar como o jogador será avaliado e qual o impacto das decisões.",
-		"speaker_note": "Mostre que cada acerto melhora a formação e cada erro pode limitar a renda futura."
+		"goal": "Explicar a corrida de obstáculos, o uso da tecla Espaço e o avanço por checkpoints.",
+		"speaker_note": "Mostre que o personagem corre sozinho, o jogador salta com Espaço e cada checkpoint aumenta a escolaridade e o salário semanal."
 	},
 	{
 		"step": 6,
@@ -142,13 +142,13 @@ var messages = [
 
 	"Sua escolaridade define o nível do seu salário. Quanto maior for sua formação, maiores serão as oportunidades dentro do jogo e melhor será o seu rendimento semanal.",
 
-	"Preste atenção: seu desempenho no minigame vai impactar sua vida financeira. Quanto mais longe você chegar, maior será sua formação e o seu salário inicial.",
+	"Bem-vindo(a) à sua formação escolar! O seu personagem corre automaticamente: pressione ESPAÇO no momento certo para pular os obstáculos pelo caminho.",
 
-	"Neste minigame, você precisará pular com o botão 'espaço' para desviar dos obstáculos que aparecem durante sua corrida de formação.",
+	"Cada checkpoint ultrapassado garante um nível a mais de escolaridade e aumenta o seu salário semanal. Nesta primeira corrida, vá o mais longe que conseguir sem bater!",
 
-	"O objetivo é melhorar seu nível de escolaridade para conquistar um salário maior no futuro. Sempre pense em como cada decisão pode abrir ou fechar portas para suas metas financeiras.",
+	"Nas próximas semanas, cada aula permitirá avançar 1 nível por vez. Se esbarrar antes do checkpoint, será preciso aguardar 2 dias para tentar novamente.",
 
-	"Esta primeira corrida é a sua formação inicial: vá o mais longe que conseguir. Cada checkpoint que você atravessar vale um nível de escolaridade, sem limite — a corrida só termina quando você bater em um obstáculo.",
+	"Esta primeira corrida é a sua formação inicial: vá o mais longe que conseguir. Cada checkpoint que você atravessar vale um nível de escolaridade, sem limite; a corrida só termina quando você bater em um obstáculo.",
 
 	"Das próximas vezes a regra muda: cada tentativa vale no máximo 1 nível. Alcançou o checkpoint, sobe de nível e a aula acaba ali, e a escola só reabre na semana seguinte. Bateu antes de chegar nele, precisa esperar 2 dias para tentar de novo. Repare no aviso da porta: ele diz quando a escola volta a abrir.",
 
@@ -509,7 +509,7 @@ func _next_step():
 
 		# minigame explicação (dentro do minigame)
 		6:
-			queue_messages([messages[4], messages[5], messages[6], messages[7], messages[8]])
+			queue_messages([messages[4], messages[5], messages[6]])
 
 		# espera terminar minigame
 		7:

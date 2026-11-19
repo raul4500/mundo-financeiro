@@ -144,8 +144,8 @@ func _create_start_screen() -> void:
 	box.add_theme_constant_override("separation", 14)
 	margin.add_child(box)
 
-	box.add_child(_make_label("Aula de hoje", 26))
-	var info = _make_label("Desvie dos obstáculos até o próximo checkpoint.", 16)
+	box.add_child(_make_label("Corrida de Formação Escolar", 26))
+	var info = _make_label("Pressione ESPAÇO para pular os obstáculos até o próximo checkpoint.", 16)
 	info.custom_minimum_size = Vector2(460, 0)
 	box.add_child(info)
 
