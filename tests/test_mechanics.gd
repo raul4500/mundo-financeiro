@@ -542,6 +542,33 @@ func test_continuar_jogo_destrava_movimento() -> void:
 	TutorialManager.resume_tutorial(6)
 	_check(TutorialManager.step == 5 and not Global.gameplay_locked, "resume_tutorial(6) no mapa volta ao passo 5 destravado")
 
+func test_confirmacao_leitura_consultoria() -> void:
+	print("consultoria: exige leitura dos topicos e confirmacao antes de liberar saida no tutorial")
+	_fresh_player()
+	Global.player["tutorial_step"] = TutorialManager.OFFICE_WAIT_STEP
+	Global.player["unlock_stage"] = Global.UNLOCK_OFFICE
+	Global.player["office_study_confirmed"] = false
+	TutorialManager.step = TutorialManager.OFFICE_WAIT_STEP
+
+	var office_scene: Control = load("res://scenes/world/places/office.tscn").instantiate()
+	add_child(office_scene)
+
+	_check(office_scene.confirm_button != null and office_scene.confirm_button.disabled, "botao Concluir Aula nasce desabilitado")
+	office_scene._on_exit_pressed()
+	_check(TutorialManager.step == TutorialManager.OFFICE_WAIT_STEP, "sair sem confirmar leitura nao avanca o tutorial")
+	AlertManager._close_alert()
+
+	for topic in office_scene.levels_data[0]["topics"]:
+		office_scene._on_topic_pressed(topic)
+	_check(not office_scene.confirm_button.disabled, "ler todos os topicos habilita o botao Concluir Aula")
+
+	office_scene._on_confirm_study_pressed()
+	AlertManager._close_alert()
+	_check(bool(Global.player.get("office_study_confirmed", false)), "confirmar aula grava office_study_confirmed = true")
+
+	remove_child(office_scene)
+	office_scene.free()
+
 func _ready() -> void:
 	print("=== auto-teste das mecanicas ===")
 	test_stamina_dura_o_dia_inteiro()
@@ -566,6 +593,7 @@ func _ready() -> void:
 	test_descansar_com_fome_zerando_e_game_over_na_hora()
 	test_ensure_player_state_recupera_o_nome()
 	test_continuar_jogo_destrava_movimento()
+	test_confirmacao_leitura_consultoria()
 
 	print("=== %d falha(s) ===" % failures.size())
 	for f in failures:

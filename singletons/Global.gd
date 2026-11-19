@@ -69,6 +69,7 @@ var data_model = {
 	# tutorial_weeks_shown: `skipped` nao e' salvo, e recarregar traria o
 	# bloco de volta. Ver TutorialManager.on_player_entered_home().
 	"tutorial_home_shown": false,
+	"office_study_confirmed": false,
 	"investments": {},
 	"enterprises": {},
 	"expense_history": [],
@@ -210,7 +211,7 @@ func _new_player_data() -> Dictionary:
 func ensure_player_state() -> void:
 	if player == null:
 		player = _new_player_data()
-	for key in ["name", "money", "saldo", "poupanca", "poupanca_rendimento_total", "week", "salary", "school_level", "day", "hour", "tutorial_step", "hunger", "thirst", "stamina", "speed", "spend_today", "had_no_spend_day", "no_spend_days_count", "positive_days_count", "tutorial_home_shown", "market_discount"]:
+	for key in ["name", "money", "saldo", "poupanca", "poupanca_rendimento_total", "week", "salary", "school_level", "day", "hour", "tutorial_step", "hunger", "thirst", "stamina", "speed", "spend_today", "had_no_spend_day", "no_spend_days_count", "positive_days_count", "tutorial_home_shown", "office_study_confirmed", "market_discount"]:
 		if not player.has(key):
 			player[key] = data_model.get(key, 0)
 	if float(player.get("speed", 70.0)) <= 0.0:

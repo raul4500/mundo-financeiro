@@ -404,6 +404,7 @@ func _finish_tutorial() -> void:
 	is_displaying_tutorial_messages = false
 	Global.player["tutorial_step"] = TUTORIAL_DONE
 	Global.player["tutorial_home_shown"] = true
+	Global.player["office_study_confirmed"] = true
 	# Garante que todos os status fiquem em 100% ao liberar o jogador para explorar o mundo
 	Global.player["hunger"] = 110.0
 	Global.player["thirst"] = 110.0

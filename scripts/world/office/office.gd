@@ -156,8 +156,12 @@ var levels_data: Array = [
 
 
 var player_level: int = 1
+var current_level: int = 0
 var time_display: Label
+var viewed_topics: Array = []
+var confirm_button: Button
 
+@onready var level_panel: Panel = $HBoxContainer/LevelPanel
 @onready var level_container: VBoxContainer = $HBoxContainer/LevelPanel/Levels
 @onready var topics_container: VBoxContainer = $HBoxContainer/TopicPanel/ScrollContainer/Topics
 @onready var detail_label: RichTextLabel = $HBoxContainer/DetailPanel/ScrollContainer/RichTextLabel
@@ -173,6 +177,7 @@ func _ready() -> void:
 	_load_player_progress()
 	_build_ui()
 	_build_level_section()
+	build_topics_section(0)
 
 func _exit_tree() -> void:
 	# Qualquer saída (botão, menu de pausa, game over) solta a flag; sem isto o
@@ -201,7 +206,17 @@ func _build_ui() -> void:
 	detail_label.fit_content = true
 	detail_label.bbcode_enabled = true
 	detail_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	
+
+	confirm_button = Button.new()
+	confirm_button.offset_left = 8.0
+	confirm_button.offset_top = 344.0
+	confirm_button.offset_right = 214.0
+	confirm_button.offset_bottom = 394.0
+	confirm_button.focus_mode = Control.FOCUS_NONE
+	confirm_button.pressed.connect(_on_confirm_study_pressed)
+	level_panel.add_child(confirm_button)
+	_update_confirm_button()
+
 	_show_default_detail_message()
 
 
@@ -228,7 +243,8 @@ func build_topics_section(level: int) -> void:
 	# Proteção contra erro
 	if level < 0 or level >= levels_data.size():
 		return
-	
+	current_level = level
+
 	# Limpa os tópicos antigos
 	for t in topics_container.get_children():
 		t.free()
@@ -237,7 +253,8 @@ func build_topics_section(level: int) -> void:
 	
 	for topic in topics:
 		var button = Button.new()
-		button.text = topic["name"]
+		var t_name := str(topic["name"])
+		button.text = ("✓ " + t_name) if viewed_topics.has(t_name) else t_name
 		button.custom_minimum_size = Vector2(0, 36)
 		
 		# Bind correto (sem índice desnecessário)
@@ -249,6 +266,14 @@ func build_topics_section(level: int) -> void:
 # ---------------- DETALHE ----------------
 
 func _on_topic_pressed(topic: Dictionary) -> void:
+	var t_name := str(topic["name"])
+	if not viewed_topics.has(t_name):
+		viewed_topics.append(t_name)
+	for child in topics_container.get_children():
+		if child is Button and (child.text == t_name or child.text == "✓ " + t_name):
+			child.text = "✓ " + t_name
+	_update_confirm_button()
+
 	var text = "[color=black][b][font_size=22]%s[/font_size][/b]\n\n" % topic["name"]
 	text += "%s" % topic["description"]
 
@@ -256,12 +281,43 @@ func _on_topic_pressed(topic: Dictionary) -> void:
 	detail_label.append_text(text)
 
 
+func _all_level1_topics_viewed() -> bool:
+	if levels_data.is_empty():
+		return true
+	for topic in levels_data[0]["topics"]:
+		if not viewed_topics.has(str(topic["name"])):
+			return false
+	return true
+
+
+func _update_confirm_button() -> void:
+	if confirm_button == null:
+		return
+	if bool(Global.player.get("office_study_confirmed", false)):
+		confirm_button.text = "✓ Aula Concluída"
+		confirm_button.disabled = true
+	else:
+		confirm_button.text = "Concluir Aula"
+		confirm_button.disabled = not _all_level1_topics_viewed()
+
+
+func _on_confirm_study_pressed() -> void:
+	if not _all_level1_topics_viewed():
+		return
+	Global.player["office_study_confirmed"] = true
+	_update_confirm_button()
+	AlertManager.alert("Parabéns! Você concluiu a leitura dos conteúdos da consultoria. Agora você pode sair para explorar o Banco, o Mercado e o restante da cidade!")
+
+
 func _show_default_detail_message() -> void:
 	detail_label.clear()
-	detail_label.append_text("[i]Selecione um tópico à esquerda para ver os detalhes aqui.[/i]")
+	detail_label.append_text("[i]Selecione todos os tópicos à esquerda para ler o conteúdo e clique em 'Concluir Aula'.[/i]")
 
 
 func _on_exit_pressed() -> void:
+	if not bool(Global.player.get("office_study_confirmed", false)) and Global.unlock_stage() < Global.UNLOCK_ALL:
+		AlertManager.alert("Você ainda não concluiu a leitura de todos os tópicos desta aula. Leia cada tópico e clique em 'Concluir Aula' antes de sair para liberar o Banco e os outros locais da cidade.")
+		return
 	# Sair do escritório é o que destrava o resto da cidade no tutorial.
 	TutorialManager.on_player_left_office()
 	TransitionManager.change_scene("res://scenes/world/main_game.tscn")
