@@ -383,14 +383,20 @@ func test_tutorial_fluxo_inicial_controles_e_escola() -> void:
 	_check(TutorialManager.pending_messages.size() == 2, "2 mensagens de controles pendentes na fila do passo 2")
 
 	# Consome os alertas de controles
+	var preview_events: Array = []
+	var on_preview := func(v: bool): preview_events.append(v)
+	TutorialManager.missions_preview_requested.connect(on_preview)
 	TutorialManager.continue_tutorial_after_alert()
 	_check(TutorialManager.pending_messages.size() == 1, "1 mensagem de controles restante")
 	TutorialManager.continue_tutorial_after_alert()
 	_check(TutorialManager.pending_messages.is_empty(), "fila de controles esvaziada")
+	_check(preview_events.has(true), "tutorial abre preview do painel de missoes no passo 2")
 
 	# Proxima confirmacao avanca para a escola (passo 3)
 	TutorialManager.continue_tutorial_after_alert()
 	_check(TutorialManager.step == 3, "passo 3 apresenta a escola apos os controles")
+	_check(preview_events.has(false), "tutorial fecha preview do painel de missoes ao ir para passo 3")
+	TutorialManager.missions_preview_requested.disconnect(on_preview)
 
 	# Avanca para o passo 4 (impacto no salario)
 	TutorialManager.continue_tutorial_after_alert()

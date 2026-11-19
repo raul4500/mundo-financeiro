@@ -3,6 +3,7 @@ extends Node
 signal show_message(text)
 signal tutorial_finished
 signal focus(point)
+signal missions_preview_requested(show_panel)
 
 # Roteiro do onboarding:
 #   1    boas-vindas ao jogo
@@ -202,7 +203,7 @@ var messages = [
 	# e antes de apresentar a escola).
 	"Antes de começar a explorar a cidade, conheça os comandos básicos:\n\n• Movimentação: use as teclas W, A, S, D ou as Setas do teclado para andar pelo mapa.\n• Interação: aproxime-se de portas de prédios ou de pessoas e pressione ENTER para entrar ou interagir.\n• Confirmação: use a barra de ESPAÇO para avançar alertas, diálogos e saltar obstáculos nos minigames.",
 
-	"Fique atento à interface e aos atalhos do jogo:\n\n• Missões: clique no botão MISSÕES no topo da tela (ou use as teclas M ou F) para ver seus objetivos da semana. Cumprir missões é essencial para evoluir.\n• Relógio e Calendário: no topo você acompanha o dia atual, o horário e a semana em andamento.\n• Pausa e Salvamento: pressione ESC a qualquer momento para abrir o menu de pausa, salvar seu progresso ou sair do jogo com segurança.",
+	"Fique atento às suas MISSÕES da Semana 1 (painel aberto na tela e botão MISSÕES no topo, ou teclas M/F):\n\n• Cumpra todas as metas semanais até o fim do 5º dia para avançar de semana.\n• Comece indo até a Escola para se formar e receber seu salário inicial.\n• Pressione ESC a qualquer momento para pausar ou salvar.",
 
 	# Índice 30: Apresentação do Parque e seu minigame durante o tour do mapa.
 	"Aquele é o parque da cidade. Lá você encontra um minigame casual de caçar moedas contra o relógio. A cada 5 moedas coletadas, você responde a um quiz sobre os conteúdos da consultoria e pode ganhar um cupom de 15% de desconto no mercado! Para participar, mantenha suas necessidades (fome, sede e stamina) acima de 50% e venha antes das 16h (máximo de 2 partidas por dia)."
@@ -290,6 +291,7 @@ func skip_tutorial() -> void:
 	# Marca o tutorial como concluído e abre a cidade inteira: quem pulou não
 	# vai receber a apresentação do escritório que destravaria o resto.
 	_finish_tutorial()
+	emit_signal("missions_preview_requested", true)
 	# Em casos onde locks possam ter sido deixados por erro, garantir liberação
 	# para que o jogador não fique travado permanentemente após pular.
 	if has_node("/root/Global"):
@@ -318,6 +320,7 @@ func _resume_step(resume_step: int) -> void:
 		2:
 			queue_messages([messages[1], messages[28], messages[29]])
 		3:
+			emit_signal("missions_preview_requested", false)
 			emit_signal("show_message", messages[2], true)
 		4:
 			emit_signal("show_message", messages[3], true)
@@ -468,6 +471,8 @@ func _show_next_queued_message() -> void:
 	else:
 		# Sem foco, mostra imediatamente. Isso é importante ao trocar de cena
 		# para o minigame: não pode depender de um sinal da câmera antiga.
+		if text == messages[29]:
+			emit_signal("missions_preview_requested", true)
 		emit_signal("show_message", text, true)
 
 func continue_tutorial_after_alert() -> void:
@@ -499,6 +504,7 @@ func _next_step():
 		2:
 			queue_messages([messages[1], messages[28], messages[29]])
 		3:
+			emit_signal("missions_preview_requested", false)
 			emit_signal("show_message", messages[2], true)
 		4:
 			emit_signal("show_message", messages[3], true)

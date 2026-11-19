@@ -18,6 +18,8 @@ func _ready():
 	load_missions(Global.player["week"])
 	TimeManager.connect("week_changed", Callable(self, "load_missions"))
 	MissionManager.mission_completed.connect(_on_mission_completed)
+	if not TutorialManager.missions_preview_requested.is_connected(_on_tutorial_missions_preview):
+		TutorialManager.missions_preview_requested.connect(_on_tutorial_missions_preview)
 
 func load_missions(phase: int):
 	# limpa lista
@@ -79,6 +81,16 @@ func _on_open_pressed() -> void:
 
 func _on_close_pressed() -> void:
 	panel.visible = false
+	if is_instance_valid(open_button):
+		open_button.modulate = Color.WHITE
+
+func _on_tutorial_missions_preview(show_panel: bool) -> void:
+	if show_panel:
+		_on_open_pressed()
+		if is_instance_valid(open_button):
+			open_button.modulate = Color(1.3, 1.2, 0.5)
+	else:
+		_on_close_pressed()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if Global.player_hud_hidden or Global.gameplay_locked:
