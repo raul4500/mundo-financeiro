@@ -54,7 +54,7 @@ func _refresh_marks() -> void:
 		if not is_instance_valid(label):
 			continue
 		var done: bool = MissionManager.is_completed(entry["id"])
-		label.text = ("✓ " if done else "- ") + entry["description"]
+		label.text = ("✓ " if done else "• ") + entry["description"]
 		if done:
 			label.add_theme_color_override("font_color", DONE_COLOR)
 		else:

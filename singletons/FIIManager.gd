@@ -171,14 +171,14 @@ func sell_fund(fund_id: String, amount: int):
 	print("Vendeu %d cotas de %s" % [amount, fund_id])
 	if loss_tax > 0.0:
 		Global.register_expense(
-			"Imposto sobre prejuízo - %s" % str(funds[fund_id]["name"]),
+			"Imposto sobre prejuízo: %s" % str(funds[fund_id]["name"]),
 			"fii_loss_tax",
 			loss_tax,
 			int(Global.player.get("day", 1)),
 			int(Global.player.get("week", 1))
 		)
 		AlertManager.alert(
-			"Você vendeu %s no prejuízo.\n\nPreço médio pago: R$ %.2f por cota\nPreço de venda: R$ %.2f por cota\n\nImposto sobre o prejuízo (%d%%): - R$ %.2f\n\nVender na baixa custa caro. Diversificar e esperar a recuperação costuma sair mais barato." % [
+			"Você vendeu %s no prejuízo.\n\nPreço médio pago: R$ %.2f por cota\nPreço de venda: R$ %.2f por cota\n\nImposto sobre o prejuízo (%d%%): R$ %.2f\n\nVender na baixa custa caro. Diversificar e esperar a recuperação costuma sair mais barato." % [
 				str(funds[fund_id]["name"]),
 				cost_basis / float(amount),
 				price,

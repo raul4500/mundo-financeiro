@@ -187,17 +187,17 @@ var messages = [
 	# primeira visita, em on_player_entered_home(). Como todo o resto deste
 	# array, são append-only: os índices 0-21 são citados um a um em
 	# _next_step(), _resume_step() e nas duas funções de fila.
-	"Aquela é a sua casa. É o único lugar onde você recupera o que o dia gasta — comer, beber e descansar acontecem lá dentro — e o único lugar onde o dia termina, porque é onde fica a sua cama.",
+	"Aquela é a sua casa. É o único lugar onde você recupera o que o dia gasta (comer, beber e descansar acontecem lá dentro) e o único lugar onde o dia termina, porque é onde fica a sua cama.",
 
 	"Uma coisa importante sobre o mercado: comida e bebida que você compra NÃO são consumidas na hora da compra. Elas vão para o estoque da sua casa e ficam lá até você usar. As abas COMIDAS e BEBIDAS da casa mostram o que você tem guardado, em cards, e quanto cada item repõe de fome e de sede.",
 
 	"Você escolhe o que consumir: abra a aba COMIDAS ou BEBIDAS, ache o card do item e clique em COMER ou BEBER. O item sai do estoque. Comer custa 30 minutos do seu dia e beber custa 15. Comer também devolve um pouco de stamina, mas pouco: quem recupera stamina de verdade é o sono.",
 
-	"DESCANSAR e ASSISTIR TV devolvem stamina e custam 1 hora cada, mas gastam fome no processo. Servem para esticar um dia que está acabando, não para substituir o sono — e se você usá-los sem ter comida no estoque, só está trocando um problema por outro.",
+	"DESCANSAR e ASSISTIR TV devolvem stamina e custam 1 hora cada, mas gastam fome no processo. Servem para esticar um dia que está acabando, não para substituir o sono. Se você usá-los sem ter comida no estoque, só está trocando um problema por outro.",
 
 	"DORMIR é o que encerra o dia: a stamina volta a 100 e o relógio pula para as 08:00 do dia seguinte. Antes das 18h o botão não deixa você dormir. E se você virar a noite acordado, à meia-noite volta para casa à força, paga R$ 30 de café e começa o dia seguinte com metade da stamina.",
 
-	"Por último, a sede. Ela cai mais rápido que a fome — cerca de 14 pontos por dia contra 6 — e chegar a zero faz você desmaiar, igual à fome. O que vale olhar no mercado é quanto você paga por ponto reposto: a água resolve 25% de sede por R$ 5, ou seja R$ 0,20 por ponto, enquanto a cerveja pede R$ 50 para repor 10% — R$ 5,00 por ponto, vinte e cinco vezes mais caro. É o \"necessidade x desejo\" do escritório, agora com um medidor.",
+	"Por último, a sede. Ela cai mais rápido que a fome (cerca de 14 pontos por dia contra 6) e chegar a zero faz você desmaiar, igual à fome. O que vale olhar no mercado é quanto você paga por ponto reposto: a água resolve 25% de sede por R$ 5, ou seja R$ 0,20 por ponto, enquanto a cerveja pede R$ 50 para repor 10% (R$ 5,00 por ponto, vinte e cinco vezes mais caro). É o \"necessidade x desejo\" do escritório, agora com um medidor.",
 
 	# Índices 28-29: Controles e comandos básicos do jogo (ensinados logo após a introdução
 	# e antes de apresentar a escola).

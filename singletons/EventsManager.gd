@@ -137,7 +137,7 @@ func _money_text(value: float) -> String:
 
 func _show_pending_alert(evento: Dictionary, pendencia: Dictionary) -> void:
 	var is_bonus = bool(pendencia.get("is_bonus", false))
-	var text = "%s\n\n%s\n\n%s de %s — %s no banco." % [
+	var text = "%s\n\n%s\n\n%s de %s: %s no banco." % [
 		str(evento.get("titulo", "Evento")),
 		str(evento.get("descricao", "")),
 		"Bônus" if is_bonus else "Conta",
@@ -176,7 +176,7 @@ func _choice_label(escolha: Dictionary) -> String:
 
 func _on_choice_taken(evento: Dictionary, escolha: Dictionary) -> void:
 	var escolhido = evento.duplicate(true)
-	escolhido["titulo"] = "%s — %s" % [
+	escolhido["titulo"] = "%s: %s" % [
 		str(evento.get("titulo", "Evento")),
 		str(escolha.get("descricao", ""))
 	]

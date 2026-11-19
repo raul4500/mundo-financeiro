@@ -80,9 +80,9 @@ static func _bank() -> Dictionary:
 				],
 				"correct": 1,
 				"explanations": [
-					"R$ 100 seria a sobra se ele tivesse gasto R$ 400. Mas os gastos são R$ 200 + R$ 100 = R$ 300, e R$ 500 − R$ 300 não dá 100.",
-					"Certo. Os gastos somam R$ 200 + R$ 100 = R$ 300, e R$ 500 − R$ 300 = R$ 200 sobram para as demais despesas e para guardar.",
-					"R$ 300 é o total gasto, não a sobra. A sobra é o que resta depois de tirar esse total do salário: R$ 500 − R$ 300.",
+					"R$ 100 seria a sobra se ele tivesse gasto R$ 400. Mas os gastos são R$ 200 + R$ 100 = R$ 300, e R$ 500 - R$ 300 não dá 100.",
+					"Certo. Os gastos somam R$ 200 + R$ 100 = R$ 300, e R$ 500 - R$ 300 = R$ 200 sobram para as demais despesas e para guardar.",
+					"R$ 300 é o total gasto, não a sobra. A sobra é o que resta depois de tirar esse total do salário: R$ 500 - R$ 300.",
 					"R$ 500 é tudo o que ele recebeu. Se sobrasse tudo, ele não teria gasto nada, mas R$ 300 já estão comprometidos com mercado e transporte.",
 				],
 			},
@@ -258,7 +258,7 @@ static func _bank() -> Dictionary:
 				],
 				"correct": 0,
 				"explanations": [
-					"Certo. A diferença de R$ 200 (R$ 1.200 − R$ 1.000) são juros: o preço de usar o aparelho agora e pagar aos poucos.",
+					"Certo. A diferença de R$ 200 (R$ 1.200 - R$ 1.000) são juros: o preço de usar o aparelho agora e pagar aos poucos.",
 					"Pagar mais no total não é desconto. Desconto reduz o preço, e aqui o parcelado custa R$ 200 a mais que o à vista.",
 					"Imposto já está embutido nos dois preços. A diferença entre à vista e parcelado vem do custo de parcelar, os juros.",
 					"A loja não guarda reserva para o cliente. O valor extra fica com a loja como pagamento pelo prazo concedido.",
@@ -275,8 +275,8 @@ static func _bank() -> Dictionary:
 				"correct": 2,
 				"explanations": [
 					"Se não houvesse juros, Sabrina devolveria exatamente os R$ 100 emprestados. Como devolveu R$ 120, houve um custo extra pelo empréstimo.",
-					"R$ 100 é o valor emprestado, o principal. Os juros são só o que ela pagou além disso: R$ 120 − R$ 100.",
-					"Certo. Os juros são a diferença entre o que devolveu e o que pegou: R$ 120 − R$ 100 = R$ 20.",
+					"R$ 100 é o valor emprestado, o principal. Os juros são só o que ela pagou além disso: R$ 120 - R$ 100.",
+					"Certo. Os juros são a diferença entre o que devolveu e o que pegou: R$ 120 - R$ 100 = R$ 20.",
 					"R$ 120 é o total devolvido, que inclui os R$ 100 do empréstimo. Os juros são só a parte que passou do valor emprestado.",
 				],
 			},
@@ -571,7 +571,7 @@ static func _bank() -> Dictionary:
 					"Somar receita e despesas dá R$ 550, valor sem sentido como lucro. Despesas reduzem o que sobra, não aumentam.",
 					"Receita é tudo o que entrou (R$ 400), sem descontar custos. Lucro é o que sobra depois de pagar as despesas.",
 					"Despesas (R$ 150) são só o que saiu. Sozinhas não dizem quanto sobrou: é preciso compará-las com o que entrou.",
-					"Certo. Lucro = receita − despesas: R$ 400 − R$ 150 = R$ 250 de lucro nesse dia.",
+					"Certo. Lucro = receita - despesas: R$ 400 - R$ 150 = R$ 250 de lucro nesse dia.",
 				],
 			},
 			{

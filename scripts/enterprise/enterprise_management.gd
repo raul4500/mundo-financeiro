@@ -143,7 +143,7 @@ func _render_business(data: Dictionary, info: Dictionary, state: Dictionary) -> 
 	var upgrade_row = HBoxContainer.new()
 	var upgrade_label = _make_row_label()
 	if upgrade_cost > 0.0:
-		upgrade_label.text = "Aprimorar para o nível %d — desbloqueia equipamentos e aumenta a receita" % (int(state.get("level", 1)) + 1)
+		upgrade_label.text = "Aprimorar para o nível %d: desbloqueia equipamentos e aumenta a receita" % (int(state.get("level", 1)) + 1)
 		var upgrade_button = Button.new()
 		upgrade_button.text = "Aprimorar (R$ %.2f)" % upgrade_cost
 		upgrade_button.pressed.connect(_on_upgrade_pressed)
@@ -236,7 +236,7 @@ func _render_equipment(items: Array, state: Dictionary) -> void:
 		var row = HBoxContainer.new()
 		var label = _make_row_label()
 		var owned = equipment.has(item.get("id", ""))
-		label.text = "%s%s" % [item.get("name", item.get("id", "item")), " (comprado)" if owned else " - R$ %.2f" % float(item.get("price", 0.0))]
+		label.text = "%s%s" % [item.get("name", item.get("id", "item")), " (comprado)" if owned else ": R$ %.2f" % float(item.get("price", 0.0))]
 		row.add_child(label)
 		if not owned:
 			var button = Button.new()

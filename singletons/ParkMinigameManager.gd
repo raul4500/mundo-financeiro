@@ -69,7 +69,7 @@ func lock_reason() -> String:
 	if not _status_ok():
 		return "Você precisa estar com fome, sede e stamina acima de 50% para jogar no parque."
 	if int(TimeManager.current_hour) >= LATEST_START_HOUR:
-		return "Já está tarde demais — o parque só recebe brincadeiras até as %dh." % LATEST_START_HOUR
+		return "Já está tarde demais: o parque só recebe brincadeiras até as %dh." % LATEST_START_HOUR
 	if plays_left_today() > 0:
 		return ""
 	return "Você já brincou o suficiente no parque hoje. Volte amanhã."

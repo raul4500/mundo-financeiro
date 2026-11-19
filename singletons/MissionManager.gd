@@ -203,7 +203,7 @@ func verify_missions(week: int) -> bool:
 		# Montar mensagem listando missões não concluídas
 		var text = "Você não completou todas as missões desta semana.\n\nMissões não cumpridas:\n"
 		for m in failed:
-			text += " - %s\n" % str(m.get("description", m.get("id", "missao")))
+			text += " • %s\n" % str(m.get("description", m.get("id", "missao")))
 		text += "\nVocê precisará repetir a semana até completar todas as missões para avançar. Seu dinheiro volta ao valor do início da semana. Boa sorte!"
 		_log_warning("Missões falharam: %s" % text)
 		if has_node("/root/AlertManager"):
