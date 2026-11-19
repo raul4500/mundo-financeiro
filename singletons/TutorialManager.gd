@@ -324,14 +324,18 @@ func _resume_step(resume_step: int) -> void:
 		5:
 			# Passo 5 é só "foco na escola". Se o jogador recarregar aqui,
 			# não repete o foco — apenas está no mapa esperando entrar na escola.
-			pass
-		6:
-			# Passo 6 é dentro do minigame. Se o jogador salvou lá e recarregou,
-			# o minigame restaura e as mensagens já foram mostradas. Não repita.
-			pass
-		7:
-			# Passo 7 é "esperar minigame terminar". Não há mensagens.
-			pass
+			Global.force_release_all_gameplay_locks()
+		6, 7:
+			# Passos 6 e 7 são dentro do minigame. Se o jogador recarregou no mapa
+			# principal, volta para 5 (se ainda não jogou) ou avança para 8.
+			var played := int(Global.player.get("minigame_progress", {}).get("sessions_played", 0))
+			if played > 0:
+				step = 8
+				_resume_step(8)
+			else:
+				step = 5
+				Global.player["tutorial_step"] = 5
+				Global.force_release_all_gameplay_locks()
 		8:
 			# Recarregou logo depois do minigame, antes de ver a apresentação
 			# do escritório. Repete o passo 8 inteiro.
@@ -340,7 +344,7 @@ func _resume_step(resume_step: int) -> void:
 		9:
 			# Esperando a visita ao escritório. Nada a mostrar: o escritório
 			# já está destravado e a mensagem já foi lida.
-			pass
+			Global.force_release_all_gameplay_locks()
 		10:
 			# O jogador acabou de sair do escritório (ou recarregou aqui).
 			# É neste ponto que o tour do resto da cidade acontece.

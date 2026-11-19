@@ -36,6 +36,8 @@ func _ready():
 		TutorialManager.start_tutorial()
 	elif tutorial_step <= TutorialManager.FINAL_STEP:
 		TutorialManager.resume_tutorial(tutorial_step)
+	elif not TransitionManager.is_transitioning() and not AlertManager.panel.visible:
+		Global.force_release_all_gameplay_locks()
 
 func _on_tree_exited() -> void:
 	Global.player["position"]["x"] = character.global_position.x

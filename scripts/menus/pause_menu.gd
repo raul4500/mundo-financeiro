@@ -50,6 +50,8 @@ func _input(event: InputEvent) -> void:
 
 func _on_sair_pressed() -> void:
 	visible = false
+	paused = false
+	Global.force_release_all_gameplay_locks()
 	Global.play_time = false
 	SaveManager.save_game()
 	TransitionManager.change_scene("res://scenes/menus/main_menu.tscn")

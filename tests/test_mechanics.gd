@@ -518,6 +518,24 @@ func test_ensure_player_state_recupera_o_nome() -> void:
 	Global.ensure_player_state()
 	_check(Global.player.has("name"), "'name' volta a existir depois de ensure_player_state()")
 
+func test_continuar_jogo_destrava_movimento() -> void:
+	print("continuar jogo: restaura speed e libera travas residuais")
+	Global.player = Global._new_player_data()
+	Global.player["name"] = "Raul"
+	Global.player["speed"] = 0.0
+	Global.ensure_player_state()
+	_check(float(Global.player.get("speed", 0.0)) == 70.0, "speed zerado e' restaurado para 70.0")
+
+	Global.lock_gameplay()
+	Global.lock_gameplay()
+	TutorialManager.resume_tutorial(5)
+	_check(not Global.gameplay_locked, "resume_tutorial(5) libera locks orfaos")
+
+	Global.lock_gameplay()
+	Global.player["minigame_progress"] = {"unlock_week": 1, "unlock_day": 0, "sessions_played": 0}
+	TutorialManager.resume_tutorial(6)
+	_check(TutorialManager.step == 5 and not Global.gameplay_locked, "resume_tutorial(6) no mapa volta ao passo 5 destravado")
+
 func _ready() -> void:
 	print("=== auto-teste das mecanicas ===")
 	test_stamina_dura_o_dia_inteiro()
@@ -541,6 +559,7 @@ func _ready() -> void:
 	test_penalidades_tem_piso_em_zero()
 	test_descansar_com_fome_zerando_e_game_over_na_hora()
 	test_ensure_player_state_recupera_o_nome()
+	test_continuar_jogo_destrava_movimento()
 
 	print("=== %d falha(s) ===" % failures.size())
 	for f in failures:
