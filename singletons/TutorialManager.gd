@@ -135,13 +135,13 @@ var weekly_guide = [
 
 # Lista de mensagens usadas em cada alerta do jogo.
 var messages = [
-	"Bem-vindo(a) ao Mundo Financeiro! Neste jogo, você vai aprender a cuidar do seu dinheiro, tomar decisões importantes e construir uma vida financeira saudável. Cada escolha que fizer terá consequência, então pense com calma antes de agir.",
+	"Bem-vindo(a) ao Mundo Financeiro! Gerencie seu dinheiro, cumpra as missões da semana e construa sua independência financeira.",
 
-	"Seu objetivo aqui é simples: aprender a ganhar, economizar e investir seu dinheiro de forma inteligente. Ao longo da jornada, você vai desenvolver conhecimento financeiro e enfrentar desafios que simulam a vida real.",
+	"Seu objetivo na Semana 1 é simples: qualificar-se na Escola, estudar na Consultoria e cumprir as 3 metas semanais.",
 
-	"Antes de tudo, você precisa começar pela educação. Vá até a escola e participe do minigame inicial. Ali, sua formação será definida e isso vai influenciar diretamente sua renda futura.",
+	"Primeiro passo: vá até a Escola e participe da corrida de formação para definir seu nível de escolaridade.",
 
-	"Sua escolaridade define o nível do seu salário. Quanto maior for sua formação, maiores serão as oportunidades dentro do jogo e melhor será o seu rendimento semanal.",
+	"Quanto maior a sua escolaridade, maior será o salário que você recebe toda semana!",
 
 	"Bem-vindo(a) à sua formação escolar! O seu personagem corre automaticamente: pressione ESPAÇO no momento certo para pular os obstáculos pelo caminho.",
 
@@ -153,60 +153,60 @@ var messages = [
 
 	"Das próximas vezes a regra muda: cada tentativa vale no máximo 1 nível. Alcançou o checkpoint, sobe de nível e a aula acaba ali, e a escola só reabre na semana seguinte. Bateu antes de chegar nele, precisa esperar 2 dias para tentar de novo. Repare no aviso da porta: ele diz quando a escola volta a abrir.",
 
-	"Parabéns! Você concluiu o minigame e recebeu seu primeiro salário. Agora é hora de começar a administrar melhor seu dinheiro e aprender a lidar com gastos, poupança e investimentos.",
+	"Parabéns! Você concluiu o minigame e recebeu seu primeiro salário. Agora vamos conhecer a Consultoria Financeira.",
 
-	"O mundo do jogo oferece vários lugares estratégicos. Cada um deles tem um papel importante na sua rotina financeira e no seu desenvolvimento como jogador.",
+	"A cidade possui locais essenciais para a sua rotina e evolução financeira.",
 
-	"No mercado, você pode comprar itens essenciais para o seu dia a dia. Cuidado para não gastar mais do que a sua renda permite e mantenha o equilíbrio entre necessidade e desejo.",
+	"No Mercado você compra comidas e bebidas para abastecer o estoque da sua casa. Nunca deixe fome ou sede chegarem a zero para não desmaiar (custo de R$ 30)!",
 
-	"No banco, você pode guardar seu dinheiro, acompanhar o saldo e explorar oportunidades de investimento. Essa é a base para construir uma reserva financeira e tomar decisões mais inteligentes.",
+	"No Banco você guarda seu dinheiro, aplica na poupança, investe em fundos e paga as contas da semana.",
 
-	"No escritório de consultoria, você encontra conteúdos educativos, dicas e ferramentas para compreender melhor o mundo financeiro. Aproveite esses aprendizados para melhorar sua estratégia e evoluir no jogo.",
+	"Ali fica o Escritório de Consultoria: leia todos os tópicos da aula da semana e clique em 'Concluir Aula' para destravar o restante da cidade.",
 
-	"Lembre-se: gastar com consciência, economizar e investir são as chaves para o sucesso. Pequenas decisões bem tomadas ao longo do tempo fazem uma grande diferença no futuro.",
+	"Lembre-se: gastar com consciência, economizar e investir são as chaves para o sucesso.",
 
-	"Agora é com você. Explore o mundo, cumpra suas missões, tome decisões inteligentes e construa uma vida financeira forte, estável e bem planejada!",
+	"Tudo pronto! Cumpra suas Missões (tecla M) e consulte o Guia do Jogo (tecla J) sempre que tiver dúvidas. Bom jogo!",
 
 	# Mecânicas das fases 6-7. Ficam no fim do array de propósito: os índices
 	# 0-15 são referenciados um a um em _next_step() e renumerar quebraria tudo.
-	"Repare na barra de STAMINA. Ela começa cheia às 08:00 e se esgota ao longo do dia, chegando ao fim por volta da meia-noite. Stamina é o seu limite de energia diário: quando ela acaba, você ainda anda, mas o dia já cobrou o seu preço.",
+	"A barra de STAMINA começa cheia às 08:00 e cai ao longo do dia. Volte para casa e durma para recuperá-la.",
 
-	"O dia não termina sozinho. Às 18:00 você recebe um aviso de cansaço, mas quem encerra o dia é você: volte a pé até a sua casa e clique em DORMIR. Dormir devolve 100% da stamina e faz o próximo dia começar às 08:00.",
+	"Às 18:00 você recebe um aviso de cansaço. Volte até a sua casa e clique em DORMIR para recuperar 100% da stamina e iniciar o próximo dia às 08:00.",
 
-	"Se você virar a noite acordado, à meia-noite volta para casa à força, paga R$ 30 de café para aguentar o dia seguinte e acorda com apenas metade da stamina. Planejar a volta para casa faz parte do orçamento.",
+	"Se virar a noite acordado (00:00), você volta para casa à força, paga R$ 30 de café e acorda com apenas metade da stamina.",
 
-	"No mercado, cada item mostra quanto ele repõe de fome e de sede. Comida barata repõe pouco e comida cara repõe muito: o pão custa R$ 4 e devolve 10% de fome, a carne custa R$ 70 e devolve 100%. As bebidas ficam na aba ao lado e cuidam da sede. Compare o preço por porcentagem antes de encher o carrinho.",
+	"No mercado, cada item mostra quanto repõe de fome e sede. Compare o custo-benefício antes de comprar.",
 
-	"E cuidado com a fome: ela cai um pouco a cada dia que passa e só volta comendo. Se a fome chegar a zero, você desmaia: paga R$ 30 de socorro, acorda em casa no dia seguinte e perde o resto do dia. Manter comida no estoque de casa não é luxo, é sobrevivência.",
+	"Cuidado com a fome e a sede: se chegarem a zero, você desmaia, paga R$ 30 de socorro e perde o resto do dia.",
 
 	# Passo 8. Fecha a apresentação do escritório, que é o único lugar liberado
 	# nesse momento (ver Global.PLACE_UNLOCK_STAGE).
-	"Por enquanto o escritório é o único lugar aberto para você. Vá até lá, veja o que a consultoria tem a dizer, e quando sair o resto da cidade estará liberado.",
+	"Por enquanto apenas a Consultoria está aberta. Entre lá, leia os tópicos da aula e clique em 'Concluir Aula' para liberar a cidade!",
 
 	# Índices 22-27: a casa. O 22 entra no tour do mundo; os outros disparam na
 	# primeira visita, em on_player_entered_home(). Como todo o resto deste
 	# array, são append-only: os índices 0-21 são citados um a um em
 	# _next_step(), _resume_step() e nas duas funções de fila.
-	"Aquela é a sua casa. É o único lugar onde você recupera o que o dia gasta (comer, beber e descansar acontecem lá dentro) e o único lugar onde o dia termina, porque é onde fica a sua cama.",
+	"Aquela é a sua Casa: onde você come, bebe e dorme. Compras do mercado vão para o estoque de casa. Volte antes da meia-noite e clique em DORMIR para recuperar 100% da stamina!",
 
-	"Uma coisa importante sobre o mercado: comida e bebida que você compra NÃO são consumidas na hora da compra. Elas vão para o estoque da sua casa e ficam lá até você usar. As abas COMIDAS e BEBIDAS da casa mostram o que você tem guardado, em cards, e quanto cada item repõe de fome e de sede.",
+	"Comidas e bebidas compradas no mercado vão para o estoque da sua casa. As abas COMIDAS e BEBIDAS mostram seus itens guardados e quanto repõem.",
 
-	"Você escolhe o que consumir: abra a aba COMIDAS ou BEBIDAS, ache o card do item e clique em COMER ou BEBER. O item sai do estoque. Comer custa 30 minutos do seu dia e beber custa 15. Comer também devolve um pouco de stamina, mas pouco: quem recupera stamina de verdade é o sono.",
+	"Abra a aba COMIDAS ou BEBIDAS e clique em COMER (30 min) ou BEBER (15 min) no item desejado.",
 
-	"DESCANSAR e ASSISTIR TV devolvem stamina e custam 1 hora cada, mas gastam fome no processo. Servem para esticar um dia que está acabando, não para substituir o sono. Se você usá-los sem ter comida no estoque, só está trocando um problema por outro.",
+	"DESCANSAR e ASSISTIR TV recuperam um pouco de stamina (custam 1h e gastam fome), mas apenas DORMIR recupera 100%.",
 
-	"DORMIR é o que encerra o dia: a stamina volta a 100 e o relógio pula para as 08:00 do dia seguinte. Antes das 18h o botão não deixa você dormir. E se você virar a noite acordado, à meia-noite volta para casa à força, paga R$ 30 de café e começa o dia seguinte com metade da stamina.",
+	"DORMIR encerra o dia (liberado a partir das 18h) e restaura sua stamina. Virar a noite cobra R$ 30 e reduz sua energia no dia seguinte.",
 
-	"Por último, a sede. Ela cai mais rápido que a fome (cerca de 14 pontos por dia contra 6) e chegar a zero faz você desmaiar, igual à fome. O que vale olhar no mercado é quanto você paga por ponto reposto: a água resolve 25% de sede por R$ 5, ou seja R$ 0,20 por ponto, enquanto a cerveja pede R$ 50 para repor 10% (R$ 5,00 por ponto, vinte e cinco vezes mais caro). É o \"necessidade x desejo\" do escritório, agora com um medidor.",
+	"A sede cai mais rápido que a fome. No mercado, compare o preço por ponto reposto (água é necessidade barata; bebidas caras são desejos).",
 
 	# Índices 28-29: Controles e comandos básicos do jogo (ensinados logo após a introdução
 	# e antes de apresentar a escola).
-	"Antes de começar a explorar a cidade, conheça os comandos básicos:\n\n• Movimentação: use as teclas W, A, S, D ou as Setas do teclado para andar pelo mapa.\n• Interação: aproxime-se de portas de prédios ou de pessoas e pressione ENTER para entrar ou interagir.\n• Confirmação: use a barra de ESPAÇO para avançar alertas, diálogos e saltar obstáculos nos minigames.",
+	"Comandos básicos:\n• Andar: W, A, S, D ou Setas.\n• Interagir / Entrar: ENTER.\n• Confirmar alertas e pular no minigame: ESPAÇO ou ENTER.",
 
-	"Fique atento às suas MISSÕES da Semana 1 (painel aberto na tela e botão MISSÕES no topo, ou teclas M/F):\n\n• Cumpra todas as metas semanais até o fim do 5º dia para avançar de semana.\n• Comece indo até a Escola para se formar e receber seu salário inicial.\n• Pressione ESC a qualquer momento para pausar ou salvar.",
+	"Fique atento às suas MISSÕES da Semana 1 (painel aberto na tela, botão MISSÕES ou tecla M):\n• Cumpra todas as metas até o 5º dia para avançar de semana.\n• Pressione ESC para pausar/salvar e J para abrir o Guia.",
 
 	# Índice 30: Apresentação do Parque e seu minigame durante o tour do mapa.
-	"Aquele é o parque da cidade. Lá você encontra um minigame casual de caçar moedas contra o relógio. A cada 5 moedas coletadas, você responde a um quiz sobre os conteúdos da consultoria e pode ganhar um cupom de 15% de desconto no mercado! Para participar, mantenha suas necessidades (fome, sede e stamina) acima de 50% e venha antes das 16h (máximo de 2 partidas por dia)."
+	"No Parque você joga o minigame de caçar moedas (até as 16h, com status acima de 50%). A cada 5 moedas, acerte o quiz para ganhar 15% de desconto no mercado!"
 ]
 
 # =============================
@@ -368,25 +368,12 @@ func _queue_office_intro() -> void:
 func _queue_world_tour() -> void:
 	Global.player["tutorial_home_shown"] = true
 	queue_messages([
-		messages[10],
-		# A casa é apresentada junto com o restante do mapa logo após a consultoria:
-		# a câmera foca a casa (índice 22 em message_focus_map), e todas as
-		# suas mecânicas (estoque, alimentação, descanso, sono e sede) são explicadas.
-		messages[22],  # Aquela é a sua casa (foco em "Home")
-		messages[23],  # Estoque da casa (compras do mercado ficam guardadas lá)
-		messages[24],  # Abas COMIDAS e BEBIDAS: escolher o item
-		messages[25],  # DESCANSAR e ASSISTIR TV
-		messages[16],  # Barra de STAMINA
-		messages[17],  # DORMIR encerra o dia (aviso das 18h)
-		messages[18],  # Penalidade da meia-noite (R$ 30 e metade da stamina)
-		messages[27],  # Sede, decaimento e custo-benefício
+		messages[10],  # Intro curta do tour
+		messages[22],  # Casa (foco em "Home")
 		messages[11],  # Mercado (foco em "Market")
-		messages[19],  # O que cada item do mercado repõe de fome e sede
-		messages[20],  # Fome zerada faz desmaiar
 		messages[12],  # Banco (foco em "Bank")
 		messages[30],  # Parque (foco em "Park")
-		messages[14],  # Lembre-se: gastar com consciência, economizar e investir
-		messages[15]   # Conclusão do onboarding: "Agora é com você..."
+		messages[15]   # Conclusão do onboarding
 	])
 
 # Passo 9. A apresentação do escritório terminou com a câmera parada lá
