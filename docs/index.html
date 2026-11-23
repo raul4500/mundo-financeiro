@@ -1,0 +1,954 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mundo Financeiro</title>
+<meta name="description" content="Mundo Financeiro é um RPG em pixel art que ensina educação financeira a jovens de 15 a 18 anos: salário, contas, poupança, fundos imobiliários e negócios próprios, em cinco semanas.">
+<meta property="og:title" content="Mundo Financeiro">
+<meta property="og:description" content="Cometa os erros de dinheiro num jogo, antes que custem de verdade. RPG de educação financeira em pixel art.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#A6DCF5">
+<link rel="icon" type="image/png" href="assets/moedas.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+@font-face {
+  font-family: "Pixeloid";
+  src: url("assets/fonts/pixeloid-sans-bold.ttf") format("truetype");
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  --ceu: #A6DCF5;
+  --nuvem: #F5FAFF;
+  --tinta: #1D2748;
+  --tinta-2: #4A5479;
+  --tijolo: #6B4130;
+  --tijolo-2: #43291E;
+  --papel: #FDD3B3;
+  --papel-2: #FFEEDD;
+  --moeda: #F5B82E;
+  --moeda-2: #C98A0B;
+  --verde: #1F7A33;
+  --vermelho: #B3322B;
+  --noite: #2B1E40;
+  --noite-2: #3E2B5C;
+  --luz: #FFF1E2;
+  --luz-2: #E3D2EE;
+  --pixel: "Pixeloid", "Courier New", monospace;
+  --texto: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --larg: 1200px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--nuvem);
+  color: var(--tinta);
+  font: 400 1.125rem/1.6 var(--texto);
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; height: auto; }
+a { color: inherit; }
+.pixelado { image-rendering: pixelated; }
+
+h1, h2, h3 { font-family: var(--pixel); font-weight: 700; line-height: 1.15; margin: 0; letter-spacing: 0; }
+h1 { font-size: clamp(2.1rem, 5.4vw, 4.1rem); max-width: 17ch; }
+h2 { font-size: clamp(1.55rem, 3.2vw, 2.4rem); max-width: 22ch; }
+h3 { font-size: 1.15rem; }
+p { margin: 0; }
+
+.wrap { max-width: var(--larg); margin: 0 auto; padding: 0 24px; }
+.secao { padding: 104px 0; }
+.lead { font-size: 1.25rem; max-width: 58ch; }
+.texto-largo { max-width: 62ch; }
+
+:focus-visible { outline: 3px solid var(--tinta); outline-offset: 3px; box-shadow: 0 0 0 6px #fff; }
+.escuro :focus-visible, .noite :focus-visible { outline-color: var(--moeda); box-shadow: 0 0 0 6px var(--noite); }
+.pular { position: absolute; left: 16px; top: -64px; background: var(--tinta); color: #fff; padding: 10px 16px; z-index: 10; }
+.pular:focus { top: 16px; }
+
+/* Botões no estilo dos painéis do jogo */
+.botao {
+  display: inline-block;
+  font: 700 1rem/1 var(--pixel);
+  text-decoration: none;
+  padding: 18px 24px;
+  background: var(--moeda);
+  color: var(--tinta);
+  border: 4px solid var(--tijolo);
+  box-shadow: 0 6px 0 var(--tijolo-2);
+  transition: transform .1s steps(2), box-shadow .1s steps(2);
+}
+.botao:hover { transform: translateY(2px); box-shadow: 0 4px 0 var(--tijolo-2); }
+.botao:active { transform: translateY(6px); box-shadow: 0 0 0 var(--tijolo-2); }
+.botao-vazado { background: transparent; border-color: var(--tinta); box-shadow: 0 6px 0 var(--tinta); }
+.botao-vazado:hover { background: rgba(255,255,255,.45); box-shadow: 0 4px 0 var(--tinta); }
+.botao-vazado:active { box-shadow: 0 0 0 var(--tinta); }
+.noite .botao-vazado { color: var(--luz); border-color: var(--luz); box-shadow: 0 6px 0 rgba(255,241,226,.5); }
+.noite .botao-vazado:hover { background: rgba(255,255,255,.12); }
+
+/* Painel de papel: mesmo visual das janelas do jogo */
+.painel {
+  background: var(--papel);
+  border: 4px solid var(--tijolo);
+  box-shadow: 0 8px 0 var(--tijolo-2);
+  padding: 36px;
+}
+
+/* ---------- Topo + herói ---------- */
+.hero {
+  /* céu liso atrás do texto; as nuvens só aparecem atrás da rua */
+  background:
+    linear-gradient(var(--ceu) calc(100% - 640px), rgba(166, 220, 245, 0) calc(100% - 420px)),
+    url("assets/ceu.png") center bottom / cover no-repeat,
+    var(--ceu);
+  image-rendering: pixelated;
+  position: relative;
+}
+.topo { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-top: 22px; padding-bottom: 22px; }
+.marca { display: flex; align-items: center; gap: 12px; font: 700 1.2rem/1 var(--pixel); text-decoration: none; }
+.marca img { width: 32px; height: 32px; image-rendering: pixelated; }
+.topo nav { display: flex; gap: 28px; font-size: 1rem; }
+.topo nav a { text-decoration: none; padding: 6px 0; border-bottom: 3px solid transparent; }
+.topo nav a:hover { border-bottom-color: var(--tinta); }
+.topo .botao { font-size: .85rem; padding: 12px 16px; box-shadow: 0 4px 0 var(--tijolo-2); }
+
+.hero-texto { padding-top: 56px; padding-bottom: 56px; display: grid; gap: 28px; justify-items: start; }
+.acoes { display: flex; flex-wrap: wrap; gap: 20px; }
+
+/* Rua da cidade */
+.rua-janela { max-width: 1480px; margin: 0 auto; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; }
+.trilho {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-width: 900px;
+  padding: 64px 24px 36px;
+}
+.lugar {
+  position: relative;
+  flex: 0 0 auto;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  transition: transform .12s steps(2);
+}
+.lugar img { display: block; width: 100%; height: auto; }
+.lugar:hover { transform: translateY(-6px); }
+.placa {
+  position: absolute;
+  left: 50%;
+  bottom: -32px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font: 700 .85rem/1 var(--pixel);
+  color: var(--luz);
+  background: var(--tijolo);
+  border: 3px solid var(--tijolo-2);
+  padding: 8px 12px;
+}
+.lugar[aria-pressed="true"] .placa { background: var(--moeda); color: var(--tinta); }
+.lugar[aria-pressed="true"]::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -44px;
+  width: 32px;
+  height: 32px;
+  margin-left: -16px;
+  background: url("assets/moedas.png") center / contain no-repeat;
+  image-rendering: pixelated;
+  animation: pula 1s steps(2) infinite;
+}
+@keyframes pula { 50% { transform: translateY(-8px); } }
+.l-casa { width: 6.8%; }
+.l-escola { width: 15.7%; }
+.l-mercado { width: 10.4%; }
+.l-banco { width: 23.7%; }
+.l-parque { width: 15.5%; }
+.l-negocios { width: 23.1%; }
+.rua { background: url("assets/chao.png") left bottom / auto 36px repeat-x; image-rendering: pixelated; }
+.lugar img { image-rendering: auto; }
+.lugar img.pixelado { image-rendering: pixelated; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.dica-rua { display: none; font-size: .95rem; margin: 0 24px 16px; }
+
+/* Painel do lugar escolhido */
+.cidade { padding: 72px 0 104px; }
+.lugar-painel { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 40px; align-items: start; }
+.lugar-painel[hidden] { display: none; }
+.lugar-painel h2 { margin-bottom: 14px; }
+.cena { border: 4px solid var(--tijolo); background: var(--papel-2); }
+.cena img { display: block; width: 100%; }
+.cena-ceu {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  align-self: stretch;
+  padding: 28px 20px 34px;
+  min-height: 220px;
+  background: url("assets/chao.png") left bottom / auto 36px repeat-x, var(--ceu);
+  image-rendering: pixelated;
+}
+.cena-ceu img { width: auto; max-width: 100%; }
+.duas-colunas { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 24px; }
+.duas-colunas h3 { margin-bottom: 10px; }
+.duas-colunas ul { margin: 0; padding-left: 1.2em; display: grid; gap: 8px; }
+.duas-colunas li::marker { color: var(--tijolo); }
+
+.prateleira { padding: 8px 24px; }
+.linha {
+  display: grid;
+  grid-template-columns: 48px 1fr auto 4.5rem;
+  grid-template-areas: "img nome fome preco";
+  gap: 4px 16px;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 3px dashed rgba(107, 65, 48, .35);
+  font-size: 1rem;
+}
+.linha:last-child { border-bottom: 0; }
+.linha img { grid-area: img; width: 48px; height: 48px; image-rendering: pixelated; }
+.linha b { grid-area: nome; font: 700 1rem/1.2 var(--pixel); }
+.linha .fome { grid-area: fome; color: var(--tinta-2); }
+.linha .preco { grid-area: preco; text-align: right; font-weight: 700; }
+.item { display: grid; justify-items: center; gap: 4px; text-align: center; font-size: .95rem; line-height: 1.3; }
+.item img { width: 48px; height: 48px; image-rendering: pixelated; }
+.item b { font: 700 .95rem/1 var(--pixel); }
+.necessidades { display: grid; grid-template-columns: repeat(3, 1fr); padding: 36px 8px; }
+.necessidades .item img { width: 64px; height: 64px; }
+
+.quiz {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: 40px;
+  align-items: start;
+  padding-top: 32px;
+  border-top: 4px dashed var(--tijolo);
+}
+.quiz h3 { margin-bottom: 10px; }
+.quiz-opcoes { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.quiz-opcoes button {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1.4;
+  padding: 12px 14px;
+  background: #fff;
+  color: var(--tinta);
+  border: 3px solid var(--tijolo);
+  cursor: pointer;
+}
+.quiz-opcoes button:hover:not(:disabled) { background: var(--ceu); }
+.quiz-opcoes button:disabled { cursor: default; opacity: .7; }
+.quiz-opcoes button.certa { opacity: 1; border-color: var(--verde); background: #DDF3E0; }
+.quiz-opcoes button.errada { opacity: 1; border-color: var(--vermelho); background: #FBE1DE; }
+.quiz-retorno { margin-top: 16px; display: grid; gap: 10px; font-size: 1rem; }
+.quiz-retorno:empty { display: none; }
+.quiz-retorno button { justify-self: start; font: 700 .85rem/1 var(--pixel); padding: 10px 14px; background: var(--moeda); border: 3px solid var(--tijolo); cursor: pointer; color: var(--tinta); }
+
+/* ---------- Problema (entardecer) ---------- */
+.noite {
+  color: var(--luz);
+  background: linear-gradient(rgba(43,30,64,.88), rgba(43,30,64,.88)), url("assets/entardecer.png") center / cover no-repeat;
+  image-rendering: pixelated;
+}
+.noite .lead, .noite p { image-rendering: auto; }
+.noite .muted { color: var(--luz-2); }
+.problema { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 72px; align-items: center; }
+.problema .texto { display: grid; gap: 22px; }
+.numeros { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; }
+.numero { display: grid; gap: 16px; align-content: start; }
+/* Números em fonte de texto: no Pixeloid a vírgula parece ponto e o % parece outro símbolo */
+.numero strong { font: 700 clamp(2.2rem, 4.5vw, 3.2rem)/1 var(--texto); color: var(--moeda); font-variant-numeric: tabular-nums; }
+.numero p { font-size: 1rem; line-height: 1.45; }
+.waffle { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; max-width: 260px; }
+.waffle i { aspect-ratio: 1; border: 2px solid rgba(255,241,226,.28); background: rgba(255,241,226,.06); }
+.waffle i.on { background: var(--moeda); border-color: var(--moeda-2); box-shadow: inset 0 -3px 0 var(--moeda-2); }
+.fonte { font-size: .9rem; margin-top: 28px; }
+
+/* ---------- Semanas ---------- */
+.semanas-grid { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: 72px; align-items: start; }
+.semanas-grid .intro { display: grid; gap: 22px; position: sticky; top: 32px; }
+.semanas { list-style: none; margin: 0; padding: 0; }
+.semanas li { display: grid; grid-template-columns: 64px 1fr; gap: 24px; position: relative; padding-bottom: 44px; }
+.semanas li:last-child { padding-bottom: 0; }
+.semanas li:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 30px;
+  top: 68px;
+  bottom: 8px;
+  width: 4px;
+  background: repeating-linear-gradient(var(--tijolo) 0 8px, transparent 8px 16px);
+}
+.no {
+  display: grid; place-items: center;
+  width: 64px; height: 64px;
+  background: var(--moeda);
+  border: 4px solid var(--tijolo);
+  box-shadow: 0 4px 0 var(--tijolo-2);
+  font: 700 1.6rem/1 var(--pixel);
+}
+.semanas h3 { font-size: 1.35rem; margin: 6px 0 8px; }
+.semanas .novo { margin-top: 12px; font-size: 1rem; color: var(--tinta-2); }
+.semanas .novo b { color: var(--tinta); }
+.regra-fim { margin-top: 56px; display: grid; gap: 8px; }
+.regra-fim h3 { font-size: 1.2rem; }
+
+/* ---------- Regras + conta ---------- */
+.regras { background: #E4F3FC; }
+.regras-grid { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 72px; align-items: start; }
+.regras-grid .esq { display: grid; gap: 36px; }
+.regras dl { margin: 0; display: grid; gap: 22px; }
+.regras dt { font-family: var(--pixel); font-weight: 700; font-size: 1.1rem; margin-bottom: 4px; }
+.regras dd { margin: 0; max-width: 56ch; }
+.conta { position: sticky; top: 32px; }
+.conta h3 { font-size: 1.3rem; margin-bottom: 4px; }
+.conta .sub { font-size: 1rem; color: var(--tinta-2); margin-bottom: 22px; }
+.conta label { display: block; font-weight: 700; margin-bottom: 10px; }
+.conta input[type="range"] { width: 100%; accent-color: var(--tijolo); height: 28px; }
+.escala { display: flex; justify-content: space-between; font-size: .9rem; color: var(--tinta-2); padding: 0 4px; }
+.total { margin-top: 26px; display: grid; gap: 6px; }
+.total .valor { font: 700 clamp(2.2rem, 4.5vw, 3rem)/1 var(--texto); font-variant-numeric: tabular-nums; }
+.total .valor.teto { color: var(--vermelho); }
+.barra-conta { margin-top: 18px; height: 28px; display: flex; border: 4px solid var(--tijolo); background: var(--papel-2); }
+.barra-conta .base { background: var(--tijolo); width: 57.14%; }
+.barra-conta .juros { background: var(--vermelho); width: 0; transition: width .15s steps(4); }
+.legenda { display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: .95rem; margin-top: 10px; }
+.legenda span::before { content: ""; display: inline-block; width: 12px; height: 12px; margin-right: 8px; background: var(--tijolo); vertical-align: -1px; }
+.legenda .l-juros::before { background: var(--vermelho); }
+.conta .nota { margin-top: 20px; font-size: 1rem; padding-top: 16px; border-top: 3px dashed var(--tijolo); }
+
+/* ---------- Resultados ---------- */
+.resultados { background: var(--ceu) url("assets/ceu.png") center top / cover no-repeat; image-rendering: pixelated; }
+.resultados p, .resultados li, .resultados h2, .resultados h3 { image-rendering: auto; }
+.res-grid { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: 72px; align-items: start; }
+.res-grid .intro { display: grid; gap: 22px; }
+.res-painel { background: var(--nuvem); border: 4px solid var(--tijolo); box-shadow: 0 8px 0 var(--tijolo-2); padding: 36px; display: grid; gap: 36px; }
+.res-painel h3 { font-size: 1.15rem; margin-bottom: 18px; }
+.barras { list-style: none; margin: 0; padding: 0; display: grid; gap: 20px; }
+.barras li { display: grid; grid-template-columns: 1fr auto; gap: 6px 16px; align-items: end; }
+.barras .rotulo { font-size: 1rem; line-height: 1.35; }
+.barras strong { font: 700 1.25rem/1 var(--texto); font-variant-numeric: tabular-nums; }
+.trilha { grid-column: 1 / -1; position: relative; height: 22px; border: 4px solid var(--tijolo); background: #fff; }
+.trilha::before { content: ""; position: absolute; inset: 0; width: calc(var(--v) * 1%); background: var(--verde); }
+.trilha::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 calc(5% - 3px), var(--nuvem) calc(5% - 3px) 5%); }
+.ajuste .trilha::before { background: var(--moeda-2); }
+.barras .acao { grid-column: 1 / -1; font-size: .95rem; color: var(--tinta-2); margin-top: -2px; }
+
+/* ---------- Equipe ---------- */
+.equipe-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 72px; align-items: start; }
+.equipe-grid .esq { display: grid; gap: 22px; }
+.nomes { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 10px; font-size: 1.1rem; }
+.nomes li { padding-left: 22px; position: relative; }
+.nomes li::before { content: ""; position: absolute; left: 0; top: .55em; width: 10px; height: 10px; background: var(--moeda); border: 2px solid var(--tijolo); }
+.ferramentas { margin: 0; display: grid; gap: 18px; }
+.ferramentas div { display: grid; grid-template-columns: 11rem 1fr; gap: 16px; padding-bottom: 18px; border-bottom: 3px dashed rgba(107,65,48,.45); }
+.ferramentas div:last-child { border-bottom: 0; padding-bottom: 0; }
+.ferramentas dt { font: 700 1rem/1.3 var(--pixel); }
+.ferramentas dd { margin: 0; }
+.docs-nota { margin-top: 28px; font-size: 1rem; }
+
+/* ---------- Fecho ---------- */
+.fecho { text-align: left; }
+.fecho .wrap { display: grid; gap: 28px; justify-items: start; }
+.fecho h2 { max-width: 20ch; }
+.rodape { background: var(--noite); color: var(--luz-2); font-size: .95rem; padding: 28px 0 36px; border-top: 4px solid var(--noite-2); }
+.rodape .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 32px; }
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 1000px) {
+  .secao { padding: 80px 0; }
+  .problema, .semanas-grid, .regras-grid, .res-grid, .equipe-grid, .lugar-painel { grid-template-columns: 1fr; gap: 40px; }
+  .semanas-grid .intro, .conta { position: static; }
+  .quiz { grid-template-columns: 1fr; gap: 20px; }
+  .topo nav { display: none; }
+}
+@media (max-width: 640px) {
+  body { font-size: 1.0625rem; }
+  .wrap { padding: 0 16px; }
+  .secao { padding: 64px 0; }
+  .painel, .res-painel { padding: 22px; }
+  .hero-texto { padding-top: 32px; padding-bottom: 36px; }
+  .acoes { gap: 16px; width: 100%; }
+  .acoes .botao { flex: 1 1 100%; text-align: center; }
+  .dica-rua { display: block; }
+  .trilho { padding-left: 16px; padding-right: 16px; }
+  .duas-colunas { grid-template-columns: 1fr; }
+  .numeros { grid-template-columns: 1fr; }
+  .prateleira { padding: 4px 16px; }
+  .linha { grid-template-columns: 48px 1fr auto; grid-template-areas: "img nome preco" "img fome preco"; }
+  .ferramentas div { grid-template-columns: 1fr; gap: 4px; }
+  .semanas li { grid-template-columns: 48px 1fr; gap: 16px; }
+  .no { width: 48px; height: 48px; font-size: 1.2rem; }
+  .semanas li:not(:last-child)::before { left: 22px; top: 52px; }
+  .rodape .wrap { display: grid; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<header class="hero" id="inicio">
+  <div class="wrap topo">
+    <a class="marca" href="#inicio"><img src="assets/moedas.png" alt="" width="32" height="32">Mundo Financeiro</a>
+    <nav aria-label="Seções da página">
+      <a href="#cidade">A cidade</a>
+      <a href="#problema">Por que existe</a>
+      <a href="#semanas">As 5 semanas</a>
+      <a href="#regras">Regras</a>
+      <a href="#resultados">Resultados</a>
+      <a href="#equipe">Equipe</a>
+    </nav>
+    <a class="botao" href="https://github.com/raul4500/mundo-financeiro">GitHub</a>
+  </div>
+
+  <div class="wrap hero-texto" id="conteudo">
+    <h1>Cometa os erros de dinheiro aqui, antes que custem de verdade.</h1>
+    <p class="lead">Mundo Financeiro é um RPG em pixel art para jovens de 15 a 18 anos. Em cinco semanas, você recebe salário, paga contas, investe e abre um negócio. Cada escolha tem consequência, e nenhuma delas custa um centavo real.</p>
+    <p class="acoes">
+      <a class="botao" href="https://github.com/raul4500/mundo-financeiro">Ver o projeto no GitHub</a>
+      <a class="botao botao-vazado" href="#cidade">Explorar a cidade</a>
+    </p>
+  </div>
+
+  <div class="rua">
+  <div class="rua-janela" role="group" aria-label="Mapa da cidade. Escolha um lugar para ver o que acontece lá.">
+    <p class="dica-rua">Arraste para os lados e toque num prédio.</p>
+    <div class="trilho">
+      <button type="button" class="lugar l-casa" data-lugar="casa" aria-controls="p-casa" aria-pressed="false">
+        <img src="assets/casa.png" alt="" width="106" height="137"><span class="placa">Casa</span>
+      </button>
+      <button type="button" class="lugar l-escola" data-lugar="escola" aria-controls="p-escola" aria-pressed="false">
+        <img src="assets/escola.png" alt="" width="243" height="146"><span class="placa">Escola</span>
+      </button>
+      <button type="button" class="lugar l-mercado" data-lugar="mercado" aria-controls="p-mercado" aria-pressed="false">
+        <img src="assets/mercado.png" alt="" width="161" height="176"><span class="placa">Mercado</span>
+      </button>
+      <button type="button" class="lugar l-banco" data-lugar="banco" aria-controls="p-banco" aria-pressed="true">
+        <img src="assets/banco.png" alt="" width="368" height="276"><span class="placa">Banco</span>
+      </button>
+      <button type="button" class="lugar l-parque" data-lugar="parque" aria-controls="p-parque" aria-pressed="false">
+        <img class="pixelado" src="assets/parque.png" alt="" width="120" height="66"><span class="placa">Parque</span>
+      </button>
+      <button type="button" class="lugar l-negocios" data-lugar="negocios" aria-controls="p-negocios" aria-pressed="false">
+        <img src="assets/negocios.png" alt="" width="358" height="211"><span class="placa">Negócios</span>
+      </button>
+    </div>
+  </div>
+  </div>
+</header>
+
+<main>
+  <!-- A CIDADE -->
+  <section class="cidade" id="cidade" aria-label="Detalhe do lugar escolhido">
+    <div class="wrap">
+      <div class="painel" id="lugares" aria-live="polite">
+
+        <article class="lugar-painel" id="p-banco" data-lugar="banco">
+          <div class="cena"><img class="pixelado" src="assets/interior-banco.png" alt="Interior do banco no jogo, com um segurança de uniforme ao lado do balcão" width="300" height="200"></div>
+          <div>
+            <h2>Banco</h2>
+            <p>O dinheiro na carteira some rápido. No banco, ele fica guardado para as contas e vira investimento.</p>
+            <div class="duas-colunas">
+              <div>
+                <h3>Você faz</h3>
+                <ul>
+                  <li>Deposita e saca dinheiro</li>
+                  <li>Paga as contas da casa e os eventos inesperados</li>
+                  <li>Abre a poupança, na semana 3</li>
+                  <li>Compra cotas de fundos imobiliários, na semana 4</li>
+                </ul>
+              </div>
+              <div>
+                <h3>Você aprende</h3>
+                <ul>
+                  <li>A diferença entre dinheiro na mão e saldo</li>
+                  <li>Como vencimento e juros de atraso funcionam</li>
+                  <li>O que é rendimento, risco e diversificação</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="lugar-painel" id="p-casa" data-lugar="casa">
+          <div class="cena necessidades">
+            <div class="item"><img src="assets/frango.png" alt="" width="16" height="16"><b>Fome</b></div>
+            <div class="item"><img src="assets/agua.png" alt="" width="16" height="16"><b>Sede</b></div>
+            <div class="item"><img src="assets/energia.png" alt="" width="16" height="16"><b>Energia</b></div>
+          </div>
+          <div>
+            <h2>Casa</h2>
+            <p>É onde você cuida de si. Fome, sede e energia caem ao longo do dia, e quem ignora isso paga a conta.</p>
+            <div class="duas-colunas">
+              <div>
+                <h3>Você faz</h3>
+                <ul>
+                  <li>Come e bebe o que comprou no mercado, nas abas Comidas e Bebidas</li>
+                  <li>Dorme para encerrar o dia</li>
+                </ul>
+              </div>
+              <div>
+                <h3>Você aprende</h3>
+                <ul>
+                  <li>Necessidade vem antes de desejo</li>
+                  <li>Se fome, sede ou energia chegam a zero, o personagem desmaia, paga uma cobrança e acorda em casa no dia seguinte</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="lugar-painel" id="p-escola" data-lugar="escola">
+          <div class="cena"><img class="pixelado" src="assets/interior-escritorio.png" alt="Escritório da consultoria financeira no jogo, com computadores sobre uma mesa" width="300" height="200"></div>
+          <div>
+            <h2>Escola e consultoria</h2>
+            <p>Estudar muda o salário. Na escola você joga uma corrida, e na consultoria financeira lê o conteúdo de cada semana.</p>
+            <div class="duas-colunas">
+              <div>
+                <h3>Você faz</h3>
+                <ul>
+                  <li>Desvia de obstáculos na corrida da escola para subir de nível</li>
+                  <li>Estuda na consultoria, onde o relógio do jogo para</li>
+                </ul>
+              </div>
+              <div>
+                <h3>Você aprende</h3>
+                <ul>
+                  <li>Mais escolaridade rende um salário maior</li>
+                  <li>O salário é a base do orçamento da semana</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="lugar-painel" id="p-mercado" data-lugar="mercado">
+          <div class="cena prateleira">
+            <div class="linha"><img src="assets/pao.png" alt="" width="16" height="16"><b>Pão</b><span class="fome">restaura 10% de fome</span><span class="preco">R$ 4</span></div>
+            <div class="linha"><img src="assets/maca.png" alt="" width="16" height="16"><b>Maçã</b><span class="fome">restaura 15% de fome</span><span class="preco">R$ 7</span></div>
+            <div class="linha"><img src="assets/ovo.png" alt="" width="16" height="16"><b>Ovo</b><span class="fome">restaura 18% de fome</span><span class="preco">R$ 8</span></div>
+            <div class="linha"><img src="assets/leite.png" alt="" width="16" height="16"><b>Leite</b><span class="fome">restaura 20% de fome</span><span class="preco">R$ 15</span></div>
+            <div class="linha"><img src="assets/carne.png" alt="" width="16" height="16"><b>Carne</b><span class="fome">restaura 100% de fome</span><span class="preco">R$ 70</span></div>
+          </div>
+          <div>
+            <h2>Mercado</h2>
+            <p>Os preços seguem uma lógica de vida real: o pão custa menos de R$ 5 e sacia pouco, a carne custa mais e sacia muito.</p>
+            <div class="duas-colunas">
+              <div>
+                <h3>Você faz</h3>
+                <ul>
+                  <li>Compra comida e bebida e leva para a despensa de casa</li>
+                  <li>Usa cupons de desconto</li>
+                </ul>
+              </div>
+              <div>
+                <h3>Você aprende</h3>
+                <ul>
+                  <li>A comparar preço e rendimento: o pão custa R$ 0,40 por ponto de fome, a carne R$ 0,70</li>
+                  <li>A fazer o salário da semana durar até o fim dela</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="lugar-painel" id="p-parque" data-lugar="parque">
+          <div class="cena cena-ceu"><img class="pixelado" src="assets/parque.png" alt="Árvores do parque no jogo" width="120" height="66" style="width: 240px"></div>
+          <div>
+            <h2>Parque</h2>
+            <p>Uma corrida de 2 minutos atrás de moedas. A cada 5 moedas o jogo para e faz uma pergunta sobre a semana, em forma de situação. Se você errar, ele explica por quê.</p>
+            <div class="duas-colunas">
+              <div>
+                <h3>Você faz</h3>
+                <ul>
+                  <li>Corre atrás das moedas antes que sumam</li>
+                  <li>Responde a uma pergunta a cada 5 moedas</li>
+                  <li>Pode correr até 2 vezes por dia</li>
+                </ul>
+              </div>
+              <div>
+                <h3>Você aprende</h3>
+                <ul>
+                  <li>A aplicar o conteúdo da semana em situações do dia a dia</li>
+                  <li>Por que cada alternativa está certa ou errada</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="quiz" data-correta="2">
+            <div class="quiz-q">
+              <h3>Teste uma pergunta da semana 1</h3>
+              <p>Marina recebeu o pagamento da semana. Na mesa estão duas opções: reabastecer a geladeira com comida ou comprar um fone de ouvido novo que está em promoção. O dinheiro só cobre uma delas sem faltar no resto da semana. Qual escolha segue a regra de priorizar necessidades?</p>
+            </div>
+            <div class="quiz-a">
+              <ul class="quiz-opcoes">
+                <li><button type="button" data-explicacao="Promoção não transforma um desejo em necessidade. O fone pode esperar ou voltar a ser vendido depois, mas a comida da semana não pode faltar.">Comprar o fone agora, porque a promoção termina hoje</button></li>
+                <li><button type="button" data-explicacao="Dividir ao meio faria faltar comida e ainda não pagaria o fone inteiro. Quando o dinheiro cobre só uma coisa, a necessidade vem primeiro, sem meio-termo.">Dividir o dinheiro igualmente entre as duas coisas</button></li>
+                <li><button type="button" data-explicacao="Certo. Comida é necessidade: sem ela a semana inteira fica comprometida. O fone é desejo e pode esperar o próximo pagamento ou uma sobra do orçamento.">Reabastecer a geladeira e deixar o fone para depois</button></li>
+                <li><button type="button" data-explicacao="O preço não define a prioridade. Uma opção barata pode ser um desejo, e uma necessidade pode custar mais. O critério é o que você precisa para viver bem.">Escolher a opção mais barata, seja ela qual for</button></li>
+              </ul>
+              <div class="quiz-retorno" aria-live="polite"></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="lugar-painel" id="p-negocios" data-lugar="negocios">
+          <div class="cena"><img class="pixelado" src="assets/interior-fliperama.png" alt="Interior do fliperama no jogo, com uma máquina de arcade ao centro" width="300" height="200"></div>
+          <div>
+            <h2>Negócios</h2>
+            <p>Na semana 5 você deixa de ser só funcionário e compra um restaurante, um fliperama ou um shopping.</p>
+            <div class="duas-colunas">
+              <div>
+                <h3>Você faz</h3>
+                <ul>
+                  <li>Compra o negócio e os equipamentos</li>
+                  <li>Controla estoque, contas e folha de pagamento</li>
+                </ul>
+              </div>
+              <div>
+                <h3>Você aprende</h3>
+                <ul>
+                  <li>Diferença entre receita e custo</li>
+                  <li>Fluxo de caixa e o risco de empreender</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- POR QUE EXISTE -->
+  <section class="secao noite" id="problema">
+    <div class="wrap problema">
+      <div class="texto">
+        <h2>Ter dinheiro não ensina a lidar com dinheiro.</h2>
+        <p class="lead">Quem recebe a primeira mesada, o primeiro estágio ou o primeiro salário encontra crédito fácil e propaganda o tempo todo. Quase ninguém ensinou a priorizar uma conta antes de um desejo.</p>
+        <p class="muted texto-largo">Na sala de aula, juros viram fórmula no quadro. No Mundo Financeiro, viram uma conta atrasada que você precisa resolver até sexta-feira.</p>
+      </div>
+      <div>
+        <div class="numeros">
+          <div class="numero">
+            <div class="waffle" data-valor="50.2" role="img" aria-label="50 em cada 100 jovens"></div>
+            <strong>50,2%</strong>
+            <p>dos brasileiros de 18 a 24 anos já tinham restrição no nome.</p>
+          </div>
+          <div class="numero">
+            <div class="waffle" data-valor="9.25" role="img" aria-label="9 em cada 100 estudantes"></div>
+            <strong>9,25%</strong>
+            <p>dos estudantes do ensino médio guardam e investem parte da renda. Outros 27,6% só guardam o que sobra.</p>
+          </div>
+        </div>
+        <p class="muted fonte">Dados citados no trabalho de conclusão de curso que originou o jogo (Sobianek et al., 2021). Cada quadro dourado representa 1 em 100.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- AS 5 SEMANAS -->
+  <section class="secao" id="semanas">
+    <div class="wrap semanas-grid">
+      <div class="intro">
+        <h2>Cinco semanas, cada uma com uma ideia nova.</h2>
+        <p class="lead">Cada semana tem 5 dias e um conjunto de missões. O jogo vai liberando lugares da cidade conforme você aprende o básico.</p>
+        <div class="painel regra-fim">
+          <h3>No fim da semana</h3>
+          <p>O jogo confere as missões e cobra as contas que venceram. Se algo falhar, você repete a semana com o dinheiro que tinha no primeiro dia dela.</p>
+        </div>
+      </div>
+      <ol class="semanas">
+        <li>
+          <span class="no" aria-hidden="true">1</span>
+          <div>
+            <h3><span class="sr">Semana 1: </span>Orçamento e gastos</h3>
+            <p>Salário na mão, geladeira vazia e uma pergunta: o que é necessidade e o que é desejo? Você registra seus gastos e descobre como a escola muda o salário.</p>
+            <p class="novo"><b>Novo na cidade:</b> casa, mercado, escola e consultoria financeira.</p>
+          </div>
+        </li>
+        <li>
+          <span class="no" aria-hidden="true">2</span>
+          <div>
+            <h3><span class="sr">Semana 2: </span>Reserva de emergência</h3>
+            <p>Chegam as contas da casa e os imprevistos, como conserto e consulta médica, e às vezes um bônus de freelance. Quem guardou algo atravessa a semana. Quem não guardou paga com o que não tem.</p>
+            <p class="novo"><b>Novo na cidade:</b> contas da casa e eventos inesperados no banco.</p>
+          </div>
+        </li>
+        <li>
+          <span class="no" aria-hidden="true">3</span>
+          <div>
+            <h3><span class="sr">Semana 3: </span>Poupança e renda fixa</h3>
+            <p>Você abre a poupança. O dinheiro rende juro sobre juro a seu favor, e dá para sacar a qualquer momento quando precisar.</p>
+            <p class="novo"><b>Novo na cidade:</b> poupança no banco.</p>
+          </div>
+        </li>
+        <li>
+          <span class="no" aria-hidden="true">4</span>
+          <div>
+            <h3><span class="sr">Semana 4: </span>Fundos imobiliários</h3>
+            <p>A loja de fundos oferece 8 opções, cada uma com seu preço e sua volatilidade. As cotas sobem e descem, pagam dividendos e recompensam quem diversifica.</p>
+            <p class="novo"><b>Novo na cidade:</b> loja de fundos imobiliários.</p>
+          </div>
+        </li>
+        <li>
+          <span class="no" aria-hidden="true">5</span>
+          <div>
+            <h3><span class="sr">Semana 5: </span>Empreendedorismo</h3>
+            <p>Você compra um restaurante, um fliperama ou um shopping. Estoque, equipamentos, contas e folha de pagamento passam a ser decisão sua.</p>
+            <p class="novo"><b>Novo na cidade:</b> os três negócios.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- REGRAS + CONTA -->
+  <section class="secao regras" id="regras">
+    <div class="wrap regras-grid">
+      <div class="esq">
+        <h2>Atrasar a conta custa caro. Veja quanto.</h2>
+        <dl>
+          <div>
+            <dt>Carteira ou banco</dt>
+            <dd>Dinheiro na carteira é fácil de gastar sem pensar. O banco guarda o que precisa virar conta paga ou investimento.</dd>
+          </div>
+          <div>
+            <dt>Toda conta tem prazo</dt>
+            <dd>Contas da casa e eventos inesperados aparecem no banco com vencimento e data limite. Depois do vencimento, o valor cresce a cada dia. Na data limite, o jogo cobra sozinho.</dd>
+          </div>
+          <div>
+            <dt>A semana pode se repetir</dt>
+            <dd>Se as missões não forem cumpridas, ou se o dinheiro não cobrir as contas na data limite, você volta ao primeiro dia da semana com o valor que tinha ali.</dd>
+          </div>
+          <div>
+            <dt>Estudar paga</dt>
+            <dd>Cada fase concluída na corrida da escola sobe a escolaridade, e o salário sobe junto.</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="painel conta" aria-labelledby="conta-titulo">
+        <h3 id="conta-titulo">Conta de luz de 200 reais</h3>
+        <p class="sub">Mova o controle e veja o que acontece depois do vencimento.</p>
+        <label for="dias">Dias depois do vencimento: <span id="dias-valor">0</span></label>
+        <input id="dias" type="range" min="0" max="8" step="1" value="0">
+        <div class="escala" aria-hidden="true"><span>0</span><span>2</span><span>4</span><span>6</span><span>8</span></div>
+        <div class="total" aria-live="polite">
+          <span>Você deve</span>
+          <span class="valor" id="valor">R$ 200,00</span>
+          <span id="explica">No dia do vencimento você paga o valor original.</span>
+        </div>
+        <div class="barra-conta" aria-hidden="true"><div class="base"></div><div class="juros" id="juros"></div></div>
+        <div class="legenda"><span>Valor da conta</span><span class="l-juros">Juros de atraso</span></div>
+        <p class="nota">Os juros são de 10% ao dia, compostos. O jogo limita a mora a 75% do valor original, para uma dívida antiga não virar uma bola de neve sem saída.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTADOS -->
+  <section class="secao resultados" id="resultados">
+    <div class="wrap res-grid">
+      <div class="intro">
+        <h2>16 estudantes jogaram e responderam.</h2>
+        <p class="lead">Alunos do 2º e do 3º ano do Ensino Técnico Integrado ao Médio do IFSP jogaram o protótipo em laboratório e responderam a um questionário.</p>
+        <p>O teste mediu a experiência na hora. Saber quanto do aprendizado fica meses depois exige outra pesquisa, e é um dos próximos passos do projeto.</p>
+      </div>
+      <div class="res-painel">
+        <div>
+          <h3>O que funcionou</h3>
+          <ul class="barras">
+            <li style="--v: 93.75"><span class="rotulo">Entenderam a diferença entre dinheiro na mão e saldo no banco</span><strong>93,75%</strong><span class="trilha" role="presentation"></span></li>
+            <li style="--v: 87.5"><span class="rotulo">Acharam os controles e a movimentação bons ou muito bons</span><strong>87,5%</strong><span class="trilha" role="presentation"></span></li>
+            <li style="--v: 87.5"><span class="rotulo">Acharam a interface clara para acompanhar as finanças</span><strong>87,5%</strong><span class="trilha" role="presentation"></span></li>
+            <li style="--v: 87.5"><span class="rotulo">Usaram os serviços da agência bancária com sucesso</span><strong>87,5%</strong><span class="trilha" role="presentation"></span></li>
+          </ul>
+        </div>
+        <div>
+          <h3>O que pediram para melhorar</h3>
+          <ul class="barras ajuste">
+            <li style="--v: 68.75"><span class="rotulo">Disseram que o tempo passava rápido demais no início</span><strong>68,75%</strong><span class="trilha" role="presentation"></span><span class="acao">O que mudou: a velocidade do relógio foi reajustada.</span></li>
+            <li style="--v: 56.25"><span class="rotulo">Conseguiram operar os investimentos, poupança e fundos</span><strong>56,25%</strong><span class="trilha" role="presentation"></span><span class="acao">Onde olhar: investimentos precisam de um tutorial mais claro.</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EQUIPE -->
+  <section class="secao" id="equipe">
+    <div class="wrap equipe-grid">
+      <div class="esq">
+        <h2>Feito por estudantes do IFSP.</h2>
+        <p class="lead">O Mundo Financeiro é o trabalho de conclusão de curso de cinco estudantes do Instituto Federal de São Paulo, campus São Paulo.</p>
+        <ul class="nomes">
+          <li>Enzo Faria de Melo</li>
+          <li>Matheus Araujo Gregório</li>
+          <li>Melissa Kimberly da Costa Oliveira</li>
+          <li>Phillip da Silva Marcelino Bonfim</li>
+          <li>Raul Ferreira Borges</li>
+        </ul>
+      </div>
+      <div>
+        <div class="painel">
+          <dl class="ferramentas">
+            <div><dt>Godot Engine 4</dt><dd>Motor do jogo, com código em GDScript, interfaces e física 2D.</dd></div>
+            <div><dt>Pixilart</dt><dd>Pixel art, cenários e animações.</dd></div>
+            <div><dt>Visual Paradigm</dt><dd>Diagrama de casos de uso e modelagem do sistema.</dd></div>
+            <div><dt>GitHub</dt><dd>Controle de versão e documentação.</dd></div>
+            <div><dt>Google Forms</dt><dd>Questionário aplicado aos estudantes.</dd></div>
+          </dl>
+        </div>
+        <p class="docs-nota">O projeto tem 86 requisitos funcionais e 24 requisitos não funcionais documentados no repositório.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FECHO -->
+  <section class="secao noite fecho" id="jogar">
+    <div class="wrap">
+      <h2>Abra a cidade no seu computador.</h2>
+      <p class="lead">O projeto é aberto e gratuito. Baixe o código, abra a pasta no Godot 4 e aperte F5.</p>
+      <p class="acoes">
+        <a class="botao" href="https://github.com/raul4500/mundo-financeiro">Baixar no GitHub</a>
+        <a class="botao botao-vazado" href="https://github.com/raul4500/mundo-financeiro/blob/main/PROJECT_KNOWLEDGE.md">Ler a documentação</a>
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer class="rodape">
+  <div class="wrap">
+    <p>Mundo Financeiro é um projeto acadêmico de código aberto.</p>
+    <p>Esta página não é um site oficial do IFSP.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var reduzir = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* Rua: escolhe o lugar e mostra o painel dele */
+  var botoes = Array.prototype.slice.call(document.querySelectorAll(".lugar"));
+  var paineis = Array.prototype.slice.call(document.querySelectorAll(".lugar-painel"));
+  var caixa = document.getElementById("lugares");
+
+  function abrir(id, rolar) {
+    botoes.forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.lugar === id)); });
+    paineis.forEach(function (p) { p.hidden = p.dataset.lugar !== id; });
+    if (rolar) {
+      var r = caixa.getBoundingClientRect();
+      if (r.top < 0 || r.bottom > window.innerHeight) {
+        caixa.scrollIntoView({ block: "nearest", behavior: reduzir ? "auto" : "smooth" });
+      }
+    }
+  }
+  botoes.forEach(function (b) { b.addEventListener("click", function () { abrir(b.dataset.lugar, true); }); });
+  /* ?lugar=parque abre direto um lugar (link para compartilhar) */
+  var pedido = new URLSearchParams(window.location.search).get("lugar");
+  abrir(botoes.some(function (b) { return b.dataset.lugar === pedido; }) ? pedido : "banco", false);
+
+  /* Em telas estreitas a rua rola: começa com o banco no meio */
+  var janela = document.querySelector(".rua-janela");
+  var banco = document.querySelector(".l-banco");
+  if (janela.scrollWidth > janela.clientWidth) {
+    janela.scrollLeft = banco.offsetLeft + banco.offsetWidth / 2 - janela.clientWidth / 2;
+  }
+
+  /* Quadros de 100: um quadro dourado para cada 1 em 100 */
+  Array.prototype.forEach.call(document.querySelectorAll(".waffle"), function (w) {
+    var n = Math.round(parseFloat(w.dataset.valor));
+    for (var i = 0; i < 100; i++) {
+      var q = document.createElement("i");
+      if (i < n) q.className = "on";
+      w.appendChild(q);
+    }
+  });
+
+  /* Conta atrasada: mesma regra do jogo (10% ao dia, composto, teto de +75%) */
+  var BASE = 200, TAXA = 1.10, TETO = 1.75;
+  var campo = document.getElementById("dias");
+  var rotuloDias = document.getElementById("dias-valor");
+  var valor = document.getElementById("valor");
+  var explica = document.getElementById("explica");
+  var juros = document.getElementById("juros");
+
+  function moeda(v) { return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }); }
+
+  function atualizar() {
+    var d = parseInt(campo.value, 10);
+    var mult = Math.min(Math.pow(TAXA, d), TETO);
+    var total = Math.round(BASE * mult * 100) / 100;
+    var extra = total - BASE;
+    rotuloDias.textContent = d;
+    valor.textContent = moeda(total);
+    valor.classList.toggle("teto", mult >= TETO);
+    juros.style.width = (extra / (BASE * TETO) * 100) + "%";
+    if (d === 0) {
+      explica.textContent = "No dia do vencimento você paga o valor original.";
+    } else if (mult >= TETO) {
+      explica.textContent = "Mais " + moeda(extra) + " de juros. A mora chegou ao teto de 75% e para de crescer.";
+    } else {
+      explica.textContent = "Mais " + moeda(extra) + " de juros. Cada dia soma 10% sobre o valor do dia anterior.";
+    }
+  }
+  campo.addEventListener("input", atualizar);
+  atualizar();
+
+  /* Quiz de exemplo do parque: mesmo retorno do alerta do jogo */
+  var quiz = document.querySelector(".quiz");
+  var opcoes = Array.prototype.slice.call(quiz.querySelectorAll(".quiz-opcoes button"));
+  var retorno = quiz.querySelector(".quiz-retorno");
+  var certa = parseInt(quiz.dataset.correta, 10);
+
+  function responder(i) {
+    opcoes.forEach(function (b, j) {
+      b.disabled = true;
+      if (j === certa) b.classList.add("certa");
+      if (j === i && i !== certa) b.classList.add("errada");
+    });
+    retorno.textContent = "";
+    function linha(rotulo, texto) {
+      var p = document.createElement("p");
+      if (rotulo) { var s = document.createElement("strong"); s.textContent = rotulo + " "; p.appendChild(s); }
+      p.appendChild(document.createTextNode(texto));
+      retorno.appendChild(p);
+    }
+    if (i === certa) {
+      linha("", opcoes[i].dataset.explicacao);
+    } else {
+      linha("Resposta incorreta.", opcoes[i].dataset.explicacao);
+      linha("A resposta certa era:", opcoes[certa].textContent + ". " + opcoes[certa].dataset.explicacao);
+    }
+    var de_novo = document.createElement("button");
+    de_novo.type = "button";
+    de_novo.textContent = "Responder de novo";
+    de_novo.addEventListener("click", function () {
+      opcoes.forEach(function (b) { b.disabled = false; b.classList.remove("certa", "errada"); });
+      retorno.textContent = "";
+      opcoes[0].focus();
+    });
+    retorno.appendChild(de_novo);
+  }
+  opcoes.forEach(function (b, i) { b.addEventListener("click", function () { responder(i); }); });
+})();
+</script>
+</body>
+</html>
