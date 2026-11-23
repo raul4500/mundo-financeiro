@@ -161,7 +161,20 @@ var time_display: Label
 var viewed_topics: Array = []
 var confirm_button: Button
 
+# A confirmação de leitura é a trava do tutorial (passos 8 a 10): só existe
+# enquanto a cidade está fechada. Calculada ao abrir a cena, para o botão não
+# sumir no meio da visita em que o jogador acabou de concluir a aula.
+var _study_gate_pending := false
+
+# Folga entre o botão de concluir e o SAIR, a mesma que a lista de níveis usa
+# entre os botões (separação padrão do VBoxContainer).
+const CONFIRM_BUTTON_GAP := 4.0
+
+# Prefixo do tópico já lido. O ✓ (U+2713) existe na PixeloidSansBold; ✔ não.
+const TOPIC_CHECK := "✓ "
+
 @onready var level_panel: Panel = $HBoxContainer/LevelPanel
+@onready var exit_button: Button = $HBoxContainer/LevelPanel/Exit
 @onready var level_container: VBoxContainer = $HBoxContainer/LevelPanel/Levels
 @onready var topics_container: VBoxContainer = $HBoxContainer/TopicPanel/ScrollContainer/Topics
 @onready var detail_label: RichTextLabel = $HBoxContainer/DetailPanel/ScrollContainer/RichTextLabel
@@ -173,6 +186,7 @@ func _ready() -> void:
 	# de religar play_time; main_game._ready() religa ao sair.
 	Global.in_office = true
 	Global.play_time = false
+	_study_gate_pending = _study_gate_active()
 	_create_time_display()
 	_load_player_progress()
 	_build_ui()
@@ -207,17 +221,25 @@ func _build_ui() -> void:
 	detail_label.bbcode_enabled = true
 	detail_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
+	if _study_gate_pending:
+		_build_confirm_button()
+
+	_show_default_detail_message()
+
+# Botão "Concluir aula": mesmo tema e mesmo tamanho do SAIR, empilhado logo
+# acima dele. A geometria é lida do SAIR para os dois não saírem do compasso se
+# alguém mexer no layout da cena.
+func _build_confirm_button() -> void:
 	confirm_button = Button.new()
-	confirm_button.offset_left = 8.0
-	confirm_button.offset_top = 344.0
-	confirm_button.offset_right = 214.0
-	confirm_button.offset_bottom = 394.0
 	confirm_button.focus_mode = Control.FOCUS_NONE
+	confirm_button.offset_left = exit_button.offset_left
+	confirm_button.offset_right = exit_button.offset_right
+	var height := exit_button.offset_bottom - exit_button.offset_top
+	confirm_button.offset_bottom = exit_button.offset_top - CONFIRM_BUTTON_GAP
+	confirm_button.offset_top = confirm_button.offset_bottom - height
 	confirm_button.pressed.connect(_on_confirm_study_pressed)
 	level_panel.add_child(confirm_button)
 	_update_confirm_button()
-
-	_show_default_detail_message()
 
 
 # ---------------- NÍVEIS ----------------
@@ -254,13 +276,32 @@ func build_topics_section(level: int) -> void:
 	for topic in topics:
 		var button = Button.new()
 		var t_name := str(topic["name"])
-		button.text = ("✓ " + t_name) if viewed_topics.has(t_name) else t_name
-		button.custom_minimum_size = Vector2(0, 36)
-		
+		button.text = (TOPIC_CHECK + t_name) if viewed_topics.has(t_name) else t_name
+		_style_topic_button(button, t_name)
+
 		# Bind correto (sem índice desnecessário)
 		button.pressed.connect(_on_topic_pressed.bind(topic))
-		
+
 		topics_container.add_child(button)
+
+# O botão de tópico tem tamanho fixo: o "✓" entra no texto, mas nada do que
+# acontece no clique (texto novo, foco, hover) pode mexer na altura nem na
+# largura dele.
+# - altura: a mesma do SAIR, que é o botão padrão desta tela. O 36 de antes era
+#   menor que a altura que o tema exige (margens de 16 mais o texto), então o
+#   tamanho dependia de o Godot recalcular o mínimo e a altura oscilava;
+# - largura: clip_text tira o texto da conta do tamanho mínimo, e as reticências
+#   cortam nomes longos (o nome inteiro fica na dica do botão), em vez de o
+#   botão alargar e abrir barra de rolagem horizontal quando o "✓" entra;
+# - foco: sem foco o clique não desenha o contorno padrão do Godot, e ENTER/ESPAÇO
+#   não reativam o último tópico clicado.
+func _style_topic_button(button: Button, topic_name: String) -> void:
+	button.custom_minimum_size = Vector2(0, exit_button.offset_bottom - exit_button.offset_top)
+	button.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	button.clip_text = true
+	button.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	button.tooltip_text = topic_name
+	button.focus_mode = Control.FOCUS_NONE
 
 
 # ---------------- DETALHE ----------------
@@ -270,11 +311,12 @@ func _on_topic_pressed(topic: Dictionary) -> void:
 	if not viewed_topics.has(t_name):
 		viewed_topics.append(t_name)
 	for child in topics_container.get_children():
-		if child is Button and (child.text == t_name or child.text == "✓ " + t_name):
-			child.text = "✓ " + t_name
+		if child is Button and (child.text == t_name or child.text == TOPIC_CHECK + t_name):
+			child.text = TOPIC_CHECK + t_name
 	_update_confirm_button()
 
-	var text = "[color=black][b][font_size=22]%s[/font_size][/b]\n\n" % topic["name"]
+	# Cor do texto: RichTextLabel/default_color em font_theme.tres.
+	var text = "[b][font_size=22]%s[/font_size][/b]\n\n" % topic["name"]
 	text += "%s" % topic["description"]
 
 	detail_label.clear()
@@ -290,14 +332,19 @@ func _all_level1_topics_viewed() -> bool:
 	return true
 
 
+# O jogo só pede a confirmação enquanto a cidade está fechada. Saves antigos,
+# quem pulou o tutorial e quem já concluiu a aula entram e saem sem trava.
+func _study_gate_active() -> bool:
+	return not bool(Global.player.get("office_study_confirmed", false)) and Global.unlock_stage() < Global.UNLOCK_ALL
+
 func _update_confirm_button() -> void:
 	if confirm_button == null:
 		return
 	if bool(Global.player.get("office_study_confirmed", false)):
-		confirm_button.text = "✓ Aula Concluída"
+		confirm_button.text = "✓ Aula concluída"
 		confirm_button.disabled = true
 	else:
-		confirm_button.text = "Concluir Aula"
+		confirm_button.text = "Concluir aula"
 		confirm_button.disabled = not _all_level1_topics_viewed()
 
 
@@ -306,17 +353,20 @@ func _on_confirm_study_pressed() -> void:
 		return
 	Global.player["office_study_confirmed"] = true
 	_update_confirm_button()
-	AlertManager.alert("Parabéns! Você concluiu a leitura dos conteúdos da consultoria. Agora você pode sair para explorar o Banco, o Mercado e o restante da cidade!")
+	AlertManager.alert("Parabéns! Você concluiu a leitura da aula. Agora você pode sair para explorar o Banco, o Mercado e o restante da cidade!")
 
 
 func _show_default_detail_message() -> void:
 	detail_label.clear()
-	detail_label.append_text("[i]Selecione todos os tópicos à esquerda para ler o conteúdo e clique em 'Concluir Aula'.[/i]")
+	if _study_gate_pending:
+		detail_label.append_text("Leia todos os tópicos à esquerda e clique em 'Concluir aula' para liberar a cidade.")
+	else:
+		detail_label.append_text("Escolha um tópico à esquerda para ver os detalhes aqui.")
 
 
 func _on_exit_pressed() -> void:
-	if not bool(Global.player.get("office_study_confirmed", false)) and Global.unlock_stage() < Global.UNLOCK_ALL:
-		AlertManager.alert("Você ainda não concluiu a leitura de todos os tópicos desta aula. Leia cada tópico e clique em 'Concluir Aula' antes de sair para liberar o Banco e os outros locais da cidade.")
+	if _study_gate_active():
+		AlertManager.alert("Você ainda não concluiu a aula. Leia todos os tópicos e clique em 'Concluir aula' para liberar o Banco e o resto da cidade.")
 		return
 	# Sair do escritório é o que destrava o resto da cidade no tutorial.
 	TutorialManager.on_player_left_office()

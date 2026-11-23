@@ -9,6 +9,10 @@ extends CanvasLayer
 const TEXT_WIDTH := 700
 const TEXT_VISIBLE_HEIGHT := 230
 
+# Película escura atrás de janelas modais. Pública para as outras janelas do
+# jogo (ex.: o Guia do Jogo) escurecerem a tela do mesmo jeito.
+const DIM_COLOR := Color(0, 0, 0, 0.5)
+
 var panel: Control          # raiz em tela cheia (transparente)
 var dialog: PanelContainer  # caixa central com o texto e o botão
 var text_scroll: ScrollContainer
@@ -82,7 +86,7 @@ func _create_alert_ui():
 	# =============================
 	blocker = ColorRect.new()
 	blocker.set_anchors_preset(Control.PRESET_FULL_RECT)
-	blocker.color = Color(0, 0, 0, 0.5) # fundo escuro transparente (50%)
+	blocker.color = DIM_COLOR
 	blocker.visible = false
 	blocker.mouse_filter = Control.MOUSE_FILTER_STOP # 🚨 ESSENCIAL
 
@@ -190,13 +194,16 @@ func _create_alert_ui():
 	skip_button.visible = false
 	skip_button.pressed.connect(_on_skip_pressed)
 
-	# Ancorado no canto superior direito, com 20px de margem.
-	skip_button.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	# Ancorado no canto inferior direito, com 20px de margem. O canto superior
+	# direito é dos botões GUIA e MISSÕES do HUD: o botão de pular ficava por
+	# cima deles.
+	skip_button.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
 	skip_button.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	skip_button.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	skip_button.offset_left = -220.0
-	skip_button.offset_top = 20.0
+	skip_button.offset_top = -72.0
 	skip_button.offset_right = -20.0
-	skip_button.offset_bottom = 72.0
+	skip_button.offset_bottom = -20.0
 
 	panel.add_child(skip_button)
 

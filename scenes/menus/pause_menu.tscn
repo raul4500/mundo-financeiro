@@ -44,6 +44,11 @@ layout_mode = 2
 size_flags_horizontal = 4
 text = "Continuar"
 
+[node name="guia" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(500, 70)
+layout_mode = 2
+text = "Guia do Jogo"
+
 [node name="sair" type="Button" parent="VBoxContainer" unique_id=1685082915]
 custom_minimum_size = Vector2(500, 70)
 layout_mode = 2
@@ -51,4 +56,5 @@ size_flags_vertical = 8
 text = "Sair"
 
 [connection signal="pressed" from="VBoxContainer/continuar" to="." method="_on_continuar_pressed"]
+[connection signal="pressed" from="VBoxContainer/guia" to="." method="_on_guia_pressed"]
 [connection signal="pressed" from="VBoxContainer/sair" to="." method="_on_sair_pressed"]

@@ -593,6 +593,146 @@ func test_caderno_tutorial_guia_ingame() -> void:
 	remove_child(nb)
 	nb.free()
 
+func test_guia_do_jogo_visual_e_textos() -> void:
+	print("guia do jogo: tema, tópico escolhido, números vindos das constantes")
+	_fresh_player()
+	AlertManager.reset()
+	Global.force_release_all_gameplay_locks()
+	var nb: CanvasLayer = load("res://scenes/ui/tutorial_notebook.tscn").instantiate()
+	add_child(nb)
+
+	_check(nb.blocker.color == AlertManager.DIM_COLOR, "guia escurece a tela com a mesma película do AlertManager")
+	_check(nb.content_label is RichTextLabel and nb.content_label.bbcode_enabled, "texto do guia é RichTextLabel com BBCode")
+
+	nb.select_topic(2)
+	var pressed: Array = []
+	for i in range(nb.topics_box.get_child_count()):
+		pressed.append((nb.topics_box.get_child(i) as Button).button_pressed)
+	_check(pressed == [false, false, true, false, false], "só o tópico escolhido fica pressed (estado do tema, sem modulate)")
+
+	for i in range(nb.TOPICS.size()):
+		var text: String = nb.topic_text(i)
+		_check(text.find("{") == -1, "tópico %d não deixa {marcador} sem trocar" % i)
+	_check(nb.topic_text(3).find(str(int(ParkMinigameManager.SESSION_SECONDS)) + " segundos") != -1, "tempo do parque no guia vem de ParkMinigameManager.SESSION_SECONDS")
+	_check(nb._percent(TimeManager.DAILY_POUPANCA_RATE) == "0,5", "0,005 aparece como 0,5 (vírgula)")
+	_check(nb._percent(0.15) == "15", "0,15 aparece como 15")
+
+	remove_child(nb)
+	nb.free()
+
+func test_consultoria_sem_trava_depois_do_tutorial() -> void:
+	print("consultoria: cidade aberta ou aula concluída não mostra o botão Concluir aula")
+	_fresh_player()
+	Global.player["unlock_stage"] = Global.UNLOCK_ALL
+	Global.player["office_study_confirmed"] = false
+
+	var office_scene: Control = load("res://scenes/world/places/office.tscn").instantiate()
+	add_child(office_scene)
+	_check(office_scene.confirm_button == null, "com a cidade aberta não há botão de concluir")
+	_check(not office_scene._study_gate_active(), "sem trava de leitura depois do tutorial")
+	remove_child(office_scene)
+	office_scene.free()
+
+	# No tutorial, o botão tem a geometria do SAIR e fica logo acima dele.
+	Global.player["unlock_stage"] = Global.UNLOCK_OFFICE
+	office_scene = load("res://scenes/world/places/office.tscn").instantiate()
+	add_child(office_scene)
+	var exit_btn: Button = office_scene.exit_button
+	var confirm: Button = office_scene.confirm_button
+	_check(confirm != null, "no tutorial o botão de concluir existe")
+	_check(is_equal_approx(confirm.offset_right - confirm.offset_left, exit_btn.offset_right - exit_btn.offset_left), "botão de concluir tem a largura do SAIR")
+	_check(is_equal_approx(confirm.offset_bottom - confirm.offset_top, exit_btn.offset_bottom - exit_btn.offset_top), "botão de concluir tem a altura do SAIR")
+	_check(is_equal_approx(exit_btn.offset_top - confirm.offset_bottom, office_scene.CONFIRM_BUTTON_GAP), "botão de concluir fica logo acima do SAIR")
+	remove_child(office_scene)
+	office_scene.free()
+
+func test_intro_de_missoes_lista_as_missoes_e_pulsa_o_botao() -> void:
+	print("tutorial de missões: alerta lista as metas e o botão MISSÕES pulsa até abrir o painel")
+	_fresh_player()
+	Global.player["week"] = 1
+	var text: String = TutorialManager.missions_intro_text(TutorialManager.messages[29])
+	_check(text.find("{missoes}") == -1, "intro de missões não deixa o marcador")
+	for m in MissionManager.get_missions(1):
+		_check(text.find(str(m["description"])) != -1, "intro lista a missão '%s'" % str(m["id"]))
+
+	# Fixture mínima do MissionsUi: mesmos nomes de nó que o script espera.
+	var ui := CanvasLayer.new()
+	ui.set_script(load("res://scripts/hud/missions_ui.gd"))
+	var overlay := Panel.new()
+	overlay.name = "Overlay"
+	overlay.visible = false
+	ui.add_child(overlay)
+	var inner := Panel.new()
+	inner.name = "Panel"
+	overlay.add_child(inner)
+	var list := VBoxContainer.new()
+	list.name = "MissionList"
+	inner.add_child(list)
+	var open_btn := Button.new()
+	open_btn.name = "Open"
+	ui.add_child(open_btn)
+	var guide_btn := Button.new()
+	guide_btn.name = "OpenGuide"
+	ui.add_child(guide_btn)
+	add_child(ui)
+
+	TutorialManager.missions_preview_requested.emit(true)
+	_check(ui.is_pulsing(), "o tutorial faz o botão MISSÕES pulsar")
+	_check(not ui.panel.visible, "o tutorial não abre o painel por trás do alerta")
+	TutorialManager.missions_preview_requested.emit(false)
+	_check(ui.is_pulsing(), "fechar o preview não apaga o pulso: ele espera o jogador abrir o painel")
+	ui._on_open_pressed()
+	_check(not ui.is_pulsing() and open_btn.scale == Vector2.ONE, "abrir o painel encerra o pulso e devolve a escala")
+	_check(ui.panel.visible, "painel abre pelo botão")
+
+	# Missão cumprida: pílula verde vem da variação do tema, não de cor no código.
+	MissionManager.reset_progress()
+	MissionManager._completed["economizar_100"] = true
+	ui._refresh_marks()
+	var first: Label = ui._entries[0]["label"]
+	_check(first.text.begins_with("✓ ") and first.theme_type_variation == &"LabelDone", "missão cumprida usa a variação LabelDone do tema")
+	var second: Label = ui._entries[1]["label"]
+	_check(second.text.begins_with("• ") and second.theme_type_variation == &"", "missão pendente usa o estilo padrão")
+	_check(not first.has_theme_color_override("font_color"), "sem override de cor no label da missão")
+	MissionManager.reset_progress()
+
+	remove_child(ui)
+	ui.free()
+
+func test_botao_de_topico_nao_muda_de_tamanho_ao_ler() -> void:
+	print("consultoria: botão do tópico mantém o tamanho depois do clique (✓ entra no texto)")
+	_fresh_player()
+	Global.player["unlock_stage"] = Global.UNLOCK_OFFICE
+	Global.player["office_study_confirmed"] = false
+	var office_scene: Control = load("res://scenes/world/places/office.tscn").instantiate()
+	add_child(office_scene)
+
+	var buttons: Array = office_scene.topics_container.get_children()
+	var exit_height: float = office_scene.exit_button.offset_bottom - office_scene.exit_button.offset_top
+	var before: Array = []
+	for b in buttons:
+		before.append(b.get_combined_minimum_size())
+		_check(b.get_combined_minimum_size().y >= exit_height, "botão de tópico nasce com a altura do SAIR (%d)" % int(exit_height))
+
+	for topic in office_scene.levels_data[0]["topics"]:
+		office_scene._on_topic_pressed(topic)
+
+	for i in range(buttons.size()):
+		_check(buttons[i].text.begins_with("✓ "), "tópico %d ganhou o ✓" % i)
+		_check(buttons[i].get_combined_minimum_size() == before[i], "tópico %d: tamanho mínimo igual antes e depois do ✓" % i)
+		_check(buttons[i].clip_text and buttons[i].focus_mode == Control.FOCUS_NONE, "tópico %d: texto cortado e sem foco" % i)
+
+	remove_child(office_scene)
+	office_scene.free()
+
+func test_botao_do_tema_tem_a_mesma_altura_minima_em_todo_estado() -> void:
+	print("tema: Button com a mesma altura mínima em normal, hover, pressed, hover_pressed e disabled")
+	var theme: Theme = load("res://themes/font_theme.tres")
+	var normal_height: float = theme.get_stylebox("normal", "Button").get_minimum_size().y
+	for state in ["hover", "pressed", "hover_pressed", "disabled"]:
+		var height: float = theme.get_stylebox(state, "Button").get_minimum_size().y
+		_check(is_equal_approx(height, normal_height), "Button/%s tem a mesma margem vertical que normal (%d)" % [state, int(normal_height)])
+
 func _ready() -> void:
 	print("=== auto-teste das mecanicas ===")
 	test_stamina_dura_o_dia_inteiro()
@@ -619,6 +759,11 @@ func _ready() -> void:
 	test_continuar_jogo_destrava_movimento()
 	test_confirmacao_leitura_consultoria()
 	test_caderno_tutorial_guia_ingame()
+	test_guia_do_jogo_visual_e_textos()
+	test_consultoria_sem_trava_depois_do_tutorial()
+	test_intro_de_missoes_lista_as_missoes_e_pulsa_o_botao()
+	test_botao_de_topico_nao_muda_de_tamanho_ao_ler()
+	test_botao_do_tema_tem_a_mesma_altura_minima_em_todo_estado()
 
 	print("=== %d falha(s) ===" % failures.size())
 	for f in failures:

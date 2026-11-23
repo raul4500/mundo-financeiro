@@ -22,7 +22,7 @@ Dar ao jogador algo ativo para fazer durante o dia (feedback de playtest: "não 
 5. A sessão constrói sua própria UI em código (timer + placar no topo da tela) e spawna a primeira moeda.
 6. Jogador anda pelo mapa (movimento normal, sem trocar de cena) coletando moedas antes de cada uma expirar.
 7. A cada 5 moedas coletadas (até 2 vezes por sessão), o jogo pausa para um quiz.
-8. A sessão termina de dois jeitos: o tempo geral (120s) acaba (`_end_session()`), ou o jogador aperta **BACKSPACE** e sai por vontade própria (`_quit_session()`) — ver §5.1. Em ambos os casos: mostra quantas moedas foram coletadas, restaura o HUD (`player_hud_hidden = false`), libera a trava de sessão ativa e retoma os alertas externos (aviso das 18h do `TimeManager` e eventos inesperados do `EventsManager` que ocorreram durante a corrida são retidos via `AlertManager.defer_alerts()` e exibidos ordenadamente logo após a confirmação do resultado).
+8. A sessão termina de dois jeitos: o tempo geral (60s) acaba (`_end_session()`), ou o jogador aperta **BACKSPACE** e sai por vontade própria (`_quit_session()`) — ver §5.1. Em ambos os casos: mostra quantas moedas foram coletadas, restaura o HUD (`player_hud_hidden = false`), libera a trava de sessão ativa e retoma os alertas externos (aviso das 18h do `TimeManager` e eventos inesperados do `EventsManager` que ocorreram durante a corrida são retidos via `AlertManager.defer_alerts()` e exibidos ordenadamente logo após a confirmação do resultado).
 
 ## 4. Moedas
 
@@ -34,8 +34,8 @@ Dar ao jogador algo ativo para fazer durante o dia (feedback de playtest: "não 
 
 ## 5. Timer geral e placar
 
-- Duração da sessão: **120 segundos** (`ParkMinigameManager.SESSION_SECONDS`).
-  - Motivo de ser 120s e não 60s: com moeda de 10s, 60s dificilmente permite juntar as 10 moedas necessárias para dois quizzes; 120s deixa isso alcançável.
+- Duração da sessão: **60 segundos** (`ParkMinigameManager.SESSION_SECONDS`).
+  - A sessão já foi de 120s; o valor caiu para 60s no commit "Update". Com moeda de 10s, 60s é apertado para juntar as 10 moedas dos dois quizzes: se o quiz duplo ficar raro, volte a subir `SESSION_SECONDS`.
 - UI construída em código dentro de [scripts/park/park_minigame_session.gd](scripts/park/park_minigame_session.gd) (mesmo espírito do `AlertManager`), mostrando "⏱ Xs" e "Moedas: N" no topo da tela.
 - O timer **pausa** automaticamente durante o quiz (`Global.gameplay_locked` true) e retoma ao fechar o quiz/feedback.
 

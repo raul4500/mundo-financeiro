@@ -18,7 +18,7 @@ func _on_day_changed(_day: int) -> void:
 	_update_time()
 
 func _update_time() -> void:
-	text = "Dia %d | %02dh" % [
+	text = "Dia %d • %02dh" % [
 		TimeManager.current_day,
 		TimeManager.current_hour
 	]

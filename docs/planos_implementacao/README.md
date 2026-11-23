@@ -16,6 +16,7 @@ Este diretório reúne o planejamento arquitetural e funcional detalhado para as
 | **06** | [`06_remocao_tracejados_textos.md`](./06_remocao_tracejados_textos.md) | **Remoção de Tracejados (`---`, `—`)** | Substituir travessões e hifens em textos da interface e tutoriais por pontuação polida (dois-pontos, vírgulas, `•`). | Baixa |
 | **07** | [`07_otimizacao_textos_onboarding.md`](./07_otimizacao_textos_onboarding.md) | **Enxugamento do Tutorial Geral** | Reduzir a extensão dos textos em 50-60%, tornando as mensagens ágeis, contextuais e focadas na ação imediata. | Média |
 | **08** | [`08_caderno_tutorial_guia_ingame.md`](./08_caderno_tutorial_guia_ingame.md) | **Caderno de Dicas & Guia Permanente** | Adicionar um handbook in-game permanente para consulta das mecânicas a qualquer momento (tecla `J`, HUD ou Pause). | Alta |
+| **09** | [`09_revisao_visual_e_layout.md`](./09_revisao_visual_e_layout.md) | **Revisão visual e de layout (01 a 08)** | Alinhar os componentes novos ao tema do projeto, padronizar botões e corrigir inconsistências de lógica. | Média |
 
 ---
 

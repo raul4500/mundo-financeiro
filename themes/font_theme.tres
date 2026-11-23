@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://dfxxep7h65ywp" path="res://assests/sprites/ui_assets/input_round.png" id="5_p86dj"]
 [ext_resource type="Texture2D" uid="uid://b1ljkh12elee6" path="res://assests/sprites/ui_assets/panel.png" id="6_47whx"]
 [ext_resource type="Texture2D" uid="uid://bu3rjqrk6dol" path="res://assests/sprites/ui_assets/button.png" id="7_47whx"]
+[ext_resource type="Texture2D" uid="uid://3qn5g4hlul5p" path="res://assests/sprites/ui_assets/buy_button.png" id="8_done"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_47whx"]
 texture = ExtResource("2_n5xnf")
@@ -13,6 +14,8 @@ texture_margin_left = 8.0
 texture_margin_top = 8.0
 texture_margin_right = 8.0
 texture_margin_bottom = 8.0
+content_margin_top = 16.0
+content_margin_bottom = 16.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_erpjw"]
 texture = ExtResource("7_47whx")
@@ -20,6 +23,8 @@ texture_margin_left = 8.0
 texture_margin_top = 8.0
 texture_margin_right = 8.0
 texture_margin_bottom = 8.0
+content_margin_top = 16.0
+content_margin_bottom = 16.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_mwa8i"]
 texture = ExtResource("7_47whx")
@@ -34,6 +39,8 @@ texture_margin_left = 8.0
 texture_margin_top = 8.0
 texture_margin_right = 8.0
 texture_margin_bottom = 8.0
+content_margin_top = 16.0
+content_margin_bottom = 16.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_w8gbs"]
 texture = ExtResource("4_p86dj")
@@ -98,18 +105,32 @@ texture_margin_top = 12.0
 texture_margin_right = 12.0
 texture_margin_bottom = 12.0
 
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_done"]
+texture = ExtResource("8_done")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+
 [resource]
 Button/colors/font_color = Color(7.546413e-05, 1.3102213e-05, 2.0507794e-06, 1)
 Button/colors/font_hover_color = Color(0, 0, 0, 1)
+Button/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+Button/colors/font_pressed_color = Color(1, 1, 1, 1)
 Button/font_sizes/font_size = 16
 Button/fonts/font = ExtResource("1_xe4a7")
 Button/styles/disabled = SubResource("StyleBoxTexture_47whx")
 Button/styles/hover = SubResource("StyleBoxTexture_erpjw")
+Button/styles/hover_pressed = SubResource("StyleBoxTexture_fvijx")
 Button/styles/normal = SubResource("StyleBoxTexture_mwa8i")
 Button/styles/pressed = SubResource("StyleBoxTexture_fvijx")
 Label/font_sizes/font_size = 24
 Label/fonts/font = ExtResource("1_xe4a7")
 Label/styles/normal = SubResource("StyleBoxTexture_w8gbs")
+LabelDone/base_type = &"Label"
+LabelDone/colors/font_color = Color(0, 0, 0, 1)
+LabelDone/styles/normal = SubResource("StyleBoxTexture_done")
+RichTextLabel/colors/default_color = Color(0, 0, 0, 1)
 LineEdit/colors/font_color = Color(0, 0, 0, 1)
 LineEdit/fonts/font = ExtResource("1_xe4a7")
 LineEdit/styles/normal = SubResource("StyleBoxTexture_4tbb8")

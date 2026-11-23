@@ -286,7 +286,7 @@ func _on_buy_item(group_name: String, item_name: String) -> void:
 	container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	container.size_flags_vertical = Control.SIZE_EXPAND_FILL
 
-	product_name.text = "%s - R$%d" % [item_name.capitalize(), int(price)]
+	product_name.text = "%s: R$ %d" % [item_name.capitalize(), int(price)]
 	product_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 
 	var spacer = Control.new()

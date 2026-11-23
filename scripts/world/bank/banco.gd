@@ -94,7 +94,7 @@ func render_history() -> void:
 		box.add_child(BankCard.make_label(str(entry.get("item", "-")), 18))
 		box.add_child(BankCard.make_label("R$ %.2f" % float(entry.get("price", 0.0)), 16))
 		# int(): depois de um load o JSON devolve números como float ("dia 3.0").
-		box.add_child(BankCard.make_label("Semana %d - Dia %d" % [int(entry.get("week", 1)), int(entry.get("day", 1))], 13))
+		box.add_child(BankCard.make_label("Semana %d • Dia %d" % [int(entry.get("week", 1)), int(entry.get("day", 1))], 13))
 		history_list.add_child(parts["card"])
 
 # O painel é fixo na cena (bank.tscn). Aqui só preenchemos a lista.

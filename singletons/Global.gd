@@ -200,7 +200,7 @@ func place_lock_reason(place_id: String) -> String:
 		return "Ainda não. Termine sua formação na escola primeiro."
 	if unlock_stage() == UNLOCK_SCHOOL_ONLY:
 		return "Ainda não. Comece pela escola."
-	return "Ainda não. Visite o escritório de consultoria primeiro."
+	return "Ainda não. Conclua a aula na consultoria financeira primeiro."
 
 func _new_player_data() -> Dictionary:
 	var new_player = data_model.duplicate(true)
@@ -391,9 +391,15 @@ const DAYS_PER_WEEK := 5
 func get_absolute_day() -> int:
 	return (int(player.get("week", 1)) - 1) * DAYS_PER_WEEK + int(player.get("day", 1))
 
+const BASE_SALARY := 200.0
+
+# Salário semanal de um nível de escolaridade: cada nível acima do 1 soma 50%
+# do salário base.
+func salary_for_level(level: int) -> int:
+	return int(BASE_SALARY * (1.0 + (float(level) - 1.0) * 0.5))
+
 func update_salary() -> void:
-	var base_salary = 200.0
-	player["salary"] = int(base_salary * (1.0 + (float(player["school_level"]) - 1.0) * 0.5))
+	player["salary"] = salary_for_level(int(player["school_level"]))
 
 func get_paid() -> void:
 	player["money"] = float(player["money"]) + float(player["salary"])

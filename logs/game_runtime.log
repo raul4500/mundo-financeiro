@@ -1,10 +1,5 @@
-[2026-10-19T16:33:49] === Sessão iniciada ===
-[2026-10-19T16:33:49] [INFO] Logger inicializado
-[2026-10-19T16:33:49] [INFO] save loaded
-[2026-10-19T16:33:49] [INFO] TimeManager inicializado
-[2026-10-19T16:34:13] [INFO] Missão concluída: Não gaste dinheiro por 1 dia
-[2026-10-19T16:35:43] [INFO] Missões da semana concluídas com sucesso
-[2026-10-19T16:35:43] [INFO] Evento sorteado: Despesa médica
-[2026-10-19T16:35:43] [INFO] Pendência criada: Despesa médica (conta de R$ 100.00)
-[2026-10-19T16:35:55] [INFO] Evento sorteado: Promoção imperdível
-[2026-10-19T16:35:57] [INFO] Missão concluída: Resolva um evento inesperado (pague ou resgate no banco)
+[2026-11-23T16:43:24] === Sessão iniciada ===
+[2026-11-23T16:43:24] [INFO] Logger inicializado
+[2026-11-23T16:43:24] [INFO] TimeManager inicializado
+[2026-11-23T16:43:27] [WARN] O arquivo de save não existe: user://savegame.json
+[2026-11-23T16:43:39] [INFO] save loaded

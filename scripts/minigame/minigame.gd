@@ -148,6 +148,7 @@ func _create_start_screen() -> void:
 	var info = _make_label("Pressione ESPAÇO para pular os obstáculos até o próximo checkpoint.", 16)
 	info.custom_minimum_size = Vector2(460, 0)
 	box.add_child(info)
+	box.add_child(_make_label(_goal_text(), 16))
 
 	start_button = Button.new()
 	start_button.theme = UI_THEME
@@ -157,6 +158,15 @@ func _create_start_screen() -> void:
 	start_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	start_button.pressed.connect(_on_start_pressed)
 	box.add_child(start_button)
+
+# Meta da corrida: o próximo nível e o salário que ele paga. Na primeira
+# corrida (formação inicial) não há teto, então o texto muda.
+func _goal_text() -> String:
+	if MinigameManager.is_first_session():
+		return "Formação inicial: cada checkpoint sobe um nível. Vá o mais longe que conseguir."
+	var next_level := mini(int(Global.player.get("school_level", 1)) + 1, MinigameManager.MAX_SCHOOL_LEVEL)
+	var next_label: String = MinigameManager.LEVEL_LABELS[clampi(next_level - 1, 0, MinigameManager.LEVEL_LABELS.size() - 1)]
+	return "Meta: %s • Salário: R$ %d" % [next_label, Global.salary_for_level(next_level)]
 
 # label.tres nos textos: o Label do font_theme.tres tem fundo próprio
 # (label_round.png) e corpo 24, que empilhados viram caixas dentro da caixa.

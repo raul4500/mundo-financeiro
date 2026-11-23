@@ -61,7 +61,7 @@ financeiro"
 
 [node name="Level5" type="Button" parent="HBoxContainer/LevelPanel/Levels" unique_id=918239373]
 layout_mode = 2
-text = "Empreendorismo
+text = "Empreendedorismo
 "
 
 [node name="Exit" type="Button" parent="HBoxContainer/LevelPanel" unique_id=552767366]
@@ -89,6 +89,7 @@ offset_right = -9.0
 offset_bottom = -11.0
 grow_horizontal = 2
 grow_vertical = 2
+horizontal_scroll_mode = 0
 
 [node name="Topics" type="VBoxContainer" parent="HBoxContainer/TopicPanel/ScrollContainer" unique_id=47875533]
 layout_mode = 2

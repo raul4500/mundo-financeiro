@@ -161,7 +161,7 @@ var messages = [
 
 	"No Banco você guarda seu dinheiro, aplica na poupança, investe em fundos e paga as contas da semana.",
 
-	"Ali fica o Escritório de Consultoria: leia todos os tópicos da aula da semana e clique em 'Concluir Aula' para destravar o restante da cidade.",
+	"Ali fica o Escritório de Consultoria: leia todos os tópicos da aula da semana e clique em 'Concluir aula' para destravar o restante da cidade.",
 
 	"Lembre-se: gastar com consciência, economizar e investir são as chaves para o sucesso.",
 
@@ -181,7 +181,7 @@ var messages = [
 
 	# Passo 8. Fecha a apresentação do escritório, que é o único lugar liberado
 	# nesse momento (ver Global.PLACE_UNLOCK_STAGE).
-	"Por enquanto apenas a Consultoria está aberta. Entre lá, leia os tópicos da aula e clique em 'Concluir Aula' para liberar a cidade!",
+	"Por enquanto apenas a Consultoria está aberta. Entre lá, leia os tópicos da aula e clique em 'Concluir aula' para liberar a cidade!",
 
 	# Índices 22-27: a casa. O 22 entra no tour do mundo; os outros disparam na
 	# primeira visita, em on_player_entered_home(). Como todo o resto deste
@@ -203,7 +203,8 @@ var messages = [
 	# e antes de apresentar a escola).
 	"Comandos básicos:\n• Andar: W, A, S, D ou Setas.\n• Interagir / Entrar: ENTER.\n• Confirmar alertas e pular no minigame: ESPAÇO ou ENTER.",
 
-	"Fique atento às suas MISSÕES da Semana 1 (painel aberto na tela, botão MISSÕES ou tecla M):\n• Cumpra todas as metas até o 5º dia para avançar de semana.\n• Pressione ESC para pausar/salvar e J para abrir o Guia.",
+	# {missoes} vira a lista das missões da semana atual (ver missions_intro_text).
+	"Suas MISSÕES desta semana (botão MISSÕES no topo ou tecla M):\n{missoes}\nCumpra todas até o 5º dia para avançar.\nESC pausa e salva, J abre o Guia.",
 
 	# Índice 30: Apresentação do Parque e seu minigame durante o tour do mapa.
 	"No Parque você joga o minigame de caçar moedas (até as 16h, com status acima de 50%). A cada 5 moedas, acerte o quiz para ganhar 15% de desconto no mercado!"
@@ -252,6 +253,20 @@ var weekly_messages = {
 
 func get_presentation_guide() -> Array:
 	return presentation_guide
+
+# Troca {missoes} pela lista das missões da semana atual, uma por linha.
+# Sem missões, a linha do marcador some em vez de deixar um buraco no texto.
+func missions_intro_text(template: String) -> String:
+	var week := 1
+	if has_node("/root/Global"):
+		week = int(Global.player.get("week", 1))
+	var lines: Array = []
+	if has_node("/root/MissionManager"):
+		for m in MissionManager.get_missions(week):
+			lines.append("• %s" % str(m.get("description", "")))
+	if lines.is_empty():
+		return template.replace("{missoes}\n", "")
+	return template.replace("{missoes}", "\n".join(lines))
 
 func teste():
 	emit_signal("show_message", messages[0])
@@ -460,6 +475,10 @@ func _show_next_queued_message() -> void:
 		# Sem foco, mostra imediatamente. Isso é importante ao trocar de cena
 		# para o minigame: não pode depender de um sinal da câmera antiga.
 		if text == messages[29]:
+			# O alerta lista as missões e o botão MISSÕES pulsa (ver MissionsUi).
+			# Abrir o painel por trás não adiantava: a caixa de alerta, no
+			# centro, cobria quase tudo dele.
+			text = missions_intro_text(text)
 			emit_signal("missions_preview_requested", true)
 		emit_signal("show_message", text, true)
 

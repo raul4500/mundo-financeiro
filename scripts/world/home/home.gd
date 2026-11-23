@@ -80,7 +80,7 @@ func _on_day_changed(_day: int) -> void:
 
 func _update_time_label() -> void:
 	if time_label != null:
-		time_label.text = "Dia %d | %02dh" % [TimeManager.current_day, TimeManager.current_hour]
+		time_label.text = "Dia %d • %02dh" % [TimeManager.current_day, TimeManager.current_hour]
 
 # =============================================================
 # MONTAGEM DOS ELEMENTOS DINÂMICOS
@@ -272,7 +272,7 @@ func _render_history() -> void:
 
 	# Mostra apenas as 10 ações mais recentes.
 	for entry in entries.slice(max(0, entries.size() - 10)):
-		var label = _make_info_label("%s - Dia %s / Semana %s" % [
+		var label = _make_info_label("%s • Dia %s, Semana %s" % [
 			str(entry.get("type", "ação")).capitalize(),
 			str(entry.get("day", 1)),
 			str(entry.get("week", 1))

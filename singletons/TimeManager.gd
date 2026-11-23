@@ -199,7 +199,7 @@ func sleep() -> Dictionary:
 func _faint(cause: String) -> String:
 	Global.player["money"] = max(0.0, float(Global.player.get("money", 0.0)) - MIDNIGHT_PENALTY)
 	_close_day(MIDNIGHT_STAMINA)
-	var message := "Você desmaiou de %s e foi socorrido por uma ambulância! - R$ %d" % [cause, int(MIDNIGHT_PENALTY)]
+	var message := "Você desmaiou de %s e foi socorrido por uma ambulância! Custo: R$ %d" % [cause, int(MIDNIGHT_PENALTY)]
 	AlertManager.alert(message, false, Callable(self, "_advance_to_next_day"))
 	return message
 
@@ -234,7 +234,7 @@ func _handle_midnight() -> void:
 	Global.player["money"] = max(0.0, float(Global.player.get("money", 0.0)) - MIDNIGHT_PENALTY)
 	_close_day(MIDNIGHT_STAMINA)
 	AlertManager.alert(
-		"Você passou a noite acordado e teve que comprar muito café para aguentar o dia! - R$ %d" % int(MIDNIGHT_PENALTY),
+		"Você passou a noite acordado e teve que comprar muito café para aguentar o dia! Custo: R$ %d" % int(MIDNIGHT_PENALTY),
 		false,
 		Callable(self, "_advance_to_next_day")
 	)

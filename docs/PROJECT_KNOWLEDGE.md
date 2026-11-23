@@ -288,6 +288,35 @@ O `✓` usado no painel existe na `PixeloidSansBold` (U+2713 está no cmap da fo
 
 Teste: `tests/test_mission_notifications.tscn`.
 
+### 3.12 Cores e estados de UI vêm do tema
+
+Regra: **nenhuma cor literal no código de interface** (`Color(...)`, `modulate`, `[color=...]` em BBCode). Se um estado novo precisa de aparência própria, ele vira um item do tema (`themes/font_theme.tres`) e o código só escolhe o item. O que existe hoje:
+
+- `Button/styles/hover_pressed` e `Button/colors/font_pressed_color` / `font_hover_pressed_color`: botão em modo `toggle_mode` (com `ButtonGroup`) mostra o escolhido no estado "pressed" do tema, o `button_pressed.png` com texto branco. É assim que o Guia do Jogo marca o tópico aberto. Sem `hover_pressed` no tema, o botão escolhido ficaria cinza-padrão do Godot quando o mouse passa por cima.
+- `RichTextLabel/colors/default_color` (preto): o `RichTextLabel` nasce com texto claro, e o papel creme do painel pede texto escuro. Antes disso o escritório usava `[color=black]` na mão e a mensagem de "selecione um tópico" (sem a tag) saía quase invisível.
+- Variação de tipo `LabelDone` (base `Label`, em `font_theme.tres`): é a missão cumprida. A pílula marrom do `Label` vira a pílula verde de `buy_button.png`, com texto preto. O código só faz `label.theme_type_variation = &"LabelDone"` (e `&""` para voltar ao padrão).
+- Película escura atrás de janelas modais: `AlertManager.DIM_COLOR`. O Guia do Jogo lê essa constante em vez de repetir o valor.
+
+Destaque por movimento, não por cor: o botão MISSÕES pulsa (`scale` 1,0 a 1,08 num `Tween` em loop) enquanto o tutorial espera o jogador abrir o painel.
+
+### 3.13 Botões do HUD, Guia do Jogo e missões no tutorial
+
+**Botões do topo (`scenes/players/player.tscn`, nó `MissionsUi`).** `Open` (MISSÕES) e `OpenGuide` (GUIA) têm o mesmo tamanho (140x52), ancoram no canto superior direito e ficam a 8 px um do outro. Ficam na cena, e não em código, para o tamanho valer para os dois e poder ser mexido no editor. Ambos têm `focus_mode = 0`: um botão com foco aciona de novo com ENTER (`ui_accept`), e o ENTER que o jogador aperta para entrar numa porta abriria o painel por cima. `MissionsUi._process()` esconde os dois com o HUD (`Global.player_hud_hidden`), e o `Overlay` do painel de missões cobre os dois quando abre, porque vêm antes dele na árvore.
+
+**Guia do Jogo (`scripts/ui/tutorial_notebook.gd`).** Janela modal na layer 85, criada por `player.gd` como irmã de `MissionsUi`. Abre por tecla J (ou G), pelo botão GUIA (`MissionsUi._on_guide_pressed()`) ou pelo botão "Guia do Jogo" do menu de pausa (`pause_menu.tscn`). O botão do menu tem as mesmas propriedades do "Sair" (`custom_minimum_size`, largura do container); com `SHRINK_CENTER` ele saía mais estreito que os outros dois. Layout: `PanelContainer` 860x500 → título (`label.tres`) e FECHAR → coluna de tópicos (botões `toggle_mode`) e `ScrollContainer` com `RichTextLabel` (lista `[ul]`, com recuo). Os números das regras (custos, juros, tempo do parque) são marcadores `{...}` trocados por `_tokens()`, que lê as constantes dos singletons: se uma regra mudar de valor, o guia acompanha.
+
+O menu de pausa ignora o ESC enquanto o Guia está aberto (`pause_menu._input`): sem isso, a detecção de "trava órfã" de `toggle_pause()` soltaria a trava do Guia e o jogador andaria com a janela aberta.
+
+**Missões no tutorial (passo 2).** O alerta de missões lista as metas da semana (`TutorialManager.missions_intro_text()` troca `{missoes}` em `messages[29]`) e o botão MISSÕES pulsa até o jogador abrir o painel (clique, M ou F). A versão anterior abria o painel por trás do alerta, mas a caixa do alerta (cerca de 790x385, centralizada) cobre quase todo o painel (505x456, também centralizado): sobrava só uma faixa de uns 70 px embaixo do texto.
+
+**Consultoria (`office.gd`).** "Concluir aula" só existe enquanto a cidade está fechada (`_study_gate_active()`): saves antigos, quem pulou o tutorial e quem já concluiu entram e saem sem a trava. O botão herda a geometria do `Exit` (mesma largura e altura, a 4 px acima), em vez de números soltos.
+
+**Botão de tópico (consultoria).** Tem tamanho fixo (`_style_topic_button()`): altura mínima igual à do `Exit` (o `36` antigo era menor que o mínimo do tema, 16 de margem em cima e embaixo mais o texto, e a altura oscilava quando o texto ganhava o "✓"), `clip_text` com reticências (nome longo não alarga o botão; o nome inteiro fica na dica), sem foco, e a lista de tópicos sem rolagem horizontal. No tema, os estilos `hover`, `pressed`, `hover_pressed` e `disabled` do `Button` têm `content_margin_top/bottom = 16`, igual ao `normal`: sem isso a margem vertical mudava de 16 para 8 conforme o estado do botão. Testes: `test_botao_de_topico_nao_muda_de_tamanho_ao_ler` e `test_botao_do_tema_tem_a_mesma_altura_minima_em_todo_estado`.
+
+**Botão "Pular tutorial".** Foi para o canto inferior direito. No superior direito ele ficava por cima de MISSÕES e GUIA.
+
+Testes: `tests/test_mechanics.tscn` (`test_guia_do_jogo_visual_e_textos`, `test_consultoria_sem_trava_depois_do_tutorial`, `test_intro_de_missoes_lista_as_missoes_e_pulsa_o_botao`).
+
 ## 4. Modelo do jogador (Global.player)
 
 O `Global.gd` define um `data_model` com os campos principais:
