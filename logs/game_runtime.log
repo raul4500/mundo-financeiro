@@ -1,5 +1,9 @@
-[2026-11-23T16:43:24] === Sessão iniciada ===
-[2026-11-23T16:43:24] [INFO] Logger inicializado
-[2026-11-23T16:43:24] [INFO] TimeManager inicializado
-[2026-11-23T16:43:27] [WARN] O arquivo de save não existe: user://savegame.json
-[2026-11-23T16:43:39] [INFO] save loaded
+[2026-11-25T09:12:10] === Sessão iniciada ===
+[2026-11-25T09:12:10] [INFO] Logger inicializado
+[2026-11-25T09:12:10] [INFO] save loaded
+[2026-11-25T09:12:10] [INFO] TimeManager inicializado
+[2026-11-25T09:12:10] [INFO] save loaded
+[2026-11-25T09:12:13] [INFO] Arquivo deletado com sucesso: user://savegame.json
+[2026-11-25T09:12:43] [INFO] Minigame: checkpoint alcançado. Nível 2.
+[2026-11-25T09:12:44] [INFO] Minigame: sessão encerrada. Liberado na semana 2.
+[2026-11-25T09:13:33] [INFO] save loaded
